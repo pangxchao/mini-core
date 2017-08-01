@@ -1,0 +1,53 @@
+/**
+ * Created the com.cfinal.gen.GENConfig.java
+ * @created 2017年7月26日 下午3:12:07
+ * @version 1.0.0
+ */
+package com.cfinal.gen;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import com.cfinal.db.CFDB;
+import com.cfinal.db.CFDBImpl;
+import com.cfinal.db.paging.CFMPaging;
+import com.cfinal.db.paging.CFPaging;
+
+/**
+ * 使用说明：<br/>
+ * 1.需要使用代码生成器项目的需要在com.cfinal.gen包下手动创建GENConfig的java类，GENConfig.txt文件就是java类源码
+ * 2.如果需要使用cfinal框架和cfinal代码生成器需要注意数据库命名规则<br/>
+ * &nbsp;&nbsp;1).所有表之间的字段名称不能重复<br/>
+ * &nbsp;&nbsp;2).每个表的字段都有相同的前缀名称 用‘_’下划线分隔<br/>
+ * 3.使用代码生成器生成的只有实体代码和简单的dao操作代码 <br/>
+ * 4.生成时修改下面的常量参数，代码会直接写入常量配置的名中<br/>
+ * 5.导出数据字典和sql代码时，默认在项目的‘documents’目录中
+ * @author XChao
+ */
+public class GENConfig {
+
+	public static final String DB_URL = "jdbc:mysql://ip:port/数据库名?characterEncoding=utf-8"; // 数据库连接
+	public static final String DB_USERNAME = "用户名"; // 数据库用户名
+	public static final String DB_PASSWORD = "密码"; // 数据库密码
+
+	public static final String SOURCES_NAME = "src"; // java源文件目录， 一般默认为src， 也有自定义的
+	public static final String PROJECT_PATH = "D://workspace"; // 项目根绝对路径
+	public static final String PACKAGE_NAME = "com.cfinal.test"; // 项目包（实体所在包名）名称
+	public static final String TABLE_DB_NAME = "tool_file_info"; // 数据库表名称
+	public static final String TABLE_JAVA_NAME = "FileInfo"; // java实体类名称
+	public static final String DB_PREFIX_NAME = "file"; // 表前缀名称， 如： file_id 字段名称
+	public static final CFPaging PAGING = new CFMPaging(1, 100); // 生成sql时，每张表获取前100条记录为初始数据
+
+	/**
+	 * 获取数据库连接
+	 * @return
+	 * @throws SQLException
+	 * @throws Exception
+	 */
+	public static CFDB getDB() throws SQLException, Exception {
+		Class.forName("com.mysql.jdbc.Driver"); // mysql 连接
+		return new CFDBImpl(DriverManager.getConnection(DB_URL, //
+			DB_USERNAME, DB_PASSWORD));
+	}
+
+}
