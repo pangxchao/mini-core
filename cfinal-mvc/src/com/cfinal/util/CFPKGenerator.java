@@ -8,8 +8,6 @@ package com.cfinal.util;
 import java.util.Random;
 import java.util.UUID;
 
-import com.cfinal.web.central.CFInitialize;
-
 /**
  * 主键获取,规则：当前时间缀转36进制字符串 + 两位36进制IP码 + 一位36进制随机码
  * @author XChao
@@ -24,11 +22,7 @@ public class CFPKGenerator {
 	private long lasttimestamp = -1L;
 
 	private CFPKGenerator() {
-		try {
-			this.workerid = CFInitialize.getContext().getWorkerId();
-		} catch (Exception e) {
-			workerid = (new Random().nextInt(16) + 1);
-		}
+		workerid = (new Random().nextInt(16) + 1);
 	}
 
 	// 生成主键

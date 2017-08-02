@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cfinal.db.CFDBFactory;
+import com.cfinal.util.CFPKGenerator;
 import com.cfinal.util.cast.CFCastUtil;
 import com.cfinal.util.lang.CFClazz;
 import com.cfinal.util.logger.CFLogger;
@@ -85,6 +86,7 @@ public abstract class CFInitialize {
 		context.setActionSuffix(config.getActionSuffix());
 		context.setLoginUrl(config.getLoginUrl());
 		context.setWorkerId(config.getWorkerId());
+		CFPKGenerator.setWorkerid(config.getWorkerId()); // 设置主键生成器的机器码
 		CFLogger.info("********** Init application end. *********************************");
 
 		// 初始化 全局初始化参数
