@@ -17,20 +17,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 
 import com.cfinal.db.CFDBFactory;
-import com.cfinal.util.digest.CFBase64;
+import com.cfinal.util.lang.CFString;
 import com.cfinal.util.lang.CFThrowable;
 import com.cfinal.util.logger.CFLogger;
 import com.cfinal.web.annotaion.CFType;
 import com.cfinal.web.central.CFContext;
-import com.cfinal.web.central.CFInvocation;
 import com.cfinal.web.central.CFInitialize;
+import com.cfinal.web.central.CFInvocation;
 import com.cfinal.web.control.CFActionInvocation;
 import com.cfinal.web.control.CFActionParameter;
 import com.cfinal.web.control.CFActionPorxy;
 import com.cfinal.web.editor.CFParamBindException;
 import com.cfinal.web.entity.CFUser;
-import com.cfinal.web.model.CFModelImpl;
 import com.cfinal.web.model.CFModel;
+import com.cfinal.web.model.CFModelImpl;
 
 /**
  * com.cfinal.web.CFServlet.java
@@ -126,8 +126,8 @@ public class CFServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected String loginInterceptor(CFActionPorxy porxy, CFModel model, CFRequest request,
-		CFResponse response) throws Exception {
+	protected String loginInterceptor(CFActionPorxy porxy, CFModel model, CFRequest request, CFResponse response)
+		throws Exception {
 		try {
 			CFUser usessin = (CFUser) request.getSession().getAttribute(CFUser.USER_KEY);
 			if(porxy.getAction().permiss() > 0 && usessin == null) {
@@ -136,11 +136,12 @@ public class CFServlet extends HttpServlet {
 					return null;
 				}
 				if(StringUtils.isNotBlank(context.getLoginUrl())) {
-					StringBuilder source = new StringBuilder(porxy.getName());
+					StringBuilder uri = new StringBuilder(porxy.getName());
 					if(StringUtils.isNotBlank(request.getQueryString())) {
-						source.append("?").append(request.getQueryString());
+						uri.append("?").append(request.getQueryString());
 					}
-					return "r:" + context.getLoginUrl() + "?source=" + CFBase64.urlEncode(source.toString());
+					return "r:" + context.getLoginUrl() + "?uri="
+						+ CFString.urlEncode(uri.toString(), context.getEncoding());
 				}
 				throw new RuntimeException("Not login in error.");
 			}
@@ -168,14 +169,14 @@ public class CFServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected String paramInterceptor(CFActionPorxy porxy, CFModel model, CFRequest request,
-		CFResponse response) throws Exception {
+	protected String paramInterceptor(CFActionPorxy porxy, CFModel model, CFRequest request, CFResponse response)
+		throws Exception {
 		try {
 			CFActionParameter parameter = porxy.getParameter();
 			for (int i = 0, j = parameter.length(); i < j; i++) {
 				try {
-					parameter.setValue(i, parameter.getEditor(i).value(parameter.getName(i), //
-						parameter.getType(i), request, response));
+					parameter.setValue(i,
+						parameter.getEditor(i).value(parameter.getName(i), parameter.getType(i), request, response));
 				} catch (Exception e) {
 					throw new CFParamBindException("Param binding error. ", e, parameter.getName(i));
 				}
@@ -197,8 +198,8 @@ public class CFServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected String actionInvocation(CFActionPorxy porxy, CFModel model, CFRequest request,
-		CFResponse response) throws Exception {
+	protected String actionInvocation(CFActionPorxy porxy, CFModel model, CFRequest request, CFResponse response)
+		throws Exception {
 		// 创建Action调用对象 ActionInvocation,并设置ActionPorxy对象
 		CFInvocation invocation = new CFActionInvocation(porxy);
 		// 设置HttpServletRequest

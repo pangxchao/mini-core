@@ -5,14 +5,12 @@
  */
 package com.cfinal.util.lang;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.cfinal.util.CFHashGenerator;
-import com.cfinal.web.central.CFInitialize;
 
 /**
  * java.lang.String 工具类
@@ -142,47 +140,24 @@ public class CFString {
 	}
 
 	/**
-	 * 格式化距离显示
-	 * @param dist 距离 单位米
-	 */
-	public static String formatdist(double dist) {
-		if(dist >= 1000) {
-			return String.format("%1$.2f", dist / 1000) + "km";
-		}
-		return String.format("%1$.1f", dist) + "m";
-	}
-
-	/**
-	 * 获取两经纬度距离
-	 * @param lng1 经度1
-	 * @param lat1 纬度1
-	 * @param lng2 经度2
-	 * @param lat2 纬度2
-	 * @return
-	 */
-	public static String distance(double lng1, double lat1, double lng2, double lat2) {
-		return formatdist(CFHashGenerator.getInstence().distance(lng1, lat1, lng2, lat2));
-	}
-
-	/**
 	 * 将字符串转成URL编码
 	 * @param stringContent
 	 */
-	public static String encode(String stringContent) {
-		return encode(stringContent, CFInitialize.getContext().getEncoding());
-	}
-
-	/**
-	 * 将字符串转成URL编码
-	 * @param stringContent
-	 * @param encode 字符串编码格式
-	 */
-	public static String encode(String stringContent, String encode) {
+	public static String urlEncode(String value, String encode) {
 		try {
-			if(StringUtils.isBlank(stringContent)) {
-				return stringContent;
-			}
-			return URLEncoder.encode(stringContent, encode);
+			return URLEncoder.encode(value, encode);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * 将URL编码还原成原来的字符串
+	 * @param stringContent
+	 */
+	public static String urlDecode(String value, String encode) {
+		try {
+			return URLDecoder.decode(value, encode);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
