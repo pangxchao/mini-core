@@ -12,13 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.cfinal.db.CFDB;
-import com.cfinal.db.CFDBFactory;
-import com.cfinal.db.model.mapping.CFDBTables;
-import com.cfinal.util.logger.CFLogger;
-
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
@@ -30,6 +23,10 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import sn.mini.dao.IDao;
+import sn.mini.dao.model.DaoTable;
+import sn.mini.util.json.JSONArray;
+import sn.mini.util.json.JSONObject;
 
 /**
  * com.cfinal.gen.GENDictionaries.java
@@ -38,15 +35,12 @@ import jxl.write.WritableWorkbook;
 public class GENDictionaries {
 
 	public static void main(String[] args) throws Exception {
-		OutputStream outputStream = null;
-		WritableWorkbook book = null;
-		try {
-			File file = new File(GENConfig.PROJECT_PATH, "documents/dictionary.xls");
-			if(!file.exists() && file.mkdirs()) {
-				System.out.println("创建文件夹成功");
-			}
-			outputStream = new FileOutputStream(file);
-			book = Workbook.createWorkbook(outputStream);
+		File file = new File(GENConfig.PROJECT_PATH, "document");
+		if(!file.exists() && file.mkdirs()) {
+			System.out.println("创建文件夹成功");
+		}
+		try (OutputStream outputStream = new FileOutputStream(new File(file, "dictionary.xls"));) {
+			WritableWorkbook book = Workbook.createWorkbook(outputStream);
 
 			WritableSheet sheet = book.createSheet("Sheet1", 0);
 //			FontName fontName = WritableFont.createFont("微软雅黑");
@@ -74,11 +68,9 @@ public class GENDictionaries {
 			sheet.setColumnView(2, 20); // 设置第二列宽， 字段名称列
 			sheet.setColumnView(4, 45); // 设置第五列宽， 字段说明列
 
-			CFDB db = null;
-			try {
-				db = GENConfig.getDB();
+			try (IDao dao = GENConfig.getDao();) {
 				// JSONArray arrays = CFDBTables.getCreateTable(db, tableName)
-				List<String> tables = db.query((db1, rs) -> {
+				List<String> tables = dao.query(rs -> {
 					return rs.getString(1);
 				}, "show tables");
 				for (int i = 0, row = 0, len = tables.size(); i < len; i++) {
@@ -100,14 +92,14 @@ public class GENDictionaries {
 					sheet.addCell(new Label(8, row, "默认值", cellformat));
 					row = row + 1;
 
-					JSONArray pks = CFDBTables.getPrimaryKey(db, tables.get(i));
+					JSONArray pks = DaoTable.getPrimaryKey(dao, tables.get(i));
 					Map<String, Boolean> pkMaps = new HashMap<>();
 					for (int j = 0, size = pks.size(); j < size; j++) {
 						JSONObject columnItem = pks.getJSONObject(j);
 						pkMaps.put(columnItem.getString("COLUMN_NAME"), true);
 					}
 
-					JSONArray columns = CFDBTables.getColumns(db, tables.get(i));
+					JSONArray columns = DaoTable.getColumns(dao, tables.get(i));
 					for (int j = 0, size = columns.size(); j < size; j++) {
 						JSONObject columnItem = columns.getJSONObject(j);
 						sheet.setRowView(row, 405, false); // 设置行高
@@ -127,24 +119,11 @@ public class GENDictionaries {
 					sheet.setRowView(row, 405, false); // 设置行高
 					row = row + 1;
 				}
-			} finally {
-				CFDBFactory.close(db);
 			}
 			book.write();
 			outputStream.flush();
-
+			book.close();
 			System.out.println("---------------- 数据字典生成完成 ------------------");
-		} finally {
-			if(book != null) {
-				try {
-					book.close();
-				} catch (Exception e) {
-					CFLogger.severe("book close exception", e);
-				}
-			}
-			if(null != outputStream) {
-				outputStream.close();
-			}
 		}
 	}
 }

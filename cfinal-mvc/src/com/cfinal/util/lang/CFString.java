@@ -22,6 +22,7 @@ public class CFString {
 	 * 字符串替换的回调接口
 	 * @author XChao
 	 */
+	@FunctionalInterface
 	public static interface XReplace {
 		/**
 		 * 将text转化为特定的字串返回

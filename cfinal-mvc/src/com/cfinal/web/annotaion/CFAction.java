@@ -11,8 +11,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.cfinal.web.render.CFRender;
-import com.cfinal.web.render.CFPageRender;
+import com.cfinal.web.http.render.CFRender;
 
 /**
  * @author XChao
@@ -40,28 +39,16 @@ public @interface CFAction {
 	public String suffix() default "";
 
 	/**
-	 * 该Action重新指定拦截器
+	 * 重新指定拦截器顺序
 	 * @return
 	 */
-	public String use() default "";
-
-	/**
-	 * 使用视渲染器的名称
-	 * @return
-	 */
-	public String view() default "";
+	public String interceptor() default "";
 
 	/**
 	 * 用户自定义返回类型,必须和XView.defined 联合使用
 	 * @return
 	 */
-	public Class<? extends CFRender> defined() default CFPageRender.class;
-
-	/**
-	 * 设置是否可以异步返回, 该功能暂时未实现
-	 * @return
-	 */
-	public boolean async() default false;
+	public Class<? extends CFRender> defined() default CFRender.class;
 
 	/**
 	 * 指定请求的访问权限码，该码可以根据系统逻辑自定义

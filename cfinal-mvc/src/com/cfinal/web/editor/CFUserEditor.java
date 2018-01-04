@@ -5,10 +5,10 @@
  */
 package com.cfinal.web.editor;
 
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
-import com.cfinal.web.central.CFParameter;
-import com.cfinal.web.entity.CFUser;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
+import com.cfinal.web.http.CFParameter;
+import com.cfinal.web.model.CFUser;
 
 /**
  * com.cfinal.web.editor.CFUserEditor.java
@@ -17,8 +17,8 @@ import com.cfinal.web.entity.CFUser;
 public class CFUserEditor implements CFEditor {
 
 	@Override
-	public Object value(String paramName, Class<?> paramType, CFRequest request, //
-		CFResponse response) throws Exception {
+	public Object value(String paramName, Class<?> paramType, CFHttpServletRequest request, //
+		CFHttpServletResponse response) throws Exception {
 		Object value = request.getSession().getAttribute(CFUser.USER_KEY);
 		request.setAttribute(CFParameter.PARAMETER_KEY + paramName, value);
 		return value;

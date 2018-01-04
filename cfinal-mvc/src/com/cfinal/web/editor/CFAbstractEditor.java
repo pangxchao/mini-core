@@ -5,9 +5,9 @@
  */
 package com.cfinal.web.editor;
 
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
-import com.cfinal.web.central.CFParameter;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
+import com.cfinal.web.http.CFParameter;
 
 /**
  * com.cfinal.web.editor.CFAbstractEditor.java
@@ -16,8 +16,8 @@ import com.cfinal.web.central.CFParameter;
 public abstract class CFAbstractEditor implements CFEditor {
 
 	@Override
-	public Object value(String paramName, Class<?> paramType, CFRequest request, //
-		CFResponse response) throws Exception {
+	public Object value(String paramName, Class<?> paramType, CFHttpServletRequest request, //
+		CFHttpServletResponse response) throws Exception {
 		Object value = parse(request.getParameter(paramName));
 		request.setAttribute(CFParameter.PARAMETER_KEY + paramName, value);
 		return value;

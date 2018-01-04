@@ -21,7 +21,7 @@ import java.util.jar.JarEntry;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cfinal.util.logger.CFLogger;
+import com.cfinal.util.logger.CFLog;
 
 /**
  * java.lang.Class工具类
@@ -30,29 +30,40 @@ import com.cfinal.util.logger.CFLogger;
 public class CFClazz {
 	/**
 	 * 调用 Class.forName() 并转换成 clazz 对应类的子类Class对象
-	 * @param className
-	 * @param clazz
-	 * @return
-	 * @throws ClassNotFoundException
-	 */
-	public static <T> Class<? extends T> forName(String className, Class<T> clazz) throws Exception {
-		return Class.forName(className, false, CFClazz.getDefaultClassLoader()).asSubclass(clazz);
-	}
-
-	/**
-	 * 将 加载 类名为 clazzName 的类,将强制转换成 T的子类Class对象,然后创建该对象实例返回
-	 * @param clazzName
+	 * @param name
 	 * @param clazz
 	 * @return
 	 * @throws Exception
 	 */
-	public static <T> T newInstence(String clazzName, Class<T> clazz) throws Exception {
-		return Class.forName(clazzName, false, CFClazz.getDefaultClassLoader()).asSubclass(clazz).newInstance();
+	public static <T> Class<? extends T> forName(String name, Class<T> clazz) throws Exception {
+		return Class.forName(name, false, CFClazz.getDefaultClassLoader()).asSubclass(clazz);
+	}
+
+	/**
+	 * 将 加载 类名为 name 的类,将强制转换成 T的子类Class对象,然后创建该对象实例返回
+	 * @param name
+	 * @param clazz
+	 * @return
+	 * @throws Exception
+	 */
+	public static <T> T newInstence(String name, Class<T> clazz) throws Exception {
+		return Class.forName(name, false, CFClazz.getDefaultClassLoader()).asSubclass(clazz).newInstance();
+	}
+
+	/**
+	 * 将 name 类 将强制转换成 T的子类Class对象,然后创建该对象实例返回
+	 * @param name
+	 * @param clazz
+	 * @return
+	 * @throws Exception
+	 */
+	public static <T> T newInstence(Class<?> name, Class<T> clazz) throws Exception {
+		return clazz.cast(name.newInstance());
 	}
 
 	/**
 	 * 获取默认类加载器
-	 * @return Thread.currentThread().getContextClassLoader() || XClassUtil.class.getClassLoader()
+	 * @return Thread.currentThread().getContextClassLoader() || CFClazz.class.getClassLoader()
 	 */
 	public static ClassLoader getDefaultClassLoader() {
 		try {
@@ -131,7 +142,7 @@ public class CFClazz {
 				}
 			}
 		} catch (Exception e) {
-			CFLogger.severe(e.getMessage(), e);
+			CFLog.error(e.getMessage(), e);
 		}
 	}
 
@@ -189,7 +200,7 @@ public class CFClazz {
 					.append(fileName).toString(), recursive, annotation);
 			}
 		} catch (Exception e) {
-			CFLogger.severe(e.getMessage(), e);
+			CFLog.error(e.getMessage(), e);
 		}
 	}
 
@@ -269,22 +280,22 @@ public class CFClazz {
 				}
 			}
 		} catch (ClassNotFoundException e) {
-			CFLogger.severe("java.lang.ClassNotFoundException: class " + //
+			CFLog.error("java.lang.ClassNotFoundException: class " + //
 				clazzName, e);
 		} catch (NoClassDefFoundError e) {
-			CFLogger.severe("java.lang.NoClassDefFoundError: " + //
+			CFLog.error("java.lang.NoClassDefFoundError: " + //
 				e.getMessage() + " class " + clazzName, e);
 		} catch (ExceptionInInitializerError e) {
-			CFLogger.severe("java.lang.ExceptionInInitializerError: " + //
+			CFLog.error("java.lang.ExceptionInInitializerError: " + //
 				e.getMessage() + " class " + clazzName, e);
 		} catch (UnsatisfiedLinkError e) {
-			CFLogger.severe("java.lang.UnsatisfiedLinkError: " + //
+			CFLog.error("java.lang.UnsatisfiedLinkError: " + //
 				e.getMessage() + " class " + clazzName, e);
 		} catch (Exception e) {
-			CFLogger.severe("java.lang.Exception: " + e.getMessage() + //
+			CFLog.error("java.lang.Exception: " + e.getMessage() + //
 				" class " + clazzName, e);
 		} catch (Error e) {
-			CFLogger.severe("java.lang.Error: " + e.getMessage() + //
+			CFLog.error("java.lang.Error: " + e.getMessage() + //
 				" class " + clazzName, e);
 		}
 	}
@@ -321,11 +332,5 @@ public class CFClazz {
 				file.isDirectory();
 			}
 		});
-	}
-
-	public static void main(String[] args) {
-		CFLogger.setHandler(CFLogger.HANDLE_CONSOLE);
-		List<Class<?>> list = scanningall("com", true, null);
-		System.out.println(list);
 	}
 }

@@ -16,7 +16,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import com.cfinal.db.thread.CFDBThreadLocal;
-import com.cfinal.util.logger.CFLogger;
+import com.cfinal.util.logger.CFLog;
 
 /**
  * 数据库连接工厂类
@@ -86,7 +86,7 @@ public class CFDBFactory {
 		try {
 			return db.getConnection().isClosed();
 		} catch (Exception e) {
-			CFLogger.severe("DB isClosed error. ", e);
+			CFLog.error("DB isClosed error. ", e);
 		}
 		return true;
 	}
@@ -100,7 +100,7 @@ public class CFDBFactory {
 		try {
 			return connection.isClosed();
 		} catch (Exception e) {
-			CFLogger.severe("Connection isClosed error. ", e);
+			CFLog.error("Connection isClosed error. ", e);
 		}
 		return true;
 	}
@@ -125,7 +125,7 @@ public class CFDBFactory {
 				connection.close();
 			}
 		} catch (SQLException e) {
-			CFLogger.severe("Connection close fail. ", e);
+			CFLog.error("Connection close fail. ", e);
 		}
 	}
 
@@ -139,7 +139,7 @@ public class CFDBFactory {
 				statement.close();
 			}
 		} catch (SQLException e) {
-			CFLogger.severe("Statement close fail. ", e);
+			CFLog.error("Statement close fail. ", e);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class CFDBFactory {
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					CFLogger.severe("ResultSet close fail. ", e);
+					CFLog.error("ResultSet close fail. ", e);
 				}
 				Statement statement = null;
 				try { // 这里获取Statement可能出异常，不用管
@@ -164,7 +164,7 @@ public class CFDBFactory {
 				close(statement); // 关闭 Statement
 			}
 		} catch (SQLException e) {
-			CFLogger.severe("ResultSet close fail. ", e);
+			CFLog.error("ResultSet close fail. ", e);
 		}
 	}
 }

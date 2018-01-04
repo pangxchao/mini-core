@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<project name="zpi" default="pack.jar" basedir=".">
+	<property name="web" value="${basedir}/WebContent/" />
+	<property name="lib" value="${web}/WEB-INF/lib" />
+
+	<tstamp>
+		<format property="touch.time" pattern="yyyyMMdd-HHmm" unit="hour" />
+	</tstamp>
+
+	<target name="pack.jar" description="make jar file">
+		<jar jarfile="${lib}/sn-mini-1.0.0.jar">
+			<fileset dir="${web}">
+				<include name="META-INF/services/javax.servlet.ServletContainerInitializer" />
+			</fileset>
+		</jar>
+	</target>
+</project>

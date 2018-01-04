@@ -14,9 +14,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.cfinal.db.CFDB;
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
-import com.cfinal.web.CFPart;
+import com.cfinal.web.editor.array.CFArrayEditor;
+import com.cfinal.web.editor.array.CFPartArrayEditor;
 import com.cfinal.web.editor.atomic.CFAtomicBooleanEditor;
 import com.cfinal.web.editor.atomic.CFAtomicByteEditor;
 import com.cfinal.web.editor.atomic.CFAtomicDoubleEditor;
@@ -24,8 +23,20 @@ import com.cfinal.web.editor.atomic.CFAtomicFloatEditor;
 import com.cfinal.web.editor.atomic.CFAtomicIntegerEditor;
 import com.cfinal.web.editor.atomic.CFAtomicLongEditor;
 import com.cfinal.web.editor.atomic.CFAtomicShortEditor;
-import com.cfinal.web.entity.CFUser;
+import com.cfinal.web.editor.basics.CFBooleanEditor;
+import com.cfinal.web.editor.basics.CFByteEditor;
+import com.cfinal.web.editor.basics.CFCharEditor;
+import com.cfinal.web.editor.basics.CFDoubleEditor;
+import com.cfinal.web.editor.basics.CFFloatEditor;
+import com.cfinal.web.editor.basics.CFIntegerEditor;
+import com.cfinal.web.editor.basics.CFLongEditor;
+import com.cfinal.web.editor.basics.CFShortEditor;
+import com.cfinal.web.editor.basics.CFStringEditor;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
+import com.cfinal.web.http.CFPart;
 import com.cfinal.web.model.CFModel;
+import com.cfinal.web.model.CFUser;
 
 /**
  * com.cfinal.web.editor.CFEditorBinding.java
@@ -49,8 +60,8 @@ public class CFEditorBinding {
 		editors.put(java.util.Date.class, new CFDateEditor());
 
 		editors.put(HttpSession.class, new CFSessionEditor());
-		editors.put(CFRequest.class, new CFRequestEditor());
-		editors.put(CFResponse.class, new CFResponseEditor());
+		editors.put(CFHttpServletRequest.class, new CFRequestEditor());
+		editors.put(CFHttpServletResponse.class, new CFResponseEditor());
 		editors.put(HttpServletRequest.class, new CFRequestEditor());
 		editors.put(HttpServletResponse.class, new CFResponseEditor());
 

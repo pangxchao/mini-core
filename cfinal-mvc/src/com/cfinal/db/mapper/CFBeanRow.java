@@ -10,10 +10,10 @@ import java.sql.SQLException;
 
 import com.cfinal.db.CFDB;
 import com.cfinal.db.mapper.cell.CFCell;
+import com.cfinal.db.mapper.cell.CFCellMapping;
 import com.cfinal.db.model.mapping.CFDBMapping;
 import com.cfinal.db.model.mapping.CFDBTables;
-import com.cfinal.db.mapper.cell.CFCellMapping;
-import com.cfinal.util.logger.CFLogger;
+import com.cfinal.util.logger.CFLog;
 
 /**
  * com.cfinal.db.mapper.CFBeanRow.java
@@ -50,10 +50,10 @@ public class CFBeanRow<T> extends CFAbstractRow<T> {
 								CFCellMapping.getCellMapper(this.dbTables.getTypes(columnName) // 换行
 									.getName()).getCell(db, resultSet, columnLable));
 						} catch (Exception e1) {
-							CFLogger.warning(e1.getMessage(), e1);
+							CFLog.warn(e1.getMessage(), e1);
 						}
 					} catch (Exception e) {
-						CFLogger.warning(e.getMessage(), e);
+						CFLog.warn(e.getMessage(), e);
 					}
 				}
 			}

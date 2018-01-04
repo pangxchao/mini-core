@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <project name="cfinal" default="pack.jar" basedir=".">
-	<property name="build.dir" value="${basedir}/WebContent/WEB-INF/classes" />
+	<property name="build.web" value="${basedir}/WebContent/" />
+	<property name="build.dir" value="${build.web}/WEB-INF/classes" />
 	<property name="build.classes.dir" value="${build.dir}" />
 	<property name="build.src.dir" value="${basedir}/src" />
 	<property name="build.doc.dir" value="${basedir}/doc" />
@@ -47,6 +48,9 @@
 				<exclude name="test/**/*.java" />
 				<exclude name="pojo/create/*.java" />
 				<exclude name="entry_output.vm" />
+			</fileset>
+			<fileset dir="${build.web}">
+				<include name="META-INF/services/javax.servlet.ServletContainerInitializer" />
 			</fileset>
 		</jar>
 	</target>

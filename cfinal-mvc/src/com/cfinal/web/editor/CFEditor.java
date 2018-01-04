@@ -5,14 +5,14 @@
  */
 package com.cfinal.web.editor;
 
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
 
 /**
  * com.cfinal.web.editor.CFEditor.java
  * @author XChao
  */
 public interface CFEditor {
-	public Object value(String paramName, Class<?> paramType, CFRequest request, CFResponse response)
+	public Object value(String paramName, Class<?> paramType, CFHttpServletRequest request, CFHttpServletResponse response)
 		throws Exception;
 }

@@ -18,15 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.cfinal.db.CFDB;
-import com.cfinal.db.CFDBFactory;
-import com.cfinal.db.model.mapping.CFDBTables;
-import com.cfinal.util.lang.CFDate;
-import com.cfinal.util.lang.CFString;
+import sn.mini.dao.IDao;
+import sn.mini.dao.model.DaoTable;
+import sn.mini.util.json.JSONArray;
+import sn.mini.util.json.JSONObject;
+import sn.mini.util.lang.DateUtil;
+import sn.mini.util.lang.StringUtil;
 
 /**
  * com.cfinal.gen.GENAll.java
@@ -107,7 +104,7 @@ public class GENAll {
 		return new File(file, GENConfig.PACKAGE_NAME.replace(".", "/"));
 	}
 
-	protected static void genBean(JSONArray columns) {
+	protected static void genBean(JSONArray columns, Map<String, Boolean> pkMaps) {
 		try {
 			// --------------- 生成实体 -----------------------
 			// 头声明
@@ -123,7 +120,7 @@ public class GENAll {
 
 			packages.add("/**");
 			packages.add(" * Created the " + ENTITY_JAVA_NAME_ALL);
-			packages.add(" * @created " + CFDate.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			packages.add(" * @created " + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			packages.add("*/");
 			packages.add("package " + ENTITY_PACKAGE_NAME_ALL + ";");
 			packages.add("\r\n");
@@ -132,10 +129,10 @@ public class GENAll {
 			headers.add(" * " + ENTITY_JAVA_NAME_ALL);
 			headers.add(" * @author XChao");
 			headers.add(" */");
-			headers.add("@CFDBName(\"" + GENConfig.TABLE_DB_NAME + "\")");
+			headers.add("@Binding(\"" + GENConfig.TABLE_DB_NAME + "\")");
 			headers.add("public class " + ENTITY_JAVA_CLASS_NAME + " { ");
 
-			imports.add("import com.cfinal.db.model.mapping.CFDBName;");
+			imports.add("import sn.mini.dao.annotaion.Binding;");
 			contents.add("public static final String TABLE_NAME = \"" + GENConfig.TABLE_DB_NAME + "\";");
 
 			List<String> static_contents = new ArrayList<>();
@@ -148,9 +145,9 @@ public class GENAll {
 				String columnRemarks = columnItem.getString("REMARKS"); // 字段说明
 				String columnAlias = columnName.replaceFirst(REGEX, ""); // 别名名称
 				ColumnTypes types = getColumnType(columnType); // 类型
-				String javaPropName = CFString.toJavaName(columnAlias, false); // java属性名称
-				String gstterName = CFString.toJavaName(columnAlias, true); // java getter，setter主要名称
-				if(StringUtils.isNotBlank(types.getImpt())) {
+				String javaPropName = StringUtil.toJavaName(columnAlias, false); // java属性名称
+				String gstterName = StringUtil.toJavaName(columnAlias, true); // java getter，setter主要名称
+				if(StringUtil.isNotBlank(types.getImpt())) {
 					imports.add("import " + types.getImpt() + ";");
 				}
 				// 字段名称静态常量生成
@@ -174,7 +171,11 @@ public class GENAll {
 				gstter_contents.add("/**");
 				gstter_contents.add("* @param " + javaPropName + " the " + javaPropName + " to set");
 				gstter_contents.add(" */");
-				gstter_contents.add("@CFDBName(\"" + columnName + "\")");
+				if(pkMaps.get(columnName) != null && pkMaps.get(columnName)) {
+					gstter_contents.add("@Binding(value=\"" + columnName + "\", des = 2)");
+				} else {
+					gstter_contents.add("@Binding(value=\"" + columnName + "\")");
+				}
 				gstter_contents
 					.add("public void set" + gstterName + "(" + types.getName() + " " + javaPropName + ") { ");
 				gstter_contents.add("\tthis." + javaPropName + " = " + javaPropName + ";");
@@ -199,20 +200,20 @@ public class GENAll {
 				// 创建JAVA文件 response
 				writer = new OutputStreamWriter(outputStream);
 				// 写入package 语句
-				writer.write(StringUtils.join(packages, "\r\n"));
+				writer.write(StringUtil.join(packages, "\r\n"));
 				writer.write("\r\n");
 				// 写入import 语句
-				writer.write(StringUtils.join(imports, "\r\n"));
+				writer.write(StringUtil.join(imports, "\r\n"));
 				writer.write("\r\n");
 				// 写入JAVA类声明
-				writer.write(StringUtils.join(headers, "\r\n"));
+				writer.write(StringUtil.join(headers, "\r\n"));
 				writer.write("\r\n");
 				// 写入JAVA类 内容（属性，方法）
 				for (String method : contents) {
 					writer.write("\t" + method + "\r\n");
 				}
 				// 写入JAVA类结束
-				writer.write(StringUtils.join(footers, "\r\n"));
+				writer.write(StringUtil.join(footers, "\r\n"));
 				writer.flush(); // 刷新buffer
 
 			} finally {
@@ -231,7 +232,7 @@ public class GENAll {
 		}
 	}
 
-	protected static void genDB(JSONArray columns, JSONArray pks) {
+	protected static void genDB(JSONArray columns, Map<String, Boolean> pkMaps) {
 		try {
 			// 头声明
 			List<String> packages = new ArrayList<>();
@@ -246,30 +247,24 @@ public class GENAll {
 
 			packages.add("/**");
 			packages.add(" * Created the " + DB_JAVA_NAME_ALL);
-			packages.add(" * @created " + CFDate.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			packages.add(" * @created " + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			packages.add("*/");
 			packages.add("package " + DB_PACKAGE_NAME_ALL + ";");
 			packages.add("\r\n");
 
-			imports.add("import com.cfinal.db.model.mapping.CFDBName;");
+			imports.add("import sn.mini.dao.annotaion.Binding;");
 			imports.add("import " + ENTITY_JAVA_NAME_ALL_UNJAVA + ";");
-			imports.add("import com.cfinal.db.model.CFDBModel;");
+			imports.add("import sn.mini.dao.model.IDaoModel;");
 
 			headers.add("/**");
 			headers.add(" * " + DB_JAVA_NAME_ALL);
 			headers.add(" * @author XChao");
 			headers.add(" */");
-			headers.add("@CFDBName(\"" + GENConfig.TABLE_DB_NAME + "\")");
+			headers.add("@Binding(\"" + GENConfig.TABLE_DB_NAME + "\")");
 			headers.add("public class " + DB_JAVA_CLASS_NAME + " extends " + //
-				ENTITY_JAVA_CLASS_NAME + " implements CFDBModel<" + DB_JAVA_CLASS_NAME + "> { ");
+				ENTITY_JAVA_CLASS_NAME + " implements IDaoModel<" + DB_JAVA_CLASS_NAME + "> { ");
 			contents.add("private static final long serialVersionUID = 1L;");
 			contents.add("\r\n");
-
-			Map<String, Boolean> pkMaps = new HashMap<>();
-			for (int i = 0, len = pks.size(); i < len; i++) {
-				JSONObject columnItem = pks.getJSONObject(i);
-				pkMaps.put(columnItem.getString("COLUMN_NAME"), true);
-			}
 
 			List<String> idJavaNameAndType = new ArrayList<>();
 			List<String> idJavaName = new ArrayList<>();
@@ -283,7 +278,7 @@ public class GENAll {
 				String columnType = columnItem.getString("TYPE_NAME"); // 类型名称
 				String columnAlias = columnName.replaceFirst(REGEX, ""); // 别名名称
 				ColumnTypes types = getColumnType(columnType); // 类型
-				String javaPropName = CFString.toJavaName(columnAlias, false); // java属性名称
+				String javaPropName = StringUtil.toJavaName(columnAlias, false); // java属性名称
 				if(pkMaps.get(columnName) != null && pkMaps.get(columnName)) {
 					idJavaNameAndType.add(types.getName() + " " + javaPropName);
 					idJavaName.add(javaPropName);
@@ -292,49 +287,62 @@ public class GENAll {
 				allJavaNameAndType.add(types.getName() + " " + javaPropName);
 				allJavaName.add(javaPropName);
 				allDbName.add(columnName.toUpperCase());
+
+				if(StringUtil.isNotBlank(types.getImpt())) {
+					imports.add("import " + types.getImpt() + ";");
+				}
 			}
 
+			imports.add("import sn.mini.dao.IDao;");
+			// 添加方法
+			contents.add("public static int insert(IDao dao, " + StringUtil.join(allJavaNameAndType, ", ") + ") {");
+			contents.add("\treturn dao.insert(TABLE_NAME, new String[]{" + StringUtil.join(allDbName, ", ") + "}, "
+				+ StringUtil.join(allJavaName, ", ") + ");");
+			contents.add("}");
+			contents.add("\r\n");
+
+			contents.add("public static int updateById(IDao dao, " + StringUtil.join(allJavaNameAndType, ", ") + ") {");
+			contents.add("\treturn dao.update(TABLE_NAME, new String[]{" + StringUtil.join(allDbName, ", ")
+				+ "}, new String[]{" + StringUtil.join(idDbName, ", ") + "}, " + StringUtil.join(allJavaName, ", ")
+				+ ", " + StringUtil.join(idJavaName, ", ") + ");");
+			contents.add("}");
+			contents.add("\r\n");
+
 			// 根据ID 删除实体信息方法
-			imports.add("import com.cfinal.db.CFDB;");
-			contents.add("public static int deleteById(CFDB db, " + //
-				StringUtils.join(idJavaNameAndType, ", ") + ") {");
-			contents.add("\treturn db.delete(TABLE_NAME, CFSql.join(" + StringUtils.join(idDbName, ", ") + //
-				"), " + StringUtils.join(idJavaName, ", ") + ");");
+			contents.add("public static int deleteById(IDao dao, " + //
+				StringUtil.join(idJavaNameAndType, ", ") + ") {");
+			contents.add("\treturn dao.delete(TABLE_NAME, new String[]{" + StringUtil.join(idDbName, ", ") + //
+				"}, " + StringUtil.join(idJavaName, ", ") + ");");
 			contents.add("}");
 			contents.add("\r\n");
 
 			// 根据ID 查询实体方法
-			imports.add("import com.cfinal.db.CFSql;");
-			contents.add("public static " + DB_JAVA_CLASS_NAME + " findById(CFDB db, " + //
-				StringUtils.join(idJavaNameAndType, ", ") + ") {");
-			contents.add("\tCFSql sql = CFSql.createQuery(TABLE_NAME, " + StringUtils.join(allDbName, ", ") + ");");
-			if(idDbName.size() == 1) {
-				contents.add(
-					"\tsql.appendWhereTrue().appendWhereEqInAnd(" + idDbName.get(0) + ", " + idJavaName.get(0) + ");");
-			} else {
-				contents.add("\tsql.appendWhereTrue();");
-				for (int i = 0, len = idDbName.size(); i < len; i++) {
-					contents.add("\tsql.appendWhereEqInAnd(" + idDbName.get(i) + ", " + idJavaName.get(i) + ");");
-				}
+			imports.add("import sn.mini.dao.Sql;");
+			contents.add("public static " + DB_JAVA_CLASS_NAME + " findById(IDao dao, " + //
+				StringUtil.join(idJavaNameAndType, ", ") + ") {");
+			contents
+				.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
+			for (int i = 0, len = idDbName.size(); i < len; i++) {
+				contents.add("\tsql.andEq(" + idDbName.get(i) + ").params(" + idJavaName.get(i) + ");");
 			}
-			contents.add("\treturn db.queryOne(" + DB_JAVA_CLASS_NAME + ".class, sql);");
+			contents.add("\treturn dao.queryOne(" + DB_JAVA_CLASS_NAME + ".class, sql);");
 			contents.add("}");
 			contents.add("\r\n");
 
 			// public static List<info> find(CFDB db)
 			imports.add("import java.util.List;");
-			contents.add("public static List<" + DB_JAVA_CLASS_NAME + "> find(CFDB db) {");
-			contents.add("\tCFSql sql = CFSql.createQuery(TABLE_NAME, " + StringUtils.join(allDbName, ", ") + ");");
-			contents.add("\tsql.appendWhereTrue();");
-			contents.add("\treturn db.query(" + DB_JAVA_CLASS_NAME + ".class, sql);");
+			contents.add("public static List<" + DB_JAVA_CLASS_NAME + "> find(IDao dao) {");
+			contents
+				.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
+			contents.add("\treturn dao.query(" + DB_JAVA_CLASS_NAME + ".class, sql);");
 			contents.add("}");
 			contents.add("\r\n");
 
-			imports.add("import com.cfinal.db.paging.CFPaging;");
-			contents.add("public static List<" + DB_JAVA_CLASS_NAME + "> find(CFPaging paging, CFDB db) {");
-			contents.add("\tCFSql sql = CFSql.createQuery(TABLE_NAME, " + StringUtils.join(allDbName, ", ") + ");");
-			contents.add("\tsql.appendWhereTrue();");
-			contents.add("\treturn db.query(paging, " + DB_JAVA_CLASS_NAME + ".class, sql);");
+			imports.add("import sn.mini.dao.Paging;");
+			contents.add("public static List<" + DB_JAVA_CLASS_NAME + "> find(Paging paging, IDao dao){");
+			contents
+				.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
+			contents.add("\treturn dao.query(paging, " + DB_JAVA_CLASS_NAME + ".class, sql);");
 			contents.add("}");
 			contents.add("\r\n");
 
@@ -352,20 +360,20 @@ public class GENAll {
 				// 创建JAVA文件 response
 				writer = new OutputStreamWriter(outputStream);
 				// 写入package 语句
-				writer.write(StringUtils.join(packages, "\r\n"));
+				writer.write(StringUtil.join(packages, "\r\n"));
 				writer.write("\r\n");
 				// 写入import 语句
-				writer.write(StringUtils.join(imports, "\r\n"));
+				writer.write(StringUtil.join(imports, "\r\n"));
 				writer.write("\r\n");
 				// 写入JAVA类声明
-				writer.write(StringUtils.join(headers, "\r\n"));
+				writer.write(StringUtil.join(headers, "\r\n"));
 				writer.write("\r\n");
 				// 写入JAVA类 内容（属性，方法）
 				for (String method : contents) {
 					writer.write("\t" + method + "\r\n");
 				}
 				// 写入JAVA类结束
-				writer.write(StringUtils.join(footers, "\r\n"));
+				writer.write(StringUtil.join(footers, "\r\n"));
 				writer.flush(); // 刷新buffer
 			} finally {
 				if(writer != null) {
@@ -382,15 +390,17 @@ public class GENAll {
 	}
 
 	public static void main(String[] args) throws SQLException, Exception {
-		CFDB db = null;
-		try {
-			db = GENConfig.getDB(); // 创建数据库连接
-			// 查询当前表的所有字段
-			JSONArray columns = CFDBTables.getColumns(GENConfig.getDB(), GENConfig.TABLE_DB_NAME);
-			genBean(columns);
-			genDB(columns, CFDBTables.getPrimaryKey(db, GENConfig.TABLE_DB_NAME));
-		} finally {
-			CFDBFactory.close(db);
+		try (IDao dao = GENConfig.getDao()) {
+			JSONArray columns = DaoTable.getColumns(dao, GENConfig.TABLE_DB_NAME);
+			JSONArray pks = DaoTable.getPrimaryKey(dao, GENConfig.TABLE_DB_NAME);
+			Map<String, Boolean> pkMaps = new HashMap<>();
+			for (int i = 0, len = pks.size(); i < len; i++) {
+				JSONObject columnItem = pks.getJSONObject(i);
+				pkMaps.put(columnItem.getString("COLUMN_NAME"), true);
+			}
+
+			genBean(columns, pkMaps);
+			genDB(columns, pkMaps);
 		}
 	}
 

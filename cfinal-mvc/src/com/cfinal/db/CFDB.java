@@ -214,7 +214,7 @@ public interface CFDB {
 	 * @param cells 需要单独处理的字段
 	 * @return
 	 */
-//	public JSONArray analysis(ResultSet resultSet, Map<String, CFCell<?>> cells);
+	public JSONArray analysis(ResultSet resultSet, Map<String, CFCell<?>> cells);
 
 	/**
 	 * 解析并关闭结果集， 将结果集数据组装成 List<T>

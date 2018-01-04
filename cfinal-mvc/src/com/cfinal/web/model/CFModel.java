@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cfinal.web.central.CFBasics;
-
 /**
  * 视图和数据类
  * @author XChao
  */
-public interface CFModel extends CFBasics {
+public interface CFModel {
 	public static final String MODEL_KEY = "CF_REQUEST_IMODEL_KEY";
 
 	/**

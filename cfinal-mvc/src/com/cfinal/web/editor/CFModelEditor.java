@@ -5,9 +5,9 @@
  */
 package com.cfinal.web.editor;
 
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
-import com.cfinal.web.central.CFParameter;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
+import com.cfinal.web.http.CFParameter;
 import com.cfinal.web.model.CFModel;
 
 /**
@@ -16,8 +16,8 @@ import com.cfinal.web.model.CFModel;
  */
 public class CFModelEditor implements CFEditor {
 
-	public Object value(String paramName, Class<?> paramType, CFRequest request, //
-		CFResponse response) throws Exception {
+	public Object value(String paramName, Class<?> paramType, CFHttpServletRequest request, //
+		CFHttpServletResponse response) throws Exception {
 		Object value = request.getAttribute(CFModel.MODEL_KEY);
 		request.setAttribute(CFParameter.PARAMETER_KEY + paramName, value);
 		return value;

@@ -22,11 +22,15 @@ public class CFDataSource implements DataSource {
 	private DataSource dataSource;
 	private String jndiname;
 
-	private synchronized DataSource getDataSource() {
+	private DataSource getDataSource() {
 		try {
-			if(dataSource == null || jndiname == null || "".equals(jndiname)) {
-				InitialContext context = new InitialContext();
-				dataSource = (DataSource) context.lookup(jndiname);
+			if(dataSource == null) {
+				synchronized (CFDataSource.class) {
+					if(dataSource == null || jndiname == null || "".equals(jndiname)) {
+						InitialContext context = new InitialContext();
+						dataSource = (DataSource) context.lookup(jndiname);
+					}
+				}
 			}
 			return dataSource;
 		} catch (Exception e) {

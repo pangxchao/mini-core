@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cfinal.web.http.CFHttpServletRequest;
+
 /**
  * com.cfinal.web.model.CFModelImpl.java
  * @author XChao
@@ -233,6 +235,10 @@ public class CFModelImpl implements CFModel {
 	private InputStream inputStream;
 	private long contentLength;
 	private DataModel<?> dataModel;
+
+	public CFModelImpl(CFHttpServletRequest request) {
+		request.setAttribute(CFModel.MODEL_KEY, this);
+	}
 
 	public CFModel setError(int error) {
 		this.error = error;

@@ -34,14 +34,8 @@ public @interface CFControl {
 	public String suffix() default "";
 
 	/**
-	 * 给该控制器重新指定一个拦截器
+	 * 给该控制器指定拦截器数组
 	 * @return
 	 */
-	public String use() default "";
-
-	/**
-	 * 默认视图渲染器名称
-	 * @return
-	 */
-	public String view() default "";
+	public String interceptor() default "";
 }

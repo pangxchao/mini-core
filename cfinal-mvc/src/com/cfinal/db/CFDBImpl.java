@@ -22,14 +22,14 @@ import org.apache.commons.lang.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.cfinal.db.mapper.CFMapRow;
 import com.cfinal.db.mapper.CFAbstractRow;
 import com.cfinal.db.mapper.CFBeanRow;
+import com.cfinal.db.mapper.CFMapRow;
 import com.cfinal.db.mapper.CFRow;
 import com.cfinal.db.mapper.cell.CFCell;
 import com.cfinal.db.paging.CFPaging;
 import com.cfinal.util.lang.CFArrays;
-import com.cfinal.util.logger.CFLogger;
+import com.cfinal.util.logger.CFLog;
 
 /**
  * 数据库连接实现
@@ -645,7 +645,7 @@ public final class CFDBImpl implements CFDB {
 				try {
 					connection.rollback(savepoint);
 				} catch (SQLException e) {
-					CFLogger.severe("Transaction rollback error.");
+					CFLog.error("Transaction rollback error.");
 				}
 			}
 			if(this.transRefCount == 0) { // 如果事务计数为0 时, 则表示所有事务提交或者回滚完成

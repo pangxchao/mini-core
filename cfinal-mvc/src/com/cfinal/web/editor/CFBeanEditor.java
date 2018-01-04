@@ -12,11 +12,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.cfinal.util.logger.CFLogger;
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
-import com.cfinal.web.central.CFParameter;
-import com.cfinal.web.control.CFActionParameter;
+import com.cfinal.util.logger.CFLog;
+import com.cfinal.web.http.CFActionParameter;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
+import com.cfinal.web.http.CFParameter;
 
 /**
  * com.cfinal.web.editor.CFBeanEditor.java
@@ -39,7 +39,7 @@ public class CFBeanEditor implements CFEditor {
 	}
 
 	@Override
-	public Object value(String paramName, Class<?> paramType, CFRequest request, CFResponse response) {
+	public Object value(String paramName, Class<?> paramType, CFHttpServletRequest request, CFHttpServletResponse response) {
 		try {
 			BeanEditorMethod methods = CLAZZ_METHOD.get(paramType);
 			if(methods == null) {
@@ -70,7 +70,7 @@ public class CFBeanEditor implements CFEditor {
 			request.setAttribute(CFParameter.PARAMETER_KEY + paramName, instence);
 			return instence;
 		} catch (Exception e) {
-			CFLogger.severe("Parameter instantiation failed: ", e);
+			CFLog.error("Parameter instantiation failed: ", e);
 		}
 		return null;
 	}

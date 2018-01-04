@@ -15,13 +15,11 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.cfinal.db.CFDB;
-import com.cfinal.db.CFDBFactory;
-import com.cfinal.db.model.mapping.CFDBTables;
+import sn.mini.dao.IDao;
+import sn.mini.dao.model.DaoTable;
+import sn.mini.util.json.JSONArray;
+import sn.mini.util.json.JSONObject;
+import sn.mini.util.lang.StringUtil;
 
 /**
  * com.cfinal.gen.GENSqls.java
@@ -30,16 +28,14 @@ import com.cfinal.db.model.mapping.CFDBTables;
 public class GENSqls {
 
 	public static void main(String[] args) throws Exception {
-		CFDB db = null;
-		try {
-			db = GENConfig.getDB();
-			List<String> tables = db.query((db1, rs) -> {
+		try (IDao db = GENConfig.getDao();) {
+			List<String> tables = db.query(rs -> {
 				return rs.getString(1);
 			}, "show tables");
 			OutputStreamWriter writer = null;
 			OutputStream outputStream = null;
 			try {
-				File file = new File(GENConfig.PROJECT_PATH, "documents");
+				File file = new File(GENConfig.PROJECT_PATH, "document");
 				if(!file.exists() && file.mkdirs()) {
 					System.out.println("创建文件夹成功");
 				}
@@ -47,12 +43,12 @@ public class GENSqls {
 				writer = new OutputStreamWriter(outputStream);
 				for (String tableName : tables) {
 					writer.write("drop table if exists " + tableName + ";\r\n");
-					writer.write(CFDBTables.getCreateTable(db, tableName));
+					writer.write(DaoTable.getCreateTable(db, tableName));
 					writer.write(";\r\n\r\n");
 				}
 
 				for (String tableName : tables) {
-					JSONArray columns = CFDBTables.getColumns(db, tableName);
+					JSONArray columns = DaoTable.getColumns(db, tableName);
 					List<String> allDbName = new ArrayList<>();
 					for (int i = 0, len = columns.size(); i < len; i++) {
 						JSONObject columnItem = columns.getJSONObject(i);
@@ -60,7 +56,7 @@ public class GENSqls {
 					}
 					JSONArray datas = db.query(GENConfig.PAGING, "select * from " + tableName);
 					StringBuilder sql = new StringBuilder("insert into ").append(tableName);
-					sql.append("(").append(StringUtils.join(allDbName, ", ")).append(")\r\n values");
+					sql.append("(").append(StringUtil.join(allDbName, ", ")).append(")\r\n values");
 					List<String> allValues = new ArrayList<>();
 					for (int j = 0, size = datas.size(); j < size; j++) {
 						JSONObject data = datas.getJSONObject(j);
@@ -77,13 +73,13 @@ public class GENSqls {
 							while ((line = buffer.readLine()) != null) {
 								lineVal.add(line);
 							}
-							value = StringUtils.join(lineVal, "\\r\\n");
+							value = StringUtil.join(lineVal, "\\r\\n");
 							values.add("'" + value + "'");
 						}
-						allValues.add("(" + StringUtils.join(values, ", ") + ")");
+						allValues.add("(" + StringUtil.join(values, ", ") + ")");
 					}
 					if(allValues.size() > 0) {
-						sql.append(StringUtils.join(allValues, ", \r\n"));
+						sql.append(StringUtil.join(allValues, ", \r\n"));
 						writer.write(sql.toString());
 						writer.write(";");
 						writer.write("\r\n");
@@ -91,7 +87,7 @@ public class GENSqls {
 					}
 				}
 
-				writer.flush(); // 刷新buffer
+				
 				System.out.println("---------------- 键表语句生成完成 ------------------");
 			} finally {
 				if(writer != null) {
@@ -101,9 +97,6 @@ public class GENSqls {
 					outputStream.close();
 				}
 			}
-
-		} finally {
-			CFDBFactory.close(db);
 		}
 	}
 }

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cfinal.util.logger.CFLogger;
+import com.cfinal.util.logger.CFLog;
 
 /**
  * com.cfinal.util.http.CFURLRquest.java
@@ -257,7 +257,7 @@ public class CFUrlRquest {
 			try {
 				closeable.close();
 			} catch (IOException e) {
-				CFLogger.warning(e.getMessage(), e);
+				CFLog.warn(e.getMessage(), e);
 			}
 		}
 		return this;

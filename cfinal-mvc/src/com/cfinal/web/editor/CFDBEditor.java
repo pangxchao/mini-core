@@ -6,18 +6,18 @@
 package com.cfinal.web.editor;
 
 import com.cfinal.db.CFDBFactory;
+import com.cfinal.web.http.CFHttpServletRequest;
+import com.cfinal.web.http.CFHttpServletResponse;
+import com.cfinal.web.http.CFParameter;
 import com.cfinal.db.CFDB;
-import com.cfinal.web.CFRequest;
-import com.cfinal.web.CFResponse;
-import com.cfinal.web.central.CFParameter;
 
 /**
  * com.cfinal.web.editor.CFDBEditor.java
  * @author XChao
  */
 public class CFDBEditor implements CFEditor {
-	public Object value(String paramName, Class<?> paramType, CFRequest request, //
-		CFResponse response) {
+	public Object value(String paramName, Class<?> paramType, CFHttpServletRequest request, //
+		CFHttpServletResponse response) {
 		try {
 			CFDB db = CFDBFactory.create(paramName);
 			request.setAttribute(CFParameter.PARAMETER_KEY + paramName, db);

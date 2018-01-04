@@ -5,12 +5,11 @@
  */
 package com.cfinal.web.annotaion;
 
-import com.cfinal.web.central.CFContext;
-import com.cfinal.web.control.CFActionPorxy;
-import com.cfinal.web.render.CFRender;
-import com.cfinal.web.render.CFJsonRender;
-import com.cfinal.web.render.CFPageRender;
-import com.cfinal.web.render.CFStreamRender;
+import com.cfinal.web.CFServletContext;
+import com.cfinal.web.http.render.CFJsonRender;
+import com.cfinal.web.http.render.CFPageRender;
+import com.cfinal.web.http.render.CFRender;
+import com.cfinal.web.http.render.CFStreamRender;
 
 /**
  * com.cfinal.web.annotaion.CFType.java
@@ -22,9 +21,8 @@ public enum CFType {
 	 */
 	page {
 		@Override
-		public CFType setRender(CFActionPorxy actionPorxy, CFContext context) {
-			actionPorxy.setRender(context.getRender(CFPageRender.class));
-			return this;
+		public CFRender getRender(CFAction action, CFServletContext context) {
+			return context.getBean(CFPageRender.class);
 		}
 	},
 	/**
@@ -32,45 +30,31 @@ public enum CFType {
 	 */
 	json {
 		@Override
-		public CFType setRender(CFActionPorxy actionPorxy, CFContext context) {
-			actionPorxy.setRender(context.getRender(CFJsonRender.class));
-			return this;
+		public CFRender getRender(CFAction action, CFServletContext context) {
+			return context.getBean(CFJsonRender.class);
 		}
 	},
 	/**
 	 * 返回一个流文件对象
 	 */
 	stream {
-		@Override
-		public CFType setRender(CFActionPorxy actionPorxy, CFContext context) {
-			actionPorxy.setRender(context.getRender(CFStreamRender.class));
-			return this;
+		public CFRender getRender(CFAction action, CFServletContext context) {
+			return context.getBean(CFStreamRender.class);
 		}
 	},
 	/**
 	 * 用户自定义视图类型，必须和 defined 联合使用
 	 */
 	defined {
-		@Override
-		public CFType setRender(CFActionPorxy actionPorxy, CFContext context) {
-			try {
-				Class<? extends CFRender> clazz = actionPorxy.getAction().defined();
-				CFRender instence = context.getRender(clazz);
-				if(instence == null) {
-					context.addRender(clazz, clazz.newInstance());
-				}
-				actionPorxy.setRender(context.getRender(clazz));
-				return this;
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+		public CFRender getRender(CFAction action, CFServletContext context) {
+			return context.getBean(action.defined());
 		}
 	};
 	/**
 	 * @param actionPorxy
 	 * @param context
 	 */
-	public CFType setRender(CFActionPorxy actionPorxy, CFContext context) {
-		return this;
+	public CFRender getRender(CFAction action, CFServletContext context) {
+		return context.getBean(CFPageRender.class);
 	}
 }
