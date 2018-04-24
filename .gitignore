@@ -1,1 +1,6 @@
 /build/
+/sn.mini.java.jdbc/build
+/sn.mini.java.jdbc/target
+/sn.mini.java.test/out
+/sn.mini.java.util/out
+/sn.mini.java.web/out
