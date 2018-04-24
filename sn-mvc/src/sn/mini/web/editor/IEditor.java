@@ -19,5 +19,5 @@ public interface IEditor {
 		return parse(request.getParameter(paramName));
 	}
 
-	public abstract Object parse(String text);
+	Object parse(String text);
 }

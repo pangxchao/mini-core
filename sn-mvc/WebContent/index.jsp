@@ -23,7 +23,7 @@
 	%>
 	Index.jsp
 	<br /> a${name}c
-	<jsp:include page="pages/MyController/1.jsp" />
+	<jsp:include page="/WEB-INF/pages/MyController/1.jsp" />
 	<jsp:for var="item" index="i" items="${users}" start="0" end="5" step="2">
 		<div>this is div ${item.id}</div>
 		<div>

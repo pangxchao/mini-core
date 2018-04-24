@@ -15,6 +15,7 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * java.lang.String 工具类
@@ -398,6 +399,25 @@ public class StringUtil {
 	 */
 	public static String join(Collection<?> value) {
 		return StringUtil.join(value.toArray());
+	}
+
+	/**
+	 * 字符串连接
+	 * @param value
+	 * @param join
+	 * @return
+	 */
+	public static String join(Stream<?> stream, String join) {
+		return StringUtil.join(stream.toArray(), join);
+	}
+
+	/**
+	 * 字符串连接
+	 * @param value
+	 * @return
+	 */
+	public static String join(Stream<?> stream) {
+		return StringUtil.join(stream.toArray());
 	}
 
 	/**

@@ -259,6 +259,22 @@ public final class Sql {
 	}
 
 	/**
+	 * 1 = 2
+	 * @return
+	 */
+	public Sql trues() {
+		return this.sql(" 1 = 1 ");
+	}
+
+	/**
+	 * 1 = 2
+	 * @return
+	 */
+	public Sql falses() {
+		return this.sql(" 1 = 2 ");
+	}
+
+	/**
 	 * where 1 = 1
 	 * @return
 	 */

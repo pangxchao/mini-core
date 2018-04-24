@@ -1,0 +1,19 @@
+group 'sn.mini.java.web'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile  group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    compile group: 'sn.mini.java.jdbc', name: 'sn.mini.java.jdbc', version: '1.0-SNAPSHOT'
+}

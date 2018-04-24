@@ -97,7 +97,7 @@ public final class DaoManager {
 			put("com.sybase.jdbc2.jdbc.SybDriver", ds -> new SybaseDao(ds));
 			// Informix: jdbc:informix-sqli://hostip:port/dbname:informixserver=<dbservername>
 			put("com.informix.jdbc.IfxDriver", ds -> new InformixDao(ds));
-			// hsqldb: jdbc:hsqldb:hsql://localhost/testdb
+			// hsqldb: jdbc:hsqldb:hsql://localhost/dbname
 			put("org.hsqldb.jdbcDriver", ds -> new HsqlDao(ds));
 		}
 	};

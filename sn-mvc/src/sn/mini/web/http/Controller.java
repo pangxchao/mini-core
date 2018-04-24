@@ -38,29 +38,56 @@ public abstract class Controller extends HttpServlet {
 		return this.getClass().getName();
 	}
 
-	@Override
-	protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+	public void doDeleteBefore(SNHttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
-		this.doService(httpServletRequest, httpServletResponse);
+	}
+
+	public void doGetBefore(SNHttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException {
+	}
+
+	public void doHeadBefore(SNHttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException {
+	}
+
+	public void doOptionsBefore(SNHttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException {
+	}
+
+	public void doPostBefore(SNHttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException {
+	}
+
+	public void doPutBefore(SNHttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException {
+	}
+
+	public void doTraceBefore(SNHttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+	protected void doGet(HttpServletRequest req, HttpServletResponse response) //
 		throws ServletException, IOException {
-		this.doService(httpServletRequest, httpServletResponse);
+		this.doService(req, response);
 	}
 
 	@Override
-	protected final void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+	protected void doPost(HttpServletRequest req, HttpServletResponse response) //
 		throws ServletException, IOException {
-		super.service(httpServletRequest, httpServletResponse);
+		this.doService(req, response);
 	}
 
-	protected final void doService(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+	@Override
+	protected final void service(HttpServletRequest req, HttpServletResponse res) //
+		throws ServletException, IOException {
+		super.service(req, res);
+	}
+
+	protected final void doService(HttpServletRequest req, HttpServletResponse response)
 		throws ServletException, IOException {
 		try {
-			SNHttpServletRequest request = new SNHttpServletRequest(httpServletRequest);
-			HttpServletResponse response = httpServletResponse;
+			SNHttpServletRequest request = new SNHttpServletRequest(req);
 
 			ActionProxy proxy = SNInitializer.getActionProxy(request.getRequestURI());
 			if(proxy == null) {
@@ -73,9 +100,8 @@ public abstract class Controller extends HttpServlet {
 		} catch (Throwable throwable) {
 			Log.error("Service response error.", throwable);
 			// 如果response 未提交时， 才写入错误状态码
-			if(httpServletResponse.isCommitted() == false) {
-				httpServletResponse.sendError(SC_INTERNAL_SERVER_ERROR, //
-					throwable.getMessage());
+			if(response.isCommitted() == false) {
+				response.sendError(SC_INTERNAL_SERVER_ERROR, throwable.getMessage());
 			}
 		}
 	}

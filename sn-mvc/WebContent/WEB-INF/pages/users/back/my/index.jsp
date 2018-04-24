@@ -14,7 +14,7 @@
 		List<String> list = Arrays.asList("text0", "text1", "text2", "text3");
 		session.setAttribute("list", list);
 	%>
-	<jsp:include page="pages/MyController/1.jsp" />
+	<jsp:include page="/WEB-INF/pages/MyController/1.jsp" />
 	<jsp:for var="item" index="i" items="${list}" start="0" end="5" step="2">
 		<div>El 结果集 this is div ${item}</div>
 		<div>El 结果集 this is div ${i}</div>

@@ -5,12 +5,18 @@
  */
 package sn.mini.util.http;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 /**
  * com.cfinal.util.http.CFFormData.java
@@ -50,7 +56,7 @@ public class FormData {
 	 */
 	public synchronized FormData addText(String name, String value) {
 		List<String> values = this.text.get(name);
-		if(values == null) {
+		if (values == null) {
 			values = new ArrayList<>();
 			this.text.put(name, values);
 		}
@@ -67,13 +73,29 @@ public class FormData {
 	}
 
 	/**
+	 * 添加一个文件参数
+	 * @param name
+	 * @param file
+	 * @return
+	 */
+	public synchronized FormData addFile(String name, File file) {
+		try {
+			List<FileData> values = this.file.get(name);//
+			FileData value = new FileData(file.getName(), file.length(), Files.probeContentType(Paths.get(file.toURI())), new FileInputStream(file));
+			(values == null ? this.file.put(name, new ArrayList<FileData>()) : values).add(value);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		return this;
+	}
+
+	/**
 	 * 添加一个文本参数
 	 * @param name
 	 * @param value
 	 * @return
 	 */
-	public synchronized FormData addFile(String name, String fileName, long fileLength, String contentType,
-		InputStream inputStream) {
+	public synchronized FormData addFile(String name, String fileName, long fileLength, String contentType, InputStream inputStream) {
 		List<FileData> values = this.file.get(name);//
 		FileData value = new FileData(fileName, fileLength, contentType, inputStream);
 		(values == null ? this.file.put(name, new ArrayList<>()) : values).add(value);

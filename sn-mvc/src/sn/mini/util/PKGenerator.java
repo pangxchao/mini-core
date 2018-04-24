@@ -27,7 +27,7 @@ public class PKGenerator {
 
 	// 生成主键
 	private synchronized long generate() {
-		if(sequence >= 0x40000) {
+		if(sequence > 0x3FFF) {
 			sequence = 0;
 		}
 		long timestamp = System.currentTimeMillis();
@@ -35,7 +35,7 @@ public class PKGenerator {
 			lasttimestamp = timestamp;
 		}
 		long val = ((0x7fffffffffffffffL & (timestamp - BASE_TIME) << 22));
-		return val | ((sequence++ & 0x4FFFF) << 4) | ((workerid & 0xf));
+		return val | ((sequence++ & 0x3FFF) << 8) | ((workerid & 0xff));
 	}
 
 	// 根据主键获取生成主键时的时间缀

@@ -32,5 +32,4 @@
 	<Parameter name="privateFilePath" value="d:/imgs_/" />
 	<Parameter name="publicFilePath" value="d:/imgs/" />
 	<Parameter name="publicFileUrl" value="/imgs/" />
-
 </Context>
