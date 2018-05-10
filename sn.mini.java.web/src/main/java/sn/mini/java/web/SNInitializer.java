@@ -5,39 +5,6 @@
  */
 package sn.mini.java.web;
 
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.annotation.HandlesTypes;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionIdListener;
-import javax.servlet.http.HttpSessionListener;
-
 import sn.mini.java.util.lang.MethodUtil;
 import sn.mini.java.util.lang.StringUtil;
 import sn.mini.java.util.lang.TypeUtil;
@@ -53,8 +20,23 @@ import sn.mini.java.web.http.DefaultHttpServlet;
 import sn.mini.java.web.http.interceptor.Interceptor;
 import sn.mini.java.web.http.rander.IRender;
 import sn.mini.java.web.http.view.IView;
-import sn.mini.java.web.http.view.SNView;
+import sn.mini.java.web.http.view.JspView;
 import sn.mini.java.web.task.ITask;
+
+import javax.servlet.*;
+import javax.servlet.ServletRegistration.Dynamic;
+import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionIdListener;
+import javax.servlet.http.HttpSessionListener;
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * sn.mini.java.web.SNInitializer.java
@@ -76,7 +58,7 @@ public final class SNInitializer implements ServletContainerInitializer {
 	private static long maxFileSize = -1; // 上传文件单个文件最大限制
 	private static long maxRequestSize = -1; // 上传文件单次上传最大限制
 	private static String location = "/temp"; // 文件上传临时目录
-	private static Class<? extends IView> view = SNView.class; // 视图实现类
+	private static Class<? extends IView> view = JspView.class; // 视图实现类
 
 	private static final Map<String, ActionProxy> actionProxys = new HashMap<>();
 	private static final Map<Class<? extends Controller>, Controller> controllers = new HashMap<>();
@@ -87,7 +69,7 @@ public final class SNInitializer implements ServletContainerInitializer {
 	private static final Map<Class<? extends EventListener>, EventListener> listeners = new HashMap<>();
 	private static final Map<Class<? extends Filter>, Filter> filters = new HashMap<>();
 	// 系统公共参数
-	private static final Map<String, String> paranamer = new ConcurrentHashMap<String, String>();
+	private static final Map<String, String> paranamer = new ConcurrentHashMap<>();
 
 	/**
 	 * 得到web应用的物理地址
@@ -469,7 +451,7 @@ public final class SNInitializer implements ServletContainerInitializer {
 			}
 			configurations.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
 			for (Class<? extends SNConfig> configuration : configurations) { // SNConfig
-				((SNConfig) configuration.newInstance()).initialize(servletContext);
+				configuration.getConstructor().newInstance().initialize(servletContext);
 			}
 
 			views.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
@@ -510,6 +492,11 @@ public final class SNInitializer implements ServletContainerInitializer {
 					}
 				}
 			}
+			// 设置初始化参数，
+			Enumeration<String> names = servletContext.getInitParameterNames();
+			for(String name; names.hasMoreElements();) {
+				set((name= names.nextElement()), servletContext.getInitParameter(name));
+			}
 		} catch (Throwable throwable) {
 			Log.error("SNInitializer.onStartup error. ", throwable);
 		}
@@ -526,7 +513,7 @@ public final class SNInitializer implements ServletContainerInitializer {
 			String curl = StringUtil.defaultIfEmpty(control.url(), controller.getSimpleName());
 			String cpath = StringUtil.defaultIfEmpty(control.name(), controller.getSimpleName());
 			Optional<Before> befor = Optional.ofNullable(controller.getAnnotation(Before.class));
-			Class<? extends Interceptor>[] interceptors = befor.map(v -> v.value()).orElse(INTERS_EMPTY);
+			Class<? extends Interceptor>[] interceptors = befor.map(Before::value).orElse(INTERS_EMPTY);
 			try {
 				Controller instence = controller.newInstance(); // 创建Controller实例
 				for (Method actionMethod : controller.getMethods()) {
@@ -534,7 +521,8 @@ public final class SNInitializer implements ServletContainerInitializer {
 						SNMethod method = MethodUtil.getSNMethod(actionMethod);
 						String aurl = StringUtil.defaultIfEmpty(action.url(), method.getName());
 						String suffix = StringUtil.defaultIfEmpty(action.suffix(), control.suffix());
-						String url = StringUtil.join("/" + curl, "/", aurl, suffix).replaceAll("[/]+", "/");
+						String url = StringUtil.join("/", curl, "/", aurl).replaceAll("[/]+", "/");
+						url = StringUtil.join((url.endsWith("/") ? url.substring(0, url.length() -1) : url), suffix);
 						String name = StringUtil.join(context.getContextPath(), url).replaceAll("[/]+", "/");
 
 						IView view = SNInitializer.getView(getView()); // 根据视力实现类Class获取视图实例
@@ -543,11 +531,10 @@ public final class SNInitializer implements ServletContainerInitializer {
 						ActionProxy proxy = new ActionProxy(instence, control, method, action, name, path, url, SNInitializer.getRender(action.value()), view);
 
 						Optional<Before> befor1 = Optional.ofNullable(method.getAnnotation(Before.class));
-						for (Class<? extends Interceptor> inter : befor1.map(v -> v.value()).orElse(interceptors)) {
+						for (Class<? extends Interceptor> inter : befor1.map(Before::value).orElse(interceptors)) {
 							proxy.addInterceptor(SNInitializer.getInterceptor(inter));
 						}
 						if (SNInitializer.getActionProxy(proxy.getName()) != null) { throw new RuntimeException("Action : '" + name + "' exits. "); }
-						register.addMapping(proxy.getUrl()); // 添加注册的Servlet URLMapping映射
 
 						SNInitializer.addController(instence); // 添加实例到 SNInitializer 对象中
 						SNInitializer.addActionProxy(proxy); // 将ActionProxy 对象添加到缓存中
@@ -558,6 +545,7 @@ public final class SNInitializer implements ServletContainerInitializer {
 				File location = new File(SNInitializer.getLocation()); // 检查文件上传临时目录是否存在, 如果不存在则创建,否则可能会接收不到参数
 				if (!location.exists() && location.mkdirs()) { // 如果该文件夹或者文件不存时, 则创建该文件夹或者文件
 				}
+				register.addMapping("/"); // 添加注册的Servlet URLMapping映射
 				register.setMultipartConfig(new MultipartConfigElement(// // 设置文件上传配置信息
 						location.getAbsolutePath(), maxFileSize, maxRequestSize, fileSizeThreshold));
 

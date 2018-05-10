@@ -153,7 +153,7 @@ public class ActionInvoke {
 
 	public <T> void setParameterValues(T t) {
 		for (SNParameter parameter : this.getParameters()) {
-			if(t.getClass().isAssignableFrom(parameter.getType())) {
+			if(parameter.getType().isAssignableFrom(t.getClass())) {
 				this.setParameterValue(parameter.getName(), t);
 			}
 		}

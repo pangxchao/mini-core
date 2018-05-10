@@ -28,6 +28,7 @@ public class BeanEditor implements IEditor {
 			BeanInfo beanInfo = Introspector.getBeanInfo(paramType);
 			Object instence = paramType.newInstance();
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+				//Field field = paramType.getDeclaredField(descriptor.getName());
 				Optional.ofNullable(descriptor.getWriteMethod()).ifPresent(v -> {
 					try {
 						v.invoke(instence, EditorBind.getEditor(descriptor.getPropertyType())

@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 /**
  * 文件管理上下文，处理附件图片等
+ * 
  * @author XChao
  */
 public class FileGenerator {
@@ -25,21 +26,24 @@ public class FileGenerator {
 	private static String publicFileUrl = "";
 
 	/**
-	 * @param privateFilePath the privateFilePath to set
+	 * @param privateFilePath
+	 *            the privateFilePath to set
 	 */
 	public static void setPrivateFilePath(String privateFilePath) {
 		FileGenerator.privateFilePath = privateFilePath;
 	}
 
 	/**
-	 * @param publicFilePath the publicFilePath to set
+	 * @param publicFilePath
+	 *            the publicFilePath to set
 	 */
 	public static void setPublicFilePath(String publicFilePath) {
 		FileGenerator.publicFilePath = publicFilePath;
 	}
 
 	/**
-	 * @param publicFileUrl the publicFileUrl to set
+	 * @param publicFileUrl
+	 *            the publicFileUrl to set
 	 */
 	public static void setPublicFileUrl(String publicFileUrl) {
 		FileGenerator.publicFileUrl = publicFileUrl;
@@ -47,7 +51,9 @@ public class FileGenerator {
 
 	/**
 	 * 获取根据时间缀生成的文件路径在数据库存储的路径部分
-	 * @param fileExt 文件后缀带 '.' 比如: (.png, .txt, .zip )
+	 * 
+	 * @param fileExt
+	 *            文件后缀带 '.' 比如: (.png, .txt, .zip )
 	 * @return
 	 */
 	public static String getDateDBPath(String fileExt) {
@@ -56,8 +62,11 @@ public class FileGenerator {
 
 	/**
 	 * 根据主键生成器生成的ID生成文件路径在数据库存储部分
-	 * @param key PKGenerator.key() 生成的值
-	 * @param fileExt 文件后缀带 '.' 比如: (.png, .txt, .zip )
+	 * 
+	 * @param key
+	 *            PKGenerator.key() 生成的值
+	 * @param fileExt
+	 *            文件后缀带 '.' 比如: (.png, .txt, .zip )
 	 * @return
 	 */
 	public static String getKeyDBPath(long key, String fileExt) {
@@ -66,11 +75,13 @@ public class FileGenerator {
 
 	/**
 	 * 根据文件在数据库存储的路径,获取私有文件在硬盘或者其它存储中的绝对路径
-	 * @param dbPath 数据库路径
+	 * 
+	 * @param dbPath
+	 *            数据库路径
 	 */
 	public static String getPrivateFullPath(String dbPath) {
 		File file = new File(privateFilePath + dbPath);
-		if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			new RuntimeException("创建文件夹失败: " + file.getParentFile().getAbsolutePath());
 		}
 		return file.getAbsolutePath();
@@ -78,11 +89,13 @@ public class FileGenerator {
 
 	/**
 	 * 根据文件在数据库存储的路径,获取公共文件在硬盘或者其它存储中的绝对路径
-	 * @param dbPath 数据库部分路径
+	 * 
+	 * @param dbPath
+	 *            数据库部分路径
 	 */
 	public static String getPublicFullPath(String dbPath) {
 		File file = new File(publicFilePath + dbPath);
-		if(!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			new RuntimeException("创建文件夹失败: " + file.getParentFile().getAbsolutePath());
 		}
 		return file.getAbsolutePath();
@@ -90,6 +103,7 @@ public class FileGenerator {
 
 	/**
 	 * 根据文件在数据库存储的路径,获取该文件在网页中访问的绝对路径
+	 * 
 	 * @param dbPath
 	 * @return
 	 */
@@ -100,6 +114,7 @@ public class FileGenerator {
 
 	/**
 	 * 根据文件名返回文件后缀名
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -109,7 +124,21 @@ public class FileGenerator {
 	}
 
 	/**
+	 * 获取文件后缀
+	 * 
+	 * @param name
+	 * @param isDot
+	 *            后缀名前是否带“.”
+	 * @return
+	 */
+	public static String getSuffix(String name, boolean isDot) {
+		int index = name == null ? -1 : name.lastIndexOf(".");
+		return index >= 0 ? name.substring(isDot ? index : (index + 1)) : "";
+	}
+
+	/**
 	 * 获取文件类型
+	 * 
 	 * @param file
 	 * @return
 	 * @throws MalformedURLException

@@ -32,7 +32,6 @@ public final class Json implements IRender {
 			response.setContentType(model.getContentType());
 		}
 		try (Writer writer = response.getWriter();) {
-
 			writer.write(JSON.toJSONString(model.getModelData()));
 			writer.flush(); // 写入返回数据 并刷新流
 		}

@@ -54,32 +54,14 @@ import sn.mini.java.util.lang.StringUtil;
  * 这种方式无法获取数据)</li>
  * <li>8: post 方式提交 , 设置enctype属性 enctype="text/plain" 无法获取参数 false</li>
  * </ul>
+ *
  * @author XChao
  */
 public class SNHttpServletRequest implements HttpServletRequest {
-    private static final String POST_METHOD = "POST";
-    private static final String MULTIPART = "multipart/";
-
-    private boolean isMultipartContent;
     private HttpServletRequest httpServletRequest;
 
     public SNHttpServletRequest(HttpServletRequest request) {
         this.httpServletRequest = request; // 初始化 httpServletRequest 值
-        if (POST_METHOD.equalsIgnoreCase(request.getMethod())) {
-            isMultipartContent = false;
-            return;
-        }
-        String contentType = request.getContentType();
-        if (StringUtil.isBlank(contentType)) {
-            isMultipartContent = false;
-            return;
-        }
-        contentType = contentType.toLowerCase(Locale.ENGLISH);
-        if (!contentType.startsWith(MULTIPART)) {
-            isMultipartContent = false;
-            return;
-        }
-        isMultipartContent = true;
     }
 
     protected final HttpServletRequest getRequest() {
@@ -425,15 +407,18 @@ public class SNHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Part getPart(String arg0) throws IOException, ServletException {
-        return this.isMultipartContent ? Optional.ofNullable(this.httpServletRequest.getPart(arg0)).orElse(null) : null;
+        try {
+            return this.httpServletRequest.getPart(arg0);
+        } catch (Exception e) { }
+        return null;
     }
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
-        return this.isMultipartContent == false ? new ArrayList<>()
-                : Optional.ofNullable(this.httpServletRequest.getParts()).filter(v -> {
-            return v != null && v.size() > 0;
-        }).orElse(new ArrayList<>());
+        try {
+            Optional.ofNullable(this.httpServletRequest.getParts()).filter(v -> v != null && v.size() > 0);
+        } catch (Exception e) { }
+        return new ArrayList<>();
     }
 
     public Part[] getParts(String arg0) throws IOException, ServletException {

@@ -12,15 +12,16 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * com.cfinal.util.digest.MD5Util.java
+ * 
  * @author XChao
  */
 public class MD5Util {
 	/** 用来将字节转换成 16 进制表示的字符 */
-	private static final char encode_DIGITS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-		'E', 'F' };
+	private static final char ENCODE_DIGITS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 	/**
 	 * 获取MD5加密文摘
+	 * 
 	 * @return
 	 */
 	private static MessageDigest getDigest() {
@@ -33,6 +34,7 @@ public class MD5Util {
 
 	/**
 	 * 将byte数组转换成String
+	 * 
 	 * @param bytes
 	 * @return
 	 */
@@ -42,9 +44,9 @@ public class MD5Util {
 		// 从第一个字节开始，对每一个字节,转换成 16 进制字符的转换
 		for (int i = 0, k = 0; i < 16; i++) {
 			// 取字节中高 4 位的数字转换, >>> 为逻辑右移，将符号位一起右移
-			result[k++] = encode_DIGITS[bytes[i] >>> 4 & 0xf];
+			result[k++] = ENCODE_DIGITS[bytes[i] >>> 4 & 0xf];
 			// 取字节中低 4 位的数字转换
-			result[k++] = encode_DIGITS[bytes[i] & 0xf];
+			result[k++] = ENCODE_DIGITS[bytes[i] & 0xf];
 		}
 		// 换后的结果转换为字符串
 		return new String(result);
@@ -52,6 +54,7 @@ public class MD5Util {
 
 	/**
 	 * MD5加密
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -61,6 +64,7 @@ public class MD5Util {
 
 	/**
 	 * MD5加密
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -70,6 +74,7 @@ public class MD5Util {
 
 	/**
 	 * MD5加密
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -79,6 +84,7 @@ public class MD5Util {
 
 	/**
 	 * MD5加密
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -88,6 +94,7 @@ public class MD5Util {
 
 	/**
 	 * MD5加密
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -107,6 +114,7 @@ public class MD5Util {
 
 	/**
 	 * MD5加密
+	 * 
 	 * @param data
 	 * @return
 	 */

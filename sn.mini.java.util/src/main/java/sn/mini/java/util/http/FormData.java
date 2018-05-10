@@ -76,7 +76,11 @@ public class FormData {
 		InputStream inputStream) {
 		List<FileData> values = this.file.get(name);//
 		FileData value = new FileData(fileName, fileLength, contentType, inputStream);
-		(values == null ? this.file.put(name, new ArrayList<>()) : values).add(value);
+		if(values == null) {
+			values = new ArrayList<>();
+			this.file.put(name, values);
+		}
+		values.add(value);
 		return this;
 	}
 

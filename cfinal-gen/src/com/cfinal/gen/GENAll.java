@@ -132,7 +132,7 @@ public class GENAll {
 			headers.add("@Binding(\"" + GENConfig.TABLE_DB_NAME + "\")");
 			headers.add("public class " + ENTITY_JAVA_CLASS_NAME + " { ");
 
-			imports.add("import sn.mini.dao.annotaion.Binding;");
+			imports.add("import sn.mini.java.jdbc.annotaion.Binding;");
 			contents.add("public static final String TABLE_NAME = \"" + GENConfig.TABLE_DB_NAME + "\";");
 
 			List<String> static_contents = new ArrayList<>();
@@ -252,9 +252,9 @@ public class GENAll {
 			packages.add("package " + DB_PACKAGE_NAME_ALL + ";");
 			packages.add("\r\n");
 
-			imports.add("import sn.mini.dao.annotaion.Binding;");
+			imports.add("import sn.mini.java.jdbc.annotaion.Binding;");
 			imports.add("import " + ENTITY_JAVA_NAME_ALL_UNJAVA + ";");
-			imports.add("import sn.mini.dao.model.IDaoModel;");
+			imports.add("import sn.mini.java.jdbc.model.IDaoModel;");
 
 			headers.add("/**");
 			headers.add(" * " + DB_JAVA_NAME_ALL);
@@ -293,7 +293,7 @@ public class GENAll {
 				}
 			}
 
-			imports.add("import sn.mini.dao.IDao;");
+			imports.add("import sn.mini.java.jdbc.IDao;");
 			// 添加方法
 			contents.add("public static int insert(IDao dao, " + StringUtil.join(allJavaNameAndType, ", ") + ") {");
 			contents.add("\treturn dao.insert(TABLE_NAME, new String[]{" + StringUtil.join(allDbName, ", ") + "}, "
@@ -317,7 +317,7 @@ public class GENAll {
 			contents.add("\r\n");
 
 			// 根据ID 查询实体方法
-			imports.add("import sn.mini.dao.Sql;");
+			imports.add("import sn.mini.java.jdbc.Sql;");
 			contents.add("public static " + DB_JAVA_CLASS_NAME + " findById(IDao dao, " + //
 				StringUtil.join(idJavaNameAndType, ", ") + ") {");
 			contents
@@ -338,7 +338,7 @@ public class GENAll {
 			contents.add("}");
 			contents.add("\r\n");
 
-			imports.add("import sn.mini.dao.Paging;");
+			imports.add("import sn.mini.java.jdbc.Paging;");
 			contents.add("public static List<" + DB_JAVA_CLASS_NAME + "> find(Paging paging, IDao dao){");
 			contents
 				.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");

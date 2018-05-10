@@ -5,9 +5,17 @@
  */
 package sn.mini.java.jdbc.model;
 
+import sn.mini.java.jdbc.IDao;
+import sn.mini.java.jdbc.annotaion.Column;
+import sn.mini.java.jdbc.annotaion.Table;
+import sn.mini.java.jdbc.util.DaoUtil;
+import sn.mini.java.util.json.JSONArray;
+import sn.mini.java.util.lang.StringUtil;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,40 +25,36 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-import sn.mini.java.jdbc.IDao;
-import sn.mini.java.jdbc.annotaion.Binding;
-import sn.mini.java.jdbc.util.DaoUtil;
-import sn.mini.java.util.json.JSONArray;
-import sn.mini.java.util.lang.StringUtil;
-
 /**
  * sn.mini.dao.model.DaoTable.java
+ * 
  * @author XChao
  */
 public final class DaoTable {
-	private final Optional<Binding> binding;
+	private final Optional<Table> table;
 	private final Class<?> clazz;
-	private final Map<String, DaoField> fields = new HashMap<>();
+	private final Map<String, DaoColumn> fields = new HashMap<>();
 	private final Map<String, String> current = new HashMap<>();
 	private final Map<String, String> primary = new HashMap<>();
 	private final Map<String, String> others = new HashMap<>();
 
 	public DaoTable(Class<?> clazz) {
 		try {
-			this.binding = Optional.ofNullable(clazz.getAnnotation(Binding.class));
+			this.table = Optional.ofNullable(clazz.getAnnotation(Table.class));
 			BeanInfo beanInfo = Introspector.getBeanInfo((this.clazz = clazz));
+
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-				DaoField field = new DaoField(descriptor, Optional.ofNullable(descriptor.getWriteMethod())//
-					.map(v -> v.getAnnotation(Binding.class)).orElse(null));
-				if(this.fields.get(field.getName()) != null || this.fields.get(field.getDbName()) != null) {
+				DaoColumn field = new DaoColumn(descriptor, Optional.ofNullable(descriptor.getWriteMethod())//
+						.map(v -> v.getAnnotation(Column.class)).orElse(null));
+				if (this.fields.get(field.getName()) != null || this.fields.get(field.getDbName()) != null) {
 					throw new RuntimeException("The name and the dbName cannot be repeated with other fields.");
 				}
 				this.fields.put(field.getName(), field);
 				this.fields.put(field.getDbName(), field);
-				if(field.isBinding()) {
+				if (field.isBinding()) {
 					current.put(field.getName(), field.getDbName());
 				}
-				if(field.isPrimary()) {
+				if (field.isPrimary()) {
 					primary.put(field.getName(), field.getDbName());
 				} else {
 					others.put(field.getName(), field.getDbName());
@@ -66,10 +70,10 @@ public final class DaoTable {
 	}
 
 	public String getDbName() {
-		return binding.map(v -> v.value()).orElse(StringUtil.toDBName(clazz.getSimpleName()));
+		return table.map(v -> v.value()).orElse(StringUtil.toDBName(clazz.getSimpleName()));
 	}
 
-	public Set<Entry<String, DaoField>> fieldEntrySet() {
+	public Set<Entry<String, DaoColumn>> fieldEntrySet() {
 		return this.fields.entrySet();
 	}
 
@@ -127,6 +131,7 @@ public final class DaoTable {
 
 	/**
 	 * 获取指定表的创建表的SQL语句
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @return
@@ -140,6 +145,7 @@ public final class DaoTable {
 
 	/**
 	 * 获取指定表所有的字段
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @return
@@ -153,6 +159,7 @@ public final class DaoTable {
 
 	/**
 	 * 获取指定表所有的主键字段
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @return
@@ -166,6 +173,7 @@ public final class DaoTable {
 
 	/**
 	 * 获取指定表所有的外键， 其它表指向该表的所有外键
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @return
@@ -179,6 +187,7 @@ public final class DaoTable {
 
 	/**
 	 * 获取所有表指定的外键，该表指向其它表的所有外键
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @return
@@ -192,6 +201,7 @@ public final class DaoTable {
 
 	/**
 	 * 获取指定表所有的索引
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @return
