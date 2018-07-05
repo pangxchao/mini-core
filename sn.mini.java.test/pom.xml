@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sn.mini.java.test</groupId>
 	<artifactId>sn.mini.java.test</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<dependencies>
@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>sn.mini.java.web</groupId>
 			<artifactId>sn.mini.java.web</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

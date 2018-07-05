@@ -21,11 +21,11 @@ fun <T> Iterable<T>.join(separator: CharSequence = ", "): String {
  * @author XChao
  */
 object GENBeanJKotlin {
-    internal val REGEX = "((" + GENConfig.DB_PREFIX_NAME + ")(_)*)"
+    internal const val REGEX = "((${GENConfig.DB_PREFIX_NAME})(_)*)"
 
-    private val PACKAGE_NAME_ALL = GENConfig.PACKAGE_NAME
-    private val KOTLIN_NAME = GENConfig.TABLE_JAVA_NAME + ".kt"
-    private val KOTLIN_CLASS_NAME = GENConfig.TABLE_JAVA_NAME
+    private const val PACKAGE_NAME_ALL = GENConfig.PACKAGE_NAME
+    private const val KOTLIN_NAME =  "${GENConfig.TABLE_JAVA_NAME}.kt"
+    private const val KOTLIN_CLASS_NAME = GENConfig.TABLE_JAVA_NAME
 
     internal val COLUMN_TYPE: MutableMap<String, ColumnTypes> = HashMap()
 
@@ -65,7 +65,7 @@ object GENBeanJKotlin {
     }
 
     fun getColumnType(typeName: String): ColumnTypes? {
-        return COLUMN_TYPE[typeName.toUpperCase()] ?: return COLUMN_TYPE.get("DEFAULT")
+        return COLUMN_TYPE[typeName.toUpperCase()] ?: return COLUMN_TYPE["DEFAULT"]
     }
 
     internal fun genBean(columns: JSONArray, pkMaps: Map<String, Boolean>) {
@@ -136,9 +136,7 @@ object GENBeanJKotlin {
                     }
                     var isPK = false
                     pkMaps[columnName]?.let {
-                        if (it == true) {
-                            isPK = true
-                        }
+                        isPK = it
                     }
                     headers.add("\t/** ${columnRemarks} */")
                     if (isPK) {

@@ -32,7 +32,7 @@ public final class DaoColumn {
             new RuntimeException("PropertyDescriptor cannot be null. "));
     }
 
-    public boolean isBinding() {
+    public boolean isColumn() {
         return this.column.isPresent();
     }
 

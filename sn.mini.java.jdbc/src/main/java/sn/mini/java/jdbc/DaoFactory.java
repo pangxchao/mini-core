@@ -5,9 +5,8 @@
  */
 package sn.mini.java.jdbc;
 
-import java.sql.SQLException;
-
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * sn.mini.dao.DaoFactory.java
@@ -15,5 +14,5 @@ import javax.sql.DataSource;
  */
 @FunctionalInterface
 public interface DaoFactory {
-	public abstract IDao create(DataSource dataSource) throws SQLException;
+	IDao create(DataSource dataSource) throws SQLException;
 }

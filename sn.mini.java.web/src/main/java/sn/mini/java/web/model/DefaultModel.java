@@ -188,9 +188,10 @@ public class DefaultModel implements IModel {
 		return object != null;
 	}
 
-	public void validateNull(Object object, int error, String message) {
+	public String validateNull(Object object, int error, String message) {
 		validate(validateNull(object), error, message);
-	}
+        return message;
+    }
 
 	public boolean validateEmail(String email) {
 		return validate(email, EMAIL);

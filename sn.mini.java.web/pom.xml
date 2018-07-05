@@ -4,7 +4,7 @@
 	<groupId>sn.mini.java.web</groupId>
 	<artifactId>sn.mini.java.web</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>sn.mini.java.jdbc</groupId>
 			<artifactId>sn.mini.java.jdbc</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

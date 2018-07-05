@@ -5,14 +5,14 @@
  */
 package sn.mini.java.jdbc;
 
+import sn.mini.java.jdbc.mapper.row.IRow;
+import sn.mini.java.util.json.JSONArray;
+import sn.mini.java.util.json.JSONObject;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Date;
 import java.util.List;
-
-import sn.mini.java.jdbc.mapper.row.IRow;
-import sn.mini.java.util.json.JSONArray;
-import sn.mini.java.util.json.JSONObject;
 
 /**
  * sn.mini.dao.IDao.java
@@ -25,7 +25,7 @@ public interface IDao extends Connection {
 	 * @param statement 预处理sql 对象
 	 * @param params statement 对象中 sql对应的参数值
 	 */
-	public void fullPreparedStatement(PreparedStatement statement, Object... params) ;
+	 void fullPreparedStatement(PreparedStatement statement, Object... params) ;
 
 	/**
 	 * 批量SQL操作实现方法<br/>
@@ -34,7 +34,7 @@ public interface IDao extends Connection {
 	 * @param length 数据长度
 	 * @param batch 回调接口
 	 */
-	public int[] batch(String sql, int length, Batch batch) ;
+	 int[] batch(String sql, int length, Batch batch) ;
 
 	/**
 	 * 批量SQL操作实现方法
@@ -42,7 +42,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public int[] batch(String sql, Object[][] params) ;
+	 int[] batch(String sql, Object[][] params) ;
 
 	/**
 	 * 批量SQL操作实现方法<br/>
@@ -51,7 +51,7 @@ public interface IDao extends Connection {
 	 * @param dataLength 数据长度
 	 * @param batch 回调接口
 	 */
-	public int[] batch(Sql sql, int dataLength, Batch batch) ;
+	 int[] batch(Sql sql, int dataLength, Batch batch) ;
 
 	/**
 	 * 批量SQL操作实现方法
@@ -59,7 +59,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public int[] batch(Sql sql, Object[][] params) ;
+	 int[] batch(Sql sql, Object[][] params) ;
 
 	/**
 	 * 执行insert,replace,update,delete语句,返回影响数据库记录的行数
@@ -67,7 +67,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public int execute(String sql, Object... params) ;
+	 int execute(String sql, Object... params) ;
 
 	/**
 	 * 执行insert,replace语句, 返回数据库自增ID
@@ -75,21 +75,21 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return 返回自增长ID值
 	 */
-	public long executeGen(String sql, Object... params) ;
+	 long executeGen(String sql, Object... params) ;
 
 	/**
 	 * 执行insert,replace,update,delete语句,返回影响数据库记录的行数
 	 * @param sql
 	 * @return
 	 */
-	public int execute(Sql sql) ;
+	 int execute(Sql sql) ;
 
 	/**
 	 * 执行insert,replace语句, 返回数据库自增ID
 	 * @param sql
 	 * @return 返回自增长ID值
 	 */
-	public long executeGen(Sql sql) ;
+	 long executeGen(Sql sql) ;
 
 	/**
 	 * 生成SQL结果: insert into user_info(coumn1, column2, column3) values(?, ?, ?)
@@ -98,7 +98,7 @@ public interface IDao extends Connection {
 	 * @param params 比如: va1, va2, va3 分别对应三个字段的值
 	 * @return
 	 */
-	public int insert(String tname, String[] keys, Object... params) ;
+	 int insert(String tname, String[] keys, Object... params) ;
 
 	/**
 	 * 生成SQL结果: insert into user_info(coumn1, column2, column3) values(?, ?, ?)
@@ -107,7 +107,7 @@ public interface IDao extends Connection {
 	 * @param params 比如: va1, va2, va3 分别对应三个字段的值
 	 * @return 返回自增长ID值
 	 */
-	public long insertGen(String tname, String[] keys, Object... params) ;
+	 long insertGen(String tname, String[] keys, Object... params) ;
 
 	/**
 	 * 生成SQL结果: replace into user_info(coumn1, column2, column3) values(?, ?, ?)
@@ -116,7 +116,7 @@ public interface IDao extends Connection {
 	 * @param params 比如: va1, va2, va3 分别对应三个字段的值
 	 * @return
 	 */
-	public int replace(String tname, String[] keys, Object... params) ;
+	 int replace(String tname, String[] keys, Object... params) ;
 
 	/**
 	 * 生成SQL结果: replace into user_info(coumn1, column2, column3) values(?, ?, ?)
@@ -125,7 +125,7 @@ public interface IDao extends Connection {
 	 * @param params 比如: va1, va2, va3 分别对应三个字段的值
 	 * @return 返回自增长ID值
 	 */
-	public long replaceGen(String tname, String[] keys, Object... params) ;
+	 long replaceGen(String tname, String[] keys, Object... params) ;
 
 	/**
 	 * 生成SQL结果: update coumn1 = ?, column2 = ?, column3 = ? where coumn4 = ? and column5 = ?
@@ -135,7 +135,7 @@ public interface IDao extends Connection {
 	 * @param params 比如: va1, va2, va3, va4, va5, 其中前三个对应keys的值, 后两个对应wheres的值
 	 * @return
 	 */
-	public int update(String tname, String[] keys, String[] wheres, Object... params) ;
+	 int update(String tname, String[] keys, String[] wheres, Object... params) ;
 
 	/**
 	 * 生成SQL结果: delete user_info where coumn1 = ? and column2 = ? and column3 = ?
@@ -144,7 +144,7 @@ public interface IDao extends Connection {
 	 * @param params 比如: va1, va2, va3 分别对应三个字段值
 	 * @return 影响数据库的条数
 	 */
-	public int delete(String tname, String[] wheres, Object... params) ;
+	 int delete(String tname, String[] wheres, Object... params) ;
 
 	/**
 	 * 查询记录, 根据sql中所有带条查询数据库所有匹配的记录<br/>
@@ -154,7 +154,7 @@ public interface IDao extends Connection {
 	 * @param params sql语句是的参数
 	 * @return
 	 */
-	public <T> T executeQuery(IRow<T> row, String sql, Object... params) ;
+	 <T> T executeQuery(IRow<T> row, String sql, Object... params) ;
 
 	/**
 	 * 查询记录, 根据sql所所带条件查询数据库所有匹配的记录<br/>
@@ -163,7 +163,7 @@ public interface IDao extends Connection {
 	 * @param sql sql封装器
 	 * @return
 	 */
-	public <T> T executeQuery(IRow<T> row, Sql sql) ;
+	 <T> T executeQuery(IRow<T> row, Sql sql) ;
 
 	/**
 	 * 查询记录, 根据sql所所带条件查询数据库记录按分页工具分页<br/>
@@ -174,7 +174,7 @@ public interface IDao extends Connection {
 	 * @param params sql语句是的参数
 	 * @return
 	 */
-	public <T> T executeQuery(IRow<T> row, Paging paging, String sql, Object... params) ;
+	 <T> T executeQuery(IRow<T> row, Paging paging, String sql, Object... params) ;
 
 	/**
 	 * 查询记录, 根据sql所所带条件查询数据库记录按分页工具分页<br/>
@@ -184,14 +184,14 @@ public interface IDao extends Connection {
 	 * @param sql sql封装器
 	 * @return
 	 */
-	public <T> T executeQuery(IRow<T> row, Paging paging, Sql sql) ;
+	 <T> T executeQuery(IRow<T> row, Paging paging, Sql sql) ;
 
 	/**
 	 * 查询记录， 根据sql中所带的条件查询数据库所有匹配的记录全部返回
 	 * @param sql sql封装工具
 	 * @return
 	 */
-	public JSONArray query(Sql sql) ;
+	 JSONArray query(Sql sql) ;
 
 	/**
 	 * 根据 查询所有记录
@@ -199,7 +199,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public JSONArray query(String sql, Object... params) ;
+	 JSONArray query(String sql, Object... params) ;
 
 	/**
 	 * 查询记录， 根据sql中所带的条件查询数据库所有匹配的记录全部返回
@@ -207,7 +207,7 @@ public interface IDao extends Connection {
 	 * @param 查询记录， 根据sql中所带的条件查询数据库所有匹配的记录全部返回
 	 * @return 查询结果
 	 */
-	public <T> List<T> query(Class<T> clazz, Sql sql) ;
+	 <T> List<T> query(Class<T> clazz, Sql sql) ;
 
 	/**
 	 * 查询所有记录
@@ -216,7 +216,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public <T> List<T> query(Class<T> clazz, String sql, Object... params) ;
+	 <T> List<T> query(Class<T> clazz, String sql, Object... params) ;
 
 	/**
 	 * 查询记录， 根据sql中所带的条件查询数据库所有匹配的记录全部返回, 该方法中sql中的cellMapper无效
@@ -224,7 +224,7 @@ public interface IDao extends Connection {
 	 * @param sql
 	 * @return
 	 */
-	public <T> List<T> query(IRow<T> mapper, Sql sql) ;
+	 <T> List<T> query(IRow<T> mapper, Sql sql) ;
 
 	/**
 	 * 查询所有数据
@@ -233,7 +233,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public <T> List<T> query(IRow<T> mapper, String sql, Object... params) ;
+	 <T> List<T> query(IRow<T> mapper, String sql, Object... params) ;
 
 	/**
 	 * 查询记录， 根据sql中所带的条件与Paging工具分页查询数据库
@@ -241,7 +241,7 @@ public interface IDao extends Connection {
 	 * @param sql sql封装工具
 	 * @return 查询结果 @see com.ms.mvc.util.JSONArrays
 	 */
-	public JSONArray query(Paging paging, Sql sql) ;
+	 JSONArray query(Paging paging, Sql sql) ;
 
 	/**
 	 * 分页查询数据
@@ -250,7 +250,7 @@ public interface IDao extends Connection {
 	 * @param objects
 	 * @return
 	 */
-	public JSONArray query(Paging paging, String sql, Object... params) ;
+	 JSONArray query(Paging paging, String sql, Object... params) ;
 
 	/**
 	 * 查询记录， 根据sql中所带的条件与Paging工具分页查询数据库
@@ -259,7 +259,7 @@ public interface IDao extends Connection {
 	 * @param sql
 	 * @return
 	 */
-	public <T> List<T> query(Paging paging, Class<T> clazz, Sql sql) ;
+	 <T> List<T> query(Paging paging, Class<T> clazz, Sql sql) ;
 
 	/**
 	 * 查询所有记录
@@ -269,7 +269,7 @@ public interface IDao extends Connection {
 	 * @param objects
 	 * @return
 	 */
-	public <T> List<T> query(Paging paging, Class<T> clazz, String sql, Object... params) ;
+	 <T> List<T> query(Paging paging, Class<T> clazz, String sql, Object... params) ;
 
 	/**
 	 * 查询记录， 根据sql中所带的条件查询数据库所有匹配的记录全部返回, 该方法中sql中的cellMapper无效
@@ -278,7 +278,7 @@ public interface IDao extends Connection {
 	 * @param sql
 	 * @return
 	 */
-	public <T> List<T> query(Paging paging, IRow<T> mapper, Sql sql) ;
+	 <T> List<T> query(Paging paging, IRow<T> mapper, Sql sql) ;
 
 	/**
 	 * 分页查询数据
@@ -288,14 +288,14 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public <T> List<T> query(Paging paging, IRow<T> mapper, String sql, Object... params) ;
+	 <T> List<T> query(Paging paging, IRow<T> mapper, String sql, Object... params) ;
 
 	/**
 	 * 查询单条记录
 	 * @param sql sql封装工具
 	 * @return 查询结果 @see com.ms.mvc.util.JSONArrays
 	 */
-	public JSONObject queryOne(Sql sql) ;
+	 JSONObject queryOne(Sql sql) ;
 
 	/**
 	 * 查询单条记录
@@ -303,7 +303,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public JSONObject queryOne(String sql, Object... params) ;
+	 JSONObject queryOne(String sql, Object... params) ;
 
 	/**
 	 * 查询单条记录
@@ -311,7 +311,7 @@ public interface IDao extends Connection {
 	 * @param 查询记录， 根据sql中所带的条件查询数据库所有匹配的记录全部返回
 	 * @return 查询结果
 	 */
-	public <T> T queryOne(Class<T> clazz, Sql sql) ;
+	 <T> T queryOne(Class<T> clazz, Sql sql) ;
 
 	/**
 	 * 查询单条记录
@@ -320,7 +320,7 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public <T> T queryOne(Class<T> clazz, String sql, Object... params) ;
+	 <T> T queryOne(Class<T> clazz, String sql, Object... params) ;
 
 	/**
 	 * 查询单条记录 该方法中sql中的cellMapper无效
@@ -328,7 +328,7 @@ public interface IDao extends Connection {
 	 * @param sql
 	 * @return
 	 */
-	public <T> T queryOne(IRow<T> mapper, Sql sql) ;
+	 <T> T queryOne(IRow<T> mapper, Sql sql) ;
 
 	/**
 	 * 查询单条记录
@@ -337,13 +337,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public <T> T queryOne(IRow<T> mapper, String sql, Object... params) ;
+	 <T> T queryOne(IRow<T> mapper, String sql, Object... params) ;
 
 	/**
 	 * 查询单一 String 数据值
 	 * @param sql
 	 */
-	public String queryString(Sql sql) ;
+	 String queryString(Sql sql) ;
 
 	/**
 	 * 查询单一 String 数据值
@@ -351,13 +351,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public String queryString(String sql, Object... params) ;
+	 String queryString(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 Long 数据值
 	 * @param sql
 	 */
-	public long queryLong(Sql sql) ;
+	 long queryLong(Sql sql) ;
 
 	/**
 	 * 查询单一 Long 数据值
@@ -365,13 +365,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public long queryLong(String sql, Object... params) ;
+	 long queryLong(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 int 数据值
 	 * @param sql
 	 */
-	public int queryInt(Sql sql) ;
+	 int queryInt(Sql sql) ;
 
 	/**
 	 * 查询单一 int 数据值
@@ -379,13 +379,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public int queryInt(String sql, Object... params) ;
+	 int queryInt(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 short 数据值
 	 * @param sql
 	 */
-	public short queryShort(Sql sql) ;
+	 short queryShort(Sql sql) ;
 
 	/**
 	 * 查询单一 short 数据值
@@ -393,13 +393,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public short queryShort(String sql, Object... params) ;
+	 short queryShort(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 byte 数据值
 	 * @param sql
 	 */
-	public byte queryByte(Sql sql) ;
+	 byte queryByte(Sql sql) ;
 
 	/**
 	 * 查询单一 short 数据值
@@ -407,13 +407,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public byte queryByte(String sql, Object... params) ;
+	 byte queryByte(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 double 数据值
 	 * @param sql
 	 */
-	public double queryDouble(Sql sql) ;
+	 double queryDouble(Sql sql) ;
 
 	/**
 	 * 查询单一 double 数据值
@@ -421,13 +421,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public double queryDouble(String sql, Object... params) ;
+	 double queryDouble(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 float 数据值
 	 * @param sql
 	 */
-	public float queryFloat(Sql sql) ;
+	 float queryFloat(Sql sql) ;
 
 	/**
 	 * 查询单一 float 数据值
@@ -435,13 +435,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public float queryFloat(String sql, Object... params) ;
+	 float queryFloat(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 date 数据值
 	 * @param sql
 	 */
-	public Date queryDate(Sql sql) ;
+	 Date queryDate(Sql sql) ;
 
 	/**
 	 * 查询单一 date 数据值
@@ -449,13 +449,13 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public Date queryDate(String sql, Object... params) ;
+	 Date queryDate(String sql, Object... params) ;
 
 	/**
 	 * 查询单一 boolean 数据值
 	 * @param sql
 	 */
-	public boolean queryBoolean(Sql sql) ;
+	 boolean queryBoolean(Sql sql) ;
 
 	/**
 	 * 查询单一 boolean 数据值
@@ -463,14 +463,14 @@ public interface IDao extends Connection {
 	 * @param params
 	 * @return
 	 */
-	public boolean queryBoolean(String sql, Object... params) ;
+	 boolean queryBoolean(String sql, Object... params) ;
 
 	/**
 	 * 事件执行方法
 	 * @param transaction
 	 * @return true: 事务执行成功(最后提交事务), false: 事务执行失败, 最后回滚
 	 */
-	public boolean transaction(Transaction transaction) ;
+	 boolean transaction(Transaction transaction) ;
 
 	/**
 	 * 事件执行方法
@@ -478,15 +478,15 @@ public interface IDao extends Connection {
 	 * @param transaction
 	 * @return true: 事务执行成功(最后提交事务), false: 事务执行失败, 最后回滚
 	 */
-	public boolean transaction(int transLevel, Transaction transaction) ;
+	 boolean transaction(int transLevel, Transaction transaction) ;
 
 	/**
 	 * Batch 批处理回调
 	 * @author XChao
 	 */
 	@FunctionalInterface
-	public static interface Batch {
-		public Object[] values(int index) ;
+	 interface Batch {
+		 Object[] values(int index) ;
 	}
 
 	/**
@@ -494,7 +494,7 @@ public interface IDao extends Connection {
 	 * @author XChao
 	 */
 	@FunctionalInterface
-	public static interface Transaction {
-		public boolean transaction() ;
+	 interface Transaction {
+		 boolean transaction() ;
 	}
 }

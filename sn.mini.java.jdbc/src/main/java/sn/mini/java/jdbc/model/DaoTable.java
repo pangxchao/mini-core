@@ -51,7 +51,7 @@ public final class DaoTable {
 				}
 				this.fields.put(field.getName(), field);
 				this.fields.put(field.getDbName(), field);
-				if (field.isBinding()) {
+				if (field.isColumn()) {
 					current.put(field.getName(), field.getDbName());
 				}
 				if (field.isPrimary()) {
@@ -93,8 +93,8 @@ public final class DaoTable {
 		return this.fields.get(name).getName();
 	}
 
-	public boolean isBinding(String name) {
-		return this.fields.get(name).isBinding();
+	public boolean isColumn(String name) {
+		return this.fields.get(name).isColumn();
 	}
 
 	public boolean isPrimary(String name) {

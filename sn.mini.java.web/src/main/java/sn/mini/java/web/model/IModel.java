@@ -185,11 +185,11 @@ public interface IModel {
 
 	/**
 	 * 对象非空验证, 该方法在验证不通过时, 会抛出RuntimeException, 系统已经处理该异常无需自己处理
-	 * @param object
-	 * @param error 返回错误码
-	 * @param message 提示消息字符串
-	 */
-	public void validateNull(Object object, int error, String message);
+     * @param object
+     * @param error 返回错误码
+     * @param message 提示消息字符串
+     */
+	public String validateNull(Object object, int error, String message);
 
 	/**
 	 * 邮箱验证

@@ -1,16 +1,7 @@
-/**
- * Created the com.cfinal.util.digest.Base64Util.java
- * @created 2017年5月16日 下午4:31:08
- * @version 1.0.0
- */
 package sn.mini.kotlin.util.degest
 
 import java.nio.ByteBuffer
 
-/**
- * com.cfinal.util.digest.Base64Util.java
- * @author XChao
- */
 object Base64Util {
 
     /**

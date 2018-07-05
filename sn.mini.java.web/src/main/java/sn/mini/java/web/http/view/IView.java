@@ -5,10 +5,10 @@
  */
 package sn.mini.java.web.http.view;
 
+import sn.mini.java.web.model.IModel;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import sn.mini.java.web.model.IModel;
 
 /**
  * sn.mini.java.web.http.view.IView.java
@@ -24,7 +24,7 @@ public interface IView {
 	 * @param response
 	 * @throws Exception
 	 */
-	public abstract void generator(IModel model, String viewPath, HttpServletRequest request,
+	void generator(IModel model, String viewPath, HttpServletRequest request,
 		HttpServletResponse response) throws Exception;
 	
 }

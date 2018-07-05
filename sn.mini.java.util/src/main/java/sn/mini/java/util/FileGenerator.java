@@ -108,7 +108,7 @@ public class FileGenerator {
 	 * @return
 	 */
 	public static String getPublicFullUrl(String dbPath) {
-		Pattern pattern = Pattern.compile("(\\w+)(://|://)(\\S*)");
+		Pattern pattern = Pattern.compile("(\\w+)(://)(\\S*)");
 		return pattern.matcher(dbPath).matches() ? dbPath : publicFileUrl + dbPath;
 	}
 

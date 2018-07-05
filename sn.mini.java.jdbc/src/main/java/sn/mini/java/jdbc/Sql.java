@@ -5,14 +5,10 @@
  */
 package sn.mini.java.jdbc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import sn.mini.java.jdbc.mapper.cell.ICell;
 import sn.mini.java.util.lang.StringUtil;
+
+import java.util.*;
 
 /**
  * sn.mini.dao.Sql.java
@@ -22,7 +18,7 @@ public final class Sql {
 
 	private StringBuilder content = new StringBuilder();
 	private List<Object> params = new ArrayList<>();
-	private Map<String, ICell<?>> cells = new HashMap<String, ICell<?>>();
+	private Map<String, ICell<?>> cells = new HashMap<>();
 
 	/**
 	 * 设置构造方法为私有，让外部创建当前对象时都调用静态方法创建
@@ -760,9 +756,7 @@ public final class Sql {
 	 * @return
 	 */
 	public Sql params(Object... params) {
-		for (Object param : params) {
-			this.params.add(param);
-		}
+		Collections.addAll(this.params, params);
 		return this;
 	}
 

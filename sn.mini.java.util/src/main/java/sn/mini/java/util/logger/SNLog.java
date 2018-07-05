@@ -63,7 +63,6 @@ public class SNLog implements ILog {
 	@Override
 	public void doFatal(String message) {
 		this.log(Level.FATAL, message);
-
 	}
 
 	@Override

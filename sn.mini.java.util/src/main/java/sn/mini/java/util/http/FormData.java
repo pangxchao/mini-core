@@ -1,164 +1,202 @@
 /**
  * Created the com.cfinal.util.http.CFFormData.java
+ *
  * @created 2017年6月21日 下午3:43:40
  * @version 1.0.0
  */
 package sn.mini.java.util.http;
 
+import sn.mini.java.util.FileGenerator;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * com.cfinal.util.http.CFFormData.java
+ *
  * @author XChao
  */
 public class FormData {
-	// 存储文本参数的对象
-	private final Map<String, List<String>> text = new HashMap<>();
-	// 存储文件参数对象
-	private final Map<String, List<FileData>> file = new HashMap<>();
+    // 存储文本参数的对象
+    private final Map<String, List<String>> text = new HashMap<>();
+    // 存储文件参数对象
+    private final Map<String, List<FileData>> file = new HashMap<>();
+    // 相信纯文本数据
+    private String contentBody = null;
 
-	// 相信纯文本数据
-	private String contentBody = null;
+    public FormData() {
+    }
 
-	/**
-	 * 文本参数KeySet
-	 * @return
-	 */
-	public Set<String> textKeySet() {
-		return this.text.keySet();
-	}
+    public FormData(String contentBody) {
+        this.contentBody = contentBody;
+    }
 
-	/**
-	 * 获取文本参数对象
-	 * @param name
-	 * @return
-	 */
-	public List<String> getText(String name) {
-		return this.text.get(name);
-	}
+    public FormData(String name, String value) {
+        this.addText(name, value);
+    }
 
-	/**
-	 * 添加一个文本参数
-	 * @param name
-	 * @param value
-	 * @return
-	 */
-	public synchronized FormData addText(String name, String value) {
-		List<String> values = this.text.get(name);
-		if(values == null) {
-			values = new ArrayList<>();
-			this.text.put(name, values);
-		}
-		values.add(value);
-		return this;
-	}
+    public FormData(String name, String fileName, long fileLength, String contentType,
+                    InputStream inputStream) {
+        this.addFile(name, fileName, fileLength, contentType, inputStream);
+    }
 
-	/**
-	 * 文件参数KeySet
-	 * @return
-	 */
-	public Set<String> fileKeySet() {
-		return this.file.keySet();
-	}
+    /**
+     * 文本参数KeySet
+     *
+     * @return
+     */
+    public Set<String> textKeySet() {
+        return this.text.keySet();
+    }
 
-	/**
-	 * 添加一个文本参数
-	 * @param name
-	 * @param value
-	 * @return
-	 */
-	public synchronized FormData addFile(String name, String fileName, long fileLength, String contentType,
-		InputStream inputStream) {
-		List<FileData> values = this.file.get(name);//
-		FileData value = new FileData(fileName, fileLength, contentType, inputStream);
-		if(values == null) {
-			values = new ArrayList<>();
-			this.file.put(name, values);
-		}
-		values.add(value);
-		return this;
-	}
+    /**
+     * 获取文本参数对象
+     *
+     * @param name
+     * @return
+     */
+    public List<String> getText(String name) {
+        return this.text.get(name);
+    }
 
-	public int getFileCount(String name) {
-		return this.file.get(name).size();
-	}
+    /**
+     * 添加一个文本参数
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public synchronized FormData addText(String name, String value) {
+        List<String> values = this.text.get(name);
+        if (null == values) {
+            values = new ArrayList<>();
+            this.text.put(name, values);
+        }
+        values.add(value);
+        return this;
+    }
 
-	public String getFileName(String name, int index) {
-		return this.file.get(name).get(index).getFileName();
-	}
+    /**
+     * 文件参数KeySet
+     *
+     * @return
+     */
+    public Set<String> fileKeySet() {
+        return this.file.keySet();
+    }
 
-	public long getFileLength(String name, int index) {
-		return this.file.get(name).get(index).getFileLength();
-	}
+    /**
+     * 添加一个文件参数
+     *
+     * @param name
+     * @param file
+     * @return
+     */
+    public FormData addFile(String name, File file) {
+        try {
+            this.addFile(name, file.getName(), file.length(), FileGenerator.getMiniType(file), new FileInputStream(file));
+            return this;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
-	public String getFileContentType(String name, int index) {
-		return this.file.get(name).get(index).getContentType();
-	}
+    /**
+     * 添加一个文本参数
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public synchronized FormData addFile(String name, String fileName, long fileLength, String contentType,
+                                         InputStream inputStream) {
+        List<FileData> values = this.file.get(name);//
+        FileData value = new FileData(fileName, fileLength, contentType, inputStream);
+        if (values == null) {
+            values = new ArrayList<>();
+            this.file.put(name, values);
+        }
+        values.add(value);
+        return this;
+    }
 
-	public InputStream getFileInputStream(String name, int index) {
-		return this.file.get(name).get(index).getInputStream();
-	}
+    public int getFileCount(String name) {
+        return this.file.get(name).size();
+    }
 
-	/**
-	 * @return the contentBody
-	 */
-	public String getContentBody() {
-		return contentBody;
-	}
+    public String getFileName(String name, int index) {
+        return this.file.get(name).get(index).getFileName();
+    }
 
-	/**
-	 * @param contentBody the contentBody to set
-	 */
-	public FormData setContentBody(String contentBody) {
-		this.contentBody = contentBody;
-		return this;
-	}
+    public long getFileLength(String name, int index) {
+        return this.file.get(name).get(index).getFileLength();
+    }
 
-	private static class FileData {
-		private String fileName;
-		private long fileLength;
-		private String contentType;
-		private InputStream inputStream;
+    public String getFileContentType(String name, int index) {
+        return this.file.get(name).get(index).getContentType();
+    }
 
-		public FileData(String name, long length, String type, InputStream input) {
-			this.fileName = name;
-			this.fileLength = length;
-			this.contentType = type;
-			this.inputStream = input;
-		}
+    public InputStream getFileInputStream(String name, int index) {
+        return this.file.get(name).get(index).getInputStream();
+    }
 
-		/**
-		 * @return the fileName
-		 */
-		public String getFileName() {
-			return fileName;
-		}
+    /**
+     * @return the contentBody
+     */
+    public String getContentBody() {
+        return contentBody;
+    }
 
-		/**
-		 * @return the fileLength
-		 */
-		public long getFileLength() {
-			return fileLength;
-		}
+    /**
+     * @param contentBody the contentBody to set
+     */
+    public FormData setContentBody(String contentBody) {
+        this.contentBody = contentBody;
+        return this;
+    }
 
-		/**
-		 * @return the contentType
-		 */
-		public String getContentType() {
-			return contentType;
-		}
+    private static class FileData {
+        private String fileName;
+        private long fileLength;
+        private String contentType;
+        private InputStream inputStream;
 
-		/**
-		 * @return the inputStream
-		 */
-		public InputStream getInputStream() {
-			return inputStream;
-		}
+        public FileData(String name, long length, String type, InputStream input) {
+            this.fileName = name;
+            this.fileLength = length;
+            this.contentType = type;
+            this.inputStream = input;
+        }
 
-	}
+        /**
+         * @return the fileName
+         */
+        public String getFileName() {
+            return fileName;
+        }
+
+        /**
+         * @return the fileLength
+         */
+        public long getFileLength() {
+            return fileLength;
+        }
+
+        /**
+         * @return the contentType
+         */
+        public String getContentType() {
+            return contentType;
+        }
+
+        /**
+         * @return the inputStream
+         */
+        public InputStream getInputStream() {
+            return inputStream;
+        }
+
+    }
 }

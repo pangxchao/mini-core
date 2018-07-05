@@ -1,12 +1,7 @@
-/**
- * Created the com.cfinal.util.lang.CFClazz.java
- *
- * @created 2016骞�8鏈�14鏃� 涓婂崍10:22:25
- * @version 1.0.0
- */
 package sn.mini.java.util.lang;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
@@ -19,13 +14,13 @@ import java.util.List;
 import java.util.jar.JarEntry;
 
 /**
- * java.lang.Class宸ュ叿绫�
+ * java.lang.Class工具类
  *
  * @author xchao
  */
 public class ClassUtil {
     /**
-     * 璋冪敤 Class.forName() 骞惰浆鎹㈡垚 clazz 瀵瑰簲绫荤殑瀛愮被Class瀵硅薄
+     * 调用 Class.forName() 并转换成 clazz 对应类的子类Class对象
      *
      * @param name
      * @param clazz
@@ -41,30 +36,45 @@ public class ClassUtil {
     }
 
     /**
-     * 灏� 鍔犺浇 绫诲悕涓� name 鐨勭被,灏嗗己鍒惰浆鎹㈡垚 T鐨勫瓙绫籆lass瀵硅薄,鐒跺悗鍒涘缓璇ュ璞″疄渚嬭繑鍥�
+     * 将 加载 类名为 name 的类,将强制转换成 T的子类Class对象,然后创建该对象实例返回
      *
      * @param name
      * @param clazz
      * @return
      * @throws Exception
      */
-    public static <T> T newInstence(String name, Class<T> clazz) {
+    public static <T> T newInstance(String name, Class<T> clazz) {
         try {
-            return Class.forName(name, false, ClassUtil.getDefaultClassLoader()).asSubclass(clazz).getConstructor().newInstance();
+            return Class.forName(name, false, ClassUtil.getDefaultClassLoader()) //
+                    .asSubclass(clazz).getConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * 灏� name 绫� 灏嗗己鍒惰浆鎹㈡垚 T鐨勫瓙绫籆lass瀵硅薄,鐒跺悗鍒涘缓璇ュ璞″疄渚嬭繑鍥�
+     * 将 name 类 将强制转换成 T的子类Class对象,然后创建该对象实例返回
      *
      * @param name
      * @param clazz
      * @return
      * @throws Exception
      */
-    public static <T> T newInstence(Class<?> name, Class<T> clazz) {
+    public static <T> T newInstance(Class<?> name, Class<T> clazz) {
+        try {
+            return clazz.cast(name.getConstructor().newInstance());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 创建clazz类的实例
+     *
+     * @param clazz
+     * @return
+     */
+    public static <T> T newInstance(Class<T> clazz) {
         try {
             return clazz.getConstructor().newInstance();
         } catch (Exception e) {
@@ -73,21 +83,7 @@ public class ClassUtil {
     }
 
     /**
-     * 鍒涘缓clazz绫荤殑瀹炰緥
-     *
-     * @param clazz
-     * @return
-     */
-    public static <T> T newInstence(Class<T> clazz) {
-        try {
-            return clazz.getConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * 鑾峰彇榛樿绫诲姞杞藉櫒
+     * 获取默认类加载器
      *
      * @return Thread.currentThread().getContextClassLoader() || ClassUtil.class.getClassLoader()
      */
@@ -100,11 +96,11 @@ public class ClassUtil {
     }
 
     /**
-     * 鎵弿鎵�鏈夋櫘閫氬寘涓嬬殑绫伙紝闈瀓ar鍖呬笅鐨勭被銆� 鎵弿鏃朵細璺宠繃鍐呴儴绫伙紝鍜屼笉鏄互 publick 淇グ绗︿慨鏀圭殑绫汇��
+     * 扫描所有普通包下的类，非jar包下的类。 扫描时会跳过内部类，和不是以 public 修饰符修改的类。
      *
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
     public static List<Class<?>> scanning(String packageName, boolean recursive,
                                           Class<? extends Annotation> annotation) {
@@ -117,14 +113,13 @@ public class ClassUtil {
     }
 
     /**
-     * 鎵弿鎵�鏈塲ar鍖呬腑鐨勭被锛屾櫘閫氬寘涓嬬殑class鏃犳硶鎵弿 銆� 鎵弿鏃朵細璺宠繃鍐呴儴绫伙紝鍜屼笉鏄互 publick 淇グ绗︿慨鏀圭殑绫汇��
+     * 扫描所有jar包中的类，普通包下的class无法扫描 。 扫描时会跳过内部类，和不是以 public 修饰符修改的类。
      *
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
-    public static List<Class<?>> scanningjars(String packageName, boolean recursive,
-                                              Class<? extends Annotation> annotation) {
+    public static List<Class<?>> scanningJars(String packageName, boolean recursive, Class<? extends Annotation> annotation) {
         if (StringUtil.isBlank(packageName)) {
             packageName = "";
         }
@@ -134,13 +129,13 @@ public class ClassUtil {
     }
 
     /**
-     * 鎵弿鎵�鏈夋櫘閫氬寘鍜宩ar鍖呬腑鐨勭被銆� 鎵弿鏃朵細璺宠繃鍐呴儴绫伙紝鍜屼笉鏄互 publick 淇グ绗︿慨鏀圭殑绫汇��
+     * 扫描所有普通包和jar包中的类。 扫描时会跳过内部类，和不是以 public 修饰符修改的类。
      *
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
-    public static List<Class<?>> scanningall(String packageName, boolean recursive,
+    public static List<Class<?>> scanningAll(String packageName, boolean recursive,
                                              Class<? extends Annotation> annotation) {
         if (StringUtil.isBlank(packageName)) {
             packageName = "";
@@ -152,12 +147,12 @@ public class ClassUtil {
     }
 
     /**
-     * 鎵弿鎵�鏈夋櫘閫氬寘涓嬬殑绫伙紝闈瀓ar鍖呬笅鐨勭被
+     * 扫描所有普通包下的类，非jar包下的类
      *
-     * @param clazzList   鎵弿缁撴灉瀹瑰櫒
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param clazzList   扫描结果容器
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
     private static void scanning(List<Class<?>> clazzList, String packageName, //
                                  boolean recursive, Class<? extends Annotation> annotation) {
@@ -177,76 +172,72 @@ public class ClassUtil {
     }
 
     /**
-     * 鎵弿鎵�鏈塲ar鍖呬腑鐨勭被锛屾櫘閫氬寘涓嬬殑class鏃犳硶鎵弿
+     * 扫描所有jar包中的类，普通包下的class无法扫描
      *
-     * @param clazzList   鎵弿缁撴灉瀹瑰櫒
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param clazzList   扫描结果容器
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
-    private static void scanning_jar(List<Class<?>> clazzList, String packageName, //
-                                     boolean recursive, Class<? extends Annotation> annotation) {
+    private static void scanning_jar(List<Class<?>> clazzList, String packageName, boolean recursive, Class<? extends Annotation> annotation) {
         ClassLoader classLoader = getDefaultClassLoader();
         scanning_jar(classLoader, clazzList, packageName, recursive, annotation);
     }
 
     /**
-     * 鑾峰彇鎵�鏈夋櫘閫氬寘锛堟枃浠跺す锛夐噷鐨勬墍鏈夌被
+     * 获取所有普通包（文件夹）里的所有类
      *
-     * @param clazzList   鎵弿缁撴灉瀹瑰櫒
-     * @param packageURI  绫绘墍灞炶矾寰�
-     * @param packageName 鍖呭悕锛� com.ms.mvc.controller
-     * @param recursive   鏄惁閫掑綊鏌ヨ鎵�鏈夌被 锛� true: 鏄� 锛� false锛� 鍚�
-     * @param annotation  鎸囧畾娉ㄨВ, null锛� 涓嶆寚瀹�
+     * @param clazzList   扫描结果容器
+     * @param packageName 包名： com.ms.mvc.controller
+     * @param classPath   类所属路径
+     * @param recursive   是否递归查询所有类 ， true: 是 ， false： 否
+     * @param annotation  指定注解, null： 不指定
      */
-    private static void scanning(List<Class<?>> clazzList, URI packageURI, String packageName, //
-                                 boolean recursive, Class<? extends Annotation> annotation) {
+    private static void scanning(List<Class<?>> clazzList, URI packageURI, String packageName, boolean recursive,
+                                 Class<? extends Annotation> annotation) {
         File[] files = getClassFileOrDirector(packageURI);
         if (files == null || files.length == 0) {
             return;
         }
         for (File file : files) {
-            scanningToClazzList(clazzList, file, packageURI, packageName, //
-                                recursive, annotation);
+            scanningToClazzList(clazzList, file, packageURI, packageName, recursive, annotation);
         }
     }
 
     /**
-     * 鑾峰彇鎵�鏈夋櫘閫氬寘锛堟枃浠跺す锛夐噷鐨勬墍鏈夌被
+     * 获取所有普通包（文件夹）里的所有类
      *
-     * @param clazzList   鎵弿缁撴灉瀹瑰櫒
-     * @param file        鏂囦欢鎴栬�呮枃浠跺す瀵硅薄
-     * @param packageURI
-     * @param packageName 鍖呭悕锛� com.ms.mvc.controller
-     * @param recursive   鏄惁閫掑綊鏌ヨ鎵�鏈夌被 锛� true: 鏄� 锛� false锛� 鍚�
-     * @param annotation  鎸囧畾娉ㄨВ, null锛� 涓嶆寚瀹�
+     * @param clazzList   扫描结果容器
+     * @param file        文件或者文件夹对象
+     * @param packageName 包名： com.ms.mvc.controller
+     * @param classPath   类所属路径
+     * @param recursive   是否递归查询所有类 ， true: 是 ， false： 否
+     * @param annotation  指定注解, null： 不指定
      */
-    private static void scanningToClazzList(List<Class<?>> clazzList, File file, URI packageURI, String packageName, boolean recursive, Class<? extends
-            Annotation> annotation) {
+    private static void scanningToClazzList(List<Class<?>> clazzList, File file, URI packageURI, String packageName, boolean recursive,
+                                            Class<? extends Annotation> annotation) {
         try {
             String fileName = file.getName();
             if (file.isFile() && file.getName().endsWith(".class")) {
-                classNameToResultList(clazzList, getClassAllNameByFilePath(
-                        packageName, fileName), annotation);
+                classNameToResultList(clazzList, getClassAllNameByFilePath(packageName, fileName), annotation);
             } else if (recursive && file.isDirectory()) {
-                scanning(clazzList, file.toURI(), packageName + "." + fileName, true, annotation);
+                scanning(clazzList, file.toURI(), packageName + "." + fileName, recursive, annotation);
             }
         } catch (Exception e) {
-            e.printStackTrace(System.out);
         }
     }
 
     /**
-     * 鎵弿鎵�鏈塲ar鍖呬腑鐨勭被锛屾櫘閫氬寘涓嬬殑class鏃犳硶鎵弿
+     * 扫描所有jar包中的类，普通包下的class无法扫描
      *
-     * @param classLoader 绫诲姞杞藉櫒
-     * @param clazzList   鎵弿缁撴灉瀹瑰櫒
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param classLoader 类加载器
+     * @param clazzList   扫描结果容器
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
-    private static void scanning_jar(ClassLoader classLoader, List<Class<?>> clazzList, String packageName,
-                                     boolean recursive, Class<? extends Annotation> annotation) {
+    private static void scanning_jar(ClassLoader classLoader, List<Class<?>> clazzList, String packageName, boolean recursive,
+                                     Class<? extends Annotation> annotation) {
         try {
             if (classLoader instanceof URLClassLoader) {
                 for (URL url : ((URLClassLoader) classLoader).getURLs()) {
@@ -260,21 +251,20 @@ public class ClassUtil {
                 scanning_jar(classLoader.getParent(), clazzList, packageName, recursive, annotation);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     /**
-     * 鎵弿鎵�鏈塲ar鍖呬腑鐨勭被锛屾櫘閫氬寘涓嬬殑class鏃犳硶鎵弿
+     * 扫描所有jar包中的类，普通包下的class无法扫描
      *
-     * @param clazzList   鎵弿缁撴灉瀹瑰櫒
-     * @param packageName 鎸囧畾鍖呭悕锛屾壂鎻忔墍鏈夊寘鏃朵紶null鎴栬�� ""
-     * @param jarUrl      jar鍖匲RL璺緞
-     * @param recursive   鏄惁閫掑綊鎵弿锛� 濡傛灉涓簍rue:鍒欐壂鎻忓綋鍓嶅寘鍙婂綋鍓嶅寘涓嬬殑鎵�鏈夊瓙鍖�
-     * @param annotation  鎸囧畾娉ㄨВ锛屽鏋滀笉涓虹┖锛岃繑鍥炵粨鏋滀腑鐨勭被鍙寘鍚湁褰撳墠瑙ｅ喅鐨勭被
+     * @param clazzList   扫描结果容器
+     * @param packageName 指定包名，扫描所有包时传null或者 ""
+     * @param jarUrl      jar包URL路径
+     * @param recursive   是否递归扫描， 如果为true:则扫描当前包及当前包下的所有子包
+     * @param annotation  指定注解，如果不为空，返回结果中的类只包含有当前解决的类
      */
     private static void scanning_jar(List<Class<?>> clazzList, URL jarUrl, String packageName, boolean recursive,
-                                     Class<? extends Annotation> annotation) {
+                                     Class<? extends Annotation> annotation) throws IOException {
         try {
             Enumeration<JarEntry> jarEntries = ((JarURLConnection) jarUrl.openConnection()).getJarFile().entries();
             while (jarEntries.hasMoreElements()) {
@@ -290,12 +280,11 @@ public class ClassUtil {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     /**
-     * 灏� Class 娣诲姞鍒� clazzList
+     * 将 Class 添加到 clazzList
      *
      * @param clazzList
      * @param clazzName
@@ -315,12 +304,11 @@ public class ClassUtil {
                 }
             }
         } catch (Throwable e) {
-            e.printStackTrace(System.out);
         }
     }
 
     /**
-     * 灏嗗寘鍚嶈浆鎹㈡垚鍖呰矾寰�
+     * 将包名转换成包路径
      *
      * @param packageName
      */
@@ -332,19 +320,20 @@ public class ClassUtil {
     }
 
     /**
-     * 鏍规嵁鍖呭悕鍜� .class 鏂囦欢鍚嶈幏鍙栧綋鍓� .class 鏂囦欢鎵�鍦ㄧ被鐨勫叏鍚�
+     * 根据包名和 .class 文件名获取当前 .class 文件所在类的全名
      *
-     * @param packageName 鍖呭悕
-     * @param fileName    .class 鏂囦欢鍚�
+     * @param packageName 包名
+     * @param fileName    .class 文件名
      */
     private static String getClassAllNameByFilePath(String packageName, String fileName) {
-        return packageName + "." + (fileName.substring(0, fileName.length() - 6));
+        String className = fileName.substring(0, fileName.length() - 6);
+        return packageName + "." + className;
     }
 
     /**
-     * 鑾峰彇褰撳墠鍖呰矾寰勪笅鐨勬墍鏈夌被鏂囦欢鍜屾枃浠跺す
+     * 获取当前包路径下的所有类文件和文件夹
      *
-     * @param packageURI
+     * @param packagePath
      */
     private static File[] getClassFileOrDirector(URI packageURI) {
         return new File(packageURI).listFiles(file -> (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory());

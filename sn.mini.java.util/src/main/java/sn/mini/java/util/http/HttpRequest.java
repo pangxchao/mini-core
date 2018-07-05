@@ -1,9 +1,6 @@
-/**
- * Created the com.cfinal.util.http.CFHttpRequest.java
- * @created 2017年6月21日 上午11:15:18
- * @version 1.0.0
- */
 package sn.mini.java.util.http;
+
+import sn.mini.java.util.lang.StringUtil;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,321 +10,252 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.List;
 
-import sn.mini.java.util.lang.StringUtil;
+public class HttpRequest extends UrlRequest {
+    public static final String FORM_URLENCODED = "application/x-www-form-urlencoded";
+    public static final String MULTIPART_FORM_DATA = "multipart/form-data";
+    public static final String TEXT_PLAIN = "text/plain";
 
-/**
- * com.cfinal.util.http.CFHttpRequest.java
- * @author XChao
- */
-public class HttpRequest extends UrlRquest {
+    protected HttpRequest(String url) {
+        super(url);
+    }
 
-	public HttpRequest(String url) {
-		super(url);
-	}
+    protected HttpRequest(String url, Proxy proxy) {
+        super(url, proxy);
+    }
 
-	public HttpRequest(String url, Proxy proxy) {
-		super(url, proxy);
-	}
+    public HttpURLConnection getHttpURLConnection() {
+        return (HttpURLConnection) this.getURLConnection();
+    }
 
-	public HttpRequest(HttpURLConnection connection) {
-		super(connection);
-	}
+    public <T> HttpResponse<T> send(HttpResponse.BodyHandler<T> bodyHandler) throws IOException {
+        if (getHttpURLConnection().getResponseCode() == HttpURLConnection.HTTP_OK) {
+            return bodyHandler.apply(HttpURLConnection.HTTP_OK, getHttpURLConnection().getResponseMessage(), //
+                    getHttpURLConnection().getInputStream());
+        }
+        return bodyHandler.apply(getHttpURLConnection().getResponseCode(), getHttpURLConnection() //
+                .getResponseMessage(), null);
+    }
 
-	protected HttpURLConnection getConnection() {
-		return (HttpURLConnection) super.getConnection();
-	}
 
-	public void setFixedLengthStreamingMode(int contentLength) {
-		this.getConnection().setFixedLengthStreamingMode(contentLength);
-	}
+    public static Builder builder(String url) {
+        return new Builder(new HttpRequest(url));
+    }
 
-	public void setFixedLengthStreamingMode(long contentLength) {
-		this.getConnection().setFixedLengthStreamingMode(contentLength);
-	}
+    public static Builder builder(String url, Proxy proxy) {
+        return new Builder(new HttpRequest(url, proxy));
+    }
 
-	public void setChunkedStreamingMode(int chunklen) {
-		this.getConnection().setChunkedStreamingMode(chunklen);
-	}
+    public static class Builder extends UrlRequest.Builder {
 
-	public void setInstanceFollowRedirects(boolean followRedirects) {
-		this.getConnection().setInstanceFollowRedirects(followRedirects);
-	}
 
-	public boolean getInstanceFollowRedirects() {
-		return this.getConnection().getInstanceFollowRedirects();
-	}
+        protected Builder(HttpRequest request) {
+            super(request);
+        }
 
-	public void setRequestMethod(String method) throws ProtocolException {
-		this.getConnection().setRequestMethod(method);
-	}
+        protected HttpRequest getHttpRequest() {
+            return (HttpRequest) this.getUrlRequest();
+        }
 
-	public String getRequestMethod() {
-		return this.getConnection().getRequestMethod();
-	}
+        public Builder setConnectTimeout(int timeout) {
+            getUrlRequest().getURLConnection().setConnectTimeout(timeout);
+            return this;
 
-	public int getResponseCode() throws IOException {
-		return this.getConnection().getResponseCode();
-	}
+        }
 
-	public String getResponseMessage() throws IOException {
-		return this.getConnection().getResponseMessage();
-	}
+        public Builder setReadTimeout(int timeout) {
+            getUrlRequest().getURLConnection().setReadTimeout(timeout);
+            return this;
+        }
 
-	public void disconnect() {
-		this.getConnection().disconnect();
-	}
 
-	public boolean usingProxy() {
-		return this.getConnection().usingProxy();
-	}
+        public Builder setDoInput(boolean doInput) {
+            getUrlRequest().getURLConnection().setDoInput(doInput);
+            return this;
+        }
 
-	public InputStream getErrorStream() {
-		return this.getConnection().getErrorStream();
-	}
 
-	/**
-	 * 将form数据以 application/x-www-form-urlencoded 的转码方式写入OutputStream<br/>
-	 * 该种方式写数据时，不写file与contentBody数据
-	 * @param formData
-	 * @return
-	 */
-	public String requestForUrlEncodedToString(FormData formData) {
-		InputStream inputStream = null;
-		try {
-			inputStream = this.requestForUrlEncoded(formData);
-			return inputStreamToString(inputStream);
-		} finally {
-			close(inputStream);
-		}
-	}
+        public Builder setDoOutput(boolean doOutput) {
+            getUrlRequest().getURLConnection().setDoOutput(doOutput);
+            return this;
+        }
 
-	/**
-	 * 将form数据以multipart/form-data 的转码方式写入OutputStream<br/>
-	 * 该种方式写数据时，不写 contentBody 数据
-	 * @return
-	 * @throws IOException
-	 */
-	public String requestForMultipartToString(FormData formData) {
-		InputStream inputStream = null;
-		try {
-			inputStream = this.requestForMultipart(formData);
-			return inputStreamToString(inputStream);
-		} finally {
-			close(inputStream);
-		}
-	}
+        public Builder setAllowUserInteraction(boolean allowUserInteraction) {
+            getUrlRequest().getURLConnection().setAllowUserInteraction(allowUserInteraction);
+            return this;
+        }
 
-	/**
-	 * 将form数据以 text/plain 方式写入OutputStream<br/>
-	 * （multipart/form-data与application/x-www-form-urlencoded以外的方式）<br/>
-	 * 该种方式写数据时，不写text与file数据
-	 * @return
-	 * @throws IOException
-	 */
-	public String requestForContentBodyToString(FormData formData) {
-		InputStream inputStream = null;
-		try {
-			inputStream = this.requestForContentBody(formData);
-			return inputStreamToString(inputStream);
-		} finally {
-			close(inputStream);
-		}
-	}
+        public Builder setUseCaches(boolean useCaches) {
+            getUrlRequest().getURLConnection().setUseCaches(useCaches);
+            return this;
+        }
 
-	/**
-	 * 将form数据以 application/x-www-form-urlencoded 的转码方式写入OutputStream<br/>
-	 * 该种方式写数据时，不写file与contentBody数据
-	 * @param formData
-	 * @return
-	 */
-	public InputStream requestForUrlEncoded(FormData formData) {
-		try {
-			this.requestForUrlEncoded(formData, request -> {
-			});
-			// 验证请求是否成功, 成功时，返回InputStream
-			return this.validateResponseIsSuccess();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
-	/**
-	 * 将form数据以multipart/form-data 的转码方式写入OutputStream<br/>
-	 * 该种方式写数据时，不写 contentBody 数据
-	 * @return
-	 * @throws IOException
-	 */
-	public InputStream requestForMultipart(FormData formData) {
-		try {
-			this.requestForMultipart(formData, request -> {
-			});
-			// 验证请求是否成功, 成功时，返回InputStream
-			return this.validateResponseIsSuccess();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+        public Builder setIfModifiedSince(long fModifiedSince) {
+            getUrlRequest().getURLConnection().setIfModifiedSince(fModifiedSince);
+            return this;
+        }
 
-	/**
-	 * 将form数据以 text/plain 方式写入OutputStream<br/>
-	 * （multipart/form-data与application/x-www-form-urlencoded以外的方式）<br/>
-	 * 该种方式写数据时，不写text与file数据
-	 * @return
-	 * @throws IOException
-	 */
-	public InputStream requestForContentBody(FormData formData) {
-		try {
-			this.requestForContentBody(formData, request -> {
-			});
-			// 验证请求是否成功, 成功时，返回InputStream
-			return this.validateResponseIsSuccess();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
-	/**
-	 * 将form数据以 application/x-www-form-urlencoded 的转码方式写入OutputStream<br/>
-	 * 该种方式写数据时，不写file与contentBody数据
-	 * @param formData
-	 * @param response
-	 * @return
-	 */
-	public void requestForUrlEncoded(FormData formData, HttpResponse response) {
-		OutputStreamWriter writer = null;
-		try {
-			this.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			writer = new OutputStreamWriter(this.getOutputStream());
-			List<String> result = new ArrayList<>();
-			for (String name : formData.textKeySet()) {
-				for (String value : formData.getText(name)) {
-					result.add(name + "=" + value);
-				}
-			}
-			writer.write(StringUtil.join(result, "&"));
-			// 刷新缓存
-			writer.flush();
-			// 结果处理
-			response.handler(this);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			close(writer);
-		}
-	}
+        public Builder setDefaultUseCaches(boolean defaultUseCaches) {
+            getUrlRequest().getURLConnection().setDefaultUseCaches(defaultUseCaches);
+            return this;
+        }
 
-	/**
-	 * 将form数据以multipart/form-data 的转码方式写入OutputStream<br/>
-	 * 该种方式写数据时，不写 contentBody 数据
-	 * @return
-	 * @throws IOException
-	 */
-	public void requestForMultipart(FormData formData, HttpResponse response) {
-		DataOutputStream steam = null;
-		try {
-			this.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
-			steam = new DataOutputStream(this.getOutputStream());
-			for (String name : formData.textKeySet()) {
-				for (String value : formData.getText(name)) {
-					steam.writeBytes(UrlRquest.HYPHENS);
-					steam.writeBytes(UrlRquest.BOUNDARY);
-					steam.writeBytes(UrlRquest.END);
+        public Builder setRequestProperty(String key, String value) {
+            getUrlRequest().getURLConnection().setRequestProperty(key, value);
+            return this;
+        }
 
-					steam.writeBytes("Content-Disposition: form-data; name=\"");
-					steam.writeBytes(name);
-					steam.writeBytes("\"");
-					steam.writeBytes(UrlRquest.END);
+        public Builder addRequestProperty(String key, String value) {
+            getUrlRequest().getURLConnection().addRequestProperty(key, value);
+            return this;
+        }
 
-					steam.writeBytes(UrlRquest.END);
-					steam.writeBytes(value);
-					steam.writeBytes(UrlRquest.END);
-				}
-			}
-			for (String name : formData.fileKeySet()) {
-				for (int i = 0, len = formData.getFileCount(name); i < len; i++) {
-					steam.writeBytes(UrlRquest.HYPHENS);
-					steam.writeBytes(UrlRquest.BOUNDARY);
-					steam.writeBytes(UrlRquest.END);
+        public Builder setFixedLengthStreamingMode(int contentLength) {
+            getHttpRequest().getHttpURLConnection().setFixedLengthStreamingMode(contentLength);
+            return this;
+        }
 
-					steam.writeBytes("Content-Disposition: form-data; name=\"");
-					steam.writeBytes(name);
-					steam.writeBytes("\";filename=\"");
-					steam.writeBytes(formData.getFileName(name, i));
-//					steam.writeBytes("\"; filesize=\"");
-//					steam.writeBytes(String.valueOf(formData.getFileLength(name, i)));
-					steam.writeBytes("\"");
-					steam.writeBytes(UrlRquest.END);
+        public Builder setFixedLengthStreamingMode(long contentLength) {
+            getHttpRequest().getHttpURLConnection().setFixedLengthStreamingMode(contentLength);
+            return this;
+        }
 
-					steam.writeBytes("Content-Type:");
-					steam.writeBytes(formData.getFileContentType(name, i));
-					steam.writeBytes(UrlRquest.END);
+        public Builder setChuckleStreamingMode(int chuckle) {
+            getHttpRequest().getHttpURLConnection().setChunkedStreamingMode(chuckle);
+            return this;
+        }
 
-					steam.writeBytes(UrlRquest.END);
-					InputStream _inputStream = null;
-					try {
-						int bufferSize = 1024, length = -1;
-						byte[] buffer = new byte[bufferSize];
-						_inputStream = formData.getFileInputStream(name, i);
-						while ((length = _inputStream.read(buffer)) != -1) {
-							steam.write(buffer, 0, length);
-						}
-					} finally {
-						if(_inputStream != null) {
-							_inputStream.close();
-						}
-					}
-					steam.writeBytes(UrlRquest.END);
-				}
-			}
-			steam.writeBytes(UrlRquest.HYPHENS);
-			steam.writeBytes(UrlRquest.BOUNDARY);
-			steam.writeBytes(UrlRquest.HYPHENS);
-			steam.writeBytes(UrlRquest.END);
-			steam.flush();
-			// 结果处理
-			response.handler(this);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			close(steam);
-		}
-	}
+        public Builder setInstanceFollowRedirects(boolean followRedirects) {
+            getHttpRequest().getHttpURLConnection().setInstanceFollowRedirects(followRedirects);
+            return this;
+        }
 
-	/**
-	 * 将form数据以 text/plain 方式写入OutputStream<br/>
-	 * （multipart/form-data与application/x-www-form-urlencoded以外的方式）<br/>
-	 * 该种方式写数据时，不写text与file数据
-	 * @return
-	 * @throws IOException
-	 */
-	public void requestForContentBody(FormData formData, HttpResponse response) {
-		OutputStreamWriter writer = null;
-		try {
-			this.setRequestProperty("Content-Type", "text/plain");
-			writer = new OutputStreamWriter(this.getOutputStream());
-			writer.write(formData.getContentBody());
-			writer.flush();
-			// 结果处理
-			response.handler(this);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			close(writer);
-		}
-	}
+        public HttpRequest POST(FormData formData) throws ProtocolException {
+            getHttpRequest().getHttpURLConnection().setRequestMethod("POST");
+            String contentType = getHttpRequest().getHttpURLConnection().getRequestProperty("Content-Type");
+            String end = "\r\n", hyphens = "--", boundary = "**********";
+            if (contentType == null) { // 判断 字符 串是否为空
+                setRequestProperty("Content-Type", HttpRequest.FORM_URLENCODED);
+                contentType = HttpRequest.FORM_URLENCODED;
+            } else {
+                contentType = contentType.toLowerCase();
+                if (FORM_URLENCODED.equals(contentType)) { // 普通方式
 
-	/**
-	 * 验证请求是事成功，如果请求失败，则抛出异常， 如果成功，则返回 InputStream
-	 * @throws IOException
-	 */
-	protected InputStream validateResponseIsSuccess() throws IOException {
-		if(this.getConnection().getResponseCode() != HttpURLConnection.HTTP_OK) {
-			throw new RuntimeException("HTTP Request is fail, Response code : " //
-				+ this.getConnection().getResponseCode() + ", Response message : " //
-				+ this.getConnection().getResponseMessage());
-		}
-		return this.getConnection().getInputStream();
-	}
+                } else if (contentType.startsWith(MULTIPART_FORM_DATA)) {
+                    if (MULTIPART_FORM_DATA.equals(contentType)) {
+                        contentType = contentType + ";boundary=" + boundary;
+                    } else {
+                        String[] contentTypeArr = contentType.split(";");
+                        String br = null;
+                        for (String ct : contentTypeArr) {
+                            if (ct != null && ct.startsWith("boundary=")) {
+                                br = ct.replace("boundary=", "");
+                            }
+                        }
+                        if (br == null || br.length() == 0) {
+                            contentType = contentType + ";boundary=" + boundary;
+                        } else {
+                            boundary = br;
+                        }
+                    }
+                }
+            }
+            if (HttpRequest.FORM_URLENCODED.equals(contentType)) { //application/x-www-form-urlencoded 编码
+                try (OutputStreamWriter writer = new OutputStreamWriter(getHttpRequest().getHttpURLConnection().getOutputStream())) {
+                    writer.write(
+                            StringUtil.join(new ArrayList<String>() {{
+                                for (String name : formData.textKeySet()) {
+                                    for (String value : formData.getText(name)) {
+                                        add(name + "=" + value);
+                                    }
+                                }
+                            }}, "&"));
+                    writer.flush();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (contentType.startsWith(MULTIPART_FORM_DATA)) { // multipart/form-data 编码
+                try (DataOutputStream steam = new DataOutputStream(getHttpRequest().getHttpURLConnection().getOutputStream())) {
+                    for (String name : formData.textKeySet()) {
+                        for (String value : formData.getText(name)) {
+                            steam.writeBytes(hyphens);
+                            steam.writeBytes(boundary);
+                            steam.writeBytes(end);
+
+                            steam.writeBytes("Content-Disposition: form-data; name=\"");
+                            steam.writeBytes(name);
+                            steam.writeBytes("\"");
+                            steam.writeBytes(end);
+
+                            steam.writeBytes(end);
+                            steam.writeBytes(value);
+                            steam.writeBytes(end);
+                        }
+                    }
+                    for (String name : formData.fileKeySet()) {
+                        for (int i = 0, len = formData.getFileCount(name); i < len; i++) {
+                            steam.writeBytes(hyphens);
+                            steam.writeBytes(boundary);
+                            steam.writeBytes(end);
+
+                            steam.writeBytes("Content-Disposition: form-data; name=\"");
+                            steam.writeBytes(name);
+                            steam.writeBytes("\";filename=\"");
+                            steam.writeBytes(formData.getFileName(name, i));
+                            steam.writeBytes("\"");
+                            steam.writeBytes(end);
+
+                            steam.writeBytes("Content-Type:");
+                            steam.writeBytes(formData.getFileContentType(name, i));
+                            steam.writeBytes(end);
+
+                            steam.writeBytes(end);
+                            int bufferSize = 2048, length;
+                            byte[] buffer = new byte[bufferSize];
+                            try (InputStream inputStream = formData.getFileInputStream(name, i)) {
+                                while ((length = inputStream.read(buffer)) != -1) {
+                                    steam.write(buffer, 0, length);
+                                }
+                            }
+                            steam.writeBytes(end);
+                        }
+                    }
+                    steam.writeBytes(hyphens);
+                    steam.writeBytes(boundary);
+                    steam.writeBytes(hyphens);
+                    steam.writeBytes(end);
+                    steam.flush();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else { // multipart/form-data与application/x-www-form-urlencoded 以外的方式编码
+                try (OutputStreamWriter writer = new OutputStreamWriter(getHttpRequest().getHttpURLConnection().getOutputStream())) {
+                    writer.write(formData.getContentBody());
+                    writer.flush();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return getHttpRequest();
+        }
+
+        /**
+         * GET方式处理时，无需提交参数，强制使用 application/x-www-form-urlencoded  编码方式
+         *
+         * @return
+         * @throws ProtocolException
+         */
+        public HttpRequest GET() throws ProtocolException {
+            getHttpRequest().getHttpURLConnection().setRequestMethod("GET");
+            setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            try {
+                getHttpRequest().getHttpURLConnection().connect();
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+            return getHttpRequest();
+        }
+    }
 }
