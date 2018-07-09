@@ -27,6 +27,7 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * sn.mini.java.web.http.Controller.java
+ *
  * @author XChao
  */
 public abstract class Controller {
@@ -53,7 +54,7 @@ public abstract class Controller {
     }
 
     protected final void doService(ActionProxy proxy, SNHttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
+            IOException {
         try {
             IModel model = ModelFactory.createDefaultModel(request); // 创建model对象
             String viewPath = this.loginInterceptor(proxy, model, request, response);
@@ -69,15 +70,16 @@ public abstract class Controller {
 
     /**
      * 登录验证, 异常处理, 并调用参数绑定方法
-     * @param proxy ActionPorxy 对象
-     * @param model 数据模型对象
-     * @param request DefaultRequest 对象
+     *
+     * @param proxy    ActionPorxy 对象
+     * @param model    数据模型对象
+     * @param request  DefaultRequest 对象
      * @param response DefaultResponse 对象
      * @return
      * @throws Exception
      */
     protected final String loginInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request, HttpServletResponse response) throws
-			Exception {
+            Exception {
         try {
             IUser user = WebUtil.getAttribute(request.getSession(), IUser.USER_KEY, IUser.class);
             if (proxy.getAction().login() && user == null) {
@@ -87,8 +89,8 @@ public abstract class Controller {
                 }
                 if (StringUtil.isNotBlank(SNInitializer.getLoginUrl())) {
                     return StringUtil.join("r:", SNInitializer.getLoginUrl(), "?uri=",
-                                           StringUtil.urlEncode(StringUtil.join(proxy.getName(), "?", request.getQueryString()), SNInitializer
-												   .getEncoding()));
+                            StringUtil.urlEncode(StringUtil.join(proxy.getName(), "?", request.getQueryString()), SNInitializer
+                                    .getEncoding()));
                 }
                 throw new ServletException("Not login error.");
             }
@@ -109,9 +111,10 @@ public abstract class Controller {
 
     /**
      * 绑定参数, 创建数据库连接, 并调用Action调用方法
-     * @param porxy ActionPorxy 对象
-     * @param model 数据模型对象
-     * @param request DefaultRequest 对象
+     *
+     * @param porxy    ActionPorxy 对象
+     * @param model    数据模型对象
+     * @param request  DefaultRequest 对象
      * @param response DefaultResponse 对象
      * @return
      * @throws Exception
@@ -120,13 +123,15 @@ public abstract class Controller {
                                             HttpServletResponse response) throws Exception {
         try {
             for (int i = 0, j = proxy.getParameters().length; i < j; i++) {
-                proxy.setParameterValue(i, EditorBind.getEditor(proxy.getParameter(i).getType()).value(proxy.getParameter(i).getName(),
-                                                                                                       proxy.getParameter(i).getType(), request, response));
+                proxy.setParameterValue(i, EditorBind.getEditor(proxy.getParameter(i)//
+                        .getType()).value(proxy.getParameter(i).getName(),
+                        proxy.getParameter(i).getType(), request, response));
             }
             return new ActionInvoke(proxy, request, response, model).invoke();
         } finally {
             for (Entry<String, IDao> entry : DaoManager.getCurrentDao().entrySet()) {
-                try (IDao dao = entry.getValue()) {} catch (Exception e) {
+                try (IDao dao = entry.getValue()) {
+                } catch (Exception e) {
                     Log.error("Close Dao fail. ", e);
                 }
             }

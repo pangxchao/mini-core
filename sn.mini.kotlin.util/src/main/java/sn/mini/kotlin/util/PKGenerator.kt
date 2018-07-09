@@ -9,6 +9,11 @@ import java.util.*
 
 //import jdk.nashorn.api.scripting.JSObject;
 
+fun main(args: Array<String>) {
+    println("-------------")
+    println(null.toString())
+}
+
 /**
  * 主键获取,规则：当前时间缀转36进制字符串 + 两位36进制IP码 + 一位36进制随机码
  * @author xchao

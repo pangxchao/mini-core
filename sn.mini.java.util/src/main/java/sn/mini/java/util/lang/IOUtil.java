@@ -1,5 +1,7 @@
 package sn.mini.java.util.lang;
 
+import sn.mini.java.util.logger.Log;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 
