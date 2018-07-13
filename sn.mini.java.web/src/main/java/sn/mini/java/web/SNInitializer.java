@@ -516,7 +516,7 @@ public final class SNInitializer implements ServletContainerInitializer {
     protected void controller(List<Class<? extends Controller>> controllers, ServletContext context) {
         Dynamic register = context.addServlet("sn.mini.java.web.servlet", DefaultHttpServlet.class);
         for (Class<? extends Controller> controller : controllers) {
-            Control control = Optional.ofNullable(controller.getAnnotation(Control.class)).orElse(defualt_control);
+            Control control = Optional.ofNullable(controller.getAnnotation(Control.class)).orElse(default_control);
             String cUrl = StringUtil.defaultIfEmpty(control.url(), controller.getSimpleName());
             String cPath = StringUtil.defaultIfEmpty(control.name(), controller.getSimpleName());
             Optional<Before> before = Optional.ofNullable(controller.getAnnotation(Before.class));
@@ -547,17 +547,16 @@ public final class SNInitializer implements ServletContainerInitializer {
 
                         SNInitializer.addController(instance); // 添加实例到 SNInitializer 对象中
                         SNInitializer.addActionProxy(proxy); // 将ActionProxy 对象添加到缓存中
-
+                        // 注册 servlet Url
+                        register.addMapping(name.replaceFirst(context.getContextPath(), ""));
                         Log.debug("Scanner Action: " + name);
                     });
                 }
                 File location = new File(SNInitializer.getLocation()); // 检查文件上传临时目录是否存在, 如果不存在则创建,否则可能会接收不到参数
                 if (!location.exists() && location.mkdirs()) { // 如果该文件夹或者文件不存时, 则创建该文件夹或者文件
                 }
-                register.addMapping("/"); // 添加注册的Servlet URLMapping映射
                 register.setMultipartConfig(new MultipartConfigElement(// // 设置文件上传配置信息
                         location.getAbsolutePath(), maxFileSize, maxRequestSize, fileSizeThreshold));
-
                 register.setAsyncSupported(true); // 设置可以异步返回
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e.getMessage(), e);
@@ -570,7 +569,7 @@ public final class SNInitializer implements ServletContainerInitializer {
      *
      * @author xchao
      */
-    private static final Control defualt_control = new Control() {
+    private static final Control default_control = new Control() {
         public Class<? extends Annotation> annotationType() {
             return this.getClass();
         }

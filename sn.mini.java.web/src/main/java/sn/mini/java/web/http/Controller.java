@@ -88,9 +88,9 @@ public abstract class Controller {
                     return null;
                 }
                 if (StringUtil.isNotBlank(SNInitializer.getLoginUrl())) {
-                    return StringUtil.join("r:", SNInitializer.getLoginUrl(), "?uri=",
-                            StringUtil.urlEncode(StringUtil.join(proxy.getName(), "?", request.getQueryString()), SNInitializer
-                                    .getEncoding()));
+                    return StringUtil.join("r:", SNInitializer.getLoginUrl(), "?uri=",//
+                            StringUtil.urlEncode(StringUtil.join(proxy.getName(), "?",//
+                                    request.getQueryString()), SNInitializer .getEncoding()));
                 }
                 throw new ServletException("Not login error.");
             }

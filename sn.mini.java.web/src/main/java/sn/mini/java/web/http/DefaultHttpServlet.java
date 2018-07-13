@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
-
 /**
  * sn.mini.java.web.http.DefaultHttpServlet.java
  *
@@ -41,19 +39,17 @@ public final class DefaultHttpServlet extends HttpServlet {
         return proxy;
     }
 
-    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy == null) {
-            response.sendError(SC_NOT_FOUND, "Not Found Page.");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found Page.");
             return;
         }
         actionProxy.getController().doDeleteBefore(request, response);
         actionProxy.getController().doService(actionProxy, request, response);
     }
 
-    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
@@ -63,7 +59,6 @@ public final class DefaultHttpServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doHead(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
@@ -73,7 +68,6 @@ public final class DefaultHttpServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
@@ -83,7 +77,6 @@ public final class DefaultHttpServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
@@ -93,7 +86,6 @@ public final class DefaultHttpServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
@@ -103,7 +95,6 @@ public final class DefaultHttpServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doTrace(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         SNHttpServletRequest request = new SNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);

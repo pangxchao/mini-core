@@ -23,16 +23,21 @@ import java.sql.SQLException;
  * 2.使用代码生成器生成的只有实体代码和简单的dao操作代码 <br/>
  * 3.生成时修改下面的常量参数，代码会直接写入常量配置的路径中<br/>
  * 4.导出数据字典和sql代码时，默认在项目的‘documents’目录中
+ * 5. version updater text
  *
  * @author XChao
  */
 public class GENConfig {
     // alter table knowledge_base CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-    //	public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_common?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_common?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_group?characterEncoding=utf-8"; // 数据库连接
+    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_maker?characterEncoding=utf-8"; // 数据库连接
 //    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_file_cloud?characterEncoding=utf-8"; // 数据库连接
 //   public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_knowledge?characterEncoding=utf-8"; // 数据库连接
-    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_user_center?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_user_center?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_update?characterEncoding=utf-8"; // 数据库连接
+
     public static final String DB_USERNAME = "root"; // 数据库用户名
     public static final String DB_PASSWORD = "Qwe123456!"; // 数据库密码
 
@@ -41,9 +46,9 @@ public class GENConfig {
     public static final String PACKAGE_NAME = "sn.mini.kotlin.gen"; // 项目名名称
 
     public static final Paging PAGING = new Paging(1, 100); // 生成sql时，每张表获取前100条记录为初始数据
-    public static final String TABLE_DB_NAME = "user_info"; // 数据库表名称
-    public static final String TABLE_JAVA_NAME = "UserInfo"; // java实体类名称
-    public static final String DB_PREFIX_NAME = "user_"; // 表前缀名称， 如： file_id 字段名称
+    public static final String TABLE_DB_NAME = "maker_template_info"; // 数据库表名称
+    public static final String TABLE_JAVA_NAME = "Template_info"; // java实体类名称
+    public static final String DB_PREFIX_NAME = "tmpl_"; // 表前缀名称， 如： file_id 字段名称
 
 
     /**
