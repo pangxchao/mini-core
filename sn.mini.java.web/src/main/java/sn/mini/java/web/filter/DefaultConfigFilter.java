@@ -1,4 +1,4 @@
-package sn.mini.java.web.http;
+package sn.mini.java.web.filter;
 
 import sn.mini.java.util.lang.StringUtil;
 import sn.mini.java.web.SNInitializer;
@@ -9,18 +9,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter(filterName = "DefaultHttpFilter", value = "/*", asyncSupported = true)
-public class DefaultHttpFilter implements Filter {
+@WebFilter(filterName = "DefaultConfigFilter", urlPatterns = {"/*", "/"})
+public final class DefaultConfigFilter extends SNAbstractFilter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
+    public void init(FilterConfig config) throws ServletException {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
-        SNHttpServletRequest request = new SNHttpServletRequest((HttpServletRequest) req);
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
+
         if (StringUtil.isNotBlank(SNInitializer.getEncoding())) {
             request.setCharacterEncoding(SNInitializer.getEncoding());
             response.setCharacterEncoding(SNInitializer.getEncoding());
@@ -40,21 +40,7 @@ public class DefaultHttpFilter implements Filter {
             response.setHeader("Access-Control-Allow-Headers", //
                     "x-requested-with, Content-Type");
         }
-        ActionProxy proxy = SNInitializer.getActionProxy(request.getRequestURI());
-        if (proxy == null) {
-            for (String name : SNInitializer.getActionProxys().keySet()) {
-                if (request.getRequestURI().matches(name)) {
-                    proxy = SNInitializer.getActionProxy(name);
-                    break;
-                }
-            }
-        }
-        if (proxy != null) {
-            proxy.getController().doDeleteBefore(request, response);
-            proxy.getController().doService(proxy, request, response);
-            return;
-        }
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 
     @Override

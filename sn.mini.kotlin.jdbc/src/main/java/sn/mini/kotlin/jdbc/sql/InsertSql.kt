@@ -3,14 +3,13 @@ package sn.mini.kotlin.jdbc.sql
 import sn.mini.kotlin.util.lang.join
 
 
-class InsertSql : Sql() {
-    private var tableName: String? = null
+open class InsertSql : Sql() {
+    protected var tableName: String? = null
+    protected val keys = arrayListOf<String>()
+    protected val values = arrayListOf<Any?>()
 
-    private val keys = arrayListOf<String>()
-    private val values = arrayListOf<Any?>()
-    override fun contentToString(): String {
-        return """insert into $tableName(${keys.join(", ")}) values(${values.join(", ")})"""
-    }
+    override fun content() = """ insert into $tableName(${keys.join(", ")})
+         values(${values.join(", ")})"""
 
     companion object {
         fun build(tableName: String): InsertBuild {
@@ -20,7 +19,7 @@ class InsertSql : Sql() {
         }
     }
 
-    class InsertBuild(override val sql: InsertSql) : Build(sql) {
+    class InsertBuild(override val sql: InsertSql) : Sql.Build(sql) {
         override fun build(): Sql {
             return this.sql
         }
@@ -35,10 +34,11 @@ class InsertSql : Sql() {
             return this.addParams(param)
         }
 
-        fun addNative(key: String, value: String): InsertBuild {
+        fun addNative(key: String, value: String, vararg params: Any?): InsertBuild {
             this.sql.keys.add(key)
             this.sql.keys.add(value)
-            return this
+            return this.addParams(*params)
+
         }
 
         override fun addParams(vararg params: Any?): InsertBuild {

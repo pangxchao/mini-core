@@ -6,9 +6,8 @@ abstract class Sql protected constructor() {
     private val content = StringBuilder()
     private val params = ArrayList<Any?>()
 
-    open fun contentToString() = this.content.toString()
-    fun paramsToArray(): Array<out Any> = this.params.toArray()
-    fun paramsToStringArray(): Array<out String> = this.params.toArray(arrayOf<String>())
+    open fun content() = this.content.toString()
+    fun params(): Array<out Any> = this.params.toArray()
 
     abstract class Build(protected open val sql: Sql) {
         open fun build(): Sql {

@@ -6,6 +6,7 @@
  */
 package sn.mini.java.web;
 
+import sn.mini.java.util.lang.ClassUtil;
 import sn.mini.java.util.lang.MethodUtil;
 import sn.mini.java.util.lang.StringUtil;
 import sn.mini.java.util.lang.TypeUtil;
@@ -478,7 +479,7 @@ public final class SNInitializer implements ServletContainerInitializer {
             listeners.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
             for (Class<? extends EventListener> listener : listeners) { // EventListener
                 if (listener.getAnnotation(WebListener.class) == null) {
-                    EventListener instance = listener.newInstance();
+                    EventListener instance = ClassUtil.newInstance(listener);
                     servletContext.addListener(instance); // 添加到缓存
                     SNInitializer.addListener(instance);
                 }

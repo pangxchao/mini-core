@@ -1,49 +1,52 @@
 /**
  * Created the sn.mini.dao.mapper.row.BeanRow.java
+ *
  * @created 2016年10月10日 下午6:17:37
  * @version 1.0.0
  */
 package sn.mini.java.jdbc.mapper.row;
 
+import sn.mini.java.jdbc.mapper.MapperMapping;
+import sn.mini.java.jdbc.model.ModelMapping;
+import sn.mini.java.util.lang.ClassUtil;
+import sn.mini.java.util.logger.Log;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import sn.mini.java.jdbc.mapper.MapperMapping;
-import sn.mini.java.jdbc.model.ModelMapping;
-import sn.mini.java.util.logger.Log;
-
 /**
  * sn.mini.dao.mapper.row.BeanRow.java
+ *
  * @author XChao
  */
 public class BeanRow<T> extends AbstractRow<T> {
-	private final Class<T> clazz;
+    private final Class<T> clazz;
 
-	public BeanRow(Class<T> clazz) {
-		this.clazz = clazz;
-	}
+    public BeanRow(Class<T> clazz) {
+        this.clazz = clazz;
+    }
 
-	@Override
-	public T getRow(ResultSet resultSet) throws SQLException {
-		try {
-			T instence = clazz.newInstance();
-			for (String columnLable : this.cells.keySet()) {
-				try {
-					ModelMapping.getDaoTable(clazz).setValue(columnLable, instence,
-						this.cells.get(columnLable).getCell(resultSet, columnLable));
-				} catch (Exception e) {
-					try {
-						ModelMapping.getDaoTable(clazz).setValue(columnLable, instence, MapperMapping.getCell(//
-							ModelMapping.getDaoTable(clazz).getType(columnLable).getName()) //
-							.getCell(resultSet, columnLable));
-					} catch (Exception e1) {
-						Log.warn("DBException: " + e.getMessage());
-					}
-				}
-			}
-			return instence;
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-	}
+    @Override
+    public T getRow(ResultSet resultSet) throws SQLException {
+        try {
+            T instance = ClassUtil.newInstance(clazz);
+            for (String columnLabel : this.cells.keySet()) {
+                try {
+                    ModelMapping.getDaoTable(clazz).setValue(columnLabel, instance,
+                            this.cells.get(columnLabel).getCell(resultSet, columnLabel));
+                } catch (Exception e) {
+                    try {
+                        ModelMapping.getDaoTable(clazz).setValue(columnLabel, instance, MapperMapping.getCell(//
+                                ModelMapping.getDaoTable(clazz).getType(columnLabel).getName()) //
+                                .getCell(resultSet, columnLabel));
+                    } catch (Exception e1) {
+                        Log.warn("DBException: " + e.getMessage());
+                    }
+                }
+            }
+            return instance;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 }

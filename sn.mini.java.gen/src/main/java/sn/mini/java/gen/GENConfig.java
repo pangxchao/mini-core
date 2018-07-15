@@ -30,13 +30,13 @@ import java.sql.SQLException;
 public class GENConfig {
     // alter table knowledge_base CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_common?characterEncoding=utf-8"; // 数据库连接
-//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_group?characterEncoding=utf-8"; // 数据库连接
-    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_maker?characterEncoding=utf-8"; // 数据库连接
-//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_file_cloud?characterEncoding=utf-8"; // 数据库连接
-//   public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_knowledge?characterEncoding=utf-8"; // 数据库连接
-//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_user_center?characterEncoding=utf-8"; // 数据库连接
-//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_update?characterEncoding=utf-8"; // 数据库连接
+//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_file_cloud?characterEncoding=utf-8"; // 数据库连接
+//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_common?characterEncoding=utf-8"; // 数据库连接
+//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_group?characterEncoding=utf-8"; // 数据库连接
+//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_maker?characterEncoding=utf-8"; // 数据库连接
+//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_knowledge?characterEncoding=utf-8"; // 数据库连接
+    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_users?characterEncoding=utf-8"; // 数据库连接
+//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_update?characterEncoding=utf-8"; // 数据库连接
 
     public static final String DB_USERNAME = "root"; // 数据库用户名
     public static final String DB_PASSWORD = "Qwe123456!"; // 数据库密码
@@ -46,9 +46,9 @@ public class GENConfig {
     public static final String PACKAGE_NAME = "sn.mini.kotlin.gen"; // 项目名名称
 
     public static final Paging PAGING = new Paging(1, 100); // 生成sql时，每张表获取前100条记录为初始数据
-    public static final String TABLE_DB_NAME = "maker_template_info"; // 数据库表名称
-    public static final String TABLE_JAVA_NAME = "Template_info"; // java实体类名称
-    public static final String DB_PREFIX_NAME = "tmpl_"; // 表前缀名称， 如： file_id 字段名称
+    public static final String TABLE_DB_NAME = "user_session"; // 数据库表名称
+    public static final String TABLE_JAVA_NAME = "UserSession"; // java实体类名称
+    public static final String DB_PREFIX_NAME = "session_"; // 表前缀名称， 如： file_id 字段名称
 
 
     /**

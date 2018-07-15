@@ -53,7 +53,7 @@ public abstract class Controller {
     public void doTraceBefore(SNHttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     }
 
-    protected final void doService(ActionProxy proxy, SNHttpServletRequest request, HttpServletResponse response) throws ServletException,
+    public final void doService(ActionProxy proxy, SNHttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
         try {
             IModel model = ModelFactory.createDefaultModel(request); // 创建model对象
@@ -90,7 +90,7 @@ public abstract class Controller {
                 if (StringUtil.isNotBlank(SNInitializer.getLoginUrl())) {
                     return StringUtil.join("r:", SNInitializer.getLoginUrl(), "?uri=",//
                             StringUtil.urlEncode(StringUtil.join(proxy.getName(), "?",//
-                                    request.getQueryString()), SNInitializer .getEncoding()));
+                                    request.getQueryString()), SNInitializer.getEncoding()));
                 }
                 throw new ServletException("Not login error.");
             }

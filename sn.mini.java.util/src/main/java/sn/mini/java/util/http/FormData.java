@@ -6,7 +6,7 @@
  */
 package sn.mini.java.util.http;
 
-import sn.mini.java.util.FileGenerator;
+import sn.mini.java.util.lang.FileUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,12 +69,7 @@ public class FormData {
      * @return
      */
     public synchronized FormData addText(String name, String value) {
-        List<String> values = this.text.get(name);
-        if (null == values) {
-            values = new ArrayList<>();
-            this.text.put(name, values);
-        }
-        values.add(value);
+        this.text.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
         return this;
     }
 
@@ -96,7 +91,7 @@ public class FormData {
      */
     public FormData addFile(String name, File file) {
         try {
-            this.addFile(name, file.getName(), file.length(), FileGenerator.getMiniType(file), new FileInputStream(file));
+            this.addFile(name, file.getName(), file.length(), FileUtil.getMiniType(file), new FileInputStream(file));
             return this;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

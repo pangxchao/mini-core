@@ -118,10 +118,10 @@ object GENBeanJKotlin {
                     val columnAlias = columnName.replaceFirst(REGEX.toRegex(), "") // 别名名称
                     val types = getColumnType(columnType) // 类型
                     val javaPropName = StringUtil.toJavaName(columnAlias, false) // java属性名称
-                    //val gstterName = StringUtil.toJavaName(columnAlias, true) // java getter，setter主要名称
+                    //val getterName = StringUtil.toJavaName(columnAlias, true) // java getter，setter主要名称
 
                     pkMaps[columnName]?.let {
-                        if (it == true) {
+                        if (it) {
                             idJavaNameAndType.add("${javaPropName}:${types?.name}")
                             idJavaName.add(javaPropName)
                             idDbName.add(columnName.toUpperCase())
