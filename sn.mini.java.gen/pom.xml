@@ -9,28 +9,13 @@
 	<!-- 基础属性配置 -->
 	<properties>
 		<junit.version>4.12</junit.version>
-		<kotlin.version>1.2.41</kotlin.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<!-- 依赖配置 -->
 	<dependencies>
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib-jdk8</artifactId>
-			<version>${kotlin.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-test-junit</artifactId>
-			<version>${kotlin.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -52,66 +37,9 @@
 
 	<!-- 插件配置 -->
 	<build>
-		<!-- 源代码文件夹 -->
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<!-- 脚本目录 -->
-		<!--<scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>-->
-		<!-- 测试代码 -->
-		<testSourceDirectory>src/test/java</testSourceDirectory>
-		<!-- 编译后输出的目录 -->
-		<outputDirectory>target/classes</outputDirectory>
-		<!-- 测试代码编译输出目录 -->
-		<testOutputDirectory>target/test-classes</testOutputDirectory>
-		<!-- 资源文件夹，可配置多个 -->
-		<resources>
-			<!-- 资源文件目录 -->
-			<resource>
-				<directory>src/main/resources</directory>
-				<!-- 包含的文件 -->
-				<includes>
-					<include>*.*</include>
-				</includes>
-			</resource>
-		</resources>
-		<testResources>
-			<!-- 测试资源目录 -->
-			<testResource>
-				<directory>src/test/resources</directory>
-			</testResource>
-		</testResources>
-		<directory>target</directory>
 		<!-- 设置编译属性 -->
 		<defaultGoal>compile</defaultGoal>
 		<plugins>
-			<plugin>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<version>${kotlin.version}</version>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<sourceDirs>
-								<sourceDir>src/main/java</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-						<configuration>
-							<sourceDirs>
-								<sourceDir>src/test/java</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -120,32 +48,6 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
-				<executions>
-					<!-- 替换会被 maven 特别处理的 default-compile -->
-					<execution>
-						<id>default-compile</id>
-						<phase>none</phase>
-					</execution>
-					<!-- 替换会被 maven 特别处理的 default-testCompile -->
-					<execution>
-						<id>default-testCompile</id>
-						<phase>none</phase>
-					</execution>
-					<execution>
-						<id>java-compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>java-test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

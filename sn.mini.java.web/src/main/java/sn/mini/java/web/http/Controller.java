@@ -71,15 +71,15 @@ public abstract class Controller {
     /**
      * 登录验证, 异常处理, 并调用参数绑定方法
      *
-     * @param proxy    ActionPorxy 对象
+     * @param proxy    ActionProxy 对象
      * @param model    数据模型对象
      * @param request  DefaultRequest 对象
      * @param response DefaultResponse 对象
      * @return
      * @throws Exception
      */
-    protected final String loginInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request, HttpServletResponse response) throws
-            Exception {
+    protected final String loginInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request,//
+                                            HttpServletResponse response) throws Exception {
         try {
             IUser user = WebUtil.getAttribute(request.getSession(), IUser.USER_KEY, IUser.class);
             if (proxy.getAction().login() && user == null) {
@@ -87,10 +87,18 @@ public abstract class Controller {
                     model.setError(500).setMessage("Not login error.");
                     return null;
                 }
-                if (StringUtil.isNotBlank(SNInitializer.getLoginUrl())) {
-                    return StringUtil.join("r:", SNInitializer.getLoginUrl(), "?uri=",//
-                            StringUtil.urlEncode(StringUtil.join(proxy.getName(), "?",//
-                                    request.getQueryString()), SNInitializer.getEncoding()));
+                String loginUrl, backUrl, queryString = request.getQueryString(), backUrlEncode;
+                queryString = StringUtil.defaultIfEmpty(queryString, "");
+                if (StringUtil.isNotBlank(loginUrl = SNInitializer.getLoginUrl())) {
+                    backUrlEncode = StringUtil.urlEncode(StringUtil.join(WebUtil.getDoMain(request), //
+                            proxy.getName(), "?", queryString), SNInitializer.getEncoding());
+                    if (loginUrl.toLowerCase().startsWith("http://") ||
+                            loginUrl.toLowerCase().startsWith("https://")) {
+                        // 如果登录地址是完整的http或者https协议的地址时，将其切换成访问的协议
+                        loginUrl = request.getScheme() + loginUrl.substring(5);
+                        return StringUtil.join("r:", loginUrl, "?uri=", backUrlEncode);
+                    }
+                    return StringUtil.join("r:", loginUrl, "?uri=", backUrlEncode);
                 }
                 throw new ServletException("Not login error.");
             }
@@ -112,7 +120,7 @@ public abstract class Controller {
     /**
      * 绑定参数, 创建数据库连接, 并调用Action调用方法
      *
-     * @param porxy    ActionPorxy 对象
+     * @param proxy    ActionProxy 对象
      * @param model    数据模型对象
      * @param request  DefaultRequest 对象
      * @param response DefaultResponse 对象

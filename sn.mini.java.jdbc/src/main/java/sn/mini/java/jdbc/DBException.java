@@ -7,6 +7,7 @@ package sn.mini.java.jdbc;
 
 /**
  * sn.mini.dao.DBException.java
+ * 
  * @author XChao
  */
 public class DBException extends RuntimeException {

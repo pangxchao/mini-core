@@ -15,7 +15,6 @@ import sn.mini.java.util.lang.StringUtil;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -138,9 +137,7 @@ public final class DaoTable {
 	 * @throws SQLException
 	 */
 	public static String getCreateTable(IDao dao, String tableName) throws SQLException {
-		return dao.executeQuery(rs -> {
-			return rs.next() ? rs.getString(2) : "";
-		}, "show create table " + tableName);
+		return dao.executeQuery(rs -> rs.next() ? rs.getString(2) : "", "show create table " + tableName);
 	}
 
 	/**

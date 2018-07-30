@@ -463,17 +463,17 @@ public final class SNInitializer implements ServletContainerInitializer {
 
             views.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
             for (Class<? extends IView> view : views) { // IView
-                SNInitializer.addView(view.newInstance());
+                SNInitializer.addView(ClassUtil.newInstance(view));
             }
 
             renders.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
             for (Class<? extends IRender> render : renders) {// IRender
-                SNInitializer.addRender(render.newInstance());
+                SNInitializer.addRender(ClassUtil.newInstance(render));
             }
 
             interceptors.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
             for (Class<? extends Interceptor> interceptor : interceptors) { // Interceptor
-                SNInitializer.addInterceptor(interceptor.newInstance());
+                SNInitializer.addInterceptor(ClassUtil.newInstance(interceptor));
             }
 
             listeners.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
@@ -491,7 +491,7 @@ public final class SNInitializer implements ServletContainerInitializer {
             filters.sort((v1, v2) -> v1.isAssignableFrom(v2) ? -1 : 1);
             for (Class<? extends SNAbstractFilter> filter : filters) { // Filter
                 if (filter.getAnnotation(WebFilter.class) == null) {
-                    SNAbstractFilter instance = filter.newInstance();
+                    SNAbstractFilter instance = ClassUtil.newInstance(filter);
                     SNInitializer.addFilter(instance); // 添加到缓存
                     FilterRegistration.Dynamic dynamic = servletContext.addFilter(filter.getName(), instance);
                     if (instance.getUrlPatterns() != null && instance.getUrlPatterns().length > 0) {
@@ -514,6 +514,7 @@ public final class SNInitializer implements ServletContainerInitializer {
      *
      * @param controllers
      */
+    @SuppressWarnings("unchecked")
     protected void controller(List<Class<? extends Controller>> controllers, ServletContext context) {
         Dynamic register = context.addServlet("sn.mini.java.web.servlet", DefaultHttpServlet.class);
         for (Class<? extends Controller> controller : controllers) {
@@ -523,7 +524,7 @@ public final class SNInitializer implements ServletContainerInitializer {
             Optional<Before> before = Optional.ofNullable(controller.getAnnotation(Before.class));
             Class<? extends Interceptor>[] interceptors = before.map(Before::value).orElse(INTERS_EMPTY);
             try {
-                Controller instance = controller.newInstance(); // 创建Controller实例
+                Controller instance = ClassUtil.newInstance(controller); // 创建Controller实例
                 for (Method actionMethod : controller.getMethods()) {
                     Optional.ofNullable(actionMethod.getAnnotation(Action.class)).ifPresent(action -> {
                         SNMethod method = MethodUtil.getSNMethod(actionMethod);
@@ -559,7 +560,7 @@ public final class SNInitializer implements ServletContainerInitializer {
                 register.setMultipartConfig(new MultipartConfigElement(// // 设置文件上传配置信息
                         location.getAbsolutePath(), maxFileSize, maxRequestSize, fileSizeThreshold));
                 register.setAsyncSupported(true); // 设置可以异步返回
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }

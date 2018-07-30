@@ -15,6 +15,7 @@ import sn.mini.java.util.lang.StringUtil;
 
 /**
  * sn.mini.dao.implement.MysqlDao.java
+ * 
  * @author XChao
  */
 public class MysqlDao extends AbstractDao {

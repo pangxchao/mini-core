@@ -1,8 +1,8 @@
 package sn.mini.java.util.lang;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLConnection;
 
 public final class FileUtil {
@@ -32,15 +32,31 @@ public final class FileUtil {
         return index >= 0 ? name.substring(isDot ? index : (index + 1)) : "";
     }
 
+
+    /**
+     * 获取文件类型
+     *
+     * @param path
+     * @return
+     */
+    public static String getMiniType(String path) {
+        String contentType = URLConnection.getFileNameMap().getContentTypeFor(path);
+        return contentType == null ? "application/octet-stream" : contentType;
+    }
+
     /**
      * 获取文件类型
      *
      * @param file
      * @return
-     * @throws MalformedURLException
-     * @throws IOException
      */
     public static String getMiniType(File file) {
-        return URLConnection.getFileNameMap().getContentTypeFor(file.getAbsolutePath());
+        return getMiniType(file.getAbsolutePath());
+    }
+
+    public static void main(String[] args) throws MalformedURLException {
+        URL url = new URL("http://127.0.0.1/cloud/aa/bb.htm?ab=1");
+        System.out.println(url.getPath());
+        System.out.println(url.getQuery());
     }
 }

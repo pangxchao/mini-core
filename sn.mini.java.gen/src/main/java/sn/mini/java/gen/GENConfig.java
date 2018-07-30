@@ -9,10 +9,11 @@ package sn.mini.java.gen;
 import sn.mini.java.jdbc.IDao;
 import sn.mini.java.jdbc.Paging;
 import sn.mini.java.jdbc.implement.MysqlDao;
-import sn.mini.java.util.digest.MD5Util;
+import sn.mini.java.util.lang.DateUtil;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 
 /**
@@ -30,25 +31,27 @@ import java.sql.SQLException;
 public class GENConfig {
     // alter table knowledge_base CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_file_cloud?characterEncoding=utf-8"; // 数据库连接
-//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_common?characterEncoding=utf-8"; // 数据库连接
-//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_group?characterEncoding=utf-8"; // 数据库连接
-//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_maker?characterEncoding=utf-8"; // 数据库连接
-//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_knowledge?characterEncoding=utf-8"; // 数据库连接
-    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_users?characterEncoding=utf-8"; // 数据库连接
-//  public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_update?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_cloud?characterEncoding=utf-8"; // 数据库连接
+    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_common?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_group?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_knowledge?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_maker?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_product?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_update?characterEncoding=utf-8"; // 数据库连接
+//    public static final String DB_URL = "jdbc:mysql://192.168.1.200:3306/mengyi_users?characterEncoding=utf-8"; // 数据库连接
 
     public static final String DB_USERNAME = "root"; // 数据库用户名
     public static final String DB_PASSWORD = "Qwe123456!"; // 数据库密码
 
+    // 生成sql时，每张表获取前100条记录为初始数据
+    public static final Paging PAGING = /*new Paging(1, 0)*/ null;
     public static final String SOURCES_NAME = "src/main/java"; // java源文件目录， 一般默认为src， 也有自定义的
     public static final String PROJECT_PATH = "D:/WorkGit/sn-mini/sn.mini.java.gen"; // 项目根绝对路径
     public static final String PACKAGE_NAME = "sn.mini.kotlin.gen"; // 项目名名称
 
-    public static final Paging PAGING = new Paging(1, 100); // 生成sql时，每张表获取前100条记录为初始数据
-    public static final String TABLE_DB_NAME = "user_session"; // 数据库表名称
-    public static final String TABLE_JAVA_NAME = "UserSession"; // java实体类名称
-    public static final String DB_PREFIX_NAME = "session_"; // 表前缀名称， 如： file_id 字段名称
+    public static final String TABLE_DB_NAME = "cloud_info"; // 数据库表名称
+    public static final String TABLE_JAVA_NAME = "CloudInfo"; // java实体类名称
+    public static final String DB_PREFIX_NAME = "cloud_"; // 表前缀名称， 如： file_id 字段名称
 
 
     /**
@@ -70,7 +73,21 @@ public class GENConfig {
     public static class B extends A {
     }
 
+    static final long year_80 = 1000L * 60 * 60 * 24 * 365 * 80;
+
     public static void main(String[] args) {
-        System.out.println(MD5Util.encode("11001测试节点10er35@s7$"));
+//        System.out.println(String.format("%.2f", 111111.235d));
+//        System.out.println(MD5Util.encode("nietao52"));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,
+                calendar.get(Calendar.DAY_OF_MONTH) + 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        long time = calendar.getTime().getTime() + 1;
+        System.out.println(time);
+        System.out.println(DateUtil.format(time, "yyyy-MM-dd HH:mm:ss.SSS"));
     }
 }

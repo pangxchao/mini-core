@@ -5,26 +5,20 @@
  */
 package sn.mini.java.gen;
 
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.util.CellRangeAddress;
+import sn.mini.java.jdbc.IDao;
+import sn.mini.java.jdbc.model.DaoTable;
+import sn.mini.java.util.json.JSONArray;
+import sn.mini.java.util.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.util.CellRangeAddress;
-
-import sn.mini.java.jdbc.IDao;
-import sn.mini.java.jdbc.model.DaoTable;
-import sn.mini.java.util.json.JSONArray;
-import sn.mini.java.util.json.JSONObject;
 
 /**
  * com.cfinal.gen.GENDictionaries.java
@@ -67,11 +61,11 @@ public class GENDictionaries {
 			
 			// 设置列宽
 			for (int i = 0; i < 9; i++) {
-				sheet.setColumnWidth(i, 10000);
+				sheet.setColumnWidth(i, 3000);
 			}
-			sheet.setColumnWidth(1, 30000); // 设置第二列宽， 字段名称列
-			sheet.setColumnWidth(2, 20000); // 设置第二列宽， 字段名称列
-			sheet.setColumnWidth(4, 45000); // 设置第五列宽， 字段说明列
+			sheet.setColumnWidth(1, 6000); // 设置第二列宽， 字段名称列
+			sheet.setColumnWidth(2, 4000); // 设置第二列宽， 字段名称列
+			sheet.setColumnWidth(4, 9000); // 设置第五列宽， 字段说明列
 
 			HSSFRow row;
 			HSSFCell cell;

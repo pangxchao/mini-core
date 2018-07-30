@@ -171,8 +171,7 @@ public class GENBeanJava {
 				} else {
 					gstter_contents.add("@Column(value=\"" + columnName + "\")");
 				}
-				gstter_contents
-						.add("public void set" + gstterName + "(" + types.getName() + " " + javaPropName + ") { ");
+				gstter_contents.add("public void set" + gstterName + "(" + types.getName() + " " + javaPropName + ") { ");
 				gstter_contents.add("\tthis." + javaPropName + " = " + javaPropName + ";");
 				gstter_contents.add("} ");
 
@@ -190,9 +189,8 @@ public class GENBeanJava {
 			contents.add("\r\n");
 
 			contents.add("public static int updateById(IDao dao, " + StringUtil.join(allJavaNameAndType, ", ") + ") {");
-			contents.add("\treturn dao.update(TABLE_NAME, new String[]{" + StringUtil.join(allDbName, ", ")
-					+ "}, new String[]{" + StringUtil.join(idDbName, ", ") + "}, " + StringUtil.join(allJavaName, ", ")
-					+ ", " + StringUtil.join(idJavaName, ", ") + ");");
+			contents.add("\treturn dao.update(TABLE_NAME, new String[]{" + StringUtil.join(allDbName, ", ") + "}, new String[]{"
+					+ StringUtil.join(idDbName, ", ") + "}, " + StringUtil.join(allJavaName, ", ") + ", " + StringUtil.join(idJavaName, ", ") + ");");
 			contents.add("}");
 			contents.add("\r\n");
 
@@ -208,8 +206,7 @@ public class GENBeanJava {
 			imports.add("import sn.mini.java.jdbc.Sql;");
 			contents.add("public static " + JAVA_CLASS_NAME + " findById(IDao dao, " + //
 					StringUtil.join(idJavaNameAndType, ", ") + ") {");
-			contents.add(
-					"\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
+			contents.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
 			for (int i = 0, len = idDbName.size(); i < len; i++) {
 				contents.add("\tsql.andEq(" + idDbName.get(i) + ").params(" + idJavaName.get(i) + ");");
 			}
@@ -220,16 +217,14 @@ public class GENBeanJava {
 			// public static List<info> find(CFDB db)
 			imports.add("import java.util.List;");
 			contents.add("public static List<" + JAVA_CLASS_NAME + "> find(IDao dao) {");
-			contents.add(
-					"\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
+			contents.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
 			contents.add("\treturn dao.query(" + JAVA_CLASS_NAME + ".class, sql);");
 			contents.add("}");
 			contents.add("\r\n");
 
 			imports.add("import sn.mini.java.jdbc.Paging;");
 			contents.add("public static List<" + JAVA_CLASS_NAME + "> find(Paging paging, IDao dao){");
-			contents.add(
-					"\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
+			contents.add("\tSql sql = Sql.createSelect(TABLE_NAME, " + StringUtil.join(allDbName, ", ") + ").whereTrue();");
 			contents.add("\treturn dao.query(paging, " + JAVA_CLASS_NAME + ".class, sql);");
 			contents.add("}");
 			contents.add("\r\n");

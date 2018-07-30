@@ -15,6 +15,7 @@ import sn.mini.java.util.lang.StringUtil;
 
 /**
  * sn.mini.dao.implement.InformixDao.java
+ * 
  * @author XChao
  */
 public class InformixDao extends AbstractDao {
@@ -35,8 +36,8 @@ public class InformixDao extends AbstractDao {
 	protected String paging(Paging paging, String sql) {
 		// select skip 2 first 2 * from test_rowcols where 1=1 order by score;
 		return StringUtil.join( //
-			"select skip " + paging.getStart() + " first " + paging.getRows() + " ( ", //
-			"	", sql, "	", //
-			") ");
+				"select skip " + paging.getStart() + " first " + paging.getRows() + " ( ", //
+				"	", sql, "	", //
+				") ");
 	}
 }

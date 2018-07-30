@@ -132,16 +132,17 @@ public class HttpRequest extends UrlRequest {
             return this;
         }
 
-        public HttpRequest POST(FormData formData) throws ProtocolException {
+        @SuppressWarnings("serial")
+		public HttpRequest POST(FormData formData) throws ProtocolException {
             getHttpRequest().getHttpURLConnection().setRequestMethod("POST");
             String contentType = getHttpRequest().getHttpURLConnection().getRequestProperty("Content-Type");
             String end = "\r\n", hyphens = "--", boundary = "**********";
-            if (contentType == null) { // 判断 字符 串是否为空
+            if (contentType == null) { // 鍒ゆ柇 瀛楃 涓叉槸鍚︿负绌�
                 setRequestProperty("Content-Type", HttpRequest.FORM_URLENCODED);
                 contentType = HttpRequest.FORM_URLENCODED;
             } else {
                 contentType = contentType.toLowerCase();
-                if (FORM_URLENCODED.equals(contentType)) { // 普通方式
+                if (FORM_URLENCODED.equals(contentType)) { // 鏅�氭柟寮�
 
                 } else if (contentType.startsWith(MULTIPART_FORM_DATA)) {
                     if (MULTIPART_FORM_DATA.equals(contentType)) {
@@ -161,8 +162,9 @@ public class HttpRequest extends UrlRequest {
                         }
                     }
                 }
+                setRequestProperty("Content-Type", contentType);
             }
-            if (HttpRequest.FORM_URLENCODED.equals(contentType)) { //application/x-www-form-urlencoded 编码
+            if (HttpRequest.FORM_URLENCODED.equals(contentType)) { //application/x-www-form-urlencoded 缂栫爜
                 try (OutputStreamWriter writer = new OutputStreamWriter(getHttpRequest().getHttpURLConnection().getOutputStream())) {
                     writer.write(
                             StringUtil.join(new ArrayList<String>() {{
@@ -176,7 +178,7 @@ public class HttpRequest extends UrlRequest {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            } else if (contentType.startsWith(MULTIPART_FORM_DATA)) { // multipart/form-data 编码
+            } else if (contentType.startsWith(MULTIPART_FORM_DATA)) { // multipart/form-data 缂栫爜
                 try (DataOutputStream steam = new DataOutputStream(getHttpRequest().getHttpURLConnection().getOutputStream())) {
                     for (String name : formData.textKeySet()) {
                         for (String value : formData.getText(name)) {
@@ -230,7 +232,7 @@ public class HttpRequest extends UrlRequest {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            } else { // multipart/form-data与application/x-www-form-urlencoded 以外的方式编码
+            } else { // multipart/form-data涓巃pplication/x-www-form-urlencoded 浠ュ鐨勬柟寮忕紪鐮�
                 try (OutputStreamWriter writer = new OutputStreamWriter(getHttpRequest().getHttpURLConnection().getOutputStream())) {
                     writer.write(formData.getContentBody());
                     writer.flush();
@@ -242,7 +244,7 @@ public class HttpRequest extends UrlRequest {
         }
 
         /**
-         * GET方式处理时，无需提交参数，强制使用 application/x-www-form-urlencoded  编码方式
+         * GET鏂瑰紡澶勭悊鏃讹紝鏃犻渶鎻愪氦鍙傛暟锛屽己鍒朵娇鐢� application/x-www-form-urlencoded  缂栫爜鏂瑰紡
          *
          * @return
          * @throws ProtocolException

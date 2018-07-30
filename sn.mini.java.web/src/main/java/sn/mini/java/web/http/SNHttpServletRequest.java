@@ -6,34 +6,15 @@
  */
 package sn.mini.java.web.http;
 
+import sn.mini.java.util.lang.StringUtil;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
-
-import sn.mini.java.util.lang.StringUtil;
+import java.util.*;
 
 /**
  * 重新包装HttpServletRequest对象的接口方法
@@ -409,28 +390,50 @@ public class SNHttpServletRequest implements HttpServletRequest {
     public Part getPart(String arg0) throws IOException, ServletException {
         try {
             return this.httpServletRequest.getPart(arg0);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
         return null;
     }
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
+        List<Part> partList = new ArrayList<>();
         try {
-            Optional.ofNullable(this.httpServletRequest.getParts()).filter(v -> v != null && v.size() > 0);
-        } catch (Exception e) { }
-        return new ArrayList<>();
+            Collection<Part> collections = this.httpServletRequest.getParts();
+            if (collections != null) {
+                for (Part part : collections) {
+                    if (part != null && part.getSize() > 0) {
+                        partList.add(part);
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return partList;
     }
 
     public Part[] getParts(String arg0) throws IOException, ServletException {
-        return Optional.ofNullable(this.getParts()).orElse(new ArrayList<>()).stream().filter(v -> {
-            return v != null && v.getSize() > 0 && v.getName() != null && v.getName().equals(arg0);
-        }).toArray(v -> new Part[v]);
+        List<Part> partList = new ArrayList<>();
+        try {
+            Collection<Part> collections = this.httpServletRequest.getParts();
+            if (collections != null) {
+                for (Part part : collections) {
+                    if (part != null && part.getSize() > 0 && StringUtil.isNotBlank(arg0) //
+                            && arg0.equals(part.getName())) {
+                        partList.add(part);
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return partList.toArray(new Part[0]);
+
     }
 
     public String getBodyString() throws IOException {
-        String line = null;
-        List<String> result = new ArrayList<String>();
-        try (BufferedReader reader = this.getReader();) {
+        String line;
+        List<String> result = new ArrayList<>();
+        try (BufferedReader reader = this.getReader()) {
             while ((line = reader.readLine()) != null) {
                 result.add(line);
             }
