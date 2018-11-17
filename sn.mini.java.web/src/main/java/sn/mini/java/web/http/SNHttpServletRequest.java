@@ -1,9 +1,3 @@
-/**
- * Created the sn.mini.java.web.http.SNHttpServletRequest.java
- *
- * @created 2017年10月25日 下午4:57:41
- * @version 1.0.0
- */
 package sn.mini.java.web.http;
 
 import sn.mini.java.util.lang.StringUtil;
@@ -31,7 +25,7 @@ import java.util.*;
  * <li></li>
  * <li>6: post 方式提交, 设置enctype属性 enctype="application/x-www-form-urlencoded" 同方式 5</li>
  * <li>7: post 方式提交, 设置enctype属性 enctype="multipart/form-data" 可以获取参数,也可以获取文件参数后台打印 Content-Type=multipart/form-data;
- * boundary=----WebKitFormBoundary0YXRJFPyA1aqN0t1,isMultipartContent=true (需要注意的是: cFinal框架在使用的过程中,如果配置文件上传的临时目录找不到时,
+ * boundary=----WebKitFormBoundary0,isMultipartContent=true (需要注意的是: cFinal框架在使用的过程中,如果配置文件上传的临时目录找不到时,
  * 这种方式无法获取数据)</li>
  * <li>8: post 方式提交 , 设置enctype属性 enctype="text/plain" 无法获取参数 false</li>
  * </ul>
@@ -42,354 +36,355 @@ public class SNHttpServletRequest implements HttpServletRequest {
     private HttpServletRequest httpServletRequest;
 
     public SNHttpServletRequest(HttpServletRequest request) {
-        this.httpServletRequest = request; // 初始化 httpServletRequest 值
+        httpServletRequest = request; // 初始化 httpServletRequest 值
     }
 
     protected final HttpServletRequest getRequest() {
-        return this.httpServletRequest;
+        return httpServletRequest;
     }
 
     @Override
     public AsyncContext getAsyncContext() {
-        return this.httpServletRequest.getAsyncContext();
+        return httpServletRequest.getAsyncContext();
     }
 
     @Override
     public Object getAttribute(String arg0) {
-        return this.httpServletRequest.getAttribute(arg0);
+        return httpServletRequest.getAttribute(arg0);
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        return this.httpServletRequest.getAttributeNames();
+        return httpServletRequest.getAttributeNames();
     }
 
     @Override
     public String getCharacterEncoding() {
-        return this.httpServletRequest.getCharacterEncoding();
+        return httpServletRequest.getCharacterEncoding();
     }
 
     @Override
     public int getContentLength() {
-        return this.httpServletRequest.getContentLength();
+        return httpServletRequest.getContentLength();
     }
 
     @Override
     public String getContentType() {
-        return this.httpServletRequest.getContentType();
+        return httpServletRequest.getContentType();
     }
 
     @Override
     public DispatcherType getDispatcherType() {
-        return this.httpServletRequest.getDispatcherType();
+        return httpServletRequest.getDispatcherType();
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return this.httpServletRequest.getInputStream();
+        return httpServletRequest.getInputStream();
     }
 
     @Override
     public String getLocalAddr() {
-        return this.httpServletRequest.getLocalAddr();
+        return httpServletRequest.getLocalAddr();
     }
 
     @Override
     public String getLocalName() {
-        return this.httpServletRequest.getLocalName();
+        return httpServletRequest.getLocalName();
     }
 
     @Override
     public int getLocalPort() {
-        return this.httpServletRequest.getLocalPort();
+        return httpServletRequest.getLocalPort();
     }
 
     @Override
     public Locale getLocale() {
-        return this.httpServletRequest.getLocale();
+        return httpServletRequest.getLocale();
     }
 
     @Override
     public Enumeration<Locale> getLocales() {
-        return this.httpServletRequest.getLocales();
+        return httpServletRequest.getLocales();
     }
 
     @Override
     public String getParameter(String arg0) {
-        return this.httpServletRequest.getParameter(arg0);
+        return httpServletRequest.getParameter(arg0);
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return this.httpServletRequest.getParameterMap();
+        return httpServletRequest.getParameterMap();
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return this.httpServletRequest.getParameterNames();
+        return httpServletRequest.getParameterNames();
     }
 
     @Override
     public String[] getParameterValues(String arg0) {
-        return this.httpServletRequest.getParameterValues(arg0);
+        return httpServletRequest.getParameterValues(arg0);
     }
 
     @Override
     public String getProtocol() {
-        return this.httpServletRequest.getProtocol();
+        return httpServletRequest.getProtocol();
     }
 
     @Override
     public BufferedReader getReader() throws IOException {
-        return this.httpServletRequest.getReader();
+        return httpServletRequest.getReader();
     }
 
     @Override
     @Deprecated
     public String getRealPath(String arg0) {
-        return this.httpServletRequest.getRealPath(arg0);
+        return httpServletRequest.getRealPath(arg0);
     }
 
     @Override
     public String getRemoteAddr() {
-        return this.httpServletRequest.getRemoteAddr();
+        return httpServletRequest.getRemoteAddr();
     }
 
     @Override
     public String getRemoteHost() {
-        return this.httpServletRequest.getRemoteHost();
+        return httpServletRequest.getRemoteHost();
     }
 
     @Override
     public int getRemotePort() {
-        return this.httpServletRequest.getRemotePort();
+        return httpServletRequest.getRemotePort();
     }
 
     @Override
     public RequestDispatcher getRequestDispatcher(String arg0) {
-        return this.httpServletRequest.getRequestDispatcher(arg0);
+        return httpServletRequest.getRequestDispatcher(arg0);
     }
 
     @Override
     public String getScheme() {
-        return this.httpServletRequest.getScheme();
+        return httpServletRequest.getScheme();
     }
 
     @Override
     public String getServerName() {
-        return this.httpServletRequest.getServerName();
+        return httpServletRequest.getServerName();
     }
 
     @Override
     public int getServerPort() {
-        return this.httpServletRequest.getServerPort();
+        return httpServletRequest.getServerPort();
     }
 
     @Override
     public ServletContext getServletContext() {
-        return this.httpServletRequest.getServletContext();
+        return httpServletRequest.getServletContext();
     }
 
     @Override
     public boolean isAsyncStarted() {
-        return this.httpServletRequest.isAsyncStarted();
+        return httpServletRequest.isAsyncStarted();
     }
 
     @Override
     public boolean isAsyncSupported() {
-        return this.httpServletRequest.isAsyncSupported();
+        return httpServletRequest.isAsyncSupported();
     }
 
     @Override
     public boolean isSecure() {
-        return this.httpServletRequest.isSecure();
+        return httpServletRequest.isSecure();
     }
 
     @Override
     public void removeAttribute(String arg0) {
-        this.httpServletRequest.removeAttribute(arg0);
+        httpServletRequest.removeAttribute(arg0);
     }
 
     @Override
     public void setAttribute(String arg0, Object arg1) {
-        this.httpServletRequest.setAttribute(arg0, arg1);
+        httpServletRequest.setAttribute(arg0, arg1);
     }
 
     @Override
     public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException {
-        this.httpServletRequest.setCharacterEncoding(arg0);
+        httpServletRequest.setCharacterEncoding(arg0);
     }
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        return this.httpServletRequest.startAsync();
+        return httpServletRequest.startAsync();
     }
 
     @Override
     public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1) throws IllegalStateException {
-        return this.httpServletRequest.startAsync(arg0, arg1);
+        return httpServletRequest.startAsync(arg0, arg1);
     }
 
     @Override
     public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
-        return this.httpServletRequest.authenticate(arg0);
+        return httpServletRequest.authenticate(arg0);
     }
 
     @Override
     public String getAuthType() {
-        return this.httpServletRequest.getAuthType();
+        return httpServletRequest.getAuthType();
     }
 
     @Override
     public String getContextPath() {
-        return this.httpServletRequest.getContentType();
+        return httpServletRequest.getContentType();
     }
 
     @Override
     public Cookie[] getCookies() {
-        return this.httpServletRequest.getCookies();
+        return httpServletRequest.getCookies();
     }
 
     @Override
     public long getDateHeader(String arg0) {
-        return this.httpServletRequest.getDateHeader(arg0);
+        return httpServletRequest.getDateHeader(arg0);
     }
 
     @Override
     public String getHeader(String arg0) {
-        return this.httpServletRequest.getHeader(arg0);
+        return httpServletRequest.getHeader(arg0);
     }
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        return this.httpServletRequest.getHeaderNames();
+        return httpServletRequest.getHeaderNames();
     }
 
     @Override
     public Enumeration<String> getHeaders(String arg0) {
-        return this.httpServletRequest.getHeaders(arg0);
+        return httpServletRequest.getHeaders(arg0);
     }
 
     @Override
     public int getIntHeader(String arg0) {
-        return this.httpServletRequest.getIntHeader(arg0);
+        return httpServletRequest.getIntHeader(arg0);
     }
 
     @Override
     public String getMethod() {
-        return this.httpServletRequest.getMethod();
+        return httpServletRequest.getMethod();
     }
 
     @Override
     public String getPathInfo() {
-        return this.httpServletRequest.getPathInfo();
+        return httpServletRequest.getPathInfo();
     }
 
     @Override
     public String getPathTranslated() {
-        return this.httpServletRequest.getPathTranslated();
+        return httpServletRequest.getPathTranslated();
     }
 
     @Override
     public String getQueryString() {
-        return this.httpServletRequest.getQueryString();
+        return httpServletRequest.getQueryString();
     }
 
     @Override
     public String getRemoteUser() {
-        return this.httpServletRequest.getRemoteUser();
+        return httpServletRequest.getRemoteUser();
     }
 
     @Override
     public String getRequestURI() {
-        return this.httpServletRequest.getRequestURI();
+        return httpServletRequest.getRequestURI();
     }
 
     @Override
     public StringBuffer getRequestURL() {
-        return this.httpServletRequest.getRequestURL();
+        return httpServletRequest.getRequestURL();
     }
 
     @Override
     public String getRequestedSessionId() {
-        return this.httpServletRequest.getRequestedSessionId();
+        return httpServletRequest.getRequestedSessionId();
     }
 
     @Override
     public String getServletPath() {
-        return this.httpServletRequest.getServletPath();
+        return httpServletRequest.getServletPath();
     }
 
     @Override
     public HttpSession getSession() {
-        return this.httpServletRequest.getSession();
+        return httpServletRequest.getSession();
     }
 
     @Override
     public HttpSession getSession(boolean arg0) {
-        return this.httpServletRequest.getSession(arg0);
+        return httpServletRequest.getSession(arg0);
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return this.httpServletRequest.getUserPrincipal();
+        return httpServletRequest.getUserPrincipal();
     }
 
     @Override
     public boolean isRequestedSessionIdFromCookie() {
-        return this.httpServletRequest.isRequestedSessionIdFromCookie();
+        return httpServletRequest.isRequestedSessionIdFromCookie();
     }
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-        return this.httpServletRequest.isRequestedSessionIdFromURL();
+        return httpServletRequest.isRequestedSessionIdFromURL();
     }
 
     @Override
     @Deprecated
     public boolean isRequestedSessionIdFromUrl() {
-        return this.httpServletRequest.isRequestedSessionIdFromUrl();
+        return httpServletRequest.isRequestedSessionIdFromUrl();
     }
 
     @Override
     public boolean isRequestedSessionIdValid() {
-        return this.httpServletRequest.isRequestedSessionIdValid();
+        return httpServletRequest.isRequestedSessionIdValid();
     }
 
     @Override
     public boolean isUserInRole(String arg0) {
-        return this.httpServletRequest.isUserInRole(arg0);
+        return httpServletRequest.isUserInRole(arg0);
     }
 
     @Override
     public void login(String arg0, String arg1) throws ServletException {
-        this.httpServletRequest.login(arg0, arg1);
+        httpServletRequest.login(arg0, arg1);
     }
 
     @Override
     public void logout() throws ServletException {
-        this.httpServletRequest.logout();
+        httpServletRequest.logout();
     }
 
     @Override
     public long getContentLengthLong() {
-        return this.httpServletRequest.getContentLengthLong();
+        return httpServletRequest.getContentLengthLong();
     }
 
     @Override
     public String changeSessionId() {
-        return this.httpServletRequest.changeSessionId();
+        return httpServletRequest.changeSessionId();
     }
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> arg0) throws IOException, ServletException {
-        return this.httpServletRequest.upgrade(arg0);
+        return httpServletRequest.upgrade(arg0);
     }
 
     @Override
     public Part getPart(String arg0) throws IOException, ServletException {
         try {
-            return this.httpServletRequest.getPart(arg0);
+            Part part = httpServletRequest.getPart(arg0);
+            return part != null && part.getSize() > 0 ? part : null;
         } catch (Exception e) {
         }
         return null;
@@ -399,7 +394,7 @@ public class SNHttpServletRequest implements HttpServletRequest {
     public Collection<Part> getParts() throws IOException, ServletException {
         List<Part> partList = new ArrayList<>();
         try {
-            Collection<Part> collections = this.httpServletRequest.getParts();
+            Collection<Part> collections = httpServletRequest.getParts();
             if (collections != null) {
                 for (Part part : collections) {
                     if (part != null && part.getSize() > 0) {
@@ -415,7 +410,7 @@ public class SNHttpServletRequest implements HttpServletRequest {
     public Part[] getParts(String arg0) throws IOException, ServletException {
         List<Part> partList = new ArrayList<>();
         try {
-            Collection<Part> collections = this.httpServletRequest.getParts();
+            Collection<Part> collections = httpServletRequest.getParts();
             if (collections != null) {
                 for (Part part : collections) {
                     if (part != null && part.getSize() > 0 && StringUtil.isNotBlank(arg0) //
@@ -433,7 +428,7 @@ public class SNHttpServletRequest implements HttpServletRequest {
     public String getBodyString() throws IOException {
         String line;
         List<String> result = new ArrayList<>();
-        try (BufferedReader reader = this.getReader()) {
+        try (BufferedReader reader = getReader()) {
             while ((line = reader.readLine()) != null) {
                 result.add(line);
             }

@@ -43,8 +43,8 @@ public final class DaoTable {
 			BeanInfo beanInfo = Introspector.getBeanInfo((this.clazz = clazz));
 
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-				DaoColumn field = new DaoColumn(descriptor, Optional.ofNullable(descriptor.getWriteMethod())//
-						.map(v -> v.getAnnotation(Column.class)).orElse(null));
+				DaoColumn field = new DaoColumn(descriptor,
+						Optional.ofNullable(descriptor.getWriteMethod()).map(v -> v.getAnnotation(Column.class)).orElse(null));
 				if (this.fields.get(field.getName()) != null || this.fields.get(field.getDbName()) != null) {
 					throw new RuntimeException("The name and the dbName cannot be repeated with other fields.");
 				}

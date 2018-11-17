@@ -11,6 +11,7 @@ import java.util.Date;
 
 /**
  * 自定义日志实现
+ * 
  * @author XChao
  */
 public class SNLog implements ILog {
@@ -24,6 +25,7 @@ public class SNLog implements ILog {
 
 	/**
 	 * 设置输入日志级别
+	 * 
 	 * @param level
 	 */
 	public static void setLevel(Level level) {
@@ -123,16 +125,14 @@ public class SNLog implements ILog {
 	}
 
 	private void log(Level level, String message) {
-		if((getLevels() & level.getValue()) == level.getValue()) {
-			System.out.println(String.format("%s - %s [%s] \r\n%s", format.format(//
-				new Date()), this.getClass().getName(), level.name(), message));
+		if ((getLevels() & level.getValue()) == level.getValue()) {
+			System.out.println(String.format("%s - %s [%s] \r\n%s", format.format(new Date()), this.getClass().getName(), level.name(), message));
 		}
 	}
 
 	private void log(Level level, String message, Throwable throwable) {
-		if((getLevels() & level.getValue()) == level.getValue()) {
-			System.out.println(String.format("%s - %s [%s] \r\n%s", format.format(//
-				new Date()), this.getClass().getName(), level.name(), message));
+		if ((getLevels() & level.getValue()) == level.getValue()) {
+			System.out.println(String.format("%s - %s [%s] \r\n%s", format.format(new Date()), this.getClass().getName(), level.name(), message));
 			throwable.printStackTrace(System.out);
 		}
 	}

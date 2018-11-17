@@ -106,19 +106,15 @@ public class SNConfig {
 		// 设置系统编码
 		optional.map(v -> WebUtil.getParameter(v, "UTF-8")).ifPresent(v -> setEncoding(v));
 		// 设置文件上传缓冲区大小
-		optional.map(v -> WebUtil.getParameter(v, "file.size.threshold"))
-			.ifPresent((v) -> setFileSizeThreshold(TypeUtil.castToIntValue(v)));
+		optional.map(v -> WebUtil.getParameter(v, "file.size.threshold")) .ifPresent((v) -> setFileSizeThreshold(TypeUtil.castToIntValue(v)));
 		// 设置文件上传所有文件大小限制
-		optional.map(v -> WebUtil.getParameter(v, "max.request.size"))
-			.ifPresent((v) -> setMaxRequestSize(TypeUtil.castToLongValue(v)));
+		optional.map(v -> WebUtil.getParameter(v, "max.request.size")) .ifPresent((v) -> setMaxRequestSize(TypeUtil.castToLongValue(v)));
 		// 设置文件上传单个文件大小限制
-		optional.map(v -> WebUtil.getParameter(v, "max.file.size"))
-			.ifPresent((v) -> setMaxFileSize(TypeUtil.castToLongValue(v)));
+		optional.map(v -> WebUtil.getParameter(v, "max.file.size")) .ifPresent((v) -> setMaxFileSize(TypeUtil.castToLongValue(v)));
 		// 设置文件上传临时目录
 		optional.map(v -> WebUtil.getParameter(v, "multipart.location")).ifPresent((v) -> setLocation(v));
 		// 设置主键生成器的机器唯一码
-		optional.map(v -> WebUtil.getParameter(v, "worker-id"))
-			.ifPresent((v) -> PKGenerator.setWorkerid(TypeUtil.castToLongValue(v)));
+		optional.map(v -> WebUtil.getParameter(v, "worker-id")) .ifPresent((v) -> PKGenerator.setWorkerid(TypeUtil.castToLongValue(v)));
 		// 设置数据源
 		if(StringUtil.isNotBlank(WebUtil.getParameter(context, "dao-names"))) {
 			InitialContext initialContext = new InitialContext();

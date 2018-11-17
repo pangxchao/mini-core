@@ -12,27 +12,29 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
+import sn.mini.java.util.lang.ClassUtil;
 import sn.mini.java.util.logger.Log;
 import sn.mini.java.web.http.SNHttpServletRequest;
 
 /**
  * sn.mini.java.web.editor.BeanEditor.java
+ * 
  * @author XChao
  */
 public class BeanEditor implements IEditor {
 
 	@Override
 	public Object value(String paramName, Class<?> paramType, SNHttpServletRequest request,
-		HttpServletResponse response) throws Exception {
+			HttpServletResponse response) throws Exception {
 		try {
 			BeanInfo beanInfo = Introspector.getBeanInfo(paramType);
-			Object instence = paramType.newInstance();
+			Object instence = ClassUtil.newInstance(paramType);
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-				//Field field = paramType.getDeclaredField(descriptor.getName());
+				// Field field = paramType.getDeclaredField(descriptor.getName());
 				Optional.ofNullable(descriptor.getWriteMethod()).ifPresent(v -> {
 					try {
 						v.invoke(instence, EditorBind.getEditor(descriptor.getPropertyType())
-							.value(descriptor.getName(), descriptor.getPropertyType(), request, response));
+								.value(descriptor.getName(), descriptor.getPropertyType(), request, response));
 					} catch (Exception e) {
 						Log.warn("Parameter instantiation failure: " + descriptor.getName() + ". ");
 					}

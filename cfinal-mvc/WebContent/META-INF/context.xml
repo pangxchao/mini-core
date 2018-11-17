@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Context>
-<Context reloadable="false">
-	<Resource name="jdbc/xcc" auth="Container" type="javax.sql.DataSource" maxTotal="10" maxIdle="3"
-		maxWaitMillis="10000" username="user" password="123456" driverClassName="com.mysql.jdbc.Driver" testWhileIdle="true"
-		validationQuery="select 1" url="jdbc:mysql://ip:port/solr?characterEncoding=utf-8" />
-</Context>

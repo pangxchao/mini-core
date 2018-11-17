@@ -22,8 +22,12 @@ import java.io.IOException;
 public final class DefaultHttpServlet extends HttpServlet {
     private static final long serialVersionUID = -6021307577546368668L;
 
+    private SNHttpServletRequest getSNHttpServletRequest(HttpServletRequest req) {
+        return (req instanceof SNHttpServletRequest) ? (SNHttpServletRequest) req : new SNHttpServletRequest(req);
+    }
+
     private ActionProxy getActionProxy(HttpServletRequest req, HttpServletResponse response) throws IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy proxy = SNInitializer.getActionProxy(request.getRequestURI());
         if (proxy == null) {
             for (String name : SNInitializer.getActionProxys().keySet()) {
@@ -40,7 +44,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doDelete(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found Page.");
@@ -51,7 +55,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy != null) {
             actionProxy.getController().doDeleteBefore(request, response);
@@ -60,7 +64,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doHead(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy != null) {
             actionProxy.getController().doDeleteBefore(request, response);
@@ -69,7 +73,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doOptions(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy != null) {
             actionProxy.getController().doDeleteBefore(request, response);
@@ -78,7 +82,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy != null) {
             actionProxy.getController().doDeleteBefore(request, response);
@@ -87,7 +91,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doPut(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy != null) {
             actionProxy.getController().doDeleteBefore(request, response);
@@ -96,7 +100,7 @@ public final class DefaultHttpServlet extends HttpServlet {
     }
 
     protected void doTrace(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-        SNHttpServletRequest request = new SNHttpServletRequest(req);
+        SNHttpServletRequest request = this.getSNHttpServletRequest(req);
         ActionProxy actionProxy = getActionProxy(req, response);
         if (actionProxy != null) {
             actionProxy.getController().doDeleteBefore(request, response);

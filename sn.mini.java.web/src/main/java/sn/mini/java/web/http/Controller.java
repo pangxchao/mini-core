@@ -87,7 +87,7 @@ public abstract class Controller {
                     model.setError(500).setMessage("Not login error.");
                     return null;
                 }
-                String loginUrl, backUrl, queryString = request.getQueryString(), backUrlEncode;
+                String loginUrl, queryString = request.getQueryString(), backUrlEncode;
                 queryString = StringUtil.defaultIfEmpty(queryString, "");
                 if (StringUtil.isNotBlank(loginUrl = SNInitializer.getLoginUrl())) {
                     backUrlEncode = StringUtil.urlEncode(StringUtil.join(WebUtil.getDoMain(request), //
@@ -135,7 +135,8 @@ public abstract class Controller {
                         .getType()).value(proxy.getParameter(i).getName(),
                         proxy.getParameter(i).getType(), request, response));
             }
-            return new ActionInvoke(proxy, request, response, model).invoke();
+            ActionInvoke invoke = new ActionInvoke(proxy, request, response, model);
+            return invoke.invoke();
         } finally {
             for (Entry<String, IDao> entry : DaoManager.getCurrentDao().entrySet()) {
                 try (IDao dao = entry.getValue()) {
