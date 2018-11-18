@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>知识分享</title>
+<link type="text/css" rel="stylesheet" href="resources/layui/css/layui.css" />
+<link type="text/css" rel="stylesheet" href="resources/mini-ui/mini-ui.css" />
+<link rel="stylesheet" type="text/css" href="resources/style.css" />
+<script type="text/javascript" src="resources/layui/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="resources/layui/layui.all.js"></script>
+<script type="text/javascript" src="resources/mini-ui/mini-ui.js"></script>
+</head>
+<body class="body">
+<div class="app-title">
+	<img class="icon" src="resources/images/mengyi.jpg" />
+	<span class="text">在线学习也要有个性
+		<br/>我只要我的知识圈</span>
+	<a href="#" class="open-btn">打开</a>
+</div>
+<p class="k-title">如何通过录制功能给课件进行配音</p>
+<p class="k-title-sub">1月2日 早上10:20 刘强</p>
+<p class="k-title-sub">[分类] 微课</p>
+<div class="k-video">
+	<img src="resources/images/mengyi.jpg" class="img" />
+	<div class="btns">
+		<span class="play icon-play"></span>
+		<span class="p-time">00:00</span>
+		<span class="a-time">00:00</span>
+		<span class="full icon-full"></span>
+		<span class="seek-bar"></span>
+		<span class="seek-bar-t"></span>
+	</div>
+</div>
+<div class="k-audio">
+	<span class="play icon-play"></span>
+	<span class="p-time">00:00</span>
+	<span class="a-time">00:00</span>
+	<span class="seek-bar"></span>
+	<span class="seek-bar-t"></span>
+</div>
+<div class="k-text">
+	如何通过录制功能给课件进行配音，如何通过录制功能给课件
+	<color style="color:red;">进行配音</color>， 如何通过录制功能给课件进行配音，如何通过录制功能给课件进行配音，如何通过录制功能给课件进行配音，如何通过录制功能给课件进行配音，如何通过录制功能给课件进行配音。
+</div>
+<div class="k-image">
+	<img src="resources/images/mengyi.jpg" class="c" />
+</div>
+
+<div class="k-file">
+	<span class="icon icon_word"></span>
+	<span class="name"> 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1</span>
+</div>
+
+<div class="k-file">
+	<span class="icon icon_image"></span>
+	<span class="name"> 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1</span>
+</div>
+
+<div class="k-file">
+	<span class="icon icon_image"></span>
+	<span class="name"> 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1 操作指南教程附件1</span>
+</div>
+
+<div class="k-file k-exercise">
+	<span class="icon icon_exercise"></span>
+	<span class="name">习题（共5道）</span>
+	<span class="redo icon_redo">重做</span>
+</div>
+
+<span class="open-btn-bottom">打开APP阅读</span>
+<script type="text/javascript">
+	document.addEventListener("click", function() {
+		var u = navigator.userAgent;
+		var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+		var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+		if(isAndroid) {
+			window.location.href = "openwjtr://com.tyrbl.wjtr"; /***打开app的协议，有安卓同事提供***/
+			window.setTimeout(function() {
+				window.location.href = "http://www.wjtr.com/download/index.html"; /***打开app的协议，有安卓同事提供***/
+			}, 2000);
+		}
+
+		if(isiOS) {
+			var ifr = document.createElement("iframe");
+			ifr.src = "openwjtr://com.tyrbl.wjtr"; /***打开app的协议，有ios同事提供***/
+			ifr.style.display = "none";
+			document.body.appendChild(ifr);
+			window.setTimeout(function() {
+				document.body.removeChild(ifr);
+				window.location.href = "https://itunes.apple.com/cn/app/id1413583220?mt=8"; /***下载app的地址***/
+			}, 2000)
+		}
+	}, false)
+</script>
+</body>
+</html>

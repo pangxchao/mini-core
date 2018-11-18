@@ -1,0 +1,348 @@
+.body {
+    background: #FFFFFF;
+    font-size: 14px;
+}
+
+.app-title {
+    position: relative;
+    background: #EBEBEB;
+    padding: 0 16px;
+    height: 64px;
+}
+
+.app-title img.icon {
+    position: absolute;
+    height: 44px;
+    width: 44px;
+    top: 10px;
+}
+
+.app-title span.text {
+    display: inline-block;
+    padding-right: 74px;
+    padding-left: 54px;
+    line-height: 22px;
+    overflow: hidden;
+    margin-top: 10px;
+    font-size: 14px;
+    height: 44px;
+    width: 100%;
+}
+
+.app-title a.open-btn {
+    display: inline-block;
+    background: #FF0000;
+    border-radius: 5px;
+    text-align: center;
+    position: absolute;
+    line-height: 28px;
+    font-size: 14px;
+    height: 28px;
+    color: #FFF;
+    width: 64px;
+    right: 16px;
+    top: 18px;
+}
+
+.k-title {
+    padding: 0 16px;
+    line-height: 44px;
+    margin-top: 20px;
+    font-size: 28px;
+    color: #333;
+}
+
+.k-title-sub {
+    padding: 0 16px 0 16px;
+    line-height: 16px;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #999;
+}
+
+.k-video {
+    line-height: 100%;
+    position: relative;
+    min-height: 50px;
+    overflow: hidden;
+    margin-top: 20px;
+    padding: 0 16px;
+    width: 100%;
+}
+
+.k-video .img {
+    border: 1px solid #dfdfdf;
+    background: #FFF;
+    display: block;
+    max-width: 100%;
+    min-width: 100%;
+    width: 100%;
+}
+
+.k-video .btns {
+    background-color: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    height: 56px;
+    right: 16px;
+    left: 16px;
+    bottom: 0;
+}
+
+.k-video .btns .play {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    height: 56px;
+    color: #FFF;
+    width: 50px;
+    left: 0;
+}
+
+.k-video .btns .play:before {
+    font-size: 28px;
+}
+
+.k-video .btns .p-time {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    font-size: 14px;
+    height: 56px;
+    color: #FFF;
+    width: 50px;
+    left: 50px;
+}
+
+.k-video .btns .a-time {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    font-size: 14px;
+    height: 56px;
+    color: #FFF;
+    width: 50px;
+    right: 50px;
+}
+
+.k-video .btns .full {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    height: 56px;
+    color: #FFF;
+    width: 50px;
+    right: 0;
+}
+
+.k-video .btns .full:before {
+    font-size: 28px;
+}
+
+.k-video .btns .seek-bar {
+    position: absolute;
+    border-radius: 1px;
+    background: #FFF;
+    opacity: 0.4;
+    right: 100px;
+    height: 3px;
+    left: 100px;
+    top: 26px;
+}
+
+.k-video .btns .seek-bar-t {
+    position: absolute;
+    border-radius: 15px;
+    background: #FFF;
+    height: 30px;
+    width: 30px;
+    left: 100px;
+    top: 13px;
+}
+
+.k-audio {
+    margin: 20px 16px 0 16px;
+    background: #EBEBEB;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 56px;
+}
+
+.k-audio .play {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    height: 56px;
+    color: #666;
+    width: 50px;
+    left: 0;
+}
+
+.k-audio .play:before {
+    font-size: 28px;
+}
+
+.k-audio .p-time {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    font-size: 14px;
+    height: 56px;
+    color: #666;
+    width: 50px;
+    left: 50px;
+}
+
+.k-audio .a-time {
+    position: absolute;
+    text-align: center;
+    line-height: 56px;
+    font-size: 14px;
+    height: 56px;
+    color: #666;
+    width: 50px;
+    right: 0;
+}
+
+.k-audio .seek-bar {
+    background: #318AEE;
+    position: absolute;
+    border-radius: 1px;
+    opacity: 0.4;
+    right: 50px;
+    height: 3px;
+    left: 100px;
+    top: 26px;
+}
+
+.k-audio .seek-bar-t {
+    position: absolute;
+    border-radius: 15px;
+    background: #999;
+    height: 30px;
+    width: 30px;
+    left: 100px;
+    top: 13px;
+}
+
+.k-text {
+    line-height: 28px;
+    margin-top: 20px;
+    padding: 0 16px;
+    font-size: 18px;
+    color: #333;
+}
+
+.k-image {
+	position: relative;
+    line-height: 100%;
+    min-height: 50px;
+    margin-top: 20px;
+    overflow: hidden;
+    padding: 0 16px;
+    width: 100%;
+}
+
+.k-image .c {
+    border: 1px solid #dfdfdf;
+    background: #FFF;
+    display: block;
+    max-width: 100%;
+    min-width: 100%;
+    width: 100%;
+}
+
+.k-file {
+    position: relative;
+    margin-top: 20px;
+    padding: 0 16px;
+    width: 100%;
+}
+
+.k-file .icon {
+    position: absolute;
+    line-height: 30px;
+    height: 30px;
+    width: 30px;
+    color: #999;
+    left: 16px;
+    top: 0;
+}
+
+.k-file .icon:before {
+    font-size: 28px;
+}
+
+.k-file .icon_word,
+.k-file .icon_other {
+    color: #439BF1;
+}
+
+.k-file .icon_image,
+.k-file .icon_pdf {
+    color: #FF6A70;
+}
+
+.k-file .icon_video {
+    color: #798FF7;
+}
+
+.k-file .icon_audio {
+    color: #00C0C0;
+}
+
+.k-file .name {
+    line-height: 30px;
+    margin-left: 40px;
+    font-size: 18px;
+    color: #007DFB;
+    display: block;
+}
+
+.k-exercise .name {
+    margin-right: 76px;
+}
+
+.k-exercise .icon_exercise:before {
+    color: #69C134;
+}
+
+.k-exercise .redo {
+    position: absolute;
+    line-height: 30px;
+    font-size: 18px;
+    color: #007DFB;
+    right: 16px;
+    top: 0;
+}
+
+.k-exercise .redo:before {
+    padding-right: 10px;
+    line-height: 30px;
+    font-size: 20px;
+    height: 30px;
+    width: 30px;
+    color: #333;
+}
+
+.open-btn-bottom {
+    background: #E64240;
+    border-radius: 5px;
+    text-align: center;
+    margin: 20px 16px;
+    line-height: 44px;
+    font-size: 18px;
+    display: block;
+    height: 44px;
+    color: #FFF;
+}
+
+.bg-image {
+    position: absolute;
+    margin-left: -10px;
+    margin-top: -10px;
+    height: 20px;
+    width: 20px;
+    left: 50%;
+    top: 50%;
+}
