@@ -40,8 +40,8 @@ public class PKGenerator {
 		return ((generate & 0xFFFFFFFFFFC00000L) >> 22) + BASE_TIME;
 	}
 
-	public static void setWorkerid(long workerid) {
-		INSTANCE.workerId = workerid;
+	public static void setWorkerId(long workerId) {
+		INSTANCE.workerId = workerId;
 	}
 
 	/**

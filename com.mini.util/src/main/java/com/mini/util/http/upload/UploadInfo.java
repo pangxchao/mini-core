@@ -4,8 +4,15 @@ import com.mini.util.PKGenerator;
 import com.mini.util.http.Converter;
 import com.mini.util.http.builder.PartBuilder;
 import com.mini.util.http.call.HttpCall;
+import com.mini.util.lang.FileUtil;
 import com.mini.util.lang.Function;
 import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,11 +24,13 @@ public class UploadInfo<T> {
     public static final int STATUS_FINISH = 3; // 上传完成
     public static final int STATUS_FAIL = 4; // 上传失败
 
-    protected int status;
+    protected File file; // 需要上传的文件
+    protected int status; // 上传状态
+    protected String field; // 上传文件的键名
     protected final long id; // 唯一标题
     protected long sliceSize; // 分片大小
     private boolean callPause; // 是否调用过暂停
-    protected final File file; // 需要上传的文件
+    protected RequestBody body; //文件Body
     protected HttpCall<T> call; // 调用器
     protected long totalLength; // 文件总大小
     protected long uploadLength; //  已上传大小
@@ -35,11 +44,12 @@ public class UploadInfo<T> {
     protected Function.F3<Long, Call, IOException> onFail; // 请求失败时的回调
     protected Function.F4<PartBuilder, Long, Long, T> handler; // 单片上传完成时的回调处理
 
-    public UploadInfo(PartBuilder builder, File file, Class<T> clazz) {
+    public UploadInfo(PartBuilder builder, String field, File file, Class<T> clazz) {
         totalLength = file.length();
         id = PKGenerator.key();
         this.builder = builder;
         this.clazz = clazz;
+        this.field = field;
         this.file = file;
     }
 
@@ -93,6 +103,8 @@ public class UploadInfo<T> {
     }
 
     /**
+     * 分片成功回调
+     *
      * @param call
      * @param t
      */
@@ -111,8 +123,7 @@ public class UploadInfo<T> {
             }
             // 分片大小与分片回调都满足分片，则分片
             if (handler != null && sliceSize > 0) {
-                handler.apply(builder, totalLength, uploadLength, t);
-                start();
+                start(t);
                 return;
             }
             // 如果不满足上面的条件，说明上传过程出现问题
@@ -121,6 +132,7 @@ public class UploadInfo<T> {
             onFail(call, new IOException(e));
         }
     }
+
 
     public UploadInfo<T> setSliceSize(long sliceSize) {
         this.sliceSize = sliceSize;
@@ -203,13 +215,53 @@ public class UploadInfo<T> {
         return uploadLength;
     }
 
+    // 开始上传
+    private void start(T t) {
+        if (status == STATUS_UPLOADING || status == STATUS_FINISH) return;
+        MultipartBody multipartBody = (MultipartBody) builder.getRequestBody();
+        PartBuilder build = builder.getRequest().newPartBuilder();
+        for (MultipartBody.Part part : multipartBody.parts()) {
+            build.addPart(part);
+        }
+        if (field != null && file != null && handler != null && sliceSize > 0) {
+            handler.apply(build, totalLength, uploadLength, t); // 添加回调参数
+            final long sendSize = Math.min(sliceSize, totalLength - uploadLength);
+            build.addPart(MultipartBody.Part.createFormData(field, file.getName(), new RequestBody() {
+                public void writeTo(BufferedSink sink) throws IOException {
+                    try (BufferedSource source = Okio.buffer(Okio.source(file))) {
+                        long mySenSize = sendSize; // 剩于可以读取的字节数长度
+                        int length, size = 2048; // 读取字节的buf长度
+                        byte[] buf = new byte[size];  //读取字节的buf数组
+                        source.skip(uploadLength); // 跳过已上传长度
+                        for (; mySenSize > 0; mySenSize -= length) {
+                            size = Math.min(size, (int) mySenSize);
+                            length = source.read(buf, 0, size);
+                            if (length <= 0) break; // 数据完成
+                            sink.write(buf, 0, length); //写数据
+                            uploadLength = uploadLength + length;
+                            onUpload(totalLength, uploadLength);
+                        }
+                    }
+                }
+
+                public MediaType contentType() {
+                    return MediaType.parse(FileUtil.getMiniType(file));
+                }
+
+                public long contentLength() {
+                    return sendSize;
+                }
+            }));
+        }
+        call = build.post(clazz).setConverter(converter).setOnSuccess(this::onSliceSuccess);
+        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+    }
+
     /**
      * 开始下载
      */
     public void start() {
-        if (status == STATUS_UPLOADING || status == STATUS_FINISH) return;
-        call = builder.post(clazz).setConverter(converter).setOnSuccess(this::onSliceSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        start(null);
     }
 
     /**

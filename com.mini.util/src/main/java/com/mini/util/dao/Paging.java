@@ -41,7 +41,7 @@ public final class Paging {
 	}
 
 	public int getMaxPage() {
-		return (int) Math.ceil(this.total * 1.0 / this.rows);
+		return (int) Math.ceil(total * 1.0 / rows);
 	}
 
 }

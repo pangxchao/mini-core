@@ -19,23 +19,14 @@ public class StringUtil {
      * @param value
      * @return
      */
-    public static String join(String join, Object... value) {
+    @SafeVarargs
+    public static <T> String join(String join, T... value) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; value != null && i < value.length; i++) {
             if (i > 0) result.append(join).append(value[i]);
             else result.append(value[i]);
         }
         return result.toString();
-    }
-
-    /**
-     * 字符串连接
-     *
-     * @param value
-     * @return
-     */
-    public static String join(Object... value) {
-        return StringUtil.join("", value);
     }
 
     /**
@@ -54,16 +45,6 @@ public class StringUtil {
         return result.toString();
     }
 
-    /**
-     * 字符串连接
-     *
-     * @param value
-     * @return
-     */
-    public static <T> String join(Iterator<T> value) {
-        return StringUtil.join("", value);
-    }
-
 
     /**
      * 字符串连接
@@ -77,13 +58,14 @@ public class StringUtil {
     }
 
     /**
-     * 字符串连接
+     * 格式化字符串
      *
-     * @param value
+     * @param str
+     * @param args
      * @return
      */
-    public static <T> String join(Iterable<T> value) {
-        return StringUtil.join("", value);
+    public static String format(String str, Object... args) {
+        return str == null ? "" : String.format(str, args);
     }
 
     /**
@@ -199,4 +181,13 @@ public class StringUtil {
         return result.toString();
     }
 
+    /**
+     * 手机号脱敏
+     *
+     * @param phone
+     * @return
+     */
+    public static String phoneEncode(String phone) {
+        return phone == null || phone.length() <= 7 ? phone : phone.substring(0, 3) + "****" + phone.substring(7);
+    }
 }

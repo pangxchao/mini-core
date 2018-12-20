@@ -210,6 +210,17 @@ public class DownloadInfo {
     }
 
     /**
+     * 设置错误回调
+     *
+     * @param onFail
+     * @return
+     */
+    public DownloadInfo setOnFail(Function.F3<Long, Call, IOException> onFail) {
+        this.onFail = onFail;
+        return this;
+    }
+
+    /**
      * 获取下载唯一标识
      *
      * @return
