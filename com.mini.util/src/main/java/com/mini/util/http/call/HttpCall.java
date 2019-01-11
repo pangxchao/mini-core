@@ -14,20 +14,21 @@ public abstract class HttpCall<T> implements Callback {
     private Call call;
     protected Function.F0 onPause; // 请求暂停时回调
     protected Function.F0 onStart; // 请求开始时的回调
-    protected Converter<T> converter; // 数据转换器
+    protected final Converter<T> converter; // 数据转换器
     protected Function.F2<Call, T> onSuccess; // 成功返回时回调
     protected Function.F2<Call, IOException> onFail; // 请求失败时的回调
     protected Function.F2<Long, Long> onUpload; // 上传进度回调
     protected Function.F2<Long, Long> onDownload; // 下载进度回调
 
-    public HttpCall(BaseBuilder builder, RequestBody body) {
-        this.call = builder.getClient().newCall(getRequest(builder, body));
+    public HttpCall(BaseBuilder builder, Converter<T> converter) {
+        this.call = builder.getClient().newCall(getRequest(builder));
+        this.converter = converter;
     }
 
     /**
      * 请求是否执行
      *
-     * @return
+     * @return 是否下在执行请求
      */
     public boolean isExecuted() {
         return call != null && call.isExecuted();
@@ -36,28 +37,17 @@ public abstract class HttpCall<T> implements Callback {
     /**
      * 请求是否取消
      *
-     * @return
+     * @return 是否取消
      */
     public boolean isCanceled() {
         return call != null && call.isCanceled();
     }
 
     /**
-     * 设置转换器
-     *
-     * @param converter
-     * @return
-     */
-    public HttpCall<T> setConverter(Converter<T> converter) {
-        this.converter = converter;
-        return this;
-    }
-
-    /**
      * 设置暂停加高方法
      *
-     * @param onPause
-     * @return
+     * @param onPause 暂停回调
+     * @return 调用器
      */
     public HttpCall<T> setOnPause(Function.F0 onPause) {
         this.onPause = onPause;
@@ -67,8 +57,8 @@ public abstract class HttpCall<T> implements Callback {
     /**
      * 设置开始回调方法
      *
-     * @param onStart
-     * @return
+     * @param onStart 开始回调
+     * @return 调用器
      */
     public HttpCall<T> setOnStart(Function.F0 onStart) {
         this.onStart = onStart;
@@ -78,8 +68,8 @@ public abstract class HttpCall<T> implements Callback {
     /**
      * 设置成功回调方法
      *
-     * @param onSuccess
-     * @return
+     * @param onSuccess 成功回调
+     * @return 调用器
      */
     public HttpCall<T> setOnSuccess(Function.F2<Call, T> onSuccess) {
         this.onSuccess = onSuccess;
@@ -89,8 +79,8 @@ public abstract class HttpCall<T> implements Callback {
     /**
      * 设置失败回调方法
      *
-     * @param onFail
-     * @return
+     * @param onFail 失败回调
+     * @return 调用器
      */
     public HttpCall<T> setOnFail(Function.F2<Call, IOException> onFail) {
         this.onFail = onFail;
@@ -98,10 +88,10 @@ public abstract class HttpCall<T> implements Callback {
     }
 
     /**
-     * 设置上似进度回调方法
+     * 设置上传进度回调方法
      *
-     * @param onUpload
-     * @return
+     * @param onUpload 提交进度回调
+     * @return 调用器
      */
     public HttpCall<T> setOnUpload(Function.F2<Long, Long> onUpload) {
         this.onUpload = onUpload;
@@ -111,43 +101,45 @@ public abstract class HttpCall<T> implements Callback {
     /**
      * 设置下载进度回调方法
      *
-     * @param onDownload
-     * @return
+     * @param onDownload 下载进度回调
+     * @return 调用器
      */
     public HttpCall<T> setOnDownload(Function.F2<Long, Long> onDownload) {
         this.onDownload = onDownload;
         return this;
     }
 
-    protected abstract Request getRequest(BaseBuilder builder, RequestBody body);
+    protected abstract Request getRequest(BaseBuilder builder);
 
     /**
      * 取消请求(暂停)
      *
-     * @return
+     * @return 调用器
      */
     public final HttpCall<T> cancel() {
-        if (call != null) call.cancel();
-        if (onPause != null) onPause.apply();
-        return this;
+        try {
+            if (call != null) call.cancel();
+            if (onPause != null) onPause.apply();
+            return this;
+        } catch (Throwable e) {
+            onFailure(call, new IOException(e));
+        }
+        return null;
     }
 
-
     /**
-     * 上步执行
+     * 同步执行
      *
-     * @return
-     * @see Call
+     * @return 结果
      */
-    public final Response execute() {
+    public final T execute() {
         try {
-            Response response = call.execute();
-            if (onStart != null) onStart.apply();
-            return response;
-        } catch (IOException e) {
-            if (!call.isCanceled() && onFail != null) {
-                onFail.apply(call, e);
-            }
+            if (converter == null) return null;
+            T instance = converter.apply(call, call.execute());
+            if (onSuccess != null) onSuccess.apply(call, instance);
+            return instance;
+        } catch (Throwable e) {
+            onFailure(call, new IOException(e));
         }
         return null;
     }
@@ -164,34 +156,27 @@ public abstract class HttpCall<T> implements Callback {
         }
     }
 
-    /**
-     * 默认转换方法
-     *
-     * @return
-     */
-    public final T executed() {
-        if (converter == null) return null;
-        T instance = converter.apply(call, execute());
-        if (onSuccess != null) onSuccess.apply(call, instance);
-        return instance;
-    }
 
     /**
      * 异步请求成功的回调方法
      *
-     * @param call
-     * @param response
+     * @param call     调用器
+     * @param response 结果
      */
     public final void onResponse(Call call, Response response) {
-        if (onSuccess == null || converter == null) return;
-        onSuccess.apply(call, converter.apply(call, response));
+        try {
+            if (onSuccess == null || converter == null) return;
+            onSuccess.apply(call, converter.apply(call, response));
+        } catch (Throwable e) {
+            onFailure(call, new IOException(e));
+        }
     }
 
     /**
      * 异步请求失败时的回调方法
      *
-     * @param call
-     * @param e
+     * @param call 调用器
+     * @param e    异常信息
      */
     public final void onFailure(Call call, IOException e) {
         if (onFail != null) onFail.apply(call, e);

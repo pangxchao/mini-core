@@ -53,8 +53,7 @@ public abstract class Controller {
     public void doTraceBefore(SNHttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     }
 
-    public final void doService(ActionProxy proxy, SNHttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    public final void doService(ActionProxy proxy, SNHttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             IModel model = ModelFactory.createDefaultModel(request); // 创建model对象
             String viewPath = this.loginInterceptor(proxy, model, request, response);
@@ -78,8 +77,7 @@ public abstract class Controller {
      * @return
      * @throws Exception
      */
-    protected final String loginInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request,//
-                                            HttpServletResponse response) throws Exception {
+    protected final String loginInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             IUser user = WebUtil.getAttribute(request.getSession(), IUser.USER_KEY, IUser.class);
             if (proxy.getAction().login() && user == null) {
@@ -90,10 +88,8 @@ public abstract class Controller {
                 String loginUrl, queryString = request.getQueryString(), backUrlEncode;
                 queryString = StringUtil.defaultIfEmpty(queryString, "");
                 if (StringUtil.isNotBlank(loginUrl = SNInitializer.getLoginUrl())) {
-                    backUrlEncode = StringUtil.urlEncode(StringUtil.join(WebUtil.getDoMain(request), //
-                            proxy.getName(), "?", queryString), SNInitializer.getEncoding());
-                    if (loginUrl.toLowerCase().startsWith("http://") ||
-                            loginUrl.toLowerCase().startsWith("https://")) {
+                    backUrlEncode = StringUtil.urlEncode(StringUtil.join(WebUtil.getDoMain(request), proxy.getName(), "?", queryString), SNInitializer.getEncoding());
+                    if (loginUrl.toLowerCase().startsWith("http://") || loginUrl.toLowerCase().startsWith("https://")) {
                         // 如果登录地址是完整的http或者https协议的地址时，将其切换成访问的协议
                         loginUrl = request.getScheme() + loginUrl.substring(5);
                         return StringUtil.join("r:", loginUrl, "?uri=", backUrlEncode);
@@ -127,13 +123,10 @@ public abstract class Controller {
      * @return
      * @throws Exception
      */
-    protected final String paramInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request, //
-                                            HttpServletResponse response) throws Exception {
+    protected final String paramInterceptor(ActionProxy proxy, IModel model, SNHttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             for (int i = 0, j = proxy.getParameters().length; i < j; i++) {
-                proxy.setParameterValue(i, EditorBind.getEditor(proxy.getParameter(i)//
-                        .getType()).value(proxy.getParameter(i).getName(),
-                        proxy.getParameter(i).getType(), request, response));
+                proxy.setParameterValue(i, EditorBind.getEditor(proxy.getParameter(i).getType()).value(proxy.getParameter(i).getName(), proxy.getParameter(i).getType(), request, response));
             }
             ActionInvoke invoke = new ActionInvoke(proxy, request, response, model);
             return invoke.invoke();

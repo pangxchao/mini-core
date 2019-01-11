@@ -1,5 +1,6 @@
 package com.mini.util.http.call;
 
+import com.mini.util.http.Converter;
 import com.mini.util.http.builder.BaseBuilder;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -11,12 +12,13 @@ import okhttp3.RequestBody;
  * @param <T>
  */
 public class HttpHeadCall<T> extends HttpCall<T> {
-    public HttpHeadCall(BaseBuilder builder, RequestBody body) {
-        super(builder, body);
+    public HttpHeadCall(BaseBuilder builder, Converter<T> converter) {
+        super(builder, converter);
     }
 
     @Override
-    protected Request getRequest(BaseBuilder builder, RequestBody body) {
+    protected Request getRequest(BaseBuilder builder) {
+        RequestBody body = builder.getRequestBody();
         if (body instanceof FormBody) {
             FormBody formBody = (FormBody) body;
             for (int i = 0; i < formBody.size(); i++) {

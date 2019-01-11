@@ -51,19 +51,17 @@ public class GENConfig {
     public static final String PROJECT_PATH = "D:/WorkGit/sn-mini/sn.mini.java.gen"; // 项目根绝对路径
     public static final String PACKAGE_NAME = "sn.mini.kotlin.gen"; // 项目名名称
 
-    public static final String TABLE_DB_NAME = "report_info"; // 数据库表名称
-    public static final String TABLE_JAVA_NAME = "ReportInfo"; // java实体类名称
-    public static final String DB_PREFIX_NAME = "report_"; // 表前缀名称， 如： file_id 字段名称
+    public static final String TABLE_DB_NAME = "saas_delete_history"; // 数据库表名称
+    public static final String TABLE_JAVA_NAME = "SaasDeleteHistory"; // java实体类名称
+    public static final String DB_PREFIX_NAME = "saas_delete_"; // 表前缀名称， 如： file_id 字段名称
 
 
     /**
      * 获取数据库连接
      *
-     * @return
-     * @throws SQLException
-     * @throws Exception
+     * @return 数据库连接
      */
-    public static IDao getDao() throws SQLException, Exception {
+    public static IDao getDao() throws Exception {
         Class.forName("com.mysql.jdbc.Driver"); // mysql 连接
         return new MysqlDao(DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD));
     }

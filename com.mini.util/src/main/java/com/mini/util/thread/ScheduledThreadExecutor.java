@@ -23,7 +23,7 @@ public final class ScheduledThreadExecutor {
     /**
      * 在后台线程执行一个任务
      *
-     * @param runnable
+     * @param runnable 任务内容
      */
     public static void schedule(Runnable runnable) {
         executor.schedule(runnable, 0, TimeUnit.MILLISECONDS);
@@ -42,9 +42,9 @@ public final class ScheduledThreadExecutor {
     /**
      * 在后台线程延时执行一个可取消的任务
      *
-     * @param id
-     * @param runnable
-     * @param delay
+     * @param id       定时器ID
+     * @param runnable 任务内容
+     * @param delay    延时时间
      */
     public static void schedule(String id, Runnable runnable, long delay) {
         futures.put(id, executor.schedule(runnable, delay, TimeUnit.MILLISECONDS));
@@ -118,7 +118,7 @@ public final class ScheduledThreadExecutor {
      * 强制开启一个立即执行的线程<br/>
      * 该线程无法取消，不受线程池管理约束
      *
-     * @param runnable
+     * @param runnable 任务内容
      */
     public static void thread(Runnable runnable) {
         new Thread(runnable).start();
@@ -127,13 +127,13 @@ public final class ScheduledThreadExecutor {
     /**
      * 取消未执行的延时任务
      *
-     * @param id
+     * @param id 定时器ID
      */
     public static void cancel(String id) {
         ScheduledFuture<?> future = futures.get(id);
         if (future instanceof RunnableScheduledFuture) {
             executor.remove((Runnable) future);
-            future.cancel(true);
+            future.cancel(false);
         }
     }
 }

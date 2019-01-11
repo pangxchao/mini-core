@@ -1,10 +1,6 @@
 package com.mini.util.lang;
 
-import okio.BufferedSource;
-import okio.Okio;
-
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLConnection;
 

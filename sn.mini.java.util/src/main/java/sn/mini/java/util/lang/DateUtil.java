@@ -117,7 +117,7 @@ public final class DateUtil {
 
     /**
      * 将 yyyy-MM-dd 日期格式的字符串转换成日期格式
-     * @param dateString
+     * @param date
      */
     public static Date parseDate(String date) {
         try {
@@ -224,15 +224,10 @@ public final class DateUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date);
         int tempday = calendar.get(Calendar.DAY_OF_WEEK);
-        switch (tempday) {
-            case 1:
-                // 星期天
-                calendar.add(Calendar.DATE, -6);
-                break;
-            default:
-                // 周一到周六
-                calendar.add(Calendar.DATE, -(tempday - 2));
-                break;
+        if (tempday == 1) {// 星期天
+            calendar.add(Calendar.DATE, -6);
+        } else {// 周一到周六
+            calendar.add(Calendar.DATE, -(tempday - 2));
         }
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -258,14 +253,9 @@ public final class DateUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date);
         int tempday = calendar.get(Calendar.DAY_OF_WEEK);
-        switch (tempday) {
-            case 1:
-                // 星期天
-                break;
-            default:
-                // 周一到周六
-                calendar.add(Calendar.DATE, 8 - tempday);
-                break;
+        if (tempday == 1) {// 星期天
+        } else {// 周一到周六
+            calendar.add(Calendar.DATE, 8 - tempday);
         }
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);

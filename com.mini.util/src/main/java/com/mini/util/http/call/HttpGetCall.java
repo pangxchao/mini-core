@@ -1,5 +1,6 @@
 package com.mini.util.http.call;
 
+import com.mini.util.http.Converter;
 import com.mini.util.http.builder.BaseBuilder;
 import com.mini.util.lang.StringUtil;
 import okhttp3.FormBody;
@@ -17,12 +18,13 @@ import java.util.List;
  */
 public class HttpGetCall<T> extends HttpCall<T> {
 
-    public HttpGetCall(BaseBuilder builder, RequestBody body) {
-        super(builder, body);
+    public HttpGetCall(BaseBuilder builder, Converter<T> converter) {
+        super(builder, converter);
     }
 
     @Override
-    protected Request getRequest(BaseBuilder builder, RequestBody body) {
+    protected Request getRequest(BaseBuilder builder) {
+        RequestBody body = builder.getRequestBody();
         if (body instanceof FormBody) {
             HttpUrl url = builder.getUrl();
             FormBody formBody = (FormBody) body;

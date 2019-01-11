@@ -135,8 +135,8 @@ public class DownloadInfo {
     /**
      * 成功
      *
-     * @param call
-     * @param file
+     * @param call 调用器
+     * @param file 下载文件
      */
     protected void onSuccess(Call call, File file) {
         status = STATUS_FINISH;
@@ -146,8 +146,8 @@ public class DownloadInfo {
     /**
      * 下载进度
      *
-     * @param total
-     * @param downloadLength
+     * @param total          总大小
+     * @param downloadLength 下载大小
      */
     protected void onDownload(long total, long downloadLength) {
         if (onDownload != null) onDownload.apply(id, total, downloadLength);
@@ -156,8 +156,8 @@ public class DownloadInfo {
     /**
      * 失败回调
      *
-     * @param call
-     * @param e
+     * @param call 调用器
+     * @param e    失败信息
      */
     protected void onFail(Call call, IOException e) {
         status = STATUS_FAIL;
@@ -167,8 +167,8 @@ public class DownloadInfo {
     /**
      * 设置暂停回调函数
      *
-     * @param onPause
-     * @return
+     * @param onPause 暂停
+     * @return 下载器
      */
     public DownloadInfo setOnPause(Function.F1<Long> onPause) {
         this.onPause = onPause;
@@ -178,8 +178,8 @@ public class DownloadInfo {
     /**
      * 设置开始回调函数
      *
-     * @param onStart
-     * @return
+     * @param onStart 开始
+     * @return 下载器
      */
     public DownloadInfo setOnStart(Function.F1<Long> onStart) {
         this.onStart = onStart;
@@ -189,8 +189,8 @@ public class DownloadInfo {
     /**
      * 设置成功回调函数
      *
-     * @param onSuccess
-     * @return
+     * @param onSuccess 成功
+     * @return 下载器
      */
     public DownloadInfo setOnSuccess(Function.F3<Long, Call, File> onSuccess) {
         this.onSuccess = onSuccess;
@@ -201,8 +201,8 @@ public class DownloadInfo {
     /**
      * 设置下载回调函数
      *
-     * @param onDownload
-     * @return
+     * @param onDownload 进度
+     * @return 下载器
      */
     public DownloadInfo setOnDownload(Function.F3<Long, Long, Long> onDownload) {
         this.onDownload = onDownload;
@@ -212,8 +212,8 @@ public class DownloadInfo {
     /**
      * 设置错误回调
      *
-     * @param onFail
-     * @return
+     * @param onFail 失败
+     * @return 下载器
      */
     public DownloadInfo setOnFail(Function.F3<Long, Call, IOException> onFail) {
         this.onFail = onFail;
@@ -223,7 +223,7 @@ public class DownloadInfo {
     /**
      * 获取下载唯一标识
      *
-     * @return
+     * @return 下载ID
      */
     public long getId() {
         return id;
@@ -232,7 +232,7 @@ public class DownloadInfo {
     /**
      * 下载状态
      *
-     * @return
+     * @return 下载状态
      */
     public int getStatus() {
         return status;
@@ -241,7 +241,7 @@ public class DownloadInfo {
     /**
      * 需要下载的总大小
      *
-     * @return
+     * @return 需要下载的文件总大小
      */
     public long getTotalLength() {
         return totalLength;
@@ -250,7 +250,7 @@ public class DownloadInfo {
     /**
      * 已经下载的总大小
      *
-     * @return
+     * @return 已下载的文件大小
      */
     public long getDownloadLength() {
         return downloadLength;
@@ -259,139 +259,127 @@ public class DownloadInfo {
     /**
      * GET 方式提交数据， 该方法无法回调进度<br/>
      * 该方式请求时，参数只能通过url和FormBuilder方式添加<br/>
-     *
-     * @return
      */
     public final void getStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return;
-        call = builder.get(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        call = builder.get(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        call.setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
     }
 
     /**
      * HEAD 方式提交数据， 该方式无法提交进度<br/>
      * 该方式请求时，参数只能通过url和FormBuilder方式添加<br/>
-     *
-     * @return
      */
     public final void headStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return;
-        call = builder.head(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        call = builder.head(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        call.setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
     }
 
 
     /**
      * POST 方式提交数据
-     *
-     * @return
      */
     public final void postStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return;
-        call = builder.post(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        call = builder.post(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        call.setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
     }
 
     /**
      * DELETE 方式提交数据
-     *
-     * @return
      */
     public final void deleteStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return;
-        call = builder.delete(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        call = builder.delete(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        call.setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
     }
 
     /**
      * PUT 方式提交数据
-     *
-     * @return
      */
     public final void putStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return;
-        call = builder.put(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        call = builder.put(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        call.setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
     }
 
     /**
      * PATCH 方式提交数据
-     *
-     * @return
      */
     public final void patchStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return;
-        call = builder.patch(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
+        call = builder.patch(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        call.setOnStart(this::onStart).setOnFail(this::onFail).enqueue();
     }
 
     /**
      * GET 方式提交数据， 该方法无法回调进度<br/>
      * 该方式请求时，参数只能通过url和FormBuilder方式添加<br/>
      *
-     * @return
+     * @return 下载的文件
      */
     public final File synchGetStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return null;
-        call = builder.get(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        return call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).executed();
+        call = builder.get(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        return call.setOnStart(this::onStart).setOnFail(this::onFail).execute();
     }
 
     /**
      * HEAD 方式提交数据， 该方式无法提交进度<br/>
      * 该方式请求时，参数只能通过url和FormBuilder方式添加<br/>
      *
-     * @return
+     * @return 下载的文件
      */
     public final File synchHeadStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return null;
-        call = builder.head(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        return call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).executed();
+        call = builder.head(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        return call.setOnStart(this::onStart).setOnFail(this::onFail).execute();
     }
 
 
     /**
      * POST 方式提交数据
      *
-     * @return
+     * @return 下载的文件
      */
     public final File synchPostStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return null;
-        call = builder.post(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        return call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).executed();
+        call = builder.post(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        return call.setOnStart(this::onStart).setOnFail(this::onFail).execute();
     }
 
     /**
      * DELETE 方式提交数据
      *
-     * @return
+     * @return 下载的文件
      */
     public final File synchDeleteStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return null;
-        call = builder.delete(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        return call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).executed();
+        call = builder.delete(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        return call.setOnStart(this::onStart).setOnFail(this::onFail).execute();
     }
 
     /**
      * PUT 方式提交数据
      *
-     * @return
+     * @return 下载的文件
      */
     public final File synchPutStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return null;
-        call = builder.put(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        return call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).executed();
+        call = builder.put(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        return call.setOnStart(this::onStart).setOnFail(this::onFail).execute();
     }
 
     /**
      * PATCH 方式提交数据
      *
-     * @return
+     * @return 下载的文件
      */
     public final File synchPatchStart() {
         if (status == STATUS_DOWNLOADING || status == STATUS_FINISH) return null;
-        call = builder.patch(File.class).setConverter(converter).setOnSuccess(this::onSuccess);
-        return call.setOnPause(this::onPause).setOnStart(this::onStart).setOnFail(this::onFail).executed();
+        call = builder.patch(converter).setOnSuccess(this::onSuccess).setOnPause(this::onPause);
+        return call.setOnStart(this::onStart).setOnFail(this::onFail).execute();
     }
 
     /**

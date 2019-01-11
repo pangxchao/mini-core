@@ -1,5 +1,6 @@
 package com.mini.util.http.builder;
 
+import com.mini.util.http.Converter;
 import com.mini.util.http.HttpRequest;
 import com.mini.util.http.call.*;
 import okhttp3.HttpUrl;
@@ -63,63 +64,63 @@ public abstract class BaseBuilder {
      * GET 方式提交数据， 该方法无法回调进度<br/>
      * 该方式请求时，参数只能通过url和FormBuilder方式添加<br/>
      *
-     * @param clazz
+     * @param converter
      * @return
      */
-    public final <T> HttpCall<T> get(Class<T> clazz) {
-        return new HttpGetCall<T>(this, getRequestBody());
+    public final <T> HttpCall<T> get( Converter<T> converter) {
+        return new HttpGetCall<T>(this, converter);
     }
 
     /**
      * HEAD 方式提交数据， 该方式无法提交进度<br/>
      * 该方式请求时，参数只能通过url和FormBuilder方式添加<br/>
      *
-     * @param clazz
+     * @param converter
      * @return
      */
-    public final <T> HttpCall<T> head(Class<T> clazz) {
-        return new HttpHeadCall<T>(this, getRequestBody());
+    public final <T> HttpCall<T> head( Converter<T> converter) {
+        return new HttpHeadCall<T>(this, converter );
     }
 
 
     /**
      * POST 方式提交数据
      *
-     * @param clazz
+     * @param converter
      * @return
      */
-    public final <T> HttpCall<T> post(Class<T> clazz) {
-        return new HttpPostCall<T>(this, getRequestBody());
+    public final <T> HttpCall<T> post( Converter<T> converter) {
+        return new HttpPostCall<T>(this,converter );
     }
 
     /**
      * DELETE 方式提交数据
      *
-     * @param clazz
+     * @param converter
      * @return
      */
-    public final <T> HttpCall<T> delete(Class<T> clazz) {
-        return new HttpDeleteCall<T>(this, getRequestBody());
+    public final <T> HttpCall<T> delete( Converter<T> converter) {
+        return new HttpDeleteCall<T>(this,converter );
     }
 
     /**
      * PUT 方式提交数据
      *
-     * @param clazz
+     * @param converter
      * @return
      */
-    public final <T> HttpCall<T> put(Class<T> clazz) {
-        return new HttpPutCall<T>(this, getRequestBody());
+    public final <T> HttpCall<T> put( Converter<T> converter) {
+        return new HttpPutCall<T>(this,converter );
     }
 
     /**
      * PATCH 方式提交数据
      *
-     * @param clazz
+     * @param converter
      * @return
      */
-    public final <T> HttpCall<T> patch(Class<T> clazz) {
-        return new HttpPatchCall<T>(this, getRequestBody());
+    public final <T> HttpCall<T> patch( Converter<T> converter) {
+        return new HttpPatchCall<T>(this, converter);
     }
 
 }

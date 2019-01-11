@@ -1,12 +1,11 @@
 package com.mini.util;
 
-import com.mini.util.http.HttpUtil;
-
 import java.util.Random;
 import java.util.UUID;
 
 /**
- * 主键获取,规则：当前时间缀转36进制字符串 + 两位36进制IP码 + 一位36进制随机码
+ * 	主键获取,规则：当前时间缀转36进制字符串 + 两位36进制IP码 + 一位36进制随机码
+ * 
  * @author XChao
  */
 public class PKGenerator {
@@ -24,7 +23,7 @@ public class PKGenerator {
 
 	// 生成主键
 	private synchronized long generate() {
-		if(sequence > 0x3FFF) {
+		if (sequence > 0x3FFF) {
 			sequence = 0;
 		}
 		long timestamp = System.currentTimeMillis();
@@ -46,6 +45,7 @@ public class PKGenerator {
 
 	/**
 	 * 根据主键获取生成主键生成时的时间缀
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -55,6 +55,7 @@ public class PKGenerator {
 
 	/**
 	 * 生成主键
+	 * 
 	 * @return
 	 */
 	public static long key() {
@@ -63,6 +64,7 @@ public class PKGenerator {
 
 	/**
 	 * 生成一个UUID 替换掉"-"
+	 * 
 	 * @return
 	 */
 	public static String uuid() {
@@ -72,6 +74,7 @@ public class PKGenerator {
 
 	/**
 	 * 生成length位长度的纯数字的随机字符串
+	 * 
 	 * @param length
 	 * @return
 	 */
@@ -86,6 +89,7 @@ public class PKGenerator {
 
 	/**
 	 * 生成length位长度的字母加数据的随机字符串
+	 * 
 	 * @param length
 	 * @return
 	 */

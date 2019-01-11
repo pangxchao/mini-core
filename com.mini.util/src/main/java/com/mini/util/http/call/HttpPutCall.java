@@ -1,8 +1,8 @@
 package com.mini.util.http.call;
 
+import com.mini.util.http.Converter;
 import com.mini.util.http.builder.BaseBuilder;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 
 /**
  * PUT 方式提交
@@ -10,12 +10,12 @@ import okhttp3.RequestBody;
  * @param <T>
  */
 public class HttpPutCall<T> extends HttpCall<T> {
-    public HttpPutCall(BaseBuilder builder, RequestBody body) {
-        super(builder, body);
+    public HttpPutCall(BaseBuilder builder, Converter<T> converter) {
+        super(builder, converter);
     }
 
     @Override
-    protected Request getRequest(BaseBuilder builder, RequestBody body) {
-        return builder.getBuilder().post(new ProgressRequestBody(body)).build();
+    protected Request getRequest(BaseBuilder builder) {
+        return builder.getBuilder().post(new ProgressRequestBody(builder.getRequestBody())).build();
     }
 }

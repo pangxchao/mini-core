@@ -15,7 +15,6 @@ public final class BodyBuilder extends BaseBuilder {
         super(request);
     }
 
-
     public BodyBuilder setBody(MediaType mediaType, File file) {
         requestBody = RequestBody.create(mediaType, file);
         return this;
