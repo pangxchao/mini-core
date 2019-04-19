@@ -34,9 +34,9 @@ public final class DaoManager {
 	private final DaoFactory factory;
 	private final DataSource dataSource;
 
-	public DaoManager(String name, String dirver, DaoFactory factory, DataSource dataSource) {
+	public DaoManager(String name, String driver, DaoFactory factory, DataSource dataSource) {
 		this.name = name;
-		this.driver = dirver;
+		this.driver = driver;
 		this.factory = factory;
 		this.dataSource = dataSource;
 	}

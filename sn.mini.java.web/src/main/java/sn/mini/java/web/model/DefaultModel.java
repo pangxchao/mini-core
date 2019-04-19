@@ -100,8 +100,8 @@ public class DefaultModel implements IModel {
 		return this.modelData;
 	}
 
-	public <T extends Map<? extends String, ? extends Object>> IModel setData(T data) {
-		if(this.modelData == null || !ObjectModelData.class.isInstance(this.modelData)) {
+	public <T extends Map<? extends String, ?>> IModel setData(T data) {
+		if(!(this.modelData instanceof ObjectModelData)) {
 			this.modelData = new ObjectModelData();
 		}
 		if(data != null) {
@@ -110,8 +110,8 @@ public class DefaultModel implements IModel {
 		return this;
 	}
 
-	public <T extends List<? extends Object>> IModel setData(T data) {
-		if(this.modelData == null || !ArraysModelData.class.isInstance(this.modelData)) {
+	public <T extends List<?>> IModel setData(T data) {
+		if(!(this.modelData instanceof ArraysModelData)) {
 			this.modelData = new ArraysModelData();
 		}
 		if(data != null) {
@@ -122,7 +122,7 @@ public class DefaultModel implements IModel {
 
 	@SuppressWarnings("unchecked")
 	public <T> IModel setData(T data, Class<T> clazz) {
-		if(this.modelData == null || !EntryModelData.class.isInstance(this.modelData)) {
+		if(!(this.modelData instanceof EntryModelData)) {
 			this.modelData = new EntryModelData<T>();
 		}
 		if(data != null) {
@@ -168,7 +168,7 @@ public class DefaultModel implements IModel {
 		return this.modelData.keySet();
 	}
 
-	public List<? extends Object> valSet() {
+	public List<?> valSet() {
 		if(this.modelData == null) {
 			this.modelData = new ArraysModelData();
 		}

@@ -1,8 +1,3 @@
-/**
- * Created the sn.mini.dao.mapper.row.AbstractRow.java
- * @created 2016年9月24日 上午11:58:29
- * @version 1.0.0
- */
 package sn.mini.java.jdbc.mapper.row;
 
 import java.util.HashMap;

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import sn.mini.java.jdbc.DBException;
 import sn.mini.java.jdbc.IDao;
@@ -51,7 +52,7 @@ public interface IDaoModel<T extends IDaoModel<T>> extends Serializable {
      */
     default int insert(IDao dao) {
         return this.insert(dao, getDaoTable().currentEntrySet().stream()//
-                .map(v -> v.getValue()).toArray(v -> new String[v]));
+                .map(Map.Entry::getValue).toArray(String[]::new));
     }
 
     /**
@@ -71,7 +72,7 @@ public interface IDaoModel<T extends IDaoModel<T>> extends Serializable {
      */
     default long insertGen(IDao dao) {
         return this.insertGen(dao, getDaoTable().currentEntrySet().stream()//
-                .map(v -> v.getValue()).toArray(v -> new String[v]));
+                .map(Map.Entry::getValue).toArray(String[]::new));
     }
 
     /**

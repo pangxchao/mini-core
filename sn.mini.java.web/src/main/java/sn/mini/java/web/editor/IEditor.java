@@ -1,5 +1,6 @@
 /**
  * Created the sn.mini.java.web.editor.IEditor.java
+ *
  * @created 2017年10月25日 下午4:56:38
  * @version 1.0.0
  */
@@ -14,10 +15,9 @@ import sn.mini.java.web.http.SNHttpServletRequest;
  * @author XChao
  */
 public interface IEditor {
-	default Object value(String paramName, Class<?> paramType, SNHttpServletRequest request,
-		HttpServletResponse response) throws Exception {
-		return parse(request.getParameter(paramName));
-	}
+    default Object value(String paramName, Class<?> paramType, SNHttpServletRequest request, HttpServletResponse response) throws Exception {
+        return parse(request.getParameter(paramName));
+    }
 
-	Object parse(String text);
+    Object parse(String text);
 }

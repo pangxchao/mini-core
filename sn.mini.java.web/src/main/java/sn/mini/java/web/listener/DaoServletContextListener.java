@@ -19,8 +19,7 @@ public abstract class DaoServletContextListener implements ServletContextListene
     @Override
     public final void contextInitialized(ServletContextEvent event) {
         try {
-            SNParameter[] parameter = MethodUtil.getSNParameter(this.getClass().getMethod( //
-                    "contextInitialized", IDao.class, ServletContextEvent.class));
+            SNParameter[] parameter = MethodUtil.getSNParameter(this.getClass().getMethod("contextInitialized", IDao.class, ServletContextEvent.class));
             if (parameter.length > 0 && parameter[0] != null) {
                 this.contextInitialized(DaoManager.getDao(parameter[0].getName()), event);
             }
@@ -29,9 +28,11 @@ public abstract class DaoServletContextListener implements ServletContextListene
         } finally {
             for (Entry<String, IDao> entry : DaoManager.getCurrentDao().entrySet()) {
                 try (IDao connection = entry.getValue()) {
+                    Log.debug("close dao before:" + connection);
                 } catch (Exception e) {
                     Log.error("Close Dao fail. ", e);
                 }
+
             }
         }
     }

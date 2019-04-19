@@ -26,7 +26,7 @@ public class ArraysModelData extends AbstrctModelData<List<Object>> {
 	}
 
 	@Override
-	public void putAll(Map<? extends String, ? extends Object> data) {
+	public void putAll(Map<? extends String, ?> data) {
 		throw new RuntimeException("Array cannot use Object method. ");
 	}
 
@@ -46,7 +46,7 @@ public class ArraysModelData extends AbstrctModelData<List<Object>> {
 	}
 
 	@Override
-	public void addAll(List<? extends Object> data) {
+	public void addAll(List<?> data) {
 		this.getData().addAll(data);
 	}
 
@@ -56,7 +56,7 @@ public class ArraysModelData extends AbstrctModelData<List<Object>> {
 	}
 
 	@Override
-	public List<? extends Object> valSet() {
+	public List<?> valSet() {
 		return this.getData();
 	}
 

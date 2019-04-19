@@ -1,6 +1,5 @@
 /**
  * Created the com.cfinal.util.lang.CFDate.java
- *
  * @created 2016年8月14日 上午10:22:25
  * @version 1.0.0
  */
@@ -37,19 +36,17 @@ public final class DateUtil {
 
     /**
      * 将日期格式化成：yyyy-MM-dd 格式
-     * @param date
+     * @param date 日期
      */
     public static String formatDate(Date date) {
-        if (date == null) {
-            return null;
-        }
+        if (date == null) return null;
         return FORMAT_DATE.format(date);
     }
 
 
     /**
      * 将日期格式化成：yyyy-MM-dd 格式
-     * @param date
+     * @param date 日期
      */
     public static String formatDate(long date) {
         return FORMAT_DATE.format(new Date(date));
@@ -57,18 +54,16 @@ public final class DateUtil {
 
     /**
      * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
-     * @param date
+     * @param date 日期
      */
     public static String formatDateTime(Date date) {
-        if (date == null) {
-            return null;
-        }
+        if (date == null) return null;
         return FORMAT_DATETIME.format(date);
     }
 
     /**
      * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
-     * @param date
+     * @param date 日期
      */
     public static String formatDateTime(long date) {
         return FORMAT_DATETIME.format(new Date(date));
@@ -76,7 +71,7 @@ public final class DateUtil {
 
     /**
      * 将日期格式化成：HH:mm:ss 格式
-     * @param date
+     * @param date 日期
      */
     public static String formatTime(Date date) {
         if (date == null) {
@@ -87,7 +82,7 @@ public final class DateUtil {
 
     /**
      * 将日期格式化成：HH:mm:ss 格式
-     * @param date
+     * @param date 日期
      */
     public static String formatTime(long date) {
         return FORMAT_TIME.format(new Date(date));
@@ -99,9 +94,7 @@ public final class DateUtil {
      * @param format 时间格式
      */
     public static String format(Date date, String format) {
-        if (date == null) {
-            return null;
-        }
+        if (date == null) return null;
         return new SimpleDateFormat(format).format(date);
 
     }
@@ -117,7 +110,7 @@ public final class DateUtil {
 
     /**
      * 将 yyyy-MM-dd 日期格式的字符串转换成日期格式
-     * @param date
+     * @param date 日期
      */
     public static Date parseDate(String date) {
         try {
@@ -129,7 +122,7 @@ public final class DateUtil {
 
     /**
      * 将(HH:mm:ss)时间格式的字符串转换成日期格式
-     * @param date
+     * @param date 日期
      */
     public static Date parseTime(String date) {
         try {
@@ -141,7 +134,7 @@ public final class DateUtil {
 
     /**
      * 将(yyyy-MM-dd HH:mm:ss)时间格式的字符串转换成日期格式
-     * @param date
+     * @param date 日期
      */
     public static Date parseDateTime(String date) {
         try {
@@ -166,7 +159,7 @@ public final class DateUtil {
 
     /**
      * 获得与当前系统时间的相差天数
-     * @param date
+     * @param date 日期
      * @return 相差天数 如果传入时间大于当前系统时间为负数
      */
     public static int compareDate(long date) {
@@ -189,7 +182,7 @@ public final class DateUtil {
 
     /**
      * 获得与当前系统时间的相差月数
-     * @param date
+     * @param date 日期
      * @return 相差月数 如果传入时间大于当前系统时间为负数
      */
     public static long compareMonth(long date) {
@@ -206,7 +199,7 @@ public final class DateUtil {
     /**
      * 计算年龄
      * @param date 出生日期
-     * @return
+     * @return 日期
      */
     public static int calcAge(Date date) {
         Calendar now = Calendar.getInstance();
@@ -217,7 +210,7 @@ public final class DateUtil {
 
     /**
      * 根据传入时间 获得本周第一天（周一)的时间
-     * @param date
+     * @param date 日期
      * @return 返回时间 时分秒毫秒为0
      */
     public static long getFristDayForWeek(long date) {
@@ -246,7 +239,7 @@ public final class DateUtil {
 
     /**
      * 根据传入时间 获得本周最后一天（周日)的时间
-     * @param date
+     * @param date 日期
      * @return 返回时间 时分秒毫秒为23:59:59 999
      */
     public static long getLastDayForWeek(long date) {
@@ -274,7 +267,7 @@ public final class DateUtil {
 
     /**
      * 根据传入时间 获得此时间所在月的 第一天的日期
-     * @param date
+     * @param date 日期
      * @return
      */
     public static Date getMonthFristDay(long date) {

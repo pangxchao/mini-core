@@ -104,7 +104,7 @@ public class SNConfig {
 	protected void initialize(ServletContext context) throws Exception {
 		Optional<ServletContext> optional = Optional.ofNullable(context);
 		// 设置系统编码
-		optional.map(v -> WebUtil.getParameter(v, "UTF-8")).ifPresent(v -> setEncoding(v));
+		optional.map(v -> WebUtil.getParameter(v, "UTF-8")).ifPresent(this::setEncoding);
 		// 设置文件上传缓冲区大小
 		optional.map(v -> WebUtil.getParameter(v, "file.size.threshold")) .ifPresent((v) -> setFileSizeThreshold(TypeUtil.castToIntValue(v)));
 		// 设置文件上传所有文件大小限制
@@ -112,9 +112,9 @@ public class SNConfig {
 		// 设置文件上传单个文件大小限制
 		optional.map(v -> WebUtil.getParameter(v, "max.file.size")) .ifPresent((v) -> setMaxFileSize(TypeUtil.castToLongValue(v)));
 		// 设置文件上传临时目录
-		optional.map(v -> WebUtil.getParameter(v, "multipart.location")).ifPresent((v) -> setLocation(v));
+		optional.map(v -> WebUtil.getParameter(v, "multipart.location")).ifPresent(this::setLocation);
 		// 设置主键生成器的机器唯一码
-		optional.map(v -> WebUtil.getParameter(v, "worker-id")) .ifPresent((v) -> PKGenerator.setWorkerid(TypeUtil.castToLongValue(v)));
+		optional.map(v -> WebUtil.getParameter(v, "worker-id")) .ifPresent((v) -> PKGenerator.setWorkerId(TypeUtil.castToLongValue(v)));
 		// 设置数据源
 		if(StringUtil.isNotBlank(WebUtil.getParameter(context, "dao-names"))) {
 			InitialContext initialContext = new InitialContext();

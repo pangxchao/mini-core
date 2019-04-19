@@ -1,9 +1,3 @@
-/**
- * Created the com.cfinal.util.digest.SHA384Util.java
- *
- * @created 2017年5月16日 下午4:31:08
- * @version 1.0.0
- */
 package sn.mini.java.util.digest;
 
 import java.io.InputStream;

@@ -1,6 +1,5 @@
 /**
  * Created the sn.mini.dao.implement.AbstractDao.java
- *
  * @created 2017年9月22日 下午12:23:36
  * @version 1.0.0
  */
@@ -202,13 +201,13 @@ public abstract class AbstractDao implements IDao {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
-                                              int resultSetHoldability) throws SQLException {
+            int resultSetHoldability) throws SQLException {
         return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
-                                         int resultSetHoldability) throws SQLException {
+            int resultSetHoldability) throws SQLException {
         return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
@@ -657,7 +656,7 @@ public abstract class AbstractDao implements IDao {
             try {
                 this.transRefCount++;
                 savepoint = this.setSavepoint();
-                commit = transaction.transaction();
+                commit    = transaction.transaction();
             } finally {
                 this.transRefCount--;
                 if (!commit && savepoint != null) { // 回滚事务到设置的回滚点

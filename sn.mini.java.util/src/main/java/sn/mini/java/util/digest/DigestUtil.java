@@ -6,20 +6,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DigestUtil {
-    /**
-     * 用来将字节转换成 16 进制表示的字符
-     */
-    private static final char ENCODE_DIGITS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+    /** 用来将字节转换成 16 进制表示的字符 */
+    private static final char[] ENCODE_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     private final String algorithm;
 
-    protected DigestUtil(String algorithm) {
+    DigestUtil(String algorithm) {
         this.algorithm = algorithm;
     }
 
     /**
      * 获取MD2加密文摘
-     *
      * @return
      */
     private MessageDigest getDigest() {
@@ -32,7 +30,6 @@ public class DigestUtil {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -42,7 +39,6 @@ public class DigestUtil {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -52,7 +48,6 @@ public class DigestUtil {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -62,7 +57,6 @@ public class DigestUtil {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -72,7 +66,6 @@ public class DigestUtil {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -92,7 +85,6 @@ public class DigestUtil {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -103,13 +95,12 @@ public class DigestUtil {
 
     /**
      * 将byte数组转换成String
-     *
      * @param bytes
      * @return
      */
     private String toString(byte[] bytes) {
         // 每个字节用 16 进制表示的话，使用两个字符
-        char result[] = new char[bytes.length * 2];
+        char[] result = new char[bytes.length * 2];
         // 从第一个字节开始，对每一个字节,转换成 16 进制字符的转换
         for (int i = 0; i < bytes.length; i++) {
             // 取字节中高 4 位的数字转换, >>> 为逻辑右移，将符号位一起右移

@@ -3,11 +3,11 @@ package sn.mini.java.util.digest;
 import java.io.InputStream;
 
 public final class MD2Util {
+
     private static final DigestUtil instance = new DigestUtil("MD2");
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -17,7 +17,6 @@ public final class MD2Util {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -27,7 +26,6 @@ public final class MD2Util {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -37,7 +35,6 @@ public final class MD2Util {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -47,7 +44,6 @@ public final class MD2Util {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */
@@ -57,7 +53,6 @@ public final class MD2Util {
 
     /**
      * MD2加密
-     *
      * @param data
      * @return
      */

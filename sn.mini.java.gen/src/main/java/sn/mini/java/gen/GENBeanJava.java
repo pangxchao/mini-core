@@ -121,9 +121,12 @@ public class GENBeanJava {
 			contents.add("/** 表名称 : " + GENConfig.TABLE_DB_NAME + " */");
 			contents.add("public static final String TABLE_NAME = \"" + GENConfig.TABLE_DB_NAME + "\";");
 
-			List<String> static_contents = new ArrayList<>();
-			List<String> prop_contents = new ArrayList<>();
-			List<String> gstter_contents = new ArrayList<>();
+			List<String> static_contents;
+			static_contents = new ArrayList<>();
+			List<String> prop_contents;
+			prop_contents = new ArrayList<>();
+			List<String> gstter_contents;
+			gstter_contents = new ArrayList<>();
 
 			List<String> idJavaNameAndType = new ArrayList<>();
 			List<String> idJavaName = new ArrayList<>();

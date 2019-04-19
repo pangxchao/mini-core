@@ -1,8 +1,3 @@
-/**
- * Created the sn.mini.java.web.model.EntryModelData.java
- * @created 2017年10月30日 下午5:43:33
- * @version 1.0.0
- */
 package sn.mini.java.web.model;
 
 import java.util.List;
@@ -25,7 +20,7 @@ public class EntryModelData<T> extends AbstrctModelData<T> {
 	}
 
 	@Override
-	public void putAll(Map<? extends String, ? extends Object> data) {
+	public void putAll(Map<? extends String, ?> data) {
 		throw new RuntimeException("Entry cannot use Object method. ");
 	}
 
@@ -45,7 +40,7 @@ public class EntryModelData<T> extends AbstrctModelData<T> {
 	}
 
 	@Override
-	public void addAll(List<? extends Object> data) {
+	public void addAll(List<?> data) {
 		throw new RuntimeException("Entry cannot use Array method. ");
 	}
 
@@ -55,7 +50,7 @@ public class EntryModelData<T> extends AbstrctModelData<T> {
 	}
 
 	@Override
-	public List<? extends Object> valSet() {
+	public List<?> valSet() {
 		throw new RuntimeException("Entry cannot use Array method. ");
 	}
 

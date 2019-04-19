@@ -37,7 +37,7 @@ public final class DaoColumn {
     }
 
     public boolean isPrimary() {
-        return column.map(v -> v.des()).map(v -> ((v & 2) == 2)).orElse(false);
+        return column.map(Column::des).map(v -> ((v & 2) == 2)).orElse(false);
     }
 
     public boolean isForeign() {
