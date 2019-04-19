@@ -12,6 +12,7 @@ public class MiniApplication extends MiniServletInitializer {
     }
 
     public static void main(String[] args) {
+        // git@github.com:pangxchao/CFQ.git
         SpringApplication.run(MiniApplication.class);
     }
 }
