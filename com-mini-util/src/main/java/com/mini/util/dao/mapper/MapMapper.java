@@ -16,18 +16,15 @@ public final class MapMapper extends AbstractMapper<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(ResultSet rs, int number) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
-        if (rs.next()) {
-            Map<String, Object> map = new HashMap<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                String clazz = metaData.getColumnClassName(i);
-                IRow<?> row = getRow(clazz);
-                if (row == null) continue;
+        Map<String, Object> map = new HashMap<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            String clazz = metaData.getColumnClassName(i);
+            IRow<?> row = getRow(clazz);
+            if (row == null) continue;
 
-                String key = metaData.getColumnLabel(i);
-                map.put(key, row.execute(rs, i));
-            }
-            return map;
+            String key = metaData.getColumnLabel(i);
+            map.put(key, row.execute(rs, i));
         }
-        return null;
+        return map;
     }
 }

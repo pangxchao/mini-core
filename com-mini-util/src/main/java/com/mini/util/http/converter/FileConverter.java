@@ -1,6 +1,6 @@
 package com.mini.util.http.converter;
 
-import com.mini.util.PKGenerator;
+import com.mini.util.dao.PKGenerator;
 import com.mini.util.http.HttpUtil;
 import com.mini.util.lang.FileUtil;
 import com.mini.util.lang.Function;

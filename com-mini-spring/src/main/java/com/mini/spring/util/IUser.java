@@ -1,7 +1,7 @@
 package com.mini.spring.util;
 
 
-import com.mini.util.PKGenerator;
+import com.mini.util.dao.PKGenerator;
 
 /**
  * IUser

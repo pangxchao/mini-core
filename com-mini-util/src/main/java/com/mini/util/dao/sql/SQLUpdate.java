@@ -1,30 +1,29 @@
 package com.mini.util.dao.sql;
 
+import com.mini.util.dao.IDao;
 import com.mini.util.dao.SQL;
-import com.mini.util.dao.sql.where.NestingItem;
+import com.mini.util.dao.sql.fragment.*;
 import com.mini.util.lang.StringUtil;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class SQLUpdate implements SQL, SQLWhere<SQLUpdate> {
-    private final NestingItem nestingItem = new NestingItem();
-    private final List<String> key_values = new ArrayList<>();
+public class SQLUpdate implements SQL, SQLFragment, SQLFrom<SQLUpdate>, SQLJoin<SQLUpdate>, SQLWhere<SQLUpdate> {
+    private final List<String> values = new ArrayList<>();
     private final List<Object> params = new ArrayList<>();
-    private final String name;
-
-    public SQLUpdate(String name) {
-        this.name = name;
-    }
+    private final DefaultWhere where = new DefaultWhere();
+    private final DefaultFrom from = new DefaultFrom();
+    private final DefaultJoin join = new DefaultJoin();
 
     /**
      * -添加一个字段和字段值
      * @param key 字段名称
      * @return SQLInsert
      */
-    public SQLUpdate put(String key, String value) {
-        key_values.add(key + " = " + value);
+    public final SQLUpdate put(String key, String value) {
+        values.add(key + " = " + value);
         return this;
     }
 
@@ -33,7 +32,7 @@ public final class SQLUpdate implements SQL, SQLWhere<SQLUpdate> {
      * @param key 字段名称
      * @return SQLInsert
      */
-    public SQLUpdate put(String key) {
+    public final SQLUpdate put(String key) {
         return put(key, "?");
     }
 
@@ -42,16 +41,11 @@ public final class SQLUpdate implements SQL, SQLWhere<SQLUpdate> {
      * @param param 参数值
      * @return SQLInsert
      */
-    public SQLUpdate params(Object... param) {
+    public final SQLUpdate params(Object... param) {
         params.addAll(Arrays.asList(param));
         return this;
     }
 
-
-    @Override
-    public String content() {
-        return StringUtil.join("", UPDATE, name, SET, StringUtil.join(", ", key_values), WHERE, nestingItem.content());
-    }
 
     @Override
     public Object[] params() {
@@ -59,12 +53,65 @@ public final class SQLUpdate implements SQL, SQLWhere<SQLUpdate> {
     }
 
     @Override
-    public SQLUpdate getSelf() {
+    public final SQLUpdate getSelf() {
         return this;
     }
 
     @Override
-    public NestingItem getNestingItem() {
-        return nestingItem;
+    public final DefaultFrom getFrom() {
+        return this.from;
+    }
+
+    @Override
+    public final DefaultJoin getJoin() {
+        return this.join;
+    }
+
+    @Override
+    public final DefaultWhere getWhere() {
+        return this.where;
+    }
+
+    @Override
+    public final String from() {
+        return SQLFrom.super.from();
+    }
+
+    public final String values() {
+        return StringUtil.join(", ", values);
+    }
+
+    @Override
+    public final String join() {
+        return SQLJoin.super.join();
+    }
+
+    @Override
+    public final String where() {
+        return SQLWhere.super.where();
+    }
+
+    @Override
+    public String content() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(UPDATE).append(from());
+        // 联合表处理
+        String join = SQLUpdate.this.join();
+        if (StringUtil.isNotBlank(join)) {
+            builder.append(JOIN);
+            builder.append(join);
+        }
+        builder.append(SET).append(values());
+        // 条件处理
+        String where = SQLUpdate.this.where();
+        if (StringUtil.isNotBlank(where)) {
+            builder.append(WHERE);
+            builder.append(where());
+        }
+        return builder.toString();
+    }
+
+    public final int execute(IDao dao) throws SQLException {
+        return dao.execute(this);
     }
 }

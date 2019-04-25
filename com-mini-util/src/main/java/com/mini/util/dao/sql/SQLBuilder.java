@@ -1,17 +1,18 @@
 package com.mini.util.dao.sql;
 
 import com.mini.util.dao.SQL;
+import com.mini.util.dao.sql.fragment.SQLFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class SQLBuilder implements SQL {
+public final class SQLBuilder implements SQL, SQLFragment {
     private final StringBuilder content = new StringBuilder();
     private final List<Object> params = new ArrayList<>();
 
     /**
-     * -带参数构造方法
+     * 带参数构造方法
      * @param strings 内容
      */
     public SQLBuilder(String... strings) {
@@ -19,7 +20,7 @@ public final class SQLBuilder implements SQL {
     }
 
     /**
-     * -添加内容
+     * 添加内容
      * @param strings 内容
      * @return #SqlBuilder
      */
@@ -30,8 +31,9 @@ public final class SQLBuilder implements SQL {
         return this;
     }
 
+
     /**
-     * -添加参数列表
+     * 添加参数列表
      * @param param 参数
      * @return #SqlBuilder
      */
@@ -41,7 +43,18 @@ public final class SQLBuilder implements SQL {
     }
 
     /**
-     * -生成内容列表
+     * 添加 SQL 内容
+     * @param sql #SQL
+     * @return #SqlBuilder
+     */
+    public SQLBuilder content(SQL sql) {
+        content(sql.content());
+        params(sql.params());
+        return this;
+    }
+
+    /**
+     * 生成内容列表
      * @return SQL
      */
     public String content() {

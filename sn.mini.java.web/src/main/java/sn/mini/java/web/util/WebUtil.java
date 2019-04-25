@@ -52,7 +52,7 @@ public class WebUtil {
         if (StringUtil.isNotBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
-        return ip.equals("0:0:0:0:0:0:0:1") ? "127.0.0.1" : ip;
+        return ip == null || ip.equals("0:0:0:0:0:0:0:1") ? "127.0.0.1" : ip;
     }
 
     public static String getParameter(ServletContext context, String name) {

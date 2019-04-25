@@ -14,8 +14,7 @@
 
     <modules>
         <module>../com-mini-util</module>
-        <module>../com-mini-web</module>
-        <module>../com-mini-test</module>
         <module>../com-mini-spring</module>
+        <module>../com-mini-spring-test</module>
     </modules>
 </project>

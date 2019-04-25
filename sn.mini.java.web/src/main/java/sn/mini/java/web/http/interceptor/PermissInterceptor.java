@@ -1,8 +1,3 @@
-/**
- * Created the sn.mini.java.web.http.interceptor.PermissInterceptor.java
- * @created 2017年11月17日 下午3:14:09
- * @version 1.0.0
- */
 package sn.mini.java.web.http.interceptor;
 
 import sn.mini.java.web.http.ActionInvoke;

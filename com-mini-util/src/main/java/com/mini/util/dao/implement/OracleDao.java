@@ -23,7 +23,7 @@ public class OracleDao extends AbstractDao {
         return StringUtil.join("", "select count(*) from (", sql, ") t");
     }
 
-    @Override // TODO： 未实现
+    @Override
     public String paging(Paging paging, String sql) {
         return StringUtil.join("", "select * from (",
                 "   select max_count.*, rownum row_number from (", sql, ") max_count where rownum <= ", (paging.getStart() + paging.getRows()),

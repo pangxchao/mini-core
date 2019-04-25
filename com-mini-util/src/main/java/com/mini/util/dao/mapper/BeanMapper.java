@@ -44,30 +44,26 @@ public final class BeanMapper<T> extends AbstractMapper<T> {
             if (constructor == null) return null;
 
             ResultSetMetaData metaData = rs.getMetaData();
-            if (rs.next()) {
-                T t = constructor.newInstance();
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    // 验证该字段在对应实体中是否存在
-                    String key = metaData.getColumnLabel(i);
-                    PropertyDescriptor des = descriptors.get(key);
-                    if (des == null) continue;
+            T t = constructor.newInstance();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                // 验证该字段在对应实体中是否存在
+                String key = metaData.getColumnLabel(i);
+                PropertyDescriptor des = descriptors.get(key);
+                if (des == null) continue;
 
-                    // SETTER 方法为空时不设置
-                    Method method = des.getWriteMethod();
-                    if (method == null) continue;
+                // SETTER 方法为空时不设置
+                Method method = des.getWriteMethod();
+                if (method == null) continue;
 
-                    // 验证数据类型是否匹配常规数据类型
-                    Class<?> clazz = des.getPropertyType();
-                    IRow<?> row = getRow(clazz);
-                    if (row == null) continue;
+                // 验证数据类型是否匹配常规数据类型
+                Class<?> clazz = des.getPropertyType();
+                IRow<?> row = getRow(clazz);
+                if (row == null) continue;
 
-                    // 调用设置方法设置值
-                    method.invoke(t, row.execute(rs, i));
-                }
-                return t;
+                // 调用设置方法设置值
+                method.invoke(t, row.execute(rs, i));
             }
-            return null;
-
+            return t;
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

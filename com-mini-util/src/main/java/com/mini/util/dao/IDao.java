@@ -5,6 +5,8 @@ import com.mini.util.lang.ArraysUtil;
 import com.mini.util.lang.Function;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.sql.ResultSet.CONCUR_READ_ONLY;
 import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
@@ -143,11 +145,17 @@ public interface IDao extends Connection {
      * @return 查询结果
      * @throws SQLException 执行错误
      */
-    default <T> T query(String sql, IMapper<T> mapper, Object... params) throws SQLException {
+    default <T> List<T> query(String sql, IMapper<T> mapper, Object... params) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql, TYPE_FORWARD_ONLY, CONCUR_READ_ONLY)) {
-            this.fullPreparedStatement(statement, params);
-            try (ResultSet rs = statement.executeQuery()) {
-                return mapper.execute(rs, rs.getRow());
+            IDao.this.fullPreparedStatement(statement, params);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<T> result = new ArrayList<>();
+                while (resultSet != null && resultSet.next()) {
+                    int number = resultSet.getRow();
+                    T t = mapper.execute(resultSet, number);
+                    result.add(t);
+                }
+                return result;
             }
         }
     }
@@ -160,8 +168,42 @@ public interface IDao extends Connection {
      * @return 查询结果
      * @throws SQLException 执行错误
      */
-    default <T> T query(SQL sql, IMapper<T> mapper) throws SQLException {
+    default <T> List<T> query(SQL sql, IMapper<T> mapper) throws SQLException {
         return query(sql.content(), mapper, sql.params());
+    }
+
+    /**
+     * 查询结果
+     * @param sql    SQL
+     * @param mapper 映射器
+     * @param params 参数
+     * @param <T>    解析器类型
+     * @return 查询结果
+     * @throws SQLException 执行错误
+     */
+    default <T> T queryOne(String sql, IMapper<T> mapper, Object... params) throws SQLException {
+        try (PreparedStatement statement = prepareStatement(sql, TYPE_FORWARD_ONLY, CONCUR_READ_ONLY)) {
+            IDao.this.fullPreparedStatement(statement, params);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet != null && resultSet.next()) {
+                    int number = resultSet.getRow();
+                    return mapper.execute(resultSet, number);
+                }
+                return null;
+            }
+        }
+    }
+
+    /**
+     * 查询结果
+     * @param sql    SQL
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     * @throws SQLException 执行错误
+     */
+    default <T> T queryOne(SQL sql, IMapper<T> mapper) throws SQLException {
+        return queryOne(sql.content(), mapper, sql.params());
     }
 
     /**
@@ -172,7 +214,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default String queryString(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getString(1) : null, params);
+        return queryOne(sql, (rs, n) -> rs.getString(1), params);
     }
 
     /**
@@ -193,7 +235,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default long queryLong(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getLong(1) : null, params);
+        return queryOne(sql, (rs, n) -> rs.getLong(1), params);
     }
 
     /**
@@ -214,7 +256,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default int queryInt(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getInt(1) : 0, params);
+        return queryOne(sql, (rs, n) -> rs.getInt(1), params);
     }
 
 
@@ -237,7 +279,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default short queryShort(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getShort(1) : 0, params);
+        return queryOne(sql, (rs, n) -> rs.getShort(1), params);
     }
 
     /**
@@ -259,7 +301,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default byte queryByte(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getByte(1) : 0, params);
+        return queryOne(sql, (rs, n) -> rs.getByte(1), params);
     }
 
     /**
@@ -280,7 +322,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default double queryDouble(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getDouble(1) : 0, params);
+        return queryOne(sql, (rs, n) -> rs.getDouble(1), params);
     }
 
     /**
@@ -301,7 +343,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default float queryFloat(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getFloat(1) : 0, params);
+        return queryOne(sql, (rs, n) -> rs.getFloat(1), params);
     }
 
     /**
@@ -322,7 +364,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default boolean queryBoolean(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() && rs.getBoolean(1), params);
+        return queryOne(sql, (rs, n) -> rs.getBoolean(1), params);
     }
 
     /**
@@ -343,7 +385,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default Timestamp queryTimestamp(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getTimestamp(1) : null, params);
+        return queryOne(sql, (rs, n) -> rs.getTimestamp(1), params);
     }
 
     /**
@@ -364,7 +406,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default Date queryDate(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getDate(1) : null, params);
+        return queryOne(sql, (rs, n) -> rs.getDate(1), params);
     }
 
     /**
@@ -385,7 +427,7 @@ public interface IDao extends Connection {
      * @throws SQLException 执行错误
      */
     default Time queryTime(String sql, Object... params) throws SQLException {
-        return query(sql, (rs, n) -> rs.next() ? rs.getTime(1) : null, params);
+        return queryOne(sql, (rs, n) -> rs.getTime(1), params);
     }
 
     /**
@@ -408,7 +450,7 @@ public interface IDao extends Connection {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    default <T> T query(Paging paging, String sql, IMapper<T> row, Object... params) throws SQLException {
+    default <T> List<T> query(Paging paging, String sql, IMapper<T> row, Object... params) throws SQLException {
         paging.setTotal(this.queryInt(this.totals(sql), params));
         return query(paging(paging, sql), row, params);
     }
@@ -421,7 +463,7 @@ public interface IDao extends Connection {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    default <T> T query(Paging paging, SQL sql, IMapper<T> row) throws SQLException {
+    default <T> List<T> query(Paging paging, SQL sql, IMapper<T> row) throws SQLException {
         return query(paging, sql.content(), row, sql.params());
     }
 
