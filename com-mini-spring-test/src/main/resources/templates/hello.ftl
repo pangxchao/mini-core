@@ -2,13 +2,14 @@
 <html lang="en" >
 <head >
     <meta charset="UTF-8" >
+<#--    <base href="${request.contextPath}/"/>-->
     <meta name="renderer" content="webkit" >
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" >
     <title >hello.ftl</title >
-    <script type="text/javascript" src="layui/jquery-3.3.1.min.js" ></script >
-    <link type="text/css" rel="stylesheet" href="layui/css/layui.css" />
+    <link type="text/css" rel="stylesheet" href="${'layui/css/layui.css'}" />
+    <script type="text/javascript" src="${'layui/jquery-3.3.1.min.js'}" ></script >
     <script type="text/javascript" src="layui/layui.js" ></script >
     <script type="text/javascript" src="mini/mini.js" ></script >
 </head >
@@ -19,7 +20,7 @@
 </div >
 
 <script type="text/javascript" >
-    layui.use(['templates.page'], function () {
+    layui.use(['page'], function () {
         var page = layui.page("#content", {
             elem: "content-page-button",
             count: 200,
@@ -33,7 +34,7 @@
             }
         });
         page.load({
-            url: 'templates.page.htm',
+            url: 'page.htm',
             data: {},
             //form: 'formId',
             complete: function () {

@@ -1,6 +1,5 @@
 /**
  * Created the com.cfinal.gen.GENSqls.java
- *
  * @created 2017年8月1日 上午9:17:08
  * @version 1.0.0
  */
@@ -45,38 +44,36 @@ public class GENSqlList {
                         JSONObject columnItem = columns.getJSONObject(i);
                         allDbName.add(columnItem.getString("COLUMN_NAME"));
                     }
-                    if (GENConfig.PAGING != null) {
-                        JSONArray dataArray = dao.query(GENConfig.PAGING, "select * from " + tableName);
-                        StringBuilder sql = new StringBuilder("insert into ").append(tableName);
-                        sql.append("(").append(StringUtil.join(allDbName, ", ")).append(")\r\n values");
-                        List<String> allValues = new ArrayList<>();
-                        for (int j = 0, size = dataArray.size(); j < size; j++) {
-                            JSONObject data = dataArray.getJSONObject(j);
-                            List<String> values = new ArrayList<>();
-                            for (String columnName : allDbName) {
-                                if (data.get(columnName) == null) {
-                                    values.add("null");
-                                    continue;
-                                }
-                                Reader reader = new StringReader(data.getString(columnName));
-                                BufferedReader buffer = new BufferedReader(reader);
-                                String line, value;
-                                List<String> lineVal = new ArrayList<>();
-                                while ((line = buffer.readLine()) != null) {
-                                    lineVal.add(line);
-                                }
-                                value = StringUtil.join(lineVal, "\\r\\n");
-                                values.add("'" + value + "'");
+                    JSONArray dataArray = dao.query(GENConfig.PAGING, "select * from " + tableName);
+                    StringBuilder sql = new StringBuilder("insert into ").append(tableName);
+                    sql.append("(").append(StringUtil.join(allDbName, ", ")).append(")\r\n values");
+                    List<String> allValues = new ArrayList<>();
+                    for (int j = 0, size = dataArray.size(); j < size; j++) {
+                        JSONObject data = dataArray.getJSONObject(j);
+                        List<String> values = new ArrayList<>();
+                        for (String columnName : allDbName) {
+                            if (data.get(columnName) == null) {
+                                values.add("null");
+                                continue;
                             }
-                            allValues.add("(" + StringUtil.join(values, ", ") + ")");
+                            Reader reader = new StringReader(data.getString(columnName));
+                            BufferedReader buffer = new BufferedReader(reader);
+                            String line, value;
+                            List<String> lineVal = new ArrayList<>();
+                            while ((line = buffer.readLine()) != null) {
+                                lineVal.add(line);
+                            }
+                            value = StringUtil.join(lineVal, "\\r\\n");
+                            values.add("'" + value + "'");
                         }
-                        if (allValues.size() > 0) {
-                            sql.append(StringUtil.join(allValues, ", \r\n"));
-                            writer.write(sql.toString());
-                            writer.write(";");
-                            writer.write("\r\n");
-                            writer.write("\r\n");
-                        }
+                        allValues.add("(" + StringUtil.join(values, ", ") + ")");
+                    }
+                    if (allValues.size() > 0) {
+                        sql.append(StringUtil.join(allValues, ", \r\n"));
+                        writer.write(sql.toString());
+                        writer.write(";");
+                        writer.write("\r\n");
+                        writer.write("\r\n");
                     }
                 }
 

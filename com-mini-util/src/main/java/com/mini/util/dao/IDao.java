@@ -139,71 +139,89 @@ public interface IDao extends Connection {
     /**
      * 查询结果
      * @param sql    SQL
-     * @param mapper 映射器
      * @param params 参数
-     * @param <T>    解析器类型
      * @return 查询结果
      * @throws SQLException 执行错误
      */
-    default <T> List<T> query(String sql, IMapper<T> mapper, Object... params) throws SQLException {
+    default ResultSet query(String sql, Object... params) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql, TYPE_FORWARD_ONLY, CONCUR_READ_ONLY)) {
             IDao.this.fullPreparedStatement(statement, params);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                List<T> result = new ArrayList<>();
-                while (resultSet != null && resultSet.next()) {
-                    int number = resultSet.getRow();
-                    T t = mapper.execute(resultSet, number);
-                    result.add(t);
-                }
-                return result;
-            }
+            return statement.executeQuery();
         }
     }
 
     /**
      * 查询结果
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param <T>    解析器类型
+     * @param sql SQL
      * @return 查询结果
      * @throws SQLException 执行错误
      */
-    default <T> List<T> query(SQL sql, IMapper<T> mapper) throws SQLException {
-        return query(sql.content(), mapper, sql.params());
+    default ResultSet query(SQL sql) throws SQLException {
+        return query(sql.content(), sql.params());
     }
 
     /**
      * 查询结果
      * @param sql    SQL
-     * @param mapper 映射器
+     * @param m      映射器
      * @param params 参数
      * @param <T>    解析器类型
      * @return 查询结果
      * @throws SQLException 执行错误
      */
-    default <T> T queryOne(String sql, IMapper<T> mapper, Object... params) throws SQLException {
-        try (PreparedStatement statement = prepareStatement(sql, TYPE_FORWARD_ONLY, CONCUR_READ_ONLY)) {
-            IDao.this.fullPreparedStatement(statement, params);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet != null && resultSet.next()) {
-                    int number = resultSet.getRow();
-                    return mapper.execute(resultSet, number);
-                }
-                return null;
+    default <T> List<T> query(String sql, IMapper<T> m, Object... params) throws SQLException {
+        ArrayList<T> result = new ArrayList<>();
+        try (ResultSet res = query(sql, params)) {
+            while (res != null && res.next()) {
+                int number = res.getRow();
+                T t = m.execute(res, number);
+                result.add(t);
             }
+            return result;
         }
     }
 
     /**
      * 查询结果
+     * @param sql SQL
+     * @param m   映射器
+     * @param <T> 解析器类型
+     * @return 查询结果
+     * @throws SQLException 执行错误
+     */
+    default <T> List<T> query(SQL sql, IMapper<T> m) throws SQLException {
+        return query(sql.content(), m, sql.params());
+    }
+
+    /**
+     * 查询结果
      * @param sql    SQL
-     * @param mapper 映射器
+     * @param m      映射器
+     * @param params 参数
      * @param <T>    解析器类型
      * @return 查询结果
      * @throws SQLException 执行错误
      */
-    default <T> T queryOne(SQL sql, IMapper<T> mapper) throws SQLException {
-        return queryOne(sql.content(), mapper, sql.params());
+    default <T> T queryOne(String sql, IMapper<T> m, Object... params) throws SQLException {
+        try (ResultSet res = query(sql, params)) {
+            if (res != null && res.next()) {
+                int number = res.getRow();
+                return m.execute(res, number);
+            }
+            return null;
+        }
+    }
+
+    /**
+     * 查询结果
+     * @param sql SQL
+     * @param m   映射器
+     * @param <T> 解析器类型
+     * @return 查询结果
+     * @throws SQLException 执行错误
+     */
+    default <T> T queryOne(SQL sql, IMapper<T> m) throws SQLException {
+        return queryOne(sql.content(), m, sql.params());
     }
 
     /**
@@ -445,26 +463,26 @@ public interface IDao extends Connection {
      * 查询结果
      * @param paging paging 分页器
      * @param sql    SQL
-     * @param row    解析器
+     * @param m      解析器
      * @param params 参数
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    default <T> List<T> query(Paging paging, String sql, IMapper<T> row, Object... params) throws SQLException {
+    default <T> List<T> query(Paging paging, String sql, IMapper<T> m, Object... params) throws SQLException {
         paging.setTotal(this.queryInt(this.totals(sql), params));
-        return query(paging(paging, sql), row, params);
+        return query(paging(paging, sql), m, params);
     }
 
     /**
      * 查询结果
      * @param paging 分页器
      * @param sql    SQL
-     * @param row    解析器
+     * @param m      解析器
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    default <T> List<T> query(Paging paging, SQL sql, IMapper<T> row) throws SQLException {
-        return query(paging, sql.content(), row, sql.params());
+    default <T> List<T> query(Paging paging, SQL sql, IMapper<T> m) throws SQLException {
+        return query(paging, sql.content(), m, sql.params());
     }
 
     /**

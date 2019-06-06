@@ -97,14 +97,18 @@ public class SQLUpdate implements SQL, SQLFragment, SQLFrom<SQLUpdate>, SQLJoin<
         builder.append(UPDATE).append(from());
         // 联合表处理
         String join = SQLUpdate.this.join();
-        if (StringUtil.isNotBlank(join)) {
+        if (!StringUtil.isBlank(join)) {
+            String before = this.before();
+            if (!StringUtil.isBlank(before)) {
+                builder.append(before);
+            }
             builder.append(JOIN);
             builder.append(join);
         }
         builder.append(SET).append(values());
         // 条件处理
         String where = SQLUpdate.this.where();
-        if (StringUtil.isNotBlank(where)) {
+        if (!StringUtil.isBlank(where)) {
             builder.append(WHERE);
             builder.append(where());
         }

@@ -43,12 +43,12 @@ public final class DefaultWhere implements SQLFragment {
 
     /**
      * 添加一个条件
-     * @param name  字段名称
-     * @param value 字段值
+     * @param name 字段名称
+     * @param c    字段值
      * @return 当前对象
      */
-    public DefaultWhere where(String name, String value) {
-        return where(name, "=", value);
+    public DefaultWhere where(String name, String c) {
+        return where(name, c, "?");
     }
 
     /**
@@ -57,7 +57,7 @@ public final class DefaultWhere implements SQLFragment {
      * @return 当前对象
      */
     public DefaultWhere where(String name) {
-        return where(name, "?");
+        return where(name, "=");
     }
 
     @Override

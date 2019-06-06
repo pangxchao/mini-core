@@ -20,7 +20,6 @@ public final class BodyBuilder<V> extends AbstractBuilder<BodyBuilder<V>, V> {
         return this;
     }
 
-
     public BodyBuilder<V> setBody(MediaType mediaType, String content) {
         requestBody = RequestBody.create(mediaType, content);
         return getSelf();

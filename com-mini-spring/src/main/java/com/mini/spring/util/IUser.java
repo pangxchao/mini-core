@@ -3,11 +3,13 @@ package com.mini.spring.util;
 
 import com.mini.util.dao.PKGenerator;
 
+import java.io.Serializable;
+
 /**
  * IUser
  * @author XChao
  */
-public interface IUser {
+public interface IUser extends Serializable {
     String USER_KEY = "MINI_USER_SESSION_KEY";
 
     /**
@@ -15,13 +17,6 @@ public interface IUser {
      * @return the id
      */
     long getId();
-
-    /**
-     * 设置用户ID
-     * @param id the id to set
-     */
-    void setId(long id);
-
 
     /**
      * 重新创建用户token

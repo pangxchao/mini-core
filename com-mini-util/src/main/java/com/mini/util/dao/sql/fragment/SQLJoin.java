@@ -8,6 +8,14 @@ public interface SQLJoin<T extends SQLJoin<T>> {
     DefaultJoin getJoin();
 
     /**
+     * 获取JOIN 前缀
+     * @return LEFT/RIGHT/OUTER
+     */
+    default String before() {
+        return getJoin().before();
+    }
+
+    /**
      * 获取 JOIN 部分片断
      * @return JOIN 部分片断
      */

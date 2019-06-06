@@ -56,74 +56,91 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
     }
 
     public PartBuilder<V> addFormDataPart(String name, Object value) {
-        Object v = value == null ? "" : value; builder.addFormDataPart(name, String.valueOf(v)); return getSelf();
+        Object v = value == null ? "" : value;
+        builder.addFormDataPart(name, String.valueOf(v));
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPart(String name, @Nullable String fileName, RequestBody body) {
-        builder.addFormDataPart(name, fileName, body); return getSelf();
+        builder.addFormDataPart(name, fileName, body);
+        return getSelf();
     }
 
     public PartBuilder<V> addPart(RequestBody body) {
-        builder.addPart(body); return getSelf();
+        builder.addPart(body);
+        return getSelf();
     }
 
     public PartBuilder<V> addPart(Headers headers, RequestBody body) {
-        builder.addPart(headers, body); return getSelf();
+        builder.addPart(headers, body);
+        return getSelf();
     }
 
     public PartBuilder<V> addPart(MultipartBody.Part part) {
-        builder.addPart(part); return getSelf();
+        builder.addPart(part);
+        return getSelf();
     }
 
     public <T> PartBuilder<V> addFormDataPartIterable(String name, Iterable<T> array) {
-        for (T t : array) addFormDataPart(name, t); return getSelf();
+        for (T t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public <T> PartBuilder<V> addFormDataPartIterator(String name, Iterator<T> array) {
-        for (; array.hasNext(); ) addFormDataPart(name, array.next()); return getSelf();
+        for (; array.hasNext(); ) addFormDataPart(name, array.next());
+        return getSelf();
     }
 
     public <T> PartBuilder<V> addFormDataPartArray(String name, T[] array) {
-        for (T t : array) addFormDataPart(name, t); return getSelf();
+        for (T t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, long[] array) {
-        for (long t : array) addFormDataPart(name, t); return getSelf();
+        for (long t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, int[] array) {
-        for (int t : array) addFormDataPart(name, t); return getSelf();
+        for (int t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, short[] array) {
-        for (short t : array) addFormDataPart(name, t); return getSelf();
+        for (short t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, byte[] array) {
-        for (byte t : array) addFormDataPart(name, t); return getSelf();
+        for (byte t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, double[] array) {
-        for (double t : array) addFormDataPart(name, t); return getSelf();
+        for (double t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, float[] array) {
-        for (float t : array) addFormDataPart(name, t); return getSelf();
+        for (float t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, boolean[] array) {
-        for (boolean t : array) addFormDataPart(name, t); return getSelf();
+        for (boolean t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
     public PartBuilder<V> addFormDataPartArray(String name, char[] array) {
-        for (char t : array) addFormDataPart(name, t); return getSelf();
+        for (char t : array) addFormDataPart(name, t);
+        return getSelf();
     }
 
 
     public PartBuilder<V> addPart(String name, String fileName, String contentType, byte[] content) {
         return addPart(MultipartBody.Part.createFormData(name, fileName, new RequestBody() {
             public MediaType contentType() {
-                if (StringUtil.isNotBlank(contentType)) {
+                if (!StringUtil.isBlank(contentType)) {
                     return parse(contentType);
                 } return parse("application/octet-stream");
             }
@@ -141,7 +158,7 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
     public PartBuilder<V> addPart(String name, String fileName, String contentType, long contentLength, InputStream content) {
         return addPart(MultipartBody.Part.createFormData(name, fileName, new RequestBody() {
             public MediaType contentType() {
-                if (StringUtil.isNotBlank(contentType)) {
+                if (!StringUtil.isBlank(contentType)) {
                     return parse(contentType);
                 } return parse("application/octet-stream");
             }
@@ -156,7 +173,6 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
                 }
             }
         }));
-
     }
 
     public PartBuilder<V> addPart(String name, File file, long offset, long contentLength) {

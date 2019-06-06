@@ -1,337 +1,349 @@
 package com.mini.spring.dao;
 
-import com.mini.util.dao.IMapper;
-import com.mini.util.dao.Paging;
-import com.mini.util.dao.SQL;
+import com.mini.util.dao.IDao;
+import com.mini.util.lang.Function;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.List;
+import java.sql.*;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
 
-public abstract class DaoTemplate extends JdbcTemplate {
+public abstract class DaoTemplate extends JdbcTemplate implements IDao {
+    // 事务应用计数，支持嵌套事务
+    private int transRefCount = 0;
+
+    @Autowired
     public DaoTemplate(DataSource dataSource) {
         super(dataSource);
     }
 
-    /**
-     * 执行SQL
-     * @param sql    SQL
-     * @param params 参数
-     * @return 执行结果
-     */
-    public int execute(String sql, Object... params) {
-        return this.update(sql, params);
+    @Nonnull
+    protected Connection getConnection() {
+        DataSource dataSource = obtainDataSource();
+        return DataSourceUtils.getConnection(dataSource);
     }
 
-    /**
-     * 执行SQL
-     * @param sql SQL
-     * @return 执行结果
-     */
-    public int execute(SQL sql) {
-        return execute(sql.content(), sql.params());
+    @Override
+    public Statement createStatement() throws SQLException {
+        return getConnection().createStatement();
     }
 
-    /**
-     * 查询结果
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param params 参数
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public <T> List<T> query(String sql, IMapper<T> mapper, Object... params) {
-        return this.query(sql, params, mapper::execute);
+    @Override
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        return getConnection().prepareStatement(sql);
     }
 
-    /**
-     * 查询结果
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public <T> List<T> query(SQL sql, IMapper<T> mapper) {
-        return query(sql.content(), mapper, sql.params());
+    @Override
+    public CallableStatement prepareCall(String sql) throws SQLException {
+        return getConnection().prepareCall(sql);
     }
 
-    /**
-     * 查询结果
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param params 参数
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public <T> T queryOne(String sql, IMapper<T> mapper, Object... params) {
-        return this.queryForObject(sql, params, mapper::execute);
+    @Override
+    public String nativeSQL(String sql) throws SQLException {
+        return getConnection().nativeSQL(sql);
     }
 
-    /**
-     * 查询结果
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public <T> T queryOne(SQL sql, IMapper<T> mapper) {
-        return queryOne(sql.content(), mapper, sql.params());
+    @Override
+    public void setAutoCommit(boolean autoCommit) throws SQLException {
+        getConnection().setAutoCommit(autoCommit);
     }
 
-    /**
-     * 查询String
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public String queryString(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getString(1), params);
+    @Override
+    public boolean getAutoCommit() throws SQLException {
+        return getConnection().getAutoCommit();
     }
 
-    /**
-     * 查询String
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public String queryString(SQL sql) {
-        return queryString(sql.content(), sql.params());
+    @Override
+    public void commit() throws SQLException {
+        getConnection().commit();
     }
 
-    /**
-     * 查询Long
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public long queryLong(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getLong(1), params);
+    @Override
+    public void rollback() throws SQLException {
+        getConnection().rollback();
     }
 
-    /**
-     * 查询Long
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public long queryLong(SQL sql) {
-        return queryLong(sql.content(), sql.params());
+    @Override
+    public void close() throws SQLException {
+        getConnection().close();
     }
 
-    /**
-     * 查询Integer
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public int queryInt(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getInt(1), params);
+    @Override
+    public boolean isClosed() throws SQLException {
+        return getConnection().isClosed();
     }
 
-
-    /**
-     * 查询Integer
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public int queryInt(SQL sql) {
-        return queryInt(sql.content(), sql.params());
+    @Override
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return getConnection().getMetaData();
     }
 
-
-    /**
-     * 查询Short
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public short queryShort(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getShort(1), params);
+    @Override
+    public void setReadOnly(boolean readOnly) throws SQLException {
+        getConnection().setReadOnly(readOnly);
     }
 
-    /**
-     * 查询Short
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public short queryShort(SQL sql) {
-        return queryShort(sql.content(), sql.params());
+    @Override
+    public boolean isReadOnly() throws SQLException {
+        return getConnection().isReadOnly();
     }
 
-
-    /**
-     * 查询Byte
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public byte queryByte(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getByte(1), params);
+    @Override
+    public void setCatalog(String catalog) throws SQLException {
+        getConnection().setCatalog(catalog);
     }
 
-    /**
-     * 查询Byte
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public byte queryByte(SQL sql) {
-        return queryByte(sql.content(), sql.params());
+    @Override
+    public String getCatalog() throws SQLException {
+        return getConnection().getCatalog();
     }
 
-    /**
-     * 查询Double
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public double queryDouble(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getDouble(1), params);
+    @Override
+    public void setTransactionIsolation(int level) throws SQLException {
+        getConnection().setTransactionIsolation(level);
     }
 
-    /**
-     * 查询Double
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public double queryDouble(SQL sql) {
-        return queryDouble(sql.content(), sql.params());
+    @Override
+    public int getTransactionIsolation() throws SQLException {
+        return getConnection().getTransactionIsolation();
     }
 
-    /**
-     * 查询Float
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public float queryFloat(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getFloat(1), params);
+    @Override
+    public SQLWarning getWarnings() throws SQLException {
+        return getConnection().getWarnings();
     }
 
-    /**
-     * 查询Float
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public float queryFloat(SQL sql) {
-        return queryFloat(sql.content(), sql.params());
+    @Override
+    public void clearWarnings() throws SQLException {
+        getConnection().clearWarnings();
     }
 
-    /**
-     * 查询Boolean
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public boolean queryBoolean(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getBoolean(1), params);
+    @Override
+    public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+        return getConnection().createStatement(resultSetType, resultSetConcurrency);
     }
 
-    /**
-     * 查询Boolean
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public boolean queryBoolean(SQL sql) {
-        return queryBoolean(sql.content(), sql.params());
+    @Override
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
+            throws SQLException {
+        return getConnection().prepareStatement(sql, resultSetType, resultSetConcurrency);
     }
 
-    /**
-     * 查询Timestamp
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public Timestamp queryTimestamp(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getTimestamp(1), params);
+    @Override
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+        return getConnection().prepareCall(sql, resultSetType, resultSetConcurrency);
     }
 
-    /**
-     * 查询Timestamp
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public Timestamp queryTimestamp(SQL sql) {
-        return queryTimestamp(sql.content(), sql.params());
+    @Override
+    public Map<String, Class<?>> getTypeMap() throws SQLException {
+        return getConnection().getTypeMap();
     }
 
-    /**
-     * 查询Date
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public Date queryDate(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getDate(1), params);
+    @Override
+    public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+        getConnection().setTypeMap(map);
     }
 
-    /**
-     * 查询Date
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public Date queryDate(SQL sql) {
-        return queryDate(sql.content(), sql.params());
+    @Override
+    public void setHoldability(int holdability) throws SQLException {
+        getConnection().setHoldability(holdability);
     }
 
-    /**
-     * 查询Time
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    public Time queryTime(String sql, Object... params) {
-        return queryOne(sql, (rs, n) -> rs.getTime(1), params);
+    @Override
+    public int getHoldability() throws SQLException {
+        return getConnection().getHoldability();
     }
 
-    /**
-     * 查询Time
-     * @param sql SQL
-     * @return 查询结果
-     */
-    public Time queryTime(SQL sql) {
-        return queryTime(sql.content(), sql.params());
+    @Override
+    public Savepoint setSavepoint() throws SQLException {
+        return getConnection().setSavepoint();
     }
 
-
-    /**
-     * 查询结果
-     * @param paging paging 分页器
-     * @param sql    SQL
-     * @param row    解析器
-     * @param params 参数
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public <T> List<T> query(Paging paging, String sql, IMapper<T> row, Object... params) {
-        paging.setTotal(this.queryInt(this.totals(sql), params));
-        return query(paging(paging, sql), row, params);
+    @Override
+    public Savepoint setSavepoint(String name) throws SQLException {
+        return getConnection().setSavepoint(name);
     }
 
-    /**
-     * 查询结果
-     * @param paging 分页器
-     * @param sql    SQL
-     * @param row    解析器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public <T> List<T> query(Paging paging, SQL sql, IMapper<T> row) {
-        return query(paging, sql.content(), row, sql.params());
+    @Override
+    public void rollback(Savepoint savepoint) throws SQLException {
+        getConnection().rollback(savepoint);
     }
 
-    /**
-     * 返回查询分页总条数的SQL
-     * @param sql SQL
-     * @return 查询总条数的SQL
-     */
-    protected abstract String totals(String sql);
+    @Override
+    public void releaseSavepoint(Savepoint savepoint) throws SQLException {
+        getConnection().releaseSavepoint(savepoint);
+    }
 
-    /**
-     * 根据分页参数，组装分页查询SQL
-     * @param paging 分页参数
-     * @param sql    基础查询SQL
-     * @return 分页查询SQL
-     */
-    protected abstract String paging(Paging paging, String sql);
+    @Override
+    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
+        return getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
+            int resultSetHoldability) throws SQLException {
+        return getConnection().prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+
+    @Override
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+            int resultSetHoldability) throws SQLException {
+        return getConnection().prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
+        return getConnection().prepareStatement(sql, autoGeneratedKeys);
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
+        return getConnection().prepareStatement(sql, columnIndexes);
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+        return getConnection().prepareStatement(sql, columnNames);
+    }
+
+    @Override
+    public Clob createClob() throws SQLException {
+        return getConnection().createClob();
+    }
+
+    @Override
+    public Blob createBlob() throws SQLException {
+        return getConnection().createBlob();
+    }
+
+    @Override
+    public NClob createNClob() throws SQLException {
+        return getConnection().createNClob();
+    }
+
+    @Override
+    public SQLXML createSQLXML() throws SQLException {
+        return getConnection().createSQLXML();
+    }
+
+    @Override
+    public boolean isValid(int timeout) throws SQLException {
+        return getConnection().isClosed();
+    }
+
+    @Override
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        getConnection().setClientInfo(name, value);
+    }
+
+    @Override
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        getConnection().setClientInfo(properties);
+    }
+
+    @Override
+    public String getClientInfo(String name) throws SQLException {
+        return getConnection().getClientInfo(name);
+    }
+
+    @Override
+    public Properties getClientInfo() throws SQLException {
+        return getConnection().getClientInfo();
+    }
+
+    @Override
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return getConnection().createArrayOf(typeName, elements);
+    }
+
+    @Override
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return getConnection().createStruct(typeName, attributes);
+    }
+
+    @Override
+    public void setSchema(String schema) throws SQLException {
+        getConnection().setSchema(schema);
+    }
+
+    @Override
+    public String getSchema() throws SQLException {
+        return getConnection().getSchema();
+    }
+
+    @Override
+    public void abort(Executor executor) throws SQLException {
+        getConnection().abort(executor);
+    }
+
+    @Override
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        getConnection().setNetworkTimeout(executor, milliseconds);
+    }
+
+    @Override
+    public int getNetworkTimeout() throws SQLException {
+        return getConnection().getNetworkTimeout();
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) throws SQLException {
+        return getConnection().unwrap(clazz);
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> clazz) throws SQLException {
+        return getConnection().isWrapperFor(clazz);
+    }
+
+    @Override
+    public boolean transaction(int level, Function.FR1<Boolean, IDao> transaction) throws SQLException {
+        // 第一次开启事务
+        if (this.transRefCount == 0) {
+            this.setAutoCommit(false);
+            this.setTransactionIsolation(level);
+        }
+        // 事务执行阶段
+        Savepoint savepoint = null;
+        boolean commit = false;
+        try {
+            this.transRefCount++;
+            savepoint = this.setSavepoint();
+            commit    = transaction.apply(this);
+        } finally {
+            this.transRefCount--;
+            // 回滚事务到设置的回滚点
+            if (!commit && savepoint != null) {
+                try {
+                    this.rollback(savepoint);
+                } catch (SQLException ignored) {}
+            }
+            // 如果事务计数为0时,则表示所有事务完成
+            if (this.transRefCount == 0) {
+                boolean rollback = true;
+                try {
+                    if (commit) {
+                        this.commit();
+                        rollback = false;
+                    }
+                } finally {
+                    try {
+                        if (rollback) {
+                            commit = false;
+                            this.rollback();
+                        }
+                    } finally {
+                        this.setAutoCommit(true);
+                    }
+                }
+            }
+        }
+        return commit;
+    }
 }

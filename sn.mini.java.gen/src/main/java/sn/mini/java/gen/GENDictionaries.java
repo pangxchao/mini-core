@@ -17,7 +17,6 @@ import java.util.Map;
 
 /**
  * com.cfinal.gen.GENDictionaries.java
- *
  * @author XChao
  */
 public class GENDictionaries {
@@ -38,8 +37,10 @@ public class GENDictionaries {
             font.setFontHeightInPoints((short) 12);
 
             HSSFCellStyle style = workBook.createCellStyle();
-            style.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平居中
-            style.setVerticalAlignment(HSSFCellStyle.ALIGN_LEFT);// 垂直居中
+            // 水平居中
+            style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            // 垂直居中
+            style.setVerticalAlignment(HSSFCellStyle.ALIGN_LEFT);
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
             style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
             style.setBorderRight(HSSFCellStyle.BORDER_THIN);
@@ -58,31 +59,37 @@ public class GENDictionaries {
             for (int i = 0; i < 9; i++) {
                 sheet.setColumnWidth(i, 3000);
             }
-            sheet.setColumnWidth(1, 6000); // 设置第二列宽， 字段名称列
-            sheet.setColumnWidth(2, 4000); // 设置第二列宽， 字段名称列
-            sheet.setColumnWidth(4, 9000); // 设置第五列宽， 字段说明列
+            // 设置第二列宽， 字段名称列
+            sheet.setColumnWidth(1, 6000);
+            // 设置第二列宽， 字段名称列
+            sheet.setColumnWidth(2, 4000);
+            // 设置第五列宽， 字段说明列
+            sheet.setColumnWidth(4, 9000);
 
             HSSFRow row;
             HSSFCell cell;
-            try (IDao dao = GENConfig.getDao();) {
-                // JSONArray arrays = CFDBTables.getCreateTable(db, tableName)
-                List<String> tables = dao.query(rs -> {
-                    return rs.getString(1);
-                }, "show tables");
+            String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "说明", "主键", "为空", "自增", "默认值"};
+            String[] cellValue = new String[]{"COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", "REMARKS", "COLUMN_NAME", "IS_NULLABLE", "IS_AUTOINCREMENT",
+                    "COLUMN_DEF"};
+            try (IDao dao = GENConfig.getDao()) {
+                List<String> tables = dao.query(rs -> rs.getString(1), "show tables");
                 for (int i = 0, rowNum = 0, len = tables.size(); i < len; i++) {
-                    // 该段是设置整个每张表的名称行
-                    sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 8)); // 合并单元格
-                    row = sheet.createRow(rowNum);// 创建表格行
-                    row.setHeightInPoints(15);// 设置行高 405
+                    // 合并单元格
+                    sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 8));
+                    // 创建表格行
+                    row = sheet.createRow(rowNum);
+                    // 设置行高 405
+                    row.setHeightInPoints(15);
+
+                    // 表名称标题栏
                     cell = row.createCell(0);
                     cell.setCellValue(tables.get(i));
                     cell.setCellStyle(style);
 
-                    // 该段是设置每张表的每个列说明行
                     rowNum = rowNum + 1;
-                    row = sheet.createRow(rowNum);// 创建表格行
-                    row.setHeightInPoints(15);// 设置行高 405
-                    String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "说明", "主键", "为空", "自增", "默认值"};
+                    row    = sheet.createRow(rowNum);
+                    row.setHeightInPoints(15);
+
                     for (int j = 0, l = cellTitle.length; j < l; j++) {
                         cell = row.createCell(j);
                         cell.setCellValue(cellTitle[j]);
@@ -97,13 +104,13 @@ public class GENDictionaries {
                     for (int j = 0, size = columns.size(); j < size; j++) {
                         JSONObject columnItem = columns.getJSONObject(j);
                         rowNum = rowNum + 1;
-                        row = sheet.createRow(rowNum);// 创建表格行
-                        row.setHeightInPoints(15);// 设置行高 405
+                        row    = sheet.createRow(rowNum);
+                        row.setHeightInPoints(15);
                         cell = row.createCell(0);
                         cell.setCellValue(String.valueOf(j + 1));
                         cell.setCellStyle(style);
 
-                        String[] cellValue = new String[]{"COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", "REMARKS", "COLUMN_NAME", "IS_NULLABLE", "IS_AUTOINCREMENT", "COLUMN_DEF"};
+
                         for (int k = 0, lv = cellValue.length; k < lv; k++) {
                             cell = row.createCell((k + 1));
                             if ("COLUMN_NAME".equals(cellValue[k])) {
@@ -115,9 +122,10 @@ public class GENDictionaries {
                             cell.setCellStyle(style);
                         }
                     }
+                    // 每个表结束之后有一个空白行
                     rowNum = rowNum + 1;
-                    row = sheet.createRow(rowNum);// 创建表格行
-                    row.setHeightInPoints(15);// 设置行高 405
+                    row    = sheet.createRow(rowNum);
+                    row.setHeightInPoints(15);
                 }
             }
             workBook.write(out);

@@ -9,7 +9,7 @@ public interface IMapper<T> {
      * 结果集映射器
      * @param rs     结果集
      * @param number Row Number
-     * @return 查询结果
+     * @return 解析结果
      * @throws SQLException 转换错误
      */
     T execute(ResultSet rs, int number) throws SQLException;

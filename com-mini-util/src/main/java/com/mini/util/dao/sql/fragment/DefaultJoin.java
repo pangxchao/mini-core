@@ -11,6 +11,34 @@ public final class DefaultJoin implements SQLFragment {
     private final List<SQLFragment> ones = new ArrayList<>();
     private String connector = SQL.AND;
     private SQLFragment content;
+    private String before;
+
+    /**
+     * LEFT JOIN 前缀
+     * @return 当前对象
+     */
+    public DefaultJoin left() {
+        this.before = SQL.LEFT;
+        return this;
+    }
+
+    /**
+     * RIGHT JOIN 前缀
+     * @return 当前对象
+     */
+    public DefaultJoin right() {
+        this.before = SQL.RIGHT;
+        return this;
+    }
+
+    /**
+     * OUTER JOIN 前缀
+     * @return 当前对象
+     */
+    public DefaultJoin outer() {
+        this.before = SQL.OUTER;
+        return this;
+    }
 
     /**
      * 设置 FROM 对象
@@ -109,8 +137,16 @@ public final class DefaultJoin implements SQLFragment {
         return on(name, "?");
     }
 
+    /**
+     * 获取JOIN 前缀
+     * @return LEFT/RIGHT/OUTER
+     */
+    public String before() {
+        return before;
+    }
+
     @Override
-    public  String content() {
+    public String content() {
         if (content == null) return null;
         return StringUtil.join(" ", content.content(), "(", StringUtil.join(connector, ones.stream().map(SQLFragment::content).toArray()), ")");
     }

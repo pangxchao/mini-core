@@ -36,18 +36,8 @@ public final class FormBuilder<V> extends AbstractBuilder<FormBuilder<V>, V> {
         return getSelf();
     }
 
-    public <T> FormBuilder<V> addIterableEncoded(String name, Iterable<T> array) {
-        for (T t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
     public <T> FormBuilder<V> addIterator(String name, Iterator<T> array) {
         while (array.hasNext()) add(name, array.next());
-        return getSelf();
-    }
-
-    public <T> FormBuilder<V> addIteratorEncoded(String name, Iterator<T> array) {
-        while (array.hasNext()) addEncoded(name, array.next());
         return getSelf();
     }
 
@@ -96,49 +86,5 @@ public final class FormBuilder<V> extends AbstractBuilder<FormBuilder<V>, V> {
         return getSelf();
     }
 
-    public <T> FormBuilder<V> addArrayEncode(String name, T[] array) {
-        for (T t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, long[] array) {
-        for (long t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, int[] array) {
-        for (int t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, short[] array) {
-        for (short t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, byte[] array) {
-        for (byte t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, double[] array) {
-        for (double t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, float[] array) {
-        for (float t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, boolean[] array) {
-        for (boolean t : array) addEncoded(name, t);
-        return getSelf();
-    }
-
-    public FormBuilder<V> addArrayEncode(String name, char[] array) {
-        for (char t : array) addEncoded(name, t);
-        return getSelf();
-    }
 }
 

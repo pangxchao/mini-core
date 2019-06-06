@@ -1,7 +1,5 @@
 package com.mini.util.dao;
 
-import java.sql.SQLException;
-
 public interface SQL {
     String REPLACE = " REPLACE ";
     String INSERT = " INSERT ";

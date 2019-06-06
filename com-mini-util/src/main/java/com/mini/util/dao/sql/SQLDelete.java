@@ -73,13 +73,17 @@ public class SQLDelete implements SQL, SQLFragment, SQLFrom<SQLDelete>, SQLJoin<
         builder.append(DELETE).append(FROM).append(from());
         // 联合表处理
         String join = SQLDelete.this.join();
-        if (StringUtil.isNotBlank(join)) {
+        if (!StringUtil.isBlank(join)) {
+            String before = this.before();
+            if (!StringUtil.isBlank(before)) {
+                builder.append(before);
+            }
             builder.append(JOIN);
             builder.append(join);
         }
         // 条件处理
         String where = SQLDelete.this.where();
-        if (StringUtil.isNotBlank(where)) {
+        if (!StringUtil.isBlank(where)) {
             builder.append(WHERE);
             builder.append(where());
         }

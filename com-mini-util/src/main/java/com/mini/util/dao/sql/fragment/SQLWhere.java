@@ -48,12 +48,12 @@ public interface SQLWhere<T extends SQLWhere<T>> {
 
     /**
      * 添加一个条件
-     * @param name  字段名称
-     * @param value 字段值
+     * @param name 字段名称
+     * @param c    连接符号
      * @return 当前对象
      */
-    default T where(String name, String value) {
-        return where(name, "=", value);
+    default T where(String name, String c) {
+        return where(name, c, "?");
     }
 
     /**
@@ -62,7 +62,7 @@ public interface SQLWhere<T extends SQLWhere<T>> {
      * @return 当前对象
      */
     default T where(String name) {
-        return where(name, "?");
+        return where(name, "=");
     }
 
 }

@@ -1,146 +1,63 @@
-create database if not exists mengyi_common; 
+create database if not exists mengyi_group; 
 
-drop table if exists advertisement;
-CREATE TABLE `advertisement` (
-  `adv_id` bigint(20) NOT NULL,
-  `adv_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0:手机App启动广告图片',
-  `adv_cloud_id` bigint(20) NOT NULL COMMENT '云节点ID',
-  `adv_file_url` varchar(255) NOT NULL COMMENT '文件URL',
-  PRIMARY KEY (`adv_id`)
+drop table if exists group_enter_info;
+CREATE TABLE `group_enter_info` (
+  `group_id` bigint(20) NOT NULL COMMENT '集团ID',
+  `group_name` varchar(20) NOT NULL COMMENT '集团名称',
+  `group_address` varchar(100) DEFAULT NULL COMMENT '集团地址',
+  `group_zipcode` varchar(10) DEFAULT NULL COMMENT '集团邮编',
+  `group_linkman` varchar(10) DEFAULT NULL COMMENT '集团联系人',
+  `group_phone` varchar(20) DEFAULT NULL COMMENT '集团联系电话',
+  `group_email` varchar(50) DEFAULT NULL COMMENT '集团联系邮箱地址',
+  `group_job` varchar(50) DEFAULT NULL COMMENT '集团联系人职位',
+  `group_auth_num` int(11) NOT NULL DEFAULT '0' COMMENT '集团购买用户数',
+  `group_give_num` int(11) NOT NULL DEFAULT '0' COMMENT '赠送用户数',
+  `group_user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '集团拥有者ID',
+  `group_buy_time` bigint(20) DEFAULT NULL COMMENT '购买时间',
+  `group_expired` bigint(20) DEFAULT NULL COMMENT '到期时间',
+  `group_expired_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '将VIP时间写入用户数据',
+  `group_cloud_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '集团专属云节点',
+  `group_tool_num` int(11) NOT NULL DEFAULT '0' COMMENT '集团使用制作工具数量',
+  `group_is_join` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否台允许加入',
+  `group_join_verify` tinyint(4) NOT NULL DEFAULT '1' COMMENT '加入时是否需要验证',
+  `group_promise` varchar(255) DEFAULT NULL COMMENT '集团承诺书附件地址',
+  `group_promise_cloud_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '承诺书附件所有云节点ID',
+  `group_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态, 0-未上传承诺书,1-已上传承诺书,2-承诺书已审核通过,3-承诺书审核未通过',
+  `group_update_time` timestamp NOT NULL DEFAULT '2019-01-01 00:00:00' COMMENT '最后修改时间',
+  PRIMARY KEY (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+drop table if exists group_enter_user;
+CREATE TABLE `group_enter_user` (
+  `ug_id` bigint(20) NOT NULL,
+  `ug_user_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `ug_group_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '集团ID',
+  `ug_identity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0-申请加入，1-普通用户，2-管理员',
+  `ug_use_tool` tinyint(4) NOT NULL DEFAULT '0' COMMENT '1-可以使用制作工具，0-不可以使用制作工具',
+  `ug_create` bigint(20) NOT NULL DEFAULT '0' COMMENT '创建日期',
+  PRIMARY KEY (`ug_id`),
+  UNIQUE KEY `UQ_group_enter_user` (`ug_user_id`,`ug_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-drop table if exists cloud_info;
-CREATE TABLE `cloud_info` (
-  `cloud_id` bigint(20) NOT NULL COMMENT '云节点ID',
-  `cloud_name` varchar(255) NOT NULL COMMENT '云节点名称',
-  `cloud_host` varchar(255) NOT NULL COMMENT '云节点域名',
-  `cloud_host_cdn` varchar(255) DEFAULT NULL,
-  `cloud_code` varchar(255) NOT NULL COMMENT '云节点验证字符串',
-  `cloud_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '云节点类型。 0；系统云，1：蒙以云，2：其它云',
-  PRIMARY KEY (`cloud_id`)
+drop table if exists group_gen_info;
+CREATE TABLE `group_gen_info` (
+  `gen_id` bigint(20) NOT NULL,
+  `gen_group_id` bigint(20) NOT NULL,
+  `gen_start` int(11) NOT NULL DEFAULT '0',
+  `gen_number` int(11) NOT NULL DEFAULT '0',
+  `gen_next` int(11) NOT NULL DEFAULT '0',
+  `gen_prefix` varchar(20) NOT NULL,
+  `gen_create` bigint(20) NOT NULL,
+  PRIMARY KEY (`gen_id`),
+  KEY `IX_gen_group_id` (`gen_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-drop table if exists email_verify;
-CREATE TABLE `email_verify` (
-  `email_verify_id` bigint(20) NOT NULL COMMENT '验证码ID',
-  `email_verify_val` varchar(100) NOT NULL COMMENT '发送验证码油箱地址',
-  `email_verify_code` varchar(10) NOT NULL COMMENT '以送验证码内容',
-  `email_verify_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '发送验证码时间',
-  `email_verify_count` int(11) NOT NULL DEFAULT '0' COMMENT '已发送次数',
-  PRIMARY KEY (`email_verify_id`),
-  UNIQUE KEY `UQ_email_verify_val` (`email_verify_val`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+insert into group_enter_info(group_id, group_name, group_address, group_zipcode, group_linkman, group_phone, group_email, group_job, group_auth_num, group_give_num, group_user_id, group_buy_time, group_expired, group_expired_type, group_cloud_id, group_tool_num, group_is_join, group_join_verify, group_promise, group_promise_cloud_id, group_status, group_update_time)
+ values('359318568388526083', '测试集团', '1111222', null, '1111', '13200000001', null, null, '10', '5', '329476854563996172', '1537200000000', '1538236800000', '0', '0', '0', '1', '0', null, '0', '0', '2019-01-01 00:00:00.0');
 
-drop table if exists hot_search_info;
-CREATE TABLE `hot_search_info` (
-  `hot_id` bigint(20) NOT NULL,
-  `hot_name` varchar(20) NOT NULL,
-  `hot_value` double NOT NULL,
-  PRIMARY KEY (`hot_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+insert into group_enter_user(ug_id, ug_user_id, ug_group_id, ug_identity, ug_use_tool, ug_create)
+ values('359318676547043843', '329480881800478988', '359318568388526083', '1', '1', '1537274648307');
 
-drop table if exists init_parameter;
-CREATE TABLE `init_parameter` (
-  `init_id` int(11) NOT NULL AUTO_INCREMENT,
-  `init_name` varchar(100) NOT NULL,
-  `init_value` varchar(255) NOT NULL,
-  `init_introduction` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`init_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
-
-drop table if exists label_info;
-CREATE TABLE `label_info` (
-  `label_id` bigint(20) NOT NULL,
-  `label_name` varchar(20) NOT NULL,
-  `label_value` double NOT NULL DEFAULT '0',
-  PRIMARY KEY (`label_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists phone_verify;
-CREATE TABLE `phone_verify` (
-  `verify_id` bigint(20) NOT NULL COMMENT '验证码ID',
-  `verify_phone` varchar(20) NOT NULL COMMENT '发送验证码手机号',
-  `verify_code` varchar(10) NOT NULL COMMENT '以送验证码内容',
-  `verify_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '发送验证码时间',
-  `verify_count` int(11) NOT NULL DEFAULT '0' COMMENT '已发送次数',
-  PRIMARY KEY (`verify_id`),
-  UNIQUE KEY `UQ_verify_phone` (`verify_phone`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists queue_in_delete;
-CREATE TABLE `queue_in_delete` (
-  `queue_in_id` bigint(20) NOT NULL,
-  `queue_in_cloud_id` bigint(20) NOT NULL,
-  `queue_in_file_url` varchar(255) NOT NULL,
-  `queue_in_update` bigint(20) NOT NULL,
-  `queue_in_count` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`queue_in_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists queue_out_delete;
-CREATE TABLE `queue_out_delete` (
-  `queue_out_id` bigint(20) NOT NULL,
-  `queue_out_cloud_id` bigint(20) NOT NULL,
-  `queue_out_file_url` varchar(255) NOT NULL,
-  `queue_out_update` bigint(20) NOT NULL,
-  `queue_out_count` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`queue_out_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists region_info;
-CREATE TABLE `region_info` (
-  `region_id` bigint(20) NOT NULL,
-  `region_name` varchar(100) NOT NULL,
-  `region_city_name` varchar(20) DEFAULT NULL,
-  `region_parent_id` bigint(20) DEFAULT '0',
-  `region_id_uri` varchar(100) NOT NULL,
-  `region_name_uri` varchar(255) NOT NULL,
-  `region_lng` double NOT NULL DEFAULT '0',
-  `region_lat` double NOT NULL DEFAULT '0',
-  PRIMARY KEY (`region_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists report_info;
-CREATE TABLE `report_info` (
-  `report_id` bigint(20) NOT NULL,
-  `report_target_id` bigint(20) NOT NULL COMMENT '举报目标ID',
-  `report_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '举报对象0-知识圈, 1:tdy',
-  `report_describe` text NOT NULL COMMENT '举报描述',
-  `report_cloud_id` bigint(20) DEFAULT '0' COMMENT '附件上传云节点ID',
-  `report_image_url` text COMMENT '举报图片-选填，可多选',
-  `report_link_list` varchar(255) DEFAULT NULL COMMENT '联系方式',
-  `report_time` datetime NOT NULL COMMENT '举报时间',
-  PRIMARY KEY (`report_id`),
-  KEY `IX_report_target_id` (`report_target_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='举报';
-
-drop table if exists school_info;
-CREATE TABLE `school_info` (
-  `school_id` bigint(20) NOT NULL COMMENT '学校/单位ID',
-  `school_name` varchar(100) NOT NULL COMMENT '学校/单位名称',
-  `school_count` int(11) NOT NULL DEFAULT '0' COMMENT '学校/单位使用次数',
-  PRIMARY KEY (`school_id`),
-  UNIQUE KEY `UQ_school_name` (`school_name`),
-  KEY `IX_school_name` (`school_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists send_email_logger;
-CREATE TABLE `send_email_logger` (
-  `email_logger_id` bigint(20) NOT NULL,
-  `email_logger_nick` varchar(100) NOT NULL,
-  `email_logger_target` varchar(100) NOT NULL,
-  `email_logger_subject` varchar(255) NOT NULL,
-  `email_logger_content` text NOT NULL,
-  `email_logger_time` bigint(20) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`email_logger_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-drop table if exists send_mobile_logger;
-CREATE TABLE `send_mobile_logger` (
-  `mobile_logger_id` bigint(20) NOT NULL,
-  `mobile_logger_target` varchar(20) NOT NULL,
-  `mobile_logger_content` text NOT NULL,
-  `mobile_logger_time` bigint(20) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`mobile_logger_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+insert into group_gen_info(gen_id, gen_group_id, gen_start, gen_number, gen_next, gen_prefix, gen_create)
+ values('359318676547044099', '359318568388526083', '1', '1', '2', 'cs_', '1537274648307');
 

@@ -1,30 +1,29 @@
 package com.mini.util.dao.mapper;
 
 import com.mini.util.dao.IRow;
+import com.mini.util.dao.SQLValue;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
-public final class MapMapper extends AbstractMapper<Map<String, Object>> {
+public final class MapMapper extends AbstractMapper<SQLValue> {
     public static final MapMapper INSTANCE = new MapMapper();
 
     private MapMapper() {}
 
     @Override
-    public Map<String, Object> execute(ResultSet rs, int number) throws SQLException {
+    public SQLValue execute(ResultSet rs, int number) throws SQLException {
+        SQLValue value = new SQLValue();
         ResultSetMetaData metaData = rs.getMetaData();
-        Map<String, Object> map = new HashMap<>();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             String clazz = metaData.getColumnClassName(i);
             IRow<?> row = getRow(clazz);
             if (row == null) continue;
 
             String key = metaData.getColumnLabel(i);
-            map.put(key, row.execute(rs, i));
+            value.put(key, row.execute(rs, i));
         }
-        return map;
+        return value;
     }
 }

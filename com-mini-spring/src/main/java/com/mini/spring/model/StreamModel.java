@@ -5,6 +5,7 @@ import com.mini.util.lang.TypeUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.View;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -79,12 +80,12 @@ public final class StreamModel implements View {
     }
 
     @Override
-    public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void render(Map<String, ?> model, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) throws Exception {
         try (OutputStream outputStream = response.getOutputStream();
              InputStream inputStream = this.getInputStream()) {
             try {
                 // 设置文件下载的头信息
-                if (StringUtil.isNotBlank(this.fileName)) {
+                if (!StringUtil.isBlank(this.fileName)) {
                     String fileName = new String(this.fileName.getBytes(), "ISO8859-1");
                     response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
                 }

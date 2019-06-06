@@ -14,7 +14,10 @@ public final class HttpUtil {
      */
     public static long getContentLength(Response response) {
         String contentLength = response.header("Content-Length");
-        return contentLength == null || contentLength.trim().length() == 0 ? 0 : Long.valueOf(contentLength);
+        if (contentLength == null || contentLength.trim().length() == 0) {
+            return 0;
+        }
+        return Long.valueOf(contentLength);
     }
 
     /**

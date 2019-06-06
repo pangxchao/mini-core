@@ -29,13 +29,19 @@ public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoin<
      * @param key 字段集合
      * @return 当前对象
      */
-    public final SQLSelect addKeys(String... key) {
+    public final SQLSelect keys(String... key) {
         Collections.addAll(keys, key);
         return this;
     }
 
-    public final SQLSelect addKeyAs(String key, String alisa) {
-        return addKeys(StringUtil.join("", key, AS, alisa));
+    /**
+     * 添加单个查询字段和别名
+     * @param key   查询字段
+     * @param alisa 别名
+     * @return 当前对象
+     */
+    public final SQLSelect key(String key, String alisa) {
+        return keys(StringUtil.join("", key, AS, alisa));
     }
 
     /**
@@ -120,32 +126,36 @@ public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoin<
         builder.append(FROM).append(from());
         // 联合表处理
         String join = SQLSelect.this.join();
-        if (StringUtil.isNotBlank(join)) {
+        if (!StringUtil.isBlank(join)) {
+            String before = this.before();
+            if (!StringUtil.isBlank(before)) {
+                builder.append(before);
+            }
             builder.append(JOIN);
             builder.append(join);
         }
         // 条件处理
         String where = SQLSelect.this.where();
-        if (StringUtil.isNotBlank(where)) {
+        if (!StringUtil.isBlank(where)) {
             builder.append(WHERE);
             builder.append(where());
         }
         // 分组处理
         String group = SQLSelect.this.group();
-        if (StringUtil.isNotBlank(group)) {
+        if (!StringUtil.isBlank(group)) {
             builder.append(GROUP);
             builder.append(BY);
             builder.append(group);
         }
         // 结果过虑
         String having = SQLSelect.this.group();
-        if (StringUtil.isNotBlank(having)) {
+        if (!StringUtil.isBlank(having)) {
             builder.append(HAVING);
             builder.append(having);
         }
         // 处理排序
         String order = SQLSelect.this.order();
-        if (StringUtil.isNotBlank(order)) {
+        if (!StringUtil.isBlank(order)) {
             builder.append(ORDER);
             builder.append(BY);
             builder.append(order);

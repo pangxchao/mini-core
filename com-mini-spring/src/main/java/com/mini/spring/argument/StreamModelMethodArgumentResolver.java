@@ -19,7 +19,7 @@ public class StreamModelMethodArgumentResolver implements HandlerMethodArgumentR
 
     @Override
     public Object resolveArgument(@Nonnull MethodParameter parameter, ModelAndViewContainer mavContainer, @Nonnull NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory){
+            WebDataBinderFactory binderFactory) {
         return new StreamModel();
     }
 }

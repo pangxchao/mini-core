@@ -7,7 +7,7 @@ import java.util.UUID;
  * 主键获取,规则：当前时间缀转36进制字符串 + 两位36进制IP码 + 一位36进制随机码
  * @author XChao
  */
-public class PKGenerator {
+public final class PKGenerator {
 	private static final long BASE_TIME = 1451606400000L;
 	private static final PKGenerator INSTANCE = new PKGenerator();
 	private final static char[] DIGITS = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N',
