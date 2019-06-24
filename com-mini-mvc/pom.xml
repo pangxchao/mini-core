@@ -5,55 +5,56 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mini</groupId>
-    <artifactId>code</artifactId>
+    <artifactId>mvc</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>com-mini-code</name>
-    <description>com mini code</description>
 
+    <name>com-mini-mvc</name>
+    <description>com mini mvc</description>
 
-    <!-- 基础属性配置 -->
     <properties>
-        <junit.version>4.12</junit.version>
+        <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-    <!-- 依赖配置 -->
     <dependencies>
-        <!-- 自定义工具 -->
+        <!-- 公共工具类依赖 -->
         <dependency>
             <groupId>com.mini</groupId>
-            <artifactId>mvc</artifactId>
+            <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- EXCEL 工作表生成工具 -->
+        <!-- 谷哥以来注入 Web 实现 -->
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.5-FINAL</version>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>4.2.2</version>
         </dependency>
 
-        <!-- java 源码生成 -->
+
+        <!-- servlet api -->
         <dependency>
-            <groupId>com.squareup</groupId>
-            <artifactId>javapoet</artifactId>
-            <version>1.11.1</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- JUNIT 测试 -->
+        <!-- 测试工具 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
+
     </dependencies>
 
-    <!-- 插件配置 -->
     <build>
-        <!-- 设置编译属性 -->
         <defaultGoal>compile</defaultGoal>
         <plugins>
             <plugin>
@@ -61,8 +62,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
