@@ -5,17 +5,17 @@
  */
 package sn.mini.java.jdbc.util;
 
+import sn.mini.java.jdbc.IDao;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import sn.mini.java.jdbc.IDao;
 
 /**
  * sn.mini.dao.util.DaoThreadLocal.java
  * @author XChao
  */
 public class DaoThreadLocal extends ThreadLocal<Map<String, IDao>> {
-	public Map<String, IDao> initialValue() {
-		return new ConcurrentHashMap<String, IDao>(); // 保存当前线程的所有数据库连接
-	}
+    public Map<String, IDao> initialValue() {
+        return new ConcurrentHashMap<>();
+    }
 }

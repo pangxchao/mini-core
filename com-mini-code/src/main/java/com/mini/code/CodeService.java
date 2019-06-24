@@ -18,15 +18,22 @@ public final class CodeService {
         System.out.println("========= Start Code Service =======");
         System.out.println("====================================");
 
-        // 生成类信息
+
+        // /**
+        //  * ${JAVA_NAME}.java
+        //  * @author xchao
+        //  */
+        // public interface ${JAVA_NAME}
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(CLASS_NAME)
                 .addModifiers(PUBLIC)
                 .addJavadoc("$L.java \n", CLASS_NAME)
-                .addJavadoc("@author xchao \n")
-                .addMethod(MethodSpec.methodBuilder("get" + CodeDao.CLASS_NAME)
-                        .addModifiers(PUBLIC, ABSTRACT)
-                        .returns(ClassName.get(Config.PACKAGE_NAME, CodeDao.CLASS_NAME))
-                        .build());
+                .addJavadoc("@author xchao \n");
+
+        // InitInfoDao getInitInfoDao();
+        builder.addMethod(MethodSpec.methodBuilder("get" + CodeDao.CLASS_NAME)
+                .addModifiers(PUBLIC, ABSTRACT)
+                .returns(ClassName.get(Config.PACKAGE_NAME, CodeDao.CLASS_NAME))
+                .build());
 
         // 生成文件信息
         JavaFile javaFile = JavaFile.builder(Config.PACKAGE_NAME, builder.build()).build();

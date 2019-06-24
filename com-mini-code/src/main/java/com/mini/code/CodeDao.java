@@ -1,7 +1,9 @@
 package com.mini.code;
 
+import com.mini.dao.IBase;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
@@ -15,11 +17,10 @@ public final class CodeDao {
         System.out.println("====================================");
         System.out.println("========= Start Code Dao ===========");
         System.out.println("====================================");
-
-        // 生成类信息
+        ClassName beanClassName = ClassName.get(Config.PACKAGE_NAME, CodeBean.CLASS_NAME);
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(CLASS_NAME)
                 .addModifiers(PUBLIC)
-                .addSuperinterface(ClassName.get(Config.PACKAGE_NAME, CodeDaoBase.CLASS_NAME))
+                .addSuperinterface(ParameterizedTypeName.get(ClassName.get(IBase.class), beanClassName))
                 .addJavadoc("$L.java \n", CLASS_NAME)
                 .addJavadoc("@author xchao \n");
 

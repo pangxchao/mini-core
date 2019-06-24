@@ -2,11 +2,17 @@ package com.mini.code;
 
 public class CodeAll {
     public static void main(String[] args) throws Exception {
-        CodeEntity.main(args);
+        // Bean 代码生成
+        CodeBean.main(args);
+
+        // Mapper 代码生成
         CodeMapper.main(args);
-        CodeDaoBase.main(args);
+
+        // Dao 代码生成
         CodeDao.main(args);
         CodeDaoImpl.main(args);
+
+        // Service 代码生成
         CodeService.main(args);
         CodeServiceImpl.main(args);
     }

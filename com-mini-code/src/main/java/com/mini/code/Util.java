@@ -1,6 +1,6 @@
 package com.mini.code;
 
-import com.mini.util.dao.IDao;
+import com.mini.dao.IDao;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -272,16 +272,6 @@ public final class Util {
     }
 
 
-    ///**
-    // * 获取代码输出文件的绝对路径
-    // * @param fileName 文件名
-    // * @return 文件绝对路径
-    // */
-    //public static File getOutFile(String fileName) {
-    //    File file = new File(Config.CLASS_PATH);
-    //    String path = PACKAGE_NAME.replace(".", "/");
-    //    return new File(new File(file, path), fileName);
-    //}
 
     /**
      * 将数据库的名称转换成 JAVA 的名称
@@ -291,21 +281,6 @@ public final class Util {
     public static String toFieldName(String name) {
         return name.replaceFirst(REGEX, "");
     }
-
-    ///**
-    // * 翻译指定文件模板
-    // * @param data 模板数据
-    // * @param name 模板文件名称
-    // * @param file 输出代码文件
-    // */
-    //public static void template(Map<String, Object> data, String name, File file) throws Exception {
-    //    Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
-    //    configuration.setDirectoryForTemplateLoading(new File(Config.TEMPLATE_PATH));
-    //    try (Writer out = new OutputStreamWriter(new FileOutputStream(file))) {
-    //        Template template = configuration.getTemplate(name);
-    //        template.process(data, out);
-    //    }
-    //}
 
     /**
      * 获取指定表的创建表的SQL语句

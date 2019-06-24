@@ -1,9 +1,9 @@
 package com.mini.code;
 
-import com.mini.util.dao.IDao;
-import com.mini.util.dao.IMapper;
-import com.mini.util.dao.sql.SQLSelect;
-import com.mini.util.lang.StringUtil;
+import com.mini.dao.IDao;
+import com.mini.dao.IMapper;
+import com.mini.dao.sql.SQLSelect;
+import com.mini.util.StringUtil;
 import com.squareup.javapoet.*;
 
 import java.io.File;
@@ -22,9 +22,9 @@ public final class CodeMapper {
         System.out.println("========= Start Code Mapper ========");
         System.out.println("====================================");
         try (IDao dao = Config.getDao()) {
-            ClassName entityClassName = ClassName.get(Config.PACKAGE_NAME, CodeEntity.CLASS_NAME);
+            ClassName entityClassName = ClassName.get(Config.PACKAGE_NAME, CodeBean.CLASS_NAME);
             ClassName mapperClassName = ClassName.get(Config.PACKAGE_NAME, CLASS_NAME);
-            String infoName = StringUtil.firstLowerCase(CodeEntity.CLASS_NAME);
+            String infoName = StringUtil.firstLowerCase(CodeBean.CLASS_NAME);
 
             // 生成类信息
             TypeSpec.Builder builder = TypeSpec.classBuilder(CLASS_NAME)

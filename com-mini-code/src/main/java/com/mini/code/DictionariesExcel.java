@@ -1,6 +1,6 @@
 package com.mini.code;
 
-import com.mini.util.dao.IDao;
+import com.mini.dao.IDao;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;

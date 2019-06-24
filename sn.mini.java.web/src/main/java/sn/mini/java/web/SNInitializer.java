@@ -1,44 +1,9 @@
 /**
  * Created the sn.mini.java.web.SNInitializer.java
- *
  * @created 2017年10月9日 下午1:34:58
  * @version 1.0.0
  */
 package sn.mini.java.web;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.annotation.HandlesTypes;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionIdListener;
-import javax.servlet.http.HttpSessionListener;
 
 import sn.mini.java.util.lang.ClassUtil;
 import sn.mini.java.util.lang.MethodUtil;
@@ -58,6 +23,21 @@ import sn.mini.java.web.http.rander.IRender;
 import sn.mini.java.web.http.view.IView;
 import sn.mini.java.web.http.view.JspView;
 
+import javax.servlet.*;
+import javax.servlet.ServletRegistration.Dynamic;
+import javax.servlet.annotation.HandlesTypes;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionIdListener;
+import javax.servlet.http.HttpSessionListener;
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * sn.mini.java.web.SNInitializer.java
@@ -70,9 +50,9 @@ import sn.mini.java.web.http.view.JspView;
         ServletRequestListener.class, ServletRequestAttributeListener.class, SNAbstractFilter.class})
 public final class SNInitializer implements ServletContainerInitializer {
     @SuppressWarnings("unchecked")
-	private static final Class<? extends Interceptor>[] INTERS_EMPTY = new Class[]{};
+    private static final Class<? extends Interceptor>[] INTERS_EMPTY = new Class[]{};
 
-//    private static boolean LOAD_COMPLETE = false;
+    //    private static boolean LOAD_COMPLETE = false;
     private static ServletContext servletContext;
     private static String encoding = "UTF-8"; // 设置编码， 用户系统中的乱码处理
     private static String loginUrl = null; // 设置登录地址, 验证登录的控制器可以自动跳转
@@ -561,6 +541,8 @@ public final class SNInitializer implements ServletContainerInitializer {
                 }
                 register.setMultipartConfig(new MultipartConfigElement(// // 设置文件上传配置信息
                         location.getAbsolutePath(), maxFileSize, maxRequestSize, fileSizeThreshold));
+
+
                 register.setAsyncSupported(true); // 设置可以异步返回
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);

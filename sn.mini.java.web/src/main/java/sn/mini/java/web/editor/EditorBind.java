@@ -51,7 +51,7 @@ public class EditorBind {
 		editors.put(HttpServletResponse.class, new ResponseEditor());
 
 		editors.put(Part.class, new PartEditor());
-		editors.put((new Part[0]).getClass(), new PartArrayEditor());
+		editors.put(Part[].class, new PartArrayEditor());
 
 		editors.put(byte.class, new sn.mini.java.web.editor.atomic.ByteEditor());
 		editors.put(long.class, new sn.mini.java.web.editor.atomic.LongEditor());
@@ -69,22 +69,22 @@ public class EditorBind {
 		editors.put(Integer.class, new sn.mini.java.web.editor.basics.IntegerEditor());
 		editors.put(Boolean.class, new sn.mini.java.web.editor.basics.BooleanEditor());
 
-		editors.put((new String[0]).getClass(), new ArrayEidtor<String>(String.class, get(String.class)));
-		editors.put((new Long[0]).getClass(), new ArrayEidtor<Long>(Long.class, get(Long.class)));
-		editors.put((new Integer[0]).getClass(), new ArrayEidtor<Integer>(Integer.class, get(Integer.class)));
-		editors.put((new Short[0]).getClass(), new ArrayEidtor<Short>(Short.class, get(Short.class)));
-		editors.put((new Byte[0]).getClass(), new ArrayEidtor<Byte>(Byte.class, get(Byte.class)));
-		editors.put((new Double[0]).getClass(), new ArrayEidtor<Double>(Double.class, get(Double.class)));
-		editors.put((new Float[0]).getClass(), new ArrayEidtor<Float>(Float.class, get(Float.class)));
-		editors.put((new Boolean[0]).getClass(), new ArrayEidtor<Boolean>(Boolean.class, get(Boolean.class)));
+		editors.put(String[].class, new ArrayEidtor<>(String.class, get(String.class)));
+		editors.put(Long[].class, new ArrayEidtor<>(Long.class, get(Long.class)));
+		editors.put(Integer[].class, new ArrayEidtor<>(Integer.class, get(Integer.class)));
+		editors.put(Short[].class, new ArrayEidtor<>(Short.class, get(Short.class)));
+		editors.put(Byte[].class, new ArrayEidtor<>(Byte.class, get(Byte.class)));
+		editors.put(Double[].class, new ArrayEidtor<>(Double.class, get(Double.class)));
+		editors.put(Float[].class, new ArrayEidtor<>(Float.class, get(Float.class)));
+		editors.put(Boolean[].class, new ArrayEidtor<>(Boolean.class, get(Boolean.class)));
 
-		editors.put((new long[0]).getClass(), new ArrayEidtor<Long>(long.class, get(long.class)));
-		editors.put((new int[0]).getClass(), new ArrayEidtor<Integer>(int.class, get(int.class)));
-		editors.put((new short[0]).getClass(), new ArrayEidtor<Short>(short.class, get(short.class)));
-		editors.put((new byte[0]).getClass(), new ArrayEidtor<Byte>(byte.class, get(byte.class)));
-		editors.put((new double[0]).getClass(), new ArrayEidtor<Double>(double.class, get(double.class)));
-		editors.put((new float[0]).getClass(), new ArrayEidtor<Float>(float.class, get(float.class)));
-		editors.put((new boolean[0]).getClass(), new ArrayEidtor<Boolean>(boolean.class, get(boolean.class)));
+		editors.put(long[].class, new ArrayEidtor<>(long.class, get(long.class)));
+		editors.put(int[].class, new ArrayEidtor<>(int.class, get(int.class)));
+		editors.put(short[].class, new ArrayEidtor<>(short.class, get(short.class)));
+		editors.put(byte[].class, new ArrayEidtor<>(byte.class, get(byte.class)));
+		editors.put(double[].class, new ArrayEidtor<>(double.class, get(double.class)));
+		editors.put(float[].class, new ArrayEidtor<>(float.class, get(float.class)));
+		editors.put(boolean[].class, new ArrayEidtor<>(boolean.class, get(boolean.class)));
 
 		editors.put(IDao.class, new IDaoEditor());
 		editors.put(IModel.class, new IModelEditor());

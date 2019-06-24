@@ -1,11 +1,11 @@
 package com.mini.code;
 
-import com.mini.util.dao.IDao;
-import com.mini.util.dao.implement.MysqlDao;
+import com.mini.dao.IDao;
+import com.mini.dao.implement.MysqlDao;
+import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.sql.DriverManager;
 
 /**
  * <p>使用说明：</p>
@@ -47,8 +47,12 @@ public class Config {
      * @return 数据库连接
      */
     public static IDao getDao() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver"); // mysql 连接
-        return new MysqlDao(DriverManager.getConnection(URL, USERNAME, PASSWORD));
+        MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setPassword(PASSWORD);
+        dataSource.setUser(USERNAME);
+        dataSource.setUrl(URL);
+        // mysql 连接
+        return new MysqlDao(dataSource);
     }
 
     public static void test(String a, String b, String c) {
@@ -62,7 +66,5 @@ public class Config {
             System.out.println(parameter.getType());
             System.out.println(parameter.getName());
         }
-
-
     }
 }
