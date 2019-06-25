@@ -48,14 +48,6 @@
             <version>4.2.2</version>
         </dependency>
 
-        <!-- 谷歌Web测试环境 -->
-        <dependency>
-            <groupId>com.google.guiceberry</groupId>
-            <artifactId>guiceberry</artifactId>
-            <version>3.3.1</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Mysql 连接工具 -->
         <dependency>
             <groupId>mysql</groupId>

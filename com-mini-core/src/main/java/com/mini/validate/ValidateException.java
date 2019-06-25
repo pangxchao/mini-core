@@ -3,29 +3,27 @@ package com.mini.validate;
 public class ValidateException extends RuntimeException {
     private static final long serialVersionUID = 5797524882646866674L;
 
-    private final int error;
+    private final int status;
 
-    public ValidateException(int error) {
-        this(error, (String) null);
+    public ValidateException(int status) {
+        this(status, (String) null);
     }
 
-    public ValidateException(int error, String message) {
-        this(error, message, null);
+    public ValidateException(int status, String message) {
+        this(status, message, null);
     }
 
-    public ValidateException(int error, Throwable cause) {
-        super(cause);
-        this.error = error;
+    public ValidateException(int status, Throwable cause) {
+        this(status, null, cause);
     }
 
-
-    public ValidateException(int error, String message, Throwable cause) {
+    public ValidateException(int status, String message, Throwable cause) {
         super(message, cause);
-        this.error = error;
+        this.status = status;
     }
 
 
-    public int getError() {
-        return error;
+    public int getStatus() {
+        return status;
     }
 }

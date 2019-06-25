@@ -19,7 +19,7 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void validate(int error, String message) {
+    public static void sendError(int error, String message) {
         throw new ValidateException(error, message);
     }
 
@@ -29,8 +29,8 @@ public final class ValidateUtil {
      * @param error    表达式为 false 的提示错误码
      * @param message  静态式为 false 的提示错误消息
      */
-    public static void validate(boolean validate, int error, String message) {
-        if (!validate) validate(error, message);
+    public static void is(boolean validate, int error, String message) {
+        if (!validate) sendError(error, message);
     }
 
     /**
@@ -40,8 +40,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void regex(String string, String regex, int error, String message) {
-        validate(string != null && string.matches(regex), error, message);
+    public static void isRegex(String string, String regex, int error, String message) {
+        is(string != null && string.matches(regex), error, message);
     }
 
     /**
@@ -50,8 +50,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void blank(String string, int error, String message) {
-        validate(!StringUtil.isBlank(string), error, message);
+    public static void isNotBlank(String string, int error, String message) {
+        is(!StringUtil.isBlank(string), error, message);
     }
 
     /**
@@ -60,8 +60,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void nil(Object object, int error, String message) {
-        validate(object != null, error, message);
+    public static void isNotNull(Object object, int error, String message) {
+        is(object != null, error, message);
     }
 
     /**
@@ -70,8 +70,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void email(String string, int error, String message) {
-        regex(string, EMAIL, error, message);
+    public static void isEmail(String string, int error, String message) {
+        isRegex(string, EMAIL, error, message);
     }
 
     /**
@@ -80,8 +80,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void phone(String string, int error, String message) {
-        regex(string, PHONE, error, message);
+    public static void isPhone(String string, int error, String message) {
+        isRegex(string, PHONE, error, message);
     }
 
     /**
@@ -90,8 +90,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void mobile(String string, int error, String message) {
-        regex(string, MOBILE, error, message);
+    public static void isMobile(String string, int error, String message) {
+        isRegex(string, MOBILE, error, message);
     }
 
     /**
@@ -100,8 +100,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void mobilePhone(String string, int error, String message) {
-        validate(string != null && (string.matches(MOBILE) || string.matches(PHONE)), error, message);
+    public static void isMobilePhone(String string, int error, String message) {
+        is(string != null && (string.matches(MOBILE) || string.matches(PHONE)), error, message);
     }
 
     /**
@@ -110,8 +110,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void letter(String string, int error, String message) {
-        regex(string, LETTER, error, message);
+    public static void isLetter(String string, int error, String message) {
+        isRegex(string, LETTER, error, message);
     }
 
     /**
@@ -120,8 +120,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void number(String string, int error, String message) {
-        regex(string, NUMBER, error, message);
+    public static void isNumber(String string, int error, String message) {
+        isRegex(string, NUMBER, error, message);
     }
 
     /**
@@ -130,8 +130,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void chinese(String string, int error, String message) {
-        regex(string, CHINESE, error, message);
+    public static void isChinese(String string, int error, String message) {
+        isRegex(string, CHINESE, error, message);
     }
 
     /**
@@ -140,8 +140,8 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void idCard(String string, int error, String message) {
-        regex(string, ID_CARD, error, message);
+    public static void isIdCard(String string, int error, String message) {
+        isRegex(string, ID_CARD, error, message);
     }
 
     /**
@@ -150,7 +150,7 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    public static void require(String string, int error, String message) {
-        regex(string, ID_CARD, error, message);
+    public static void isRequire(String string, int error, String message) {
+        isRegex(string, ID_CARD, error, message);
     }
 }

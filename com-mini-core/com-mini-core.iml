@@ -27,9 +27,6 @@
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-multibindings:4.2.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.google.guiceberry:guiceberry:3.3.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.google.guava:guava-testlib:14.0.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.truth0:truth:0.10" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.15" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.47" level="project" />

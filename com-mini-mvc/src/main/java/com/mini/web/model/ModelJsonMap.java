@@ -6,9 +6,7 @@ import com.mini.util.map.MiniMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Json Map Model 类实现
@@ -16,7 +14,6 @@ import java.util.Map;
  */
 public final class ModelJsonMap extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<ModelJsonMap> {
     private static final long serialVersionUID = -1731063292578685253L;
-    private final Map<String, String> headers = new HashMap<>();
     private int status = HttpServletResponse.SC_OK;
     private String contentType = "text/plain";
     private String message;
@@ -47,15 +44,9 @@ public final class ModelJsonMap extends LinkedHashMap<String, Object> implements
         return toChild();
     }
 
-    @Override
-    public ModelJsonMap setHeader(String name, String value) {
-        headers.put(name, value);
-        return toChild();
-    }
-
     /**
      * 添加数据
-     * @param name 数据键名称
+     * @param name  数据键名称
      * @param value 数据值
      * @return {@Code #this}
      */
@@ -66,16 +57,11 @@ public final class ModelJsonMap extends LinkedHashMap<String, Object> implements
 
     @Override
     public void submit(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-        // 错误码处理
+        // 错误码处理和返回数据格式处理
+        response.setContentType(contentType);
         if (status != HttpServletResponse.SC_OK) {
             response.sendError(status, message);
             return;
-        }
-
-        // 返回数据格式处理
-        response.setContentType(contentType);
-        for (Map.Entry<String, String> n : headers.entrySet()) {
-            response.setHeader(n.getKey(), n.getValue());
         }
 
         // 写入返回数据 并刷新流

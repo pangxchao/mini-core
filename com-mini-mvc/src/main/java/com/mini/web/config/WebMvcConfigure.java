@@ -210,16 +210,16 @@ public abstract class WebMvcConfigure extends MiniModule {
 
     /**
      * 默认的 Servlet 配置处理
-     * @param configurer 配置信息
+     * @param configure 配置信息
      */
-    protected void servletHandlerConfigure(ServletHandlerConfigure configurer) {
+    protected void servletHandlerConfigure(ServletHandlerConfigure configure) {
         if (!StringUtil.isBlank(multipartEnabled)) {
             boolean b = castToBoolVal(multipartEnabled);
-            configurer.setFileUploadSupported(b);
+            configure.setFileUploadSupported(b);
         }
         if (!StringUtil.isBlank(asyncEnabled)) {
             boolean b = castToBoolVal(asyncEnabled);
-            configurer.setAsyncSupported(b);
+            configure.setAsyncSupported(b);
         }
     }
 
@@ -260,10 +260,10 @@ public abstract class WebMvcConfigure extends MiniModule {
      * @param configure 配置信息
      */
     protected void modelFactoryConfigure(ModelFactoryConfigure configure) {
-        configure.addRenderer(ModelPage.class, new ModelFactoryPage());
-        configure.addRenderer(ModelJsonMap.class, new ModelFactoryJsonMap());
-        configure.addRenderer(ModelJsonList.class, new ModelFactoryJsonList());
-        configure.addRenderer(ModelStream.class, new ModelFactoryStream());
+        configure.addModelFactory(ModelJsonList.class, new ModelFactoryJsonList());
+        configure.addModelFactory(ModelJsonMap.class, new ModelFactoryJsonMap());
+        configure.addModelFactory(ModelStream.class, new ModelFactoryStream());
+        configure.addModelFactory(ModelPage.class, new ModelFactoryPage());
     }
 
     /**
@@ -300,23 +300,23 @@ public abstract class WebMvcConfigure extends MiniModule {
 
     /**
      * 文件上传配置处理
-     * @param configurer 配置信息
+     * @param configure 配置信息
      */
-    protected void multipartConfigure(MultipartConfigure configurer) {
+    protected void multipartConfigure(MultipartConfigure configure) {
         if (!StringUtil.isBlank(fileSizeThreshold)) {
             int size = castToIntVal(fileSizeThreshold);
-            configurer.setFileSizeThreshold(size);
+            configure.setFileSizeThreshold(size);
         }
         if (!StringUtil.isBlank(maxRequestSize)) {
             long size = castToLongVal(maxRequestSize);
-            configurer.setMaxRequestSize(size);
+            configure.setMaxRequestSize(size);
         }
         if (!StringUtil.isBlank(maxFileSize)) {
             long size = castToLongVal(maxFileSize);
-            configurer.setMaxFileSize(size);
+            configure.setMaxFileSize(size);
         }
         if (!StringUtil.isBlank(location)) {
-            configurer.setLocation(location);
+            configure.setLocation(location);
         }
     }
 

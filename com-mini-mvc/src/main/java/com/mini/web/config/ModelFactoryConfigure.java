@@ -19,7 +19,7 @@ public final class ModelFactoryConfigure implements Serializable {
      * @param model 参数解析器
      * @return {@Code this}
      */
-    public <T> ModelFactoryConfigure addRenderer(Class<? extends IModel<?>> clazz, ModelFactory<?> model) {
+    public <T> ModelFactoryConfigure addModelFactory(Class<? extends IModel<?>> clazz, ModelFactory<?> model) {
         modelFactory.putIfAbsent(clazz, model);
         return this;
     }

@@ -38,6 +38,17 @@ public final class WebUtil {
     }
 
     /**
+     * 获取 ServletContext 初始化参数
+     * @param context ServletContext 对象
+     * @param name    参数名称
+     * @return 获取结果
+     */
+    public static String getInitParameter(ServletContext context, String name) {
+        return context == null ? null : context.getInitParameter(name);
+
+    }
+
+    /**
      * 获取 ServletContext 初始化参数转换成 long 类型
      * @param context ServletContext 对象
      * @param name    参数名称
@@ -176,6 +187,17 @@ public final class WebUtil {
      */
     public static Boolean getInitParameterToBool(ServletContext context, String name) {
         return context == null ? null : castToBool(context.getInitParameter(name));
+    }
+
+    /**
+     * 获取 HttpServlet 初始化参数
+     * @param servlet HttpServlet 对象
+     * @param name    参数名称
+     * @return 获取结果
+     */
+    public static String getInitParameter(HttpServlet servlet, String name) {
+        return servlet == null ? null : servlet.getInitParameter(name);
+
     }
 
     /**
@@ -341,6 +363,16 @@ public final class WebUtil {
         if (request != null) request.setAttribute(name, value);
     }
 
+    /**
+     * 获取 HttpServlet 初始化参数
+     * @param request HttpServletRequest 对象
+     * @param name    参数名称
+     * @return 获取结果
+     */
+    public static String getParameter(HttpServletRequest request, String name) {
+        return request == null ? null : request.getParameter(name);
+
+    }
 
     /**
      * 获取 HttpServletRequest 参数转换成 long 类型

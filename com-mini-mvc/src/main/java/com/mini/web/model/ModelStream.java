@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +23,6 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 public final class ModelStream extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<ModelStream> {
     private static final String REGEX = "(?:(bytes=)(?<NS>\\d)+(-)(?<NN>\\d)*)";
     private static final long serialVersionUID = -1731063292578685253L;
-    private final Map<String, String> headers = new HashMap<>();
     private String contentType = "application/octet-stream";
     private int status = HttpServletResponse.SC_OK;
     private InputStream inputStream;
@@ -57,11 +54,6 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
         return toChild();
     }
 
-    @Override
-    public ModelStream setHeader(String name, String value) {
-        headers.put(name, value);
-        return toChild();
-    }
 
     /**
      * Sets the value of inputStream.
@@ -88,23 +80,18 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
      * @param fileName The value of fileName
      * @return {@Code #this}
      */
-    public ModelStream setFileName(String fileName) {
-        setHeader("Content-Disposition", "attachment; filename=" + fileName);
+    public ModelStream setFileName(HttpServletResponse response, String fileName) {
+        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
         return toChild();
     }
 
     @Override
     public void submit(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-        // 错误码处理
+        // 错误码处理和返回数据格式处理
+        response.setContentType(contentType);
         if (status != HttpServletResponse.SC_OK) {
             response.sendError(status, message);
             return;
-        }
-
-        // 返回数据格式处理
-        response.setContentType(contentType);
-        for (Map.Entry<String, String> n : headers.entrySet()) {
-            response.setHeader(n.getKey(), n.getValue());
         }
 
         // 如果输入流为空，不需要处理
@@ -112,6 +99,7 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
             return;
         }
 
+        // 开始读取数据
         try (OutputStream output = response.getOutputStream();
              InputStream input = this.inputStream) {
 
@@ -137,11 +125,11 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
                     }
                     position[2] = position[1] - position[0] + 1;
                     // Content-Range: bytes [文件块的开始字节]-[文件块结束字节]/[文件的总大小]
-                    setHeader("Content-Range", format("bytes %d-%d/%d", position[0], position[1], contentLength));
+                    response.setHeader("Content-Range", format("bytes %d-%d/%d", position[0], position[1], contentLength));
                 } catch (Exception ignored) { }
             });
             // 只有设置了文件下载大小时， 才支持断点续传。
-            setHeader("Content-Length", String.valueOf(position[2]));
+            response.setHeader("Content-Length", String.valueOf(position[2]));
             try {
                 int length, size = 2048;
                 byte[] buf = new byte[size];
@@ -156,5 +144,4 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
             } catch (IOException ignored) {}
         }
     }
-
 }

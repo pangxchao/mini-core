@@ -11,7 +11,7 @@ import static java.lang.String.format;
 
 public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
     private static final long serialVersionUID = -109530601761096337L;
-    private static final String REGEX = "(?:(\\{)([\\w])+?(?:}))";
+    private static final String REGEX = "(?:(\\{)([\\w$])+?(?:}))";
     private static final String SPLIT_REGEX = "(\\/)";
 
     /**
@@ -30,7 +30,7 @@ public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
             List<String> list = new CopyOnWriteArrayList<>();
             String regex = matcher.replaceAll(result -> {
                 list.add(result.group(result.groupCount()));
-                return format("(?<N%d>[\\\\w%%]+)+", list.size());
+                return format("(?<N%d>[\\\\w-$]+)+", list.size());
             });
 
             regex = StringUtil.format("(?:%s)", regex);

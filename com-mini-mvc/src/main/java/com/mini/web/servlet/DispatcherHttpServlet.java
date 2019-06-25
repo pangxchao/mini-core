@@ -7,6 +7,7 @@ import com.mini.util.ArraysUtil;
 import com.mini.util.Function;
 import com.mini.util.StringUtil;
 import com.mini.util.reflect.MiniParameter;
+import com.mini.validate.ValidateException;
 import com.mini.web.annotation.Action;
 import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.config.WebMvcConfigure;
@@ -33,7 +34,6 @@ import java.util.*;
 import static com.mini.logger.LoggerFactory.getLogger;
 import static com.mini.util.StringUtil.isEmpty;
 import static com.mini.web.model.IModel.MODEL_KEY;
-import static java.util.Optional.ofNullable;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
@@ -123,7 +123,6 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
             ActionInvocation actionInvocation = new ActionInvocation() {
                 private List<ActionInterceptor> interceptors;
                 private Iterator<ActionInterceptor> iterator;
-                private Object[] parameterValues;
                 private Object instance;
                 private IView view;
 
@@ -223,22 +222,19 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
                 @Nonnull
                 @Override
                 public Object[] getParameterValues() {
-                    return ofNullable(parameterValues).orElseGet(() -> {
-                        parameterValues = ArraysUtil.stream(getParameters()).map(parameter -> {
-                            Optional.ofNullable(resolvers.get(parameter.getType())).ifPresent(r -> {
-                                try {
-                                    parameter.setValue(r.value(  //
-                                            parameter.getName(), //
-                                            parameter.getType(), //
-                                            request, response)); //
-                                } catch (Exception | Error e) {
-                                    LOGGER.error("Argument Error!", e);
-                                }
-                            });
-                            return parameter.getValue();
-                        }).toArray();
-                        return parameterValues;
-                    });
+                    return ArraysUtil.stream(getParameters()).map(parameter -> {
+                        Optional.ofNullable(resolvers.get(parameter.getType())).ifPresent(r -> {
+                            try {
+                                parameter.setValue(r.value(  //
+                                        parameter.getName(), //
+                                        parameter.getType(), //
+                                        request, response)); //
+                            } catch (Exception | Error e) {
+                                LOGGER.error("Argument Error!", e);
+                            }
+                        });
+                        return parameter.getValue();
+                    }).toArray();
                 }
 
                 @Override
@@ -250,12 +246,15 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
                         }
                         Object[] values = getParameterValues();
                         return getMethod().invoke(getInstance(), values);
+                    } catch (ValidateException e) {
+                        int status = e.getStatus();
+                        String message = e.getMessage();
+                        model.sendError(status, message);
+                        return null;
                     } catch (InvocationTargetException exception) {
                         throw exception.getTargetException();
                     }
                 }
-
-
             };
 
             // 调用目标方法，并返回结果

@@ -29,7 +29,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- 谷哥以来注入 Web 实现 -->
+        <!-- 谷哥依赖注入 Web 实现 -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>

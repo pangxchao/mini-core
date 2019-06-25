@@ -21,7 +21,6 @@ public interface IModel<T extends IModel> extends Serializable {
      */
     T sendError(int status);
 
-
     /**
      * 发送一个错误码
      * @param status  错误码
@@ -39,20 +38,9 @@ public interface IModel<T extends IModel> extends Serializable {
     T setContentType(String contentType);
 
     /**
-     * 添加返回头信息
-     * @param name  信息名称
-     * @param value 信息值
-     * @return {@Code this}
-     */
-    T setHeader(String name, String value);
-
-
-    /**
      * 提交渲染页面
      * @param request  HttpServletRequest
      * @param response HttpServletResponse
      */
     void submit(HttpServletRequest request, HttpServletResponse response) throws Throwable;
-
-
 }
