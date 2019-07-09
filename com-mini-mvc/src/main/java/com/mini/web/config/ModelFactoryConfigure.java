@@ -3,13 +3,15 @@ package com.mini.web.config;
 import com.mini.web.model.IModel;
 import com.mini.web.model.factory.ModelFactory;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
-public final class ModelFactoryConfigure implements Serializable {
+@Named("modelFactoryConfigure")
+public  class ModelFactoryConfigure implements Serializable {
     private static final long serialVersionUID = 1348664728363424911L;
     private final Map<Class<? extends IModel<?>>, Class<? extends ModelFactory<?>>> modelFactory = new HashMap<>();
 

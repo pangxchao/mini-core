@@ -1,25 +1,23 @@
 package com.mini.web.config;
 
-import com.google.inject.Injector;
 import com.mini.logger.Logger;
 import com.mini.util.Function;
 import com.mini.util.MappingUri;
 import com.mini.web.interceptor.ActionInvocationProxy;
+import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 
 @Singleton
-public final class ActionInvocationProxyConfigure implements Serializable {
+@Named("actionInvocationProxyConfigure")
+public  class ActionInvocationProxyConfigure implements Serializable {
     private static final Logger LOGGER = getLogger(ActionInvocationProxyConfigure.class);
     private final MappingUri<ActionInvocationProxy> invocationProxy = new MappingUri<>();
     private static final long serialVersionUID = 5400886049425794748L;
-
-    @Inject
-    private Injector injector;
 
     /**
      * 注册 ActionInvocation
@@ -44,10 +42,11 @@ public final class ActionInvocationProxyConfigure implements Serializable {
     }
 
     /**
-     * 获取所有 ActionInvocation 映射
-     * @return 所有 ActionInvocation 映射
+     * 根据URI获取 ActionInvocation 映射
+     * @param uri URI
+     * @return ActionInvocation 映射
      */
-    public MappingUri<ActionInvocationProxy> getInvocationProxy() {
-        return invocationProxy;
+    public ActionInvocationProxy getInvocationProxy(String uri) {
+        return invocationProxy.get(uri);
     }
 }

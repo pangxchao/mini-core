@@ -1,12 +1,14 @@
 package com.mini.web.argument;
 
 import javax.annotation.Nonnull;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.mini.util.TypeUtil.castToFloatVal;
 
+@Named
 @Singleton
 public final class ArgumentResolverArrayFloatVal extends ArgumentResolverArray {
 

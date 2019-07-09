@@ -3,10 +3,12 @@ package com.mini.web.argument;
 import com.mini.util.StringUtil;
 
 import javax.annotation.Nonnull;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Named
 @Singleton
 public final class ArgumentResolverBody implements ArgumentResolver {
     @Override

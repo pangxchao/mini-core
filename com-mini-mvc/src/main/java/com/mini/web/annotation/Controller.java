@@ -24,6 +24,4 @@ public @interface Controller {
      */
     @Nonnull
     String path() default "";
-
-
 }

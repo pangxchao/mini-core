@@ -1,6 +1,7 @@
 package com.mini.web.config;
 
 import javax.annotation.Nonnull;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -10,7 +11,8 @@ import java.util.*;
 import static com.mini.util.StringUtil.def;
 
 @Singleton
-public final class FilterConfigure implements Serializable {
+@Named("filterConfigure")
+public  class FilterConfigure implements Serializable {
     private static final long serialVersionUID = -4631660739650897185L;
     private final List<FilterElement> elements = new ArrayList<>();
 

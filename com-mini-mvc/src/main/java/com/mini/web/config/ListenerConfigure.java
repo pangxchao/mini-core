@@ -1,5 +1,6 @@
 package com.mini.web.config;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
 import java.util.EventListener;
@@ -7,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Singleton
-public final class ListenerConfigure implements Serializable {
+@Named("listenerConfigure")
+public  class ListenerConfigure implements Serializable {
     private static final long serialVersionUID = -7621659406124770826L;
     private final Set<Class<? extends EventListener>> listeners = new HashSet<>();
 

@@ -1,6 +1,8 @@
 package com.mini.jdbc.transaction;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
@@ -18,6 +20,7 @@ import static com.mini.jdbc.util.JdbcUtil.releaseConnection;
  * JPA 事务实现
  * @author xchao
  */
+@Named
 @Singleton
 public final class TransactionalManagerJTA implements TransactionalManager {
 
@@ -29,7 +32,7 @@ public final class TransactionalManagerJTA implements TransactionalManager {
      * @param userTransaction The value of userTransaction
      */
     @Inject
-    public void setUserTransaction(UserTransaction userTransaction) {
+    public void setUserTransaction(@Nullable UserTransaction userTransaction) {
         this.userTransaction = userTransaction;
     }
 
@@ -38,7 +41,7 @@ public final class TransactionalManagerJTA implements TransactionalManager {
      * @param dataSourceList The value of dataSourceList
      */
     @Inject
-    public void setDataSourceList(List<DataSource> dataSourceList) {
+    public void setDataSourceList(@Nullable List<DataSource> dataSourceList) {
         this.dataSourceList = dataSourceList;
     }
 

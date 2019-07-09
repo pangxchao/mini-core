@@ -10,7 +10,7 @@ public final class FileUploadServlet extends AbstractDispatcherHttpServlet {
 
     @Override
     protected ActionInvocationProxy getInvocationProxy(String uri, HttpServletRequest request) {
-        return getActionInvocationProxyConfigure().getInvocationProxy("/front/user/group.htm", (name, value) -> {
+        return getActionInvocationProxy("/front/user/group.htm", (name, value) -> {
             request.setAttribute("fileId", uri); //
         });
     }

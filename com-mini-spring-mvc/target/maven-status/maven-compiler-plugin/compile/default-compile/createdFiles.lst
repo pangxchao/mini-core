@@ -1,6 +1,0 @@
-META-INF\services\javax.servlet.ServletContainerInitializer
-com\mini\web\argument\ArgumentResolverArrayString.class
-com\mini\web\argument\ArgumentResolverDoubleVal.class
-com\mini\web\argument\ArgumentResolverDateTime.class
-com\mini\web\argument\ArgumentResolverPart.class
-com\mini\web\argument\ArgumentResolverIntVal.class

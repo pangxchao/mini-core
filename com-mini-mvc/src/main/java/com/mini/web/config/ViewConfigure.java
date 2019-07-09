@@ -2,10 +2,12 @@ package com.mini.web.config;
 
 import com.mini.web.view.IView;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
 
 @Singleton
+@Named("viewConfigure")
 public final class ViewConfigure implements Serializable {
     private static final long serialVersionUID = 770591597110272211L;
     private Class<? extends IView> viewClass;
@@ -16,6 +18,14 @@ public final class ViewConfigure implements Serializable {
      */
     public Class<? extends IView> getViewClass() {
         return viewClass;
+    }
+
+    /**
+     * 获取视图实现类的全名
+     * @return 视图实现类的全名
+     */
+    public String getClassName() {
+        return viewClass.getName();
     }
 
     /**

@@ -1,9 +1,10 @@
 package com.mini;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,6 +37,8 @@ public class Test {
 
         private A a;
 
+        private String name;
+
         /**
          * The value of aImpl
          * @param aa The value of aImpl
@@ -48,16 +51,55 @@ public class Test {
             return this;
         }
 
+        /**
+         * The value of name
+         * @param name The value of name
+         * @return {@Code this}
+         */
+        @Inject
+        @Named("name")
+        public BImpl setName(String name) {
+            this.name = name;
+            return this;
+        }
+
         @Override
         public void say() {
             a.say();
         }
     }
 
-    @Configuration
-    @ComponentScan("com.mini")
-    public static class Config {
 
+    @Named
+    @Singleton
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @PropertySource("classpath:mini-application.properties")
+    public final static class Config {
+
+        @Inject
+        private ApplicationContext context;
+
+        @Value("${mini.mvc.view.prefix}")
+        private String prefix;
+
+        // 访问路径
+        @Value("${mini.http.servlet.urls}")
+        private String[] urlPatterns;
+
+        @Value("${mini.http.multipart.max-file-size}")
+        private long maxFileSize;
+
+        @Bean
+        @Named("name")
+        public String getName() {
+            System.out.println("-----------");
+            return "Name";
+        }
+
+
+        public ApplicationContext getContext() {
+            return context;
+        }
     }
 
     @Configuration
@@ -67,10 +109,11 @@ public class Test {
     }
 
     public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(Config.class, Config1.class);
 
         B b = context.getBean(BImpl.class);
         B b1 = context.getBean(BImpl.class);
+        Config c = context.getBean(Config.class);
         System.out.println(b);
         System.out.println(b1);
     }

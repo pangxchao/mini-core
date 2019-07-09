@@ -1,6 +1,8 @@
 package com.mini.jdbc.transaction;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -16,6 +18,7 @@ import static com.mini.jdbc.util.JdbcUtil.releaseConnection;
  * JDBC 事务实现
  * @author xchao
  */
+@Named
 @Singleton
 public final class TransactionalManagerJdbc implements TransactionalManager {
     private List<DataSource> dataSourceList;
@@ -25,7 +28,7 @@ public final class TransactionalManagerJdbc implements TransactionalManager {
      * @param dataSourceList The value of dataSourceList
      */
     @Inject
-    public void setDataSourceList(List<DataSource> dataSourceList) {
+    public void setDataSourceList(@Nullable List<DataSource> dataSourceList) {
         this.dataSourceList = dataSourceList;
     }
 

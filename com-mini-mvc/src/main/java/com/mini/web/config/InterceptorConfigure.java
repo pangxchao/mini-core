@@ -2,13 +2,15 @@ package com.mini.web.config;
 
 import com.mini.web.interceptor.ActionInterceptor;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Singleton
-public final class InterceptorConfigure implements Serializable {
+@Named("interceptorConfigure")
+public  class InterceptorConfigure implements Serializable {
     private static final long serialVersionUID = 299531539164896197L;
     private final Set<Class<? extends ActionInterceptor>> interceptors = new HashSet<>();
 

@@ -19,43 +19,35 @@ public interface ActionInvocation {
      * 获取目标方法对象
      * @return 目标方法对象
      */
+    @Nonnull
     Method getMethod();
-
-    ///**
-    // * 获取目标方法Action 注解
-    // * @return 目标方法Action 注解
-    // */
-    //Action getAction();
 
     /**
      * 获取Controller类Class对象
      * @return Class对象
      */
+    @Nonnull
     Class<?> getClazz();
-    //
-    //
-    ///**
-    // * 获取 Controller 注解
-    // * @return Controller
-    // */
-    //Controller getController();
 
     /**
      * 获取Controller类实例
      * @return Controller类实例
      */
+    @Nonnull
     Object getInstance();
 
     /**
      * 获取页面数据模型实现类
      * @return 页面数据模型实现类
      */
+    @Nonnull
     Class<? extends IModel<?>> getModelClass();
 
     /**
      * 获取控制器支持的方法
      * @return 控制器支持的方法
      */
+    @Nonnull
     Action.Method[] getSupportMethod();
 
     /**
@@ -70,6 +62,7 @@ public interface ActionInvocation {
      * 获取 Action Url 访问路径
      * @return Action Url 访问路径
      */
+    @Nonnull
     String getUrl();
 
 
@@ -85,13 +78,6 @@ public interface ActionInvocation {
      * @return 数据模型
      */
     IModel<?> getModel();
-
-
-    /**
-     * 获取 Action 视图实现
-     * @return Action 视图实现
-     */
-    IView getView();
 
     /**
      * 获取 HttpServletRequest
@@ -131,7 +117,7 @@ public interface ActionInvocation {
      * @return 所有参数值
      */
     @Nonnull
-    Object[] getParameterValues();
+    Object[] getParameterValues() throws Throwable;
 
 
     /**

@@ -1,21 +1,28 @@
 package com.mini.web.config;
 
 import com.mini.util.StringUtil;
+import com.mini.web.servlet.DispatcherHttpServlet;
 
 import javax.annotation.Nonnull;
+import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServlet;
+import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 
 @Singleton
-public final class HttpServletConfigure implements Serializable {
+@Named("httpServletConfigure")
+public  class HttpServletConfigure implements Serializable {
     private static final long serialVersionUID = 4064096242570613253L;
     private final List<HttpServletElement> elements = new ArrayList<>();
+    private HttpServletElement defaultElement;
 
     public HttpServletElement addServlet(Class<? extends HttpServlet> servletClass) {
         HttpServletElement element = new HttpServletElement();
         element.setServletName(servletClass.getName());
+        element.setServletClass(servletClass);
         elements.add(element);
         return element;
     }
@@ -26,6 +33,19 @@ public final class HttpServletConfigure implements Serializable {
      */
     public List<HttpServletElement> getElements() {
         return elements;
+    }
+
+    /**
+     * 获取默认的 DispatcherHttpServlet
+     * @return 默认的 DispatcherHttpServlet
+     */
+    public HttpServletElement getDefaultElement() {
+        return Optional.ofNullable(defaultElement).orElseGet(() -> {
+            HttpServletElement element = new HttpServletElement();
+            element.setServletClass(DispatcherHttpServlet.class);
+            element.setServletName("DispatcherHttpServlet");
+            return defaultElement = element;
+        });
     }
 
     public final class HttpServletElement implements Serializable {
@@ -202,6 +222,19 @@ public final class HttpServletConfigure implements Serializable {
         public HttpServletElement setServletName(String servletName) {
             this.servletName = servletName;
             return this;
+        }
+
+        /**
+         * 获取文件上传配置
+         * @return 文件上传配置
+         */
+        public MultipartConfigElement getMultipartConfigElement() {
+            File file = new File(this.location);
+            if (!file.exists() || file.mkdirs()) {
+                return null;
+            }
+            return new MultipartConfigElement(file.getAbsolutePath(),
+                    maxFileSize, maxRequestSize, fileSizeThreshold);
         }
     }
 }

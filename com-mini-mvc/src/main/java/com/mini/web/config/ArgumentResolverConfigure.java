@@ -4,6 +4,7 @@ import com.mini.jdbc.util.Paging;
 import com.mini.web.argument.*;
 import com.mini.web.model.*;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -18,7 +19,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
-public final class ArgumentResolverConfigure implements Serializable {
+@Named("argumentResolverConfigure")
+public  class ArgumentResolverConfigure implements Serializable {
     private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
     private static final long serialVersionUID = 1348664728363424911L;
 
@@ -107,5 +109,14 @@ public final class ArgumentResolverConfigure implements Serializable {
      */
     public Map<Class<?>, Class<? extends ArgumentResolver>> getArgumentResolvers() {
         return argumentResolvers;
+    }
+
+    /**
+     * 获取参数解析器
+     * @param key 指定类型
+     * @return 数解析器
+     */
+    public Class<? extends ArgumentResolver> getArgumentResolver(Class<?> key) {
+        return argumentResolvers.get(key);
     }
 }

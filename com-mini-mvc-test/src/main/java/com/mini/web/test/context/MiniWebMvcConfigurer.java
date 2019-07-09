@@ -1,32 +1,28 @@
 package com.mini.web.test.context;
 
 import com.google.inject.Provides;
-import com.mini.inject.annotation.Scanning;
 import com.mini.web.config.HttpServletConfigure;
-import com.mini.web.config.HttpServletConfigure.HttpServletElement;
 import com.mini.web.config.WebMvcConfigure;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-@Scanning("com.mini.web.test")
-public class MiniWebMvcConfigurer extends WebMvcConfigure {
-    @Override
-    protected void onStartup() throws Error {
-        enabledTransactionalInterceptor();
-    }
+@Configuration
+@PropertySource("classpath:application.properties")
+public class MiniWebMvcConfigurer implements WebMvcConfigure {
 
-    @Inject
-    @Named("mini.datasource.jndi-name")
+    @Value("${mini.datasource.jndi-name}")
     private String jndiName;
 
     @Override
-    protected HttpServletElement httpServletConfigure(HttpServletConfigure configure) {
-        configure.addServlet(FileUploadServlet.class).addUrlPatterns("/front/user/group.htm");
-        return super.httpServletConfigure(configure);
+    public void httpServletConfigure(HttpServletConfigure configure) {
+        configure.addServlet(FileUploadServlet.class)
+                .addUrlPatterns("/front/user/group.htm");
+
     }
 
 

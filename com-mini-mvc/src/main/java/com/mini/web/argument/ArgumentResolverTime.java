@@ -2,6 +2,7 @@ package com.mini.web.argument;
 
 import com.mini.util.DateUtil;
 import com.mini.util.StringUtil;
+import com.mini.web.config.WebMvcConfigureDefault;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -10,15 +11,20 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Named
 @Singleton
 public final class ArgumentResolverTime extends ArgumentResolverBase {
+    private WebMvcConfigureDefault configureDefault;
 
     @Inject
-    @Named("mini.http.time-format")
-    private String format;
+    public void setConfigureDefault(WebMvcConfigureDefault configureDefault) {
+        this.configureDefault = configureDefault;
+    }
 
     @Override
     protected Object parse(String text, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
-        return DateUtil.parse(text, StringUtil.def(format, "HH:mm:ss"));
+        return DateUtil.parse(text, StringUtil.def(configureDefault.getTimeFormat(), "HH:mm:ss"));
     }
+
+
 }

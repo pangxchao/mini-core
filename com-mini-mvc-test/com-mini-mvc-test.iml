@@ -15,7 +15,12 @@
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <fileset id="fileset" name="MiniWebMvcConfigurer" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/com/mini/web/test/context/MiniWebMvcConfigurer.java</file>
+          <file>file://$MODULE_DIR$/../com-mini-mvc/src/main/java/com/mini/web/config/WebMvcConfigureDefault.java</file>
+        </fileset>
+      </configuration>
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
