@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.implement.AbstractDao.java
+ * Created the sn.mini.jdbc.implement.AbstractDao.java
  * @created 2017年9月22日 下午12:23:36
  * @version 1.0.0
  */
@@ -25,7 +25,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
- * sn.mini.dao.implement.AbstractDao.java
+ * sn.mini.jdbc.implement.AbstractDao.java
  *
  * @author XChao
  */
@@ -84,7 +84,7 @@ public abstract class AbstractDao implements IDao {
     @Override
     public void close() throws SQLException {
         this.connection.close();
-        Log.trace("********* dao close *******");
+        Log.trace("********* jdbc close *******");
     }
 
     @Override
@@ -346,7 +346,10 @@ public abstract class AbstractDao implements IDao {
 
     @Override
     public int[] batch(String sql, Object[][] params) {
-        return this.batch(sql, (params == null ? 0 : params.length), (index) -> params[index]);
+        return this.batch(sql, (params == null ? 0 : params.length), (index) -> {
+            assert params != null;
+            return params[index];
+        });
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.row.IRow.java
+ * Created the sn.mini.jdbc.mapper.row.IRow.java
  * @created 2016年9月24日 上午11:54:02
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.row.IRow.java
+ * sn.mini.jdbc.mapper.row.IRow.java
  * @author XChao
  */
 @FunctionalInterface

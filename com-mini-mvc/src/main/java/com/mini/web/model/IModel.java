@@ -42,5 +42,5 @@ public interface IModel<T extends IModel> extends Serializable {
      * @param request  HttpServletRequest
      * @param response HttpServletResponse
      */
-    void submit(HttpServletRequest request, HttpServletResponse response) throws Throwable;
+    void submit(HttpServletRequest request, HttpServletResponse response) throws Exception, Error;
 }

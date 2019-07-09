@@ -28,7 +28,7 @@ public abstract class DaoServletContextListener implements ServletContextListene
         } finally {
             for (Entry<String, IDao> entry : DaoManager.getCurrentDao().entrySet()) {
                 try (IDao connection = entry.getValue()) {
-                    Log.debug("close dao before:" + connection);
+                    Log.debug("close jdbc before:" + connection);
                 } catch (Exception e) {
                     Log.error("Close Dao fail. ", e);
                 }

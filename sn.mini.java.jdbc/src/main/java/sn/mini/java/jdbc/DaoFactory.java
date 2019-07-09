@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.DaoFactory.java
+ * Created the sn.mini.jdbc.DaoFactory.java
  * @created 2017年3月2日 上午11:52:48
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.DaoFactory.java
+ * sn.mini.jdbc.DaoFactory.java
  * @author XChao
  */
 @FunctionalInterface

@@ -1,32 +1,39 @@
 package com.mini.web.config;
 
 import com.google.inject.Binder;
+import com.google.inject.name.Names;
 import com.mini.inject.MiniModule;
 import com.mini.inject.annotation.Scanning;
-import com.mini.util.*;
+import com.mini.util.ArraysUtil;
+import com.mini.util.ClassUtil;
+import com.mini.util.MappingUri;
+import com.mini.util.StringUtil;
 import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
 import com.mini.web.annotation.Controller;
 import com.mini.web.argument.ArgumentResolver;
+import com.mini.web.config.HttpServletConfigure.HttpServletElement;
 import com.mini.web.filter.CharacterEncodingFilter;
 import com.mini.web.interceptor.ActionInterceptor;
+import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.*;
 import com.mini.web.model.factory.*;
-import com.mini.web.servlet.ActionInvocationProxy;
+import com.mini.web.servlet.DispatcherHttpServlet;
 import com.mini.web.view.IView;
 import com.mini.web.view.ViewFreemarker;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.MultipartConfigElement;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
 import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.mini.util.ClassUtil.scanner;
-import static com.mini.util.StringUtil.def;
-import static com.mini.util.StringUtil.join;
+import static com.mini.util.StringUtil.*;
 import static com.mini.util.TypeUtil.*;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
@@ -39,55 +46,198 @@ import static javax.servlet.DispatcherType.*;
 public abstract class WebMvcConfigure extends MiniModule {
     private final ActionInvocationProxyConfigure actionInvocationProxyConfigure = new ActionInvocationProxyConfigure();
     private final ArgumentResolverConfigure argumentResolverConfigure = new ArgumentResolverConfigure();
-    private final ServletHandlerConfigure servletHandlerConfigure = new ServletHandlerConfigure();
     private final ModelFactoryConfigure modelFactoryConfigure = new ModelFactoryConfigure();
+    private final HttpServletConfigure httpServletConfigure = new HttpServletConfigure();
     private final InterceptorConfigure interceptorConfigure = new InterceptorConfigure();
-    private final MultipartConfigure multipartConfigure = new MultipartConfigure();
     private final ListenerConfigure listenerConfigure = new ListenerConfigure();
     private final FilterConfigure filterConfigure = new FilterConfigure();
     private final ViewConfigure viewConfigure = new ViewConfigure();
 
-    @javax.inject.Inject
-    @Named("mini.http.async.enabled")
-    private String asyncEnabled;
-
-    @javax.inject.Inject
-    @Named("mini.http.multipart.enabled")
-    private String multipartEnabled;
-
-    @javax.inject.Inject
+    @Inject
     @Named("mini.http.multipart.file-size-threshold")
     private String fileSizeThreshold;
 
-    @javax.inject.Inject
+    @Inject
+    @Named("mini.http.multipart.enabled")
+    private String multipartEnabled;
+
+    @Inject
     @Named("mini.http.multipart.max-request-size")
     private String maxRequestSize;
 
-    @javax.inject.Inject
+    @Inject
+    @Named("mini.http.async.enabled")
+    private String asyncEnabled;
+
+    @Inject
     @Named("mini.http.multipart.max-file-size")
     private String maxFileSize;
 
-    @javax.inject.Inject
+    @Inject
+    @Named("mini.http.servlet.urls")
+    private String urlPatterns;
+
+    @Inject
     @Named("mini.http.multipart.location")
     private String location;
 
+    /**
+     * Gets the value of fileSizeThreshold.
+     * @return The value of fileSizeThreshold
+     */
+    public final int getFileSizeThreshold() {
+        return castToIntVal(fileSizeThreshold);
+    }
+
+    /**
+     * Gets the value of maxRequestSize.
+     * @return The value of maxRequestSize
+     */
+    public final long getMaxRequestSize() {
+        if (StringUtil.isBlank(maxRequestSize)) {
+            return -1L;
+        }
+        return castToLongVal(maxRequestSize);
+    }
+
+    /**
+     * Gets the value of maxFileSize.
+     * @return The value of maxFileSize
+     */
+    public final long getMaxFileSize() {
+        if (StringUtil.isBlank(maxFileSize)) {
+            return -1L;
+        }
+        return castToLongVal(maxFileSize);
+    }
+
+    /**
+     * Gets the value of location.
+     * @return The value of location
+     */
+    public final String getLocation() {
+        return location;
+    }
+
+    /**
+     * Gets the value of multipartEnabled.
+     * @return The value of multipartEnabled
+     */
+    public final boolean isMultipartEnabled() {
+        if (StringUtil.isBlank(multipartEnabled)) {
+            return true;
+        }
+        return castToBoolVal(multipartEnabled);
+    }
+
+    /**
+     * Gets the value of asyncEnabled.
+     * @return The value of asyncEnabled
+     */
+    public final boolean isAsyncEnabled() {
+        if (StringUtil.isBlank(asyncEnabled)) {
+            return true;
+        }
+        return castToBoolVal(asyncEnabled);
+    }
+
+    /**
+     * Gets the value of UrlPatterns.
+     * @return The value of UrlPatterns
+     */
+    public final String[] getUrlPatterns() {
+        return split(urlPatterns, "[,]");
+    }
 
     @Override
-    protected final void configures(Binder binder) throws Error {
-        WebMvcConfigure.this.configureInitializer(binder);
+    protected void configures(Binder binder) throws Exception, Error {
+        // 绑定并初始化 actionInvocationProxyConfigure
+        requestInjection(actionInvocationProxyConfigure);
         actionInvocationProxyConfigure(actionInvocationProxyConfigure);
+
+        // 绑定并初始化 argumentResolverConfigure
+        requestInjection(argumentResolverConfigure);
         argumentResolverConfigure(argumentResolverConfigure);
-        servletHandlerConfigure(servletHandlerConfigure);
+
+        // 绑定并初妈化 modelFactoryConfigure
+        requestInjection(modelFactoryConfigure);
         modelFactoryConfigure(modelFactoryConfigure);
+
+        // 绑定并初始化 httpServletConfigure
+        requestInjection(httpServletConfigure);
+        httpServletConfigure(httpServletConfigure);
+
+        // 绑定并初始化 interceptorConfigure
+        requestInjection(interceptorConfigure);
         interceptorConfigure(interceptorConfigure);
-        multipartConfigure(multipartConfigure);
+
+        // 绑定并初始化 listenerConfigure
+        requestInjection(listenerConfigure);
         listenerConfigure(listenerConfigure);
+
+        // 绑定并初始化 filterConfigure
+        requestInjection(filterConfigure);
         filterConfigure(filterConfigure);
+
+        // 绑定并初始化 viewConfigure
+        requestInjection(viewConfigure);
         viewConfigure(viewConfigure);
+
+        // 自定义初始化
+        this.onStartup();
+
+        // 绑定 Invocation Proxy 对象
+        actionInvocationProxyConfigure.getInvocationProxy().values().forEach(proxy -> {
+            bind(proxy.getClazz());  //
+        });
+
+        // 绑定 Resolver Configure 对象
+        argumentResolverConfigure.getArgumentResolvers().values().forEach(resolver -> {
+            com.google.inject.name.Named named = Names.named(resolver.getName());
+            bind(ArgumentResolver.class).annotatedWith(named).to(resolver);
+        });
+
+        // 绑定 Model Factory 对象
+        modelFactoryConfigure.getModelFactory().forEach((model, factory) -> {
+            com.google.inject.name.Named named = Names.named(model.getName());
+            bind(ModelFactory.class).annotatedWith(named).to(factory);
+        });
+
+        // 绑定 Http Servlet 对象
+        httpServletConfigure.getElements().forEach(element -> {
+            com.google.inject.name.Named named = Names.named(element.getServletName());
+            Class<? extends HttpServlet> servlet = element.getServletClass();
+            bind(HttpServlet.class).annotatedWith(named).to(servlet);
+        });
+
+        // 绑定 Action Interceptor 对象
+
+        interceptorConfigure.getInterceptors().forEach(interceptor -> {
+            com.google.inject.name.Named named = Names.named(interceptor.getName());
+            bind(ActionInterceptor.class).annotatedWith(named).to(interceptor);
+        });
+
+        // 绑定 Event Listener 对象
+
+        listenerConfigure.getListeners().forEach(listener -> {
+            com.google.inject.name.Named named = Names.named(listener.getName());
+            bind(EventListener.class).annotatedWith(named).to(listener);
+        });
+
+        // 绑定 Filter 对象
+
+        filterConfigure.getElements().forEach(element -> {
+            com.google.inject.name.Named named = Names.named(element.getFilterName());
+            Class<? extends Filter> filter = element.getFilterClass();
+            bind(Filter.class).annotatedWith(named).to(filter);
+        });
+
+        // 绑定 IView 对象
+        bind(IView.class).to(viewConfigure.getViewClass());
     }
 
     /** 初始化所有配置信息 */
-    protected void configureInitializer(Binder binder) throws Error {}
+    protected abstract void onStartup() throws Exception, Error;
 
     /**
      * ActionInvocationProxy 配置
@@ -176,207 +326,72 @@ public abstract class WebMvcConfigure extends MiniModule {
     }
 
     /**
-     * 获取所有 ActionInvocationProxy
-     * @return 所有 ActionInvocationProxy
-     */
-    public final MappingUri<ActionInvocationProxy> getInvocationProxy() {
-        return actionInvocationProxyConfigure.getInvocationProxy();
-    }
-
-    /**
-     * 获取 ActionInvocationProxy
-     * @param url  路径
-     * @param func 回调
-     * @return 代理对象
-     */
-    public final ActionInvocationProxy getInvocationProxy(String url, Function.F2<String, String> func) {
-        return actionInvocationProxyConfigure.getInvocationProxy().get(url, func);
-    }
-
-    /**
      * Action接收的参数配置
      * @param configure 配置信息
      */
     protected void argumentResolverConfigure(ArgumentResolverConfigure configure) {
-    }
 
-    /**
-     * 获取所有参数解析器的映射
-     * @return 参数解析器的映射
-     */
-    public final Map<Class<?>, ArgumentResolver> getArgumentResolvers() {
-        return argumentResolverConfigure.getArgumentResolvers();
-    }
-
-    /**
-     * 默认的 Servlet 配置处理
-     * @param configure 配置信息
-     */
-    protected void servletHandlerConfigure(ServletHandlerConfigure configure) {
-        if (!StringUtil.isBlank(multipartEnabled)) {
-            boolean b = castToBoolVal(multipartEnabled);
-            configure.setFileUploadSupported(b);
-        }
-        if (!StringUtil.isBlank(asyncEnabled)) {
-            boolean b = castToBoolVal(asyncEnabled);
-            configure.setAsyncSupported(b);
-        }
-    }
-
-    /**
-     * 获取访问路径配置
-     * @return 访问路径配置
-     */
-    public final String[] getServletUrlPatterns() {
-        return servletHandlerConfigure.getUrlPatterns();
-    }
-
-    /**
-     * 是否支持文件上传功能
-     * @return true-是
-     */
-    public final boolean isFileUploadSupported() {
-        return servletHandlerConfigure.isFileUploadSupported();
-    }
-
-    /**
-     * 是否支持异步处理功能
-     * @return true-是
-     */
-    public final boolean isAsyncSupported() {
-        return servletHandlerConfigure.isAsyncSupported();
-    }
-
-    /**
-     * 获取默认 Servlet 名称
-     * @return Servlet 名称
-     */
-    public final String getServletName() {
-        return servletHandlerConfigure.getServletName();
     }
 
     /**
      * 渲染器配置
      * @param configure 配置信息
      */
+    @OverridingMethodsMustInvokeSuper
     protected void modelFactoryConfigure(ModelFactoryConfigure configure) {
-        configure.addModelFactory(ModelJsonList.class, new ModelFactoryJsonList());
-        configure.addModelFactory(ModelJsonMap.class, new ModelFactoryJsonMap());
-        configure.addModelFactory(ModelStream.class, new ModelFactoryStream());
-        configure.addModelFactory(ModelPage.class, new ModelFactoryPage());
+        configure.addModelFactory(ModelJsonList.class, ModelFactoryJsonList.class);
+        configure.addModelFactory(ModelJsonMap.class, ModelFactoryJsonMap.class);
+        configure.addModelFactory(ModelStream.class, ModelFactoryStream.class);
+        configure.addModelFactory(ModelPage.class, ModelFactoryPage.class);
     }
 
     /**
-     * 获取所有 Model 工厂映射
-     * @return 所有 Model 工厂映射
+     * HttpServlet 配置
+     * @param configure 配置信息
+     * @return 默认 HttpServlet
      */
-    public final Map<Class<? extends IModel<?>>, ModelFactory<?>> getModelFactory() {
-        return modelFactoryConfigure.getModelFactory();
-    }
-
-    /**
-     * 根据 ModelClass 获取 Model 工厂
-     * @param clazz ModelClass
-     * @return Model工厂
-     */
-    public final ModelFactory<?> getModelFactory(Class<? extends IModel<?>> clazz) {
-        return modelFactoryConfigure.getModelFactory().get(clazz);
+    @OverridingMethodsMustInvokeSuper
+    protected HttpServletElement httpServletConfigure(HttpServletConfigure configure) {
+        return configure.addServlet(DispatcherHttpServlet.class)
+                .setFileUploadSupported(isMultipartEnabled())
+                .setFileSizeThreshold(getFileSizeThreshold())
+                .setServletName("DispatcherHttpServlet")
+                .setMaxRequestSize(getMaxRequestSize())
+                .setAsyncSupported(isAsyncEnabled())
+                .setMaxFileSize(getMaxFileSize())
+                .addUrlPatterns(getUrlPatterns())
+                .setLocation(getLocation());
     }
 
     /**
      * 拦截器配置
      * @param configure 配置信息
      */
-    protected void interceptorConfigure(InterceptorConfigure configure) {
-    }
-
-    /**
-     * 获取所有拦截器实例
-     * @return 所有拦截器实例
-     */
-    public final Set<ActionInterceptor> getInterceptors() {
-        return interceptorConfigure.getInterceptors();
-    }
-
-    /**
-     * 文件上传配置处理
-     * @param configure 配置信息
-     */
-    protected void multipartConfigure(MultipartConfigure configure) {
-        if (!StringUtil.isBlank(fileSizeThreshold)) {
-            int size = castToIntVal(fileSizeThreshold);
-            configure.setFileSizeThreshold(size);
-        }
-        if (!StringUtil.isBlank(maxRequestSize)) {
-            long size = castToLongVal(maxRequestSize);
-            configure.setMaxRequestSize(size);
-        }
-        if (!StringUtil.isBlank(maxFileSize)) {
-            long size = castToLongVal(maxFileSize);
-            configure.setMaxFileSize(size);
-        }
-        if (!StringUtil.isBlank(location)) {
-            configure.setLocation(location);
-        }
-    }
-
-    /**
-     * 获取 MultipartConfigElement 对象
-     * @return MultipartConfigElement 对象
-     */
-    public final MultipartConfigElement getMultipartConfigElement() {
-        return multipartConfigure.getMultipartConfigElement();
-    }
+    protected void interceptorConfigure(InterceptorConfigure configure) { }
 
     /**
      * 监听器配置
      * @param configure 配置信息
      */
-    protected void listenerConfigure(ListenerConfigure configure) {
-    }
-
-    /**
-     * 获取所有监听器实例
-     * @return 所有监听器实例
-     */
-    public final Set<EventListener> getListeners() {
-        return listenerConfigure.getListeners();
-    }
+    protected void listenerConfigure(ListenerConfigure configure) { }
 
     /**
      * 过虑器配置
      * @param configure 配置信息
      */
+    @OverridingMethodsMustInvokeSuper
     protected void filterConfigure(FilterConfigure configure) {
-        configure.addFilter(new CharacterEncodingFilter()).setMatchAfter(true)
+        configure.addFilter(CharacterEncodingFilter.class).setMatchAfter(true)
                 .addDispatcherTypes(REQUEST, FORWARD, INCLUDE, ERROR)
                 .setFilterName("CharacterEncodingFilter")
                 .addUrlPatterns("/*");
     }
 
     /**
-     * 获取所有过虑器信息
-     * @return 所有过虑器信息
-     */
-    public final List<FilterConfigure.FilterConfigureElement> getFilterConfigureElements() {
-        return filterConfigure.getElements();
-    }
-
-    /**
      * 视图配置
      * @param configure 配置信息
      */
-    public void viewConfigure(ViewConfigure configure) {
-        configure.setView(new ViewFreemarker());
+    protected void viewConfigure(ViewConfigure configure) {
+        configure.setViewClass(ViewFreemarker.class);
     }
-
-    /**
-     * 获取视图实现类实例
-     * @return 视图实现类实例
-     */
-    public final IView getView() {
-        return viewConfigure.getView();
-    }
-
-
 }

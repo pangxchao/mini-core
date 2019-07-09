@@ -1,5 +1,5 @@
 /**   
- * Created the sn.mini.dao.model.ModelMapping.java
+ * Created the sn.mini.jdbc.model.ModelMapping.java
  * @created 2017年11月6日 上午10:53:48 
  * @version 1.0.0 
  */
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import sn.mini.java.util.lang.MapUtil;
 
 /**   
- * sn.mini.dao.model.ModelMapping.java 
+ * sn.mini.jdbc.model.ModelMapping.java
  * @author XChao  
  */
 public class ModelMapping {

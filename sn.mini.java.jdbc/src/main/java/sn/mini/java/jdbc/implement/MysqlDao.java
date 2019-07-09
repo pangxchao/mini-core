@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.util.lang.StringUtil;
 
 /**
- * sn.mini.dao.implement.MysqlDao.java
+ * sn.mini.jdbc.implement.MysqlDao.java
  * 
  * @author XChao
  */

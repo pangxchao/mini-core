@@ -116,9 +116,9 @@ public class SNConfig {
 		// 设置主键生成器的机器唯一码
 		optional.map(v -> WebUtil.getParameter(v, "worker-id")) .ifPresent((v) -> PKGenerator.setWorkerId(TypeUtil.castToLongValue(v)));
 		// 设置数据源
-		if(StringUtil.isNotBlank(WebUtil.getParameter(context, "dao-names"))) {
+		if(StringUtil.isNotBlank(WebUtil.getParameter(context, "jdbc-names"))) {
 			InitialContext initialContext = new InitialContext();
-			for (String daoName : WebUtil.getParameter(context, "dao-names").split("[,][\\s]+")) {
+			for (String daoName : WebUtil.getParameter(context, "jdbc-names").split("[,][\\s]+")) {
 				String jndi = WebUtil.getParameter(context, daoName);
 				DataSource dataSource = (DataSource) initialContext.lookup(jndi);
 				DaoManager.addDataSource(daoName, dataSource);

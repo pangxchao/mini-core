@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.DoubleCell.java
+ * Created the sn.mini.jdbc.mapper.cell.DoubleCell.java
  * @created 2016年10月9日 下午5:40:46
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.DoubleCell.java
+ * sn.mini.jdbc.mapper.cell.DoubleCell.java
  * @author XChao
  */
 public class DoubleCell implements ICell<Double> {

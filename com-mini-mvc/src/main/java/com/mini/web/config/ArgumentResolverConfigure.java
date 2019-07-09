@@ -1,6 +1,6 @@
 package com.mini.web.config;
 
-import com.mini.dao.Paging;
+import com.mini.jdbc.util.Paging;
 import com.mini.web.argument.*;
 import com.mini.web.model.*;
 
@@ -19,77 +19,76 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public final class ArgumentResolverConfigure implements Serializable {
+    private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
     private static final long serialVersionUID = 1348664728363424911L;
-    private final Map<Class<?>, ArgumentResolver> argumentResolvers = new ConcurrentHashMap<>();
-
 
     public ArgumentResolverConfigure() {
         // 基础类型数据
-        addResolver(String.class, new ArgumentResolverString());
-        addResolver(Long.class, new ArgumentResolverLong());
-        addResolver(long.class, new ArgumentResolverLongVal());
-        addResolver(Integer.class, new ArgumentResolverInt());
-        addResolver(int.class, new ArgumentResolverIntVal());
-        addResolver(Short.class, new ArgumentResolverShort());
-        addResolver(short.class, new ArgumentResolverShortVal());
-        addResolver(Byte.class, new ArgumentResolverByte());
-        addResolver(byte.class, new ArgumentResolverByteVal());
-        addResolver(Double.class, new ArgumentResolverDouble());
-        addResolver(double.class, new ArgumentResolverDoubleVal());
-        addResolver(Float.class, new ArgumentResolverFloat());
-        addResolver(float.class, new ArgumentResolverFloatVal());
-        addResolver(Boolean.class, new ArgumentResolverBoolean());
-        addResolver(boolean.class, new ArgumentResolverBooleanVal());
-        addResolver(Character.class, new ArgumentResolverChar());
-        addResolver(char.class, new ArgumentResolverCharVal());
+        addResolver(String.class, ArgumentResolverString.class);
+        addResolver(Long.class, ArgumentResolverLong.class);
+        addResolver(long.class, ArgumentResolverLongVal.class);
+        addResolver(Integer.class, ArgumentResolverInt.class);
+        addResolver(int.class, ArgumentResolverIntVal.class);
+        addResolver(Short.class, ArgumentResolverShort.class);
+        addResolver(short.class, ArgumentResolverShortVal.class);
+        addResolver(Byte.class, ArgumentResolverByte.class);
+        addResolver(byte.class, ArgumentResolverByteVal.class);
+        addResolver(Double.class, ArgumentResolverDouble.class);
+        addResolver(double.class, ArgumentResolverDoubleVal.class);
+        addResolver(Float.class, ArgumentResolverFloat.class);
+        addResolver(float.class, ArgumentResolverFloatVal.class);
+        addResolver(Boolean.class, ArgumentResolverBoolean.class);
+        addResolver(boolean.class, ArgumentResolverBooleanVal.class);
+        addResolver(Character.class, ArgumentResolverChar.class);
+        addResolver(char.class, ArgumentResolverCharVal.class);
 
         // 基础类型数组
-        addResolver(String[].class, new ArgumentResolverArrayString());
-        addResolver(Long[].class, new ArgumentResolverArrayLong());
-        addResolver(long[].class, new ArgumentResolverArrayLongVal());
-        addResolver(Integer[].class, new ArgumentResolverArrayInt());
-        addResolver(int[].class, new ArgumentResolverArrayIntVal());
-        addResolver(Short[].class, new ArgumentResolverArrayShort());
-        addResolver(short[].class, new ArgumentResolverArrayShortVal());
-        addResolver(Byte[].class, new ArgumentResolverArrayByte());
-        addResolver(byte[].class, new ArgumentResolverArrayByteVal());
-        addResolver(Double[].class, new ArgumentResolverArrayDouble());
-        addResolver(double[].class, new ArgumentResolverArrayDoubleVal());
-        addResolver(Float[].class, new ArgumentResolverArrayFloat());
-        addResolver(float[].class, new ArgumentResolverArrayFloatVal());
-        addResolver(Boolean[].class, new ArgumentResolverArrayBoolean());
-        addResolver(boolean[].class, new ArgumentResolverArrayBooleanVal());
-        addResolver(Character[].class, new ArgumentResolverArrayChar());
-        addResolver(char[].class, new ArgumentResolverArrayCharVal());
+        addResolver(String[].class, ArgumentResolverArrayString.class);
+        addResolver(Long[].class, ArgumentResolverArrayLong.class);
+        addResolver(long[].class, ArgumentResolverArrayLongVal.class);
+        addResolver(Integer[].class, ArgumentResolverArrayInt.class);
+        addResolver(int[].class, ArgumentResolverArrayIntVal.class);
+        addResolver(Short[].class, ArgumentResolverArrayShort.class);
+        addResolver(short[].class, ArgumentResolverArrayShortVal.class);
+        addResolver(Byte[].class, ArgumentResolverArrayByte.class);
+        addResolver(byte[].class, ArgumentResolverArrayByteVal.class);
+        addResolver(Double[].class, ArgumentResolverArrayDouble.class);
+        addResolver(double[].class, ArgumentResolverArrayDoubleVal.class);
+        addResolver(Float[].class, ArgumentResolverArrayFloat.class);
+        addResolver(float[].class, ArgumentResolverArrayFloatVal.class);
+        addResolver(Boolean[].class, ArgumentResolverArrayBoolean.class);
+        addResolver(boolean[].class, ArgumentResolverArrayBooleanVal.class);
+        addResolver(Character[].class, ArgumentResolverArrayChar.class);
+        addResolver(char[].class, ArgumentResolverArrayCharVal.class);
 
         // 文件类型
-        addResolver(Part.class, new ArgumentResolverPart());
-        addResolver(Part[].class, new ArgumentResolverPartArray());
+        addResolver(Part.class, ArgumentResolverPart.class);
+        addResolver(Part[].class, ArgumentResolverPartArray.class);
 
         // 日期时间类型
-        addResolver(Date.class, new ArgumentResolverDateTime());
-        addResolver(java.sql.Date.class, new ArgumentResolverDate());
-        addResolver(java.sql.Time.class, new ArgumentResolverTime());
-        addResolver(java.sql.Timestamp.class, new ArgumentResolverDateTime());
+        addResolver(Date.class, ArgumentResolverDateTime.class);
+        addResolver(java.sql.Date.class, ArgumentResolverDate.class);
+        addResolver(java.sql.Time.class, ArgumentResolverTime.class);
+        addResolver(java.sql.Timestamp.class, ArgumentResolverDateTime.class);
 
         // Web上下文相关类型
-        addResolver(ServletContext.class, new ArgumentResolverServletContext());
-        addResolver(HttpServletResponse.class, new ArgumentResolverResponse());
-        addResolver(HttpServletRequest.class, new ArgumentResolverRequest());
-        addResolver(ServletResponse.class, new ArgumentResolverResponse());
-        addResolver(ServletRequest.class, new ArgumentResolverRequest());
-        addResolver(HttpSession.class, new ArgumentResolverSession());
+        addResolver(ServletContext.class, ArgumentResolverServletContext.class);
+        addResolver(HttpServletResponse.class, ArgumentResolverResponse.class);
+        addResolver(HttpServletRequest.class, ArgumentResolverRequest.class);
+        addResolver(ServletResponse.class, ArgumentResolverResponse.class);
+        addResolver(ServletRequest.class, ArgumentResolverRequest.class);
+        addResolver(HttpSession.class, ArgumentResolverSession.class);
 
         // Model 类型
-        addResolver(IModel.class, new ArgumentResolverModel());
-        addResolver(ModelPage.class, new ArgumentResolverModel());
-        addResolver(ModelJsonMap.class, new ArgumentResolverModel());
-        addResolver(ModelJsonList.class, new ArgumentResolverModel());
-        addResolver(ModelStream.class, new ArgumentResolverModel());
+        addResolver(IModel.class, ArgumentResolverModel.class);
+        addResolver(ModelPage.class, ArgumentResolverModel.class);
+        addResolver(ModelJsonMap.class, ArgumentResolverModel.class);
+        addResolver(ModelJsonList.class, ArgumentResolverModel.class);
+        addResolver(ModelStream.class, ArgumentResolverModel.class);
 
         // 其它类型
-        addResolver(Paging.class, new ArgumentResolverPaging());
-        addResolver(StringBuilder.class, new ArgumentResolverBody());
+        addResolver(Paging.class, ArgumentResolverPaging.class);
+        addResolver(StringBuilder.class, ArgumentResolverBody.class);
     }
 
     /**
@@ -97,7 +96,7 @@ public final class ArgumentResolverConfigure implements Serializable {
      * @param resolver 参数解析器
      * @return {@Code this}
      */
-    public synchronized ArgumentResolverConfigure addResolver(Class<?> clazz, ArgumentResolver resolver) {
+    public synchronized ArgumentResolverConfigure addResolver(Class<?> clazz, Class<? extends ArgumentResolver> resolver) {
         argumentResolvers.putIfAbsent(clazz, resolver);
         return this;
     }
@@ -106,8 +105,7 @@ public final class ArgumentResolverConfigure implements Serializable {
      * Gets the value of resolveMap.
      * @return The value of resolveMap
      */
-    public Map<Class<?>, ArgumentResolver> getArgumentResolvers() {
+    public Map<Class<?>, Class<? extends ArgumentResolver>> getArgumentResolvers() {
         return argumentResolvers;
     }
-
 }

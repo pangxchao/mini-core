@@ -2,7 +2,7 @@ package com.mini.util;
 
 import com.mini.util.reflect.MiniParameter;
 import com.mini.util.reflect.ParameterNameDiscoverer;
-import com.mini.util.reflect.ParameterNameDiscovererJavassist;
+import com.mini.util.reflect.ParameterNameDiscovererAsm;
 import com.mini.util.scan.ClassScannerJar;
 import com.mini.util.scan.ClassScannerPath;
 
@@ -54,7 +54,7 @@ public final class ClassUtil {
      */
     @Nonnull
     public static String[] getParameterNames(Method method) {
-        ParameterNameDiscoverer d = new ParameterNameDiscovererJavassist();
+        ParameterNameDiscoverer d = new ParameterNameDiscovererAsm();
         return d.getParameterNames(method);
     }
 
@@ -65,7 +65,7 @@ public final class ClassUtil {
      */
     @Nonnull
     public static String[] getParameterNames(Constructor<?> constructor) {
-        ParameterNameDiscoverer d = new ParameterNameDiscovererJavassist();
+        ParameterNameDiscoverer d = new ParameterNameDiscovererAsm();
         return d.getParameterNames(constructor);
     }
 

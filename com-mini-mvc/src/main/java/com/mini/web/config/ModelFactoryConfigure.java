@@ -11,16 +11,16 @@ import java.util.Map;
 @Singleton
 public final class ModelFactoryConfigure implements Serializable {
     private static final long serialVersionUID = 1348664728363424911L;
-    private final Map<Class<? extends IModel<?>>, ModelFactory<?>> modelFactory = new HashMap<>();
+    private final Map<Class<? extends IModel<?>>, Class<? extends ModelFactory<?>>> modelFactory = new HashMap<>();
 
 
     /**
      * 添加一个监听器
-     * @param model 参数解析器
+     * @param factory 参数解析器
      * @return {@Code this}
      */
-    public <T> ModelFactoryConfigure addModelFactory(Class<? extends IModel<?>> clazz, ModelFactory<?> model) {
-        modelFactory.putIfAbsent(clazz, model);
+    public <T> ModelFactoryConfigure addModelFactory(Class<? extends IModel<?>> clazz, Class<? extends ModelFactory<?>> factory) {
+        modelFactory.putIfAbsent(clazz, factory);
         return this;
     }
 
@@ -28,7 +28,16 @@ public final class ModelFactoryConfigure implements Serializable {
      * Gets the value of modelMap.
      * @return The value of modelMap
      */
-    public Map<Class<? extends IModel<?>>, ModelFactory<?>> getModelFactory() {
+    public Map<Class<? extends IModel<?>>, Class<? extends ModelFactory<?>>> getModelFactory() {
         return modelFactory;
+    }
+
+    /**
+     * 根据 ModelClass 获取 Model 工厂
+     * @param clazz ModelClass
+     * @return Model工厂
+     */
+    public final Class<? extends ModelFactory<?>> getModelFactory(Class<? extends IModel<?>> clazz) {
+        return modelFactory.get(clazz);
     }
 }

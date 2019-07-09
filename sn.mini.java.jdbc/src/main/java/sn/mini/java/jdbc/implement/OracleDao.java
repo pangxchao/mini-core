@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.implement.OracleDao.java
+ * Created the sn.mini.jdbc.implement.OracleDao.java
  * @created 2017年11月3日 下午3:21:40
  * @version 1.0.0
  */
@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.util.lang.StringUtil;
 
 /**
- * sn.mini.dao.implement.OracleDao.java
+ * sn.mini.jdbc.implement.OracleDao.java
  * @author XChao
  */
 public class OracleDao extends AbstractDao {

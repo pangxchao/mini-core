@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.model.IDaoModel.java
+ * Created the sn.mini.jdbc.model.IDaoModel.java
  *
  * @created 2017年11月2日 下午3:42:41
  * @version 1.0.0
@@ -18,7 +18,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.jdbc.Sql;
 
 /**
- * sn.mini.dao.model.IDaoModel.java
+ * sn.mini.jdbc.model.IDaoModel.java
  * @author XChao
  */
 public interface IDaoModel<T extends IDaoModel<T>> extends Serializable {

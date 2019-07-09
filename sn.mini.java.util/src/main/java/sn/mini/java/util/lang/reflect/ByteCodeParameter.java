@@ -132,7 +132,7 @@ public class ByteCodeParameter implements IParameter {
 				}
 			}
 			this.collector = new MethodCollector((Modifier.isStatic(access) ? 0 : 1),
-				argumentTypes.length + longOrDoubleQuantity);
+					argumentTypes.length + longOrDoubleQuantity);
 			return collector;
 		}
 

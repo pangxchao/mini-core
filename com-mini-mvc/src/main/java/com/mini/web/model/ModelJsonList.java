@@ -66,7 +66,7 @@ public final class ModelJsonList extends MiniArrayList implements IModel<ModelJs
     }
 
     @Override
-    public void submit(HttpServletRequest request, HttpServletResponse response) throws Throwable {
+    public void submit(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
         // 错误码处理和返回数据格式处理
         response.setContentType(contentType);
         if (status != HttpServletResponse.SC_OK) {

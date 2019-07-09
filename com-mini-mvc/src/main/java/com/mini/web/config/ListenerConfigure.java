@@ -9,14 +9,14 @@ import java.util.Set;
 @Singleton
 public final class ListenerConfigure implements Serializable {
     private static final long serialVersionUID = -7621659406124770826L;
-    private final Set<EventListener> listeners = new HashSet<>();
+    private final Set<Class<? extends EventListener>> listeners = new HashSet<>();
 
     /**
      * 添加一个监听器
      * @param listener 监听器
      * @return {@Code this}
      */
-    public ListenerConfigure addListener(EventListener listener) {
+    public ListenerConfigure addListener(Class<? extends EventListener> listener) {
         listeners.add(listener);
         return this;
     }
@@ -25,7 +25,7 @@ public final class ListenerConfigure implements Serializable {
      * Gets the value of listenerList.
      * @return The value of listenerList
      */
-    public Set<EventListener> getListeners() {
+    public Set<Class<? extends EventListener>> getListeners() {
         return listeners;
     }
 

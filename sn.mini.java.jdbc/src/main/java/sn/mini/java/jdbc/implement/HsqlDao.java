@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.implement.HsqlDao.java
+ * Created the sn.mini.jdbc.implement.HsqlDao.java
  * @created 2017年11月3日 下午3:30:16
  * @version 1.0.0
  */
@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.util.lang.StringUtil;
 
 /**
- * sn.mini.dao.implement.HsqlDao.java
+ * sn.mini.jdbc.implement.HsqlDao.java
  * @author XChao
  */
 public class HsqlDao extends AbstractDao {

@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.model.DaoField.java
+ * Created the sn.mini.jdbc.model.DaoField.java
  *
  * @created 2017年11月2日 下午4:23:52
  * @version 1.0.0
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
- * sn.mini.dao.model.DaoField.java
+ * sn.mini.jdbc.model.DaoField.java
  *
  * @author XChao
  */

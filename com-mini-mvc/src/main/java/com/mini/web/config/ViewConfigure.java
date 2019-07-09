@@ -8,21 +8,23 @@ import java.io.Serializable;
 @Singleton
 public final class ViewConfigure implements Serializable {
     private static final long serialVersionUID = 770591597110272211L;
-    private IView view ;
+    private Class<? extends IView> viewClass;
 
     /**
-     * Gets the value of view.
-     * @return The value of view
+     * Gets the value of viewClass.
+     * @return The value of viewClass
      */
-    public IView getView() {
-        return view;
+    public Class<? extends IView> getViewClass() {
+        return viewClass;
     }
 
     /**
-     * Sets the value of view.
-     * @param view The value of view
+     * The value of viewClass
+     * @param viewClass The value of viewClass
+     * @return {@Code this}
      */
-    public void setView(IView view) {
-        this.view = view;
+    public ViewConfigure setViewClass(Class<? extends IView> viewClass) {
+        this.viewClass = viewClass;
+        return this;
     }
 }

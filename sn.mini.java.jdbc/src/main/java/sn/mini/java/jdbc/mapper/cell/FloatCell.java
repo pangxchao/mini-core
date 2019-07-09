@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.FloatCell.java
+ * Created the sn.mini.jdbc.mapper.cell.FloatCell.java
  * @created 2016年10月9日 下午5:41:30
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.FloatCell.java
+ * sn.mini.jdbc.mapper.cell.FloatCell.java
  * @author XChao
  */
 public class FloatCell implements ICell<Float> {

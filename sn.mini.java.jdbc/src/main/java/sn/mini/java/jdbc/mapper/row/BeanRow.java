@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.row.BeanRow.java
+ * Created the sn.mini.jdbc.mapper.row.BeanRow.java
  *
  * @created 2016年10月10日 下午6:17:37
  * @version 1.0.0
@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.model.ModelMapping;
 import sn.mini.java.util.lang.ClassUtil;
 
 /**
- * sn.mini.dao.mapper.row.BeanRow.java
+ * sn.mini.jdbc.mapper.row.BeanRow.java
  *
  * @author XChao
  */

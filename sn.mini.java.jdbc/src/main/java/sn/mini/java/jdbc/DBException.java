@@ -1,12 +1,12 @@
 /**
- * Created the sn.mini.dao.DBException.java
+ * Created the sn.mini.jdbc.DBException.java
  * @created 2017年11月20日 下午4:39:21
  * @version 1.0.0
  */
 package sn.mini.java.jdbc;
 
 /**
- * sn.mini.dao.DBException.java
+ * sn.mini.jdbc.DBException.java
  * 
  * @author XChao
  */

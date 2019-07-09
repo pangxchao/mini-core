@@ -14,6 +14,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <maven.test.skip>true</maven.test.skip>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -66,14 +67,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-        </dependency>
-
-        <!-- 谷歌Web测试环境 -->
-        <dependency>
-            <groupId>com.google.guiceberry</groupId>
-            <artifactId>guiceberry</artifactId>
-            <version>3.3.1</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

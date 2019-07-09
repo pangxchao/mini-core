@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.implement.InformixDao.java
+ * Created the sn.mini.jdbc.implement.InformixDao.java
  * @created 2017年11月23日 上午11:02:03
  * @version 1.0.0
  */
@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.util.lang.StringUtil;
 
 /**
- * sn.mini.dao.implement.InformixDao.java
+ * sn.mini.jdbc.implement.InformixDao.java
  * 
  * @author XChao
  */

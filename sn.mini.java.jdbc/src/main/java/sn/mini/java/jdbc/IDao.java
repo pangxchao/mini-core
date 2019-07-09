@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.IDao.java
+ * Created the sn.mini.jdbc.IDao.java
  * @created 2016年9月22日 下午3:28:42
  * @version 1.0.0
  */
@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * sn.mini.dao.IDao.java
+ * sn.mini.jdbc.IDao.java
  * @author XChao
  */
 public interface IDao extends Connection {

@@ -7,7 +7,7 @@ import sn.mini.java.jdbc.mapper.MapperMapping;
 import sn.mini.java.jdbc.mapper.cell.ICell;
 
 /**
- * sn.mini.dao.mapper.row.AbstractRow.java
+ * sn.mini.jdbc.mapper.row.AbstractRow.java
  * @author XChao
  */
 public abstract class AbstractRow<T> implements IRow<T> {

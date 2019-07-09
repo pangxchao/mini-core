@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.implement.DB2Dao.java
+ * Created the sn.mini.jdbc.implement.DB2Dao.java
  * @created 2017年11月3日 下午3:28:43
  * @version 1.0.0
  */
@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.util.lang.StringUtil;
 
 /**
- * sn.mini.dao.implement.DB2Dao.java
+ * sn.mini.jdbc.implement.DB2Dao.java
  * @author XChao
  */
 public class DB2Dao extends AbstractDao {

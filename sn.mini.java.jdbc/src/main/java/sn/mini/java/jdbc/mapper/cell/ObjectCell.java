@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.ObjectCell.java
+ * Created the sn.mini.jdbc.mapper.cell.ObjectCell.java
  * @created 2016年10月9日 下午5:15:23
  * @version 1.0.0
  */
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 /**
  * 
- * sn.mini.dao.mapper.cell.ObjectCell.java 
+ * sn.mini.jdbc.mapper.cell.ObjectCell.java
  * @author XChao
  */
 public class ObjectCell implements ICell<Object> {

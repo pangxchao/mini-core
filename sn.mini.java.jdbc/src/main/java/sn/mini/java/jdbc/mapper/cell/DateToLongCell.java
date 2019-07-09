@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.DateToLongCell.java
+ * Created the sn.mini.jdbc.mapper.cell.DateToLongCell.java
  * @created 2016年10月9日 下午5:46:02
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.DateToLongCell.java
+ * sn.mini.jdbc.mapper.cell.DateToLongCell.java
  * @author XChao
  */
 public class DateToLongCell implements ICell<Long> {

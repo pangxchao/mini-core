@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.BlobCell.java
+ * sn.mini.jdbc.mapper.cell.BlobCell.java
  * @author XChao
  */
 public class BlobCell implements ICell<Blob> {

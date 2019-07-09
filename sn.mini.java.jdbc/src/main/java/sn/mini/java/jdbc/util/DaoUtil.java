@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.util.DaoUtil.java
+ * Created the sn.mini.jdbc.util.DaoUtil.java
  * @created 2017年11月1日 下午6:40:04
  * @version 1.0.0
  */
@@ -21,7 +21,7 @@ import sn.mini.java.util.json.JSONArray;
 import sn.mini.java.util.json.JSONObject;
 
 /**
- * sn.mini.dao.util.DaoUtil.java
+ * sn.mini.jdbc.util.DaoUtil.java
  * @author XChao
  */
 public class DaoUtil {

@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.DateCell.java
+ * Created the sn.mini.jdbc.mapper.cell.DateCell.java
  * @created 2016年10月9日 下午5:44:46
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.DateCell.java
+ * sn.mini.jdbc.mapper.cell.DateCell.java
  * @author XChao
  */
 public class DateCell implements ICell<java.util.Date> {

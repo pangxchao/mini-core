@@ -1,6 +1,6 @@
 package com.mini.web.argument;
 
-import com.mini.dao.Paging;
+import com.mini.jdbc.util.Paging;
 import com.mini.util.TypeUtil;
 
 import javax.annotation.Nonnull;

@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.ShortCell.java
+ * Created the sn.mini.jdbc.mapper.cell.ShortCell.java
  * @created 2016年10月9日 下午5:38:41
  * @version 1.0.0
  */
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 /**
  * 
- * sn.mini.dao.mapper.cell.ShortCell.java 
+ * sn.mini.jdbc.mapper.cell.ShortCell.java
  * @author XChao
  */
 public class ShortCell implements ICell<Short> {

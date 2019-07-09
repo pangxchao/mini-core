@@ -14,6 +14,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <junit.version>4.13-beta-2</junit.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -22,6 +23,14 @@
     </properties>
 
     <dependencies>
+        <!-- servlet api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- 公共工具类依赖 -->
         <dependency>
             <groupId>com.mini</groupId>
@@ -36,20 +45,19 @@
             <version>4.2.2</version>
         </dependency>
 
-
-        <!-- servlet api -->
+        <!-- Freemarker 模板工具 -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>provided</scope>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
         </dependency>
 
         <!-- 测试工具 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

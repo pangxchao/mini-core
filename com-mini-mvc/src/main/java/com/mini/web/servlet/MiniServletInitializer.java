@@ -4,31 +4,27 @@ import com.google.auto.service.AutoService;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.mini.dao.annotation.Transaction;
-import com.mini.dao.transaction.TransactionInterceptor;
-import com.mini.inject.MiniModule;
 import com.mini.inject.PropertiesModule;
 import com.mini.logger.Logger;
 import com.mini.util.MiniProperties;
 import com.mini.util.ObjectUtil;
-import com.mini.web.annotation.TransactionEnable;
-import com.mini.web.config.WebMvcConfigure;
-import com.mini.web.view.IView;
+import com.mini.web.config.*;
 
 import javax.inject.Singleton;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.HandlesTypes;
 import javax.servlet.http.HttpServlet;
 import java.io.InputStream;
+import java.util.EnumSet;
+import java.util.EventListener;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.google.inject.matcher.Matchers.annotatedWith;
-import static com.google.inject.matcher.Matchers.any;
 import static com.mini.logger.LoggerFactory.getLogger;
-import static com.mini.util.StringUtil.def;
+import static java.util.EnumSet.copyOf;
 
 @Singleton
 @HandlesTypes(WebMvcConfigure.class)
@@ -36,6 +32,7 @@ import static com.mini.util.StringUtil.def;
 public final class MiniServletInitializer implements ServletContainerInitializer {
     private static final Logger LOGGER = getLogger(MiniServletInitializer.class);
     private static final String FILE_NAME = "mini-application.properties";
+
 
     @Override
     public final void onStartup(Set<Class<?>> initializer, ServletContext context) {
@@ -53,31 +50,16 @@ public final class MiniServletInitializer implements ServletContainerInitializer
                 }
             });
 
+            // 初始化依赖注入配置
             WebMvcConfigure configure = parent.getInstance(WebMvcConfigure.class);
-            parent.createChildInjector(configure, new MiniModule() {
-                protected void configures(Binder binder) throws Error {
-                    if (clazz.getAnnotation(TransactionEnable.class) != null) {
-                        bindInterceptor(new TransactionInterceptor());
-                    }
-                    // 配置信息注入
-                    configure.getFilterConfigureElements().forEach(ele -> requestInjection(ele.getFilter()));
-                    configure.getArgumentResolvers().values().forEach(this::requestInjection);
-                    configure.getModelFactory().values().forEach(this::requestInjection);
-                    configure.getInterceptors().forEach(this::requestInjection);
-                    configure.getListeners().forEach(this::requestInjection);
-                    bind(IView.class).toInstance(configure.getView());
-                }
+            Injector injector = parent.createChildInjector(configure);
 
-                // 绑定事务拦截器
-                private void bindInterceptor(TransactionInterceptor interceptor) throws Error {
-                    bindInterceptor(any(), annotatedWith(Transaction.class), interceptor);
-                }
-            });
-
-            // 向 ServletContext 注册 Servlet、Filter 和 Listener
-            configure.getFilterConfigureElements().forEach(ele -> ele.register(context));
-            registerServlet(configure, context, parent.getInstance(HttpServlet.class));
-            configure.getListeners().forEach(context::addListener);
+            // 向 ServletContext 注册 Servlet
+            this.registerServlet(injector, context);
+            // 向 ServletContext 注册 Listener
+            this.registerListener(injector, context);
+            // 向 ServletContext 注册 Filter
+            this.registerFilter(injector, context);
         } catch (Exception | Error e) {
             LOGGER.error("Initializer Error!", e);
         }
@@ -111,19 +93,49 @@ public final class MiniServletInitializer implements ServletContainerInitializer
     }
 
     /**
-     * 注册Servlet
-     * @param context ServletContext
-     * @param servlet HttpServlet 实例
+     * 注册 Servlet
+     * @param injector Injector 对象
+     * @param context  ServletContext
      */
-    private void registerServlet(WebMvcConfigure configurer, ServletContext context, HttpServlet servlet) {
-        String servletName = def(configurer.getServletName(), servlet.getClass().getName());
-        ServletRegistration.Dynamic register = context.addServlet(servletName, servlet);
-        register.setAsyncSupported(configurer.isAsyncSupported());
-        register.addMapping(configurer.getServletUrlPatterns());
+    private void registerServlet(Injector injector, ServletContext context) {
+        HttpServletConfigure configure = injector.getInstance(HttpServletConfigure.class);
+        MultipartConfigure multipart = injector.getInstance(MultipartConfigure.class);
+        for (HttpServletConfigure.HttpServletElement element : configure.getElements()) {
+            HttpServlet servlet = injector.getInstance(element.getServletClass());
+            var register = context.addServlet(element.getServletName(), servlet);
+            register.setAsyncSupported(element.isAsyncSupported());
+            register.addMapping(element.getUrlPatterns());
 
-        // 文件上传配置
-        if (!configurer.isFileUploadSupported()) return;
-        if (configurer.getMultipartConfigElement() == null) return;
-        register.setMultipartConfig(configurer.getMultipartConfigElement());
+            if (!element.isFileUploadSupported()) continue;
+            if (multipart.getMultipartConfigElement() == null) continue;
+            register.setMultipartConfig(multipart.getMultipartConfigElement());
+        }
+    }
+
+    /**
+     * 注册 Listener
+     * @param injector Injector 对象
+     * @param context  ServletContext
+     */
+    private void registerListener(Injector injector, ServletContext context) {
+        ListenerConfigure configure = injector.getInstance(ListenerConfigure.class);
+        for (Class<? extends EventListener> element : configure.getListeners()) {
+            context.addListener(injector.getInstance(element));
+        }
+    }
+
+    /**
+     * 注册 Filter
+     * @param injector Injector 对象
+     * @param context  ServletContext
+     */
+    private void registerFilter(Injector injector, ServletContext context) {
+        FilterConfigure configure = injector.getInstance(FilterConfigure.class);
+        for (FilterConfigure.FilterElement element : configure.getElements()) {
+            Filter filter = injector.getInstance(element.getFilterClass());
+            var register = context.addFilter(element.getFilterName(), filter);
+            EnumSet<DispatcherType> enumSet = copyOf(element.getDispatcherTypes());
+            register.addMappingForUrlPatterns(enumSet, element.isMatchAfter(), element.getUrlPatterns());
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.model.DaoTable.java
+ * Created the sn.mini.jdbc.model.DaoTable.java
  * @created 2017年11月2日 下午4:23:41
  * @version 1.0.0
  */
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * sn.mini.dao.model.DaoTable.java
+ * sn.mini.jdbc.model.DaoTable.java
  * 
  * @author XChao
  */

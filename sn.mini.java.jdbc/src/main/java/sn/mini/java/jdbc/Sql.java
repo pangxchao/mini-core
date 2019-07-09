@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.Sql.java
+ * Created the sn.mini.jdbc.Sql.java
  * @created 2016年9月22日 下午3:28:42
  * @version 1.0.0
  */
@@ -11,7 +11,7 @@ import sn.mini.java.util.lang.StringUtil;
 import java.util.*;
 
 /**
- * sn.mini.dao.Sql.java
+ * sn.mini.jdbc.Sql.java
  * @author XChao
  */
 public final class Sql {

@@ -1,11 +1,11 @@
 package com.mini.code;
 
-import com.mini.dao.IDao;
-import com.mini.dao.implement.MysqlDao;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static java.lang.String.format;
 
 /**
  * <p>使用说明：</p>
@@ -18,53 +18,116 @@ import java.lang.reflect.Parameter;
  * <p>5. version updater text
  * @author XChao
  */
-public class Config {
-    // 模板文件根路径
-    public static final String TEMPLATE_PATH = "D:/workspace-git/sn-mini/com-mini-code/src/main/resources";
-    // CLASSPATH 根路径
-    public static final String CLASS_PATH = "D:/workspace-git/sn-mini/com-mini-code/src/main/java";
-    // 输出文档根路径
-    public static final String DOCUMENT_PATH = "D:/workspace-git/sn-mini/com-mini-code/doc";
-    // 输出文件所在包名称
-    public static final String PACKAGE_NAME = "com.mini.out";
+public final class Config {
+    private static final String SERVER_NAME = "192.168.1.200";
+    private static final String PASSWORD = "Qwe123456!";
 
-    // 数据库连接
-    public static final String URL = "jdbc:mysql://192.168.1.200:3306/mengyi?useSSL=false";
-    // 数据库密码
-    public static final String PASSWORD = "Qwe123456!";
-    // 数据库用户名
-    public static final String USERNAME = "root";
 
-    // 数据库表名称
-    public static final String DB_NAME = "file_parameter";
-    // 实体类名称
-    public static final String JAVA_NAME = "InitInfo";
-    // 表前缀名称
-    public static final String PRE_NAME = "parameter_";
+    /** 获取配置信息 */
+    public static Configure getConfigure() {
+        //return new MengyiCommonConfigure();
+        return new MengyiCloudConfigure();
+    }
+
+    public static class MengyiCommonConfigure implements Configure {
+        String PATH = "D:/workspace-git/UserAuth_Web/com-mengyi";
+
+        @Override
+        public String getClassPath() {
+            return format("%s/src/main/java", PATH);
+        }
+
+        @Override
+        public String getDocumentPath() {
+            return format("%s/document", PATH);
+        }
+
+        @Override
+        public String getPackageName() {
+            return "com.mengyi.common";
+        }
+
+        @Override
+        public String getDatabaseName() {
+            return "mengyi";
+        }
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            MysqlDataSource dataSource = new MysqlDataSource();
+            dataSource.setDatabaseName(getDatabaseName());
+            dataSource.setServerName(SERVER_NAME);
+            dataSource.setPassword(PASSWORD);
+            dataSource.setUseSSL(false);
+            dataSource.setUser("root");
+            return dataSource.getConnection();
+        }
+
+        @Override
+        public String[][] getDatabaseBeans() {
+            return new String[][]{
+                    {"Init", "common_parameter", "parameter_"},
+                    {"Cloud", "common_cloud", "cloud_"},
+                    {"Spread", "common_spread", "spread_"},
+                    {"CodePhone", "common_code_phone", "code_phone_"},
+                    {"CodeEmail", "common_code_email", "code_email_"},
+                    {"DeleteIn", "common_delete_in", "delete_in_"},
+                    {"DeleteOut", "common_delete_out", "delete_out_"},
+                    {"SearchWords", "common_search_words", "search_words_"},
+                    {"Region", "common_region", "region_"},
+                    {"Unit", "common_unit", "unit_"},
+                    {"SendPhone", "common_send_phone", "send_phone_"},
+                    {"SendEmail", "common_send_email", "send_email_"},
+                    {"TipOff", "common_tip_off", "tip_off_"},
+            };
+        }
+    }
 
     /**
-     * 获取数据库连接
-     * @return 数据库连接
+     * Mengyi_Cloud 数据库配置信息
+     * @author xchao
      */
-    public static IDao getDao() throws Exception {
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setPassword(PASSWORD);
-        dataSource.setUser(USERNAME);
-        dataSource.setUrl(URL);
-        // mysql 连接
-        return new MysqlDao(dataSource);
-    }
+    public static class MengyiCloudConfigure implements Configure {
+        String PATH = "D:/workspace-git/UserAuth_Web/com-mengyi-cloud";
 
-    public static void test(String a, String b, String c) {
+        @Override
+        public String getClassPath() {
+            return format("%s/src/main/java", PATH);
+        }
 
-    }
+        @Override
+        public String getDocumentPath() {
+            return format("%s/document", PATH);
+        }
 
-    public static void main(String[] args) throws NoSuchMethodException {
-        Method method = Config.class.getMethod("test", String.class, String.class, String.class);
-        Parameter[] parameters = method.getParameters();
-        for (Parameter parameter : parameters) {
-            System.out.println(parameter.getType());
-            System.out.println(parameter.getName());
+        @Override
+        public String getPackageName() {
+            return "com.mengyi.cloud";
+        }
+
+        @Override
+        public String getDatabaseName() {
+            return "mengyi_cloud";
+        }
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            MysqlDataSource dataSource = new MysqlDataSource();
+            dataSource.setDatabaseName(getDatabaseName());
+            dataSource.setServerName(SERVER_NAME);
+            dataSource.setPassword(PASSWORD);
+            dataSource.setUseSSL(false);
+            dataSource.setUser("root");
+            return dataSource.getConnection();
+        }
+
+        @Override
+        public String[][] getDatabaseBeans() {
+            return new String[][]{
+                    {"Init", "file_parameter", "parameter_"},
+                    {"Detailed", "file_detailed", "detailed_"},
+                    {"DeleteQueue", "file_delete_queue", "delete_queue"},
+            };
         }
     }
 }

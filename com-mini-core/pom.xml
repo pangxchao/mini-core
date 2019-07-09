@@ -14,24 +14,97 @@
     <properties>
         <java.version>11</java.version>
         <junit.version>4.13-beta-2</junit.version>
+        <spring.version>5.1.8.RELEASE</spring.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Google 注解处理工具 -->
+        <!-- Google 自动初始化工具 -->
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
             <version>1.0-rc5</version>
+        </dependency>
+
+        <!-- 依赖注入实现标准 -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <!-- 切面编程 AOP 实现标准 -->
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- 事务管理 API 标准 -->
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>transaction-api</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <!--&lt;!&ndash; 持久层框架 JPA 标准 &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--    <groupId>javax.persistence</groupId>-->
+        <!--    <artifactId>javax.persistence-api</artifactId>-->
+        <!--    <version>2.2</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; EJB API 标准 &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--    <groupId>javax.ejb</groupId>-->
+        <!--    <artifactId>ejb-api</artifactId>-->
+        <!--    <version>3.0</version>-->
+        <!--</dependency>-->
+
+        <!-- Json 处理工具 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
+
+        <!-- Http 处理工具 -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
+        <!-- OkIo IO处理工具 -->
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+        <!-- JAVA 字节码处理  -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>7.1</version>
+        </dependency>
+
+        <!-- spring 依赖注入、AOP框架 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- spring jdbc 框架支持 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
         </dependency>
 
         <!-- 谷歌依赖注入实现-->
@@ -55,48 +128,20 @@
             <version>8.0.15</version>
         </dependency>
 
-        <!-- Json 处理工具 -->
+        <!-- atomikos 分布式事务支持 -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jdbc</artifactId>
+            <version>4.0.6</version>
         </dependency>
 
-        <!-- Http 处理工具 -->
+        <!-- 测试工具包 -->
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.12.0</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
-
-        <!-- OkIo IO处理工具 -->
-        <dependency>
-            <groupId>com.squareup.okio</groupId>
-            <artifactId>okio</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-
-        <!-- Freemarker 模板工具 -->
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.28</version>
-        </dependency>
-
-        <!-- JAVA 字节码处理 -->
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.25.0-GA</version>
-        </dependency>
-
-        <!-- JAVA 字节码处理  -->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>7.1</version>
-        </dependency>
-
     </dependencies>
 
     <build>

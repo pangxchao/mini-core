@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.DateFormatCell.java
+ * Created the sn.mini.jdbc.mapper.cell.DateFormatCell.java
  * @created 2016年10月9日 下午5:47:44
  * @version 1.0.0
  */
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import sn.mini.java.util.lang.DateUtil;
 
 /**
- * sn.mini.dao.mapper.cell.DateFormatCell.java
+ * sn.mini.jdbc.mapper.cell.DateFormatCell.java
  * @author XChao
  */
 public class DateFormatCell implements ICell<String> {

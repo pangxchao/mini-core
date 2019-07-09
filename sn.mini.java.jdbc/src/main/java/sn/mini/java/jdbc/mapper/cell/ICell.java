@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.ICell.java
+ * Created the sn.mini.jdbc.mapper.cell.ICell.java
  * @created 2016年9月24日 上午11:49:55
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.ICell.java
+ * sn.mini.jdbc.mapper.cell.ICell.java
  * @author XChao
  */
 @FunctionalInterface

@@ -1,5 +1,5 @@
 /**   
- * Created the sn.mini.dao.mapper.cell.LongCell.java
+ * Created the sn.mini.jdbc.mapper.cell.LongCell.java
  * @created 2016年10月9日 下午5:37:01 
  * @version 1.0.0 
  */
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 /**
  * 
- * sn.mini.dao.mapper.cell.LongCell.java 
+ * sn.mini.jdbc.mapper.cell.LongCell.java
  * @author XChao
  */
 public class LongCell implements ICell<Long>{

@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.DaoManager.java
+ * Created the sn.mini.jdbc.DaoManager.java
  * @created 2016年9月24日 下午12:03:31
  * @version 1.0.0
  */
@@ -24,7 +24,7 @@ import sn.mini.java.jdbc.implement.SybaseDao;
 import sn.mini.java.jdbc.util.DaoThreadLocal;
 
 /**
- * sn.mini.dao.DaoManager.java
+ * sn.mini.jdbc.DaoManager.java
  * @author XChao
  */
 public final class DaoManager {
@@ -117,7 +117,7 @@ public final class DaoManager {
 			}
 			return dao;
 		} catch (Exception e) {
-			throw new RuntimeException("Create dao fail, dataSource name is " + name, e);
+			throw new RuntimeException("Create jdbc fail, dataSource name is " + name, e);
 		}
 	}
 

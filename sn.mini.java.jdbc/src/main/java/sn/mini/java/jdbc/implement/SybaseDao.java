@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.implement.SybaseDao.java
+ * Created the sn.mini.jdbc.implement.SybaseDao.java
  * @created 2017年11月23日 上午10:59:20
  * @version 1.0.0
  */
@@ -14,7 +14,7 @@ import sn.mini.java.jdbc.Paging;
 import sn.mini.java.util.lang.StringUtil;
 
 /**
- * sn.mini.dao.implement.SybaseDao.java
+ * sn.mini.jdbc.implement.SybaseDao.java
  * @author XChao
  */
 public class SybaseDao extends AbstractDao {

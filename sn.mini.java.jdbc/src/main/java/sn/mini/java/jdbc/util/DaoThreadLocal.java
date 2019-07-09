@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.util.DaoThreadLocal.java
+ * Created the sn.mini.jdbc.util.DaoThreadLocal.java
  * @created 2017年11月2日 上午11:50:00
  * @version 1.0.0
  */
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * sn.mini.dao.util.DaoThreadLocal.java
+ * sn.mini.jdbc.util.DaoThreadLocal.java
  * @author XChao
  */
 public class DaoThreadLocal extends ThreadLocal<Map<String, IDao>> {

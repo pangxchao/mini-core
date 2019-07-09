@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.MapperMapping.java
+ * Created the sn.mini.jdbc.mapper.MapperMapping.java
  * @created 2017年11月2日 下午5:55:38
  * @version 1.0.0
  */
@@ -26,7 +26,7 @@ import sn.mini.java.jdbc.mapper.cell.ShortCell;
 import sn.mini.java.jdbc.mapper.cell.StringCell;
 
 /**
- * sn.mini.dao.mapper.MapperMapping.java
+ * sn.mini.jdbc.mapper.MapperMapping.java
  * @author XChao
  */
 public final class MapperMapping {

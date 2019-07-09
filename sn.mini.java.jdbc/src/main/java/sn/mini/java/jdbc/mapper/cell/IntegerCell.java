@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.cell.IntegerCell.java
+ * Created the sn.mini.jdbc.mapper.cell.IntegerCell.java
  * @created 2016年10月9日 下午5:37:56
  * @version 1.0.0
  */
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * sn.mini.dao.mapper.cell.IntegerCell.java
+ * sn.mini.jdbc.mapper.cell.IntegerCell.java
  * @author XChao
  */
 public class IntegerCell implements ICell<Integer> {

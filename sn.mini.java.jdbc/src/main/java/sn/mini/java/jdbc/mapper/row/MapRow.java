@@ -1,5 +1,5 @@
 /**
- * Created the sn.mini.dao.mapper.row.MapRow.java
+ * Created the sn.mini.jdbc.mapper.row.MapRow.java
  * @created 2016年10月9日 下午4:21:17
  * @version 1.0.0
  */
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import sn.mini.java.util.json.JSONObject;
 
 /**
- * sn.mini.dao.mapper.row.MapRow.java
+ * sn.mini.jdbc.mapper.row.MapRow.java
  * @author XChao
  */
 public final class MapRow extends AbstractRow<JSONObject> {
