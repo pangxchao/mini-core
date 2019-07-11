@@ -20,7 +20,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
  * Stream Model类实现
  * @author xchao
  */
-public final class ModelStream extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<ModelStream> {
+public final class StreamModel extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<StreamModel> {
     private static final String REGEX = "(?:(bytes=)(?<NS>\\d)+(-)(?<NN>\\d)*)";
     private static final long serialVersionUID = -1731063292578685253L;
     private String contentType = "application/octet-stream";
@@ -31,25 +31,25 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
 
 
     @Override
-    public ModelStream toChild() {
+    public StreamModel toChild() {
         return this;
     }
 
     @Override
-    public ModelStream sendError(int status) {
+    public StreamModel sendError(int status) {
         this.status = status;
         return toChild();
     }
 
     @Override
-    public ModelStream sendError(int status, String message) {
+    public StreamModel sendError(int status, String message) {
         this.message = message;
         this.status  = status;
         return toChild();
     }
 
     @Override
-    public ModelStream setContentType(String contentType) {
+    public StreamModel setContentType(String contentType) {
         this.contentType = contentType;
         return toChild();
     }
@@ -60,7 +60,7 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
      * @param inputStream The value of inputStream
      * @return {@Code #this}
      */
-    public ModelStream setInputStream(InputStream inputStream) {
+    public StreamModel setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
         return toChild();
     }
@@ -70,7 +70,7 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
      * @param contentLength The value of contentLength
      * @return {@Code #this}
      */
-    public ModelStream setContentLength(long contentLength) {
+    public StreamModel setContentLength(long contentLength) {
         this.contentLength = contentLength;
         return toChild();
     }
@@ -80,7 +80,7 @@ public final class ModelStream extends LinkedHashMap<String, Object> implements 
      * @param fileName The value of fileName
      * @return {@Code #this}
      */
-    public ModelStream setFileName(HttpServletResponse response, String fileName) {
+    public StreamModel setFileName(HttpServletResponse response, String fileName) {
         response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
         return toChild();
     }

@@ -14,7 +14,7 @@ import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
-import com.mini.web.model.factory.ModelFactory;
+import com.mini.web.model.factory.IModelFactory;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -126,7 +126,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
 
         // 获取数据模型工厂并验证，如果该工厂为空，返回 500 错误
-        final ModelFactory<?> modelFactory = configure.getFactory(proxy.getModelClass());
+        final IModelFactory<?> modelFactory = configure.getFactory(proxy.getModelClass());
         if (require(modelFactory, response, ERROR, "Model Factory can not be null.", Objects::nonNull)) {
             return;
         }

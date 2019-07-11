@@ -21,12 +21,12 @@ import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.listener.ServletContextListenerListener;
 import com.mini.web.model.*;
-import com.mini.web.model.factory.ModelFactoryJsonList;
-import com.mini.web.model.factory.ModelFactoryJsonMap;
-import com.mini.web.model.factory.ModelFactoryPage;
-import com.mini.web.model.factory.ModelFactoryStream;
+import com.mini.web.model.factory.JsonListModelFactory;
+import com.mini.web.model.factory.JsonMapModelFactory;
+import com.mini.web.model.factory.PageModelFactory;
+import com.mini.web.model.factory.StreamModelFactory;
 import com.mini.web.servlet.DispatcherHttpServlet;
-import com.mini.web.view.ViewFreemarker;
+import com.mini.web.view.FreemarkerView;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import javax.annotation.Nonnull;
@@ -104,8 +104,9 @@ public abstract class WebMvcConfigure implements Module {
     // 注册默认的 ActionInvocationProxy
     private void registerActionInvocationProxy(Configure configure) {
         ComponentScan scan = getClass().getAnnotation(ComponentScan.class);
-        String[] componentScanValue = scan == null ? new String[0] : scan.value();
-        ClassUtil.scanner(componentScanValue, Controller.class).forEach(clazz -> {
+        String[] componentValue = new String[]{getClass().getPackage().getName()};
+        if (scan != null && scan.value().length > 0) componentValue = scan.value();
+        ClassUtil.scanner(componentValue, Controller.class).forEach(clazz -> {
             Controller controller = clazz.getAnnotation(Controller.class);
             requireNonNull(controller, "@Controller can not be null");
 
@@ -262,14 +263,14 @@ public abstract class WebMvcConfigure implements Module {
         configure.addResolver(HttpServletRequest.class, ArgumentResolverRequest.class);
         configure.addResolver(ServletResponse.class, ArgumentResolverResponse.class);
         configure.addResolver(ServletRequest.class, ArgumentResolverRequest.class);
-        configure.addResolver(HttpSession.class, ArgumentResolverSession.class);
+        configure.addResolver(HttpSession.class, ArgumentResolverHttpSession.class);
 
         // Model 类型
         configure.addResolver(IModel.class, ArgumentResolverModel.class);
-        configure.addResolver(ModelPage.class, ArgumentResolverModel.class);
-        configure.addResolver(ModelJsonMap.class, ArgumentResolverModel.class);
-        configure.addResolver(ModelJsonList.class, ArgumentResolverModel.class);
-        configure.addResolver(ModelStream.class, ArgumentResolverModel.class);
+        configure.addResolver(PageModel.class, ArgumentResolverModel.class);
+        configure.addResolver(JsonMapModel.class, ArgumentResolverModel.class);
+        configure.addResolver(JsonListModel.class, ArgumentResolverModel.class);
+        configure.addResolver(StreamModel.class, ArgumentResolverModel.class);
 
         // 其它类型
         configure.addResolver(Paging.class, ArgumentResolverPaging.class);
@@ -279,14 +280,14 @@ public abstract class WebMvcConfigure implements Module {
 
     // 配置默认数据模型工厂/视图渲染器
     private void registerModelFactory(Configure configure) {
-        configure.addModelFactory(ModelJsonList.class, ModelFactoryJsonList.class);
-        configure.addModelFactory(ModelJsonMap.class, ModelFactoryJsonMap.class);
-        configure.addModelFactory(ModelStream.class, ModelFactoryStream.class);
-        configure.addModelFactory(ModelPage.class, ModelFactoryPage.class);
+        configure.addModelFactory(JsonListModel.class, JsonListModelFactory.class);
+        configure.addModelFactory(JsonMapModel.class, JsonMapModelFactory.class);
+        configure.addModelFactory(StreamModel.class, StreamModelFactory.class);
+        configure.addModelFactory(PageModel.class, PageModelFactory.class);
     }
 
     // 配置默认视图实现类
     private void registerView(Configure configure) {
-        configure.setViewClass(ViewFreemarker.class);
+        configure.setViewClass(FreemarkerView.class);
     }
 }

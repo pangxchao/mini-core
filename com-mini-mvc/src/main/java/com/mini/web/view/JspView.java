@@ -1,6 +1,6 @@
 package com.mini.web.view;
 
-import com.mini.web.util.IUser;
+import com.mini.web.util.ISession;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Singleton
-public  class ViewJsp implements IView, Serializable {
+public class JspView implements IView, Serializable {
     private static final long serialVersionUID = 4125460056674096998L;
 
     @Inject
@@ -25,8 +25,6 @@ public  class ViewJsp implements IView, Serializable {
 
     @Override
     public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        request.setAttribute("_user", request.getSession().getAttribute(IUser.USER_KEY));
-        request.setAttribute("contextPath", request.getContextPath());
         for (Map.Entry<String, Object> en : data.entrySet()) {
             request.setAttribute(en.getKey(), en.getValue());
         }

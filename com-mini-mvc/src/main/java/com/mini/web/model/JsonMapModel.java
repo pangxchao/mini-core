@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
  * Json Map Model 类实现
  * @author xchao
  */
-public final class ModelJsonMap extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<ModelJsonMap> {
+public final class JsonMapModel extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<JsonMapModel> {
     private static final long serialVersionUID = -1731063292578685253L;
     private int status = HttpServletResponse.SC_OK;
     private String contentType = "text/plain";
@@ -20,18 +20,18 @@ public final class ModelJsonMap extends LinkedHashMap<String, Object> implements
 
 
     @Override
-    public ModelJsonMap toChild() {
+    public JsonMapModel toChild() {
         return this;
     }
 
     @Override
-    public ModelJsonMap sendError(int status) {
+    public JsonMapModel sendError(int status) {
         this.status = status;
         return toChild();
     }
 
     @Override
-    public ModelJsonMap sendError(int status, String message) {
+    public JsonMapModel sendError(int status, String message) {
         this.message = message;
         this.status  = status;
         return toChild();
@@ -39,7 +39,7 @@ public final class ModelJsonMap extends LinkedHashMap<String, Object> implements
 
 
     @Override
-    public ModelJsonMap setContentType(String contentType) {
+    public JsonMapModel setContentType(String contentType) {
         this.contentType = contentType;
         return toChild();
     }
@@ -50,7 +50,7 @@ public final class ModelJsonMap extends LinkedHashMap<String, Object> implements
      * @param value 数据值
      * @return {@Code #this}
      */
-    public ModelJsonMap addData(String name, Object value) {
+    public JsonMapModel addData(String name, Object value) {
         super.put(name, value);
         return toChild();
     }

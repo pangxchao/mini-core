@@ -9,3 +9,6 @@
 /com-mini-mvc/target
 /com-mini-code/target
 /com-mini-core/target
+/com-mini-code/src/main/java/com/mini/code/CourseRoomConfigure.java
+/com-mini-code/src/main/java/com/mini/code/MengyiCloudConfigure.java
+/com-mini-code/src/main/java/com/mini/code/MengyiCommonConfigure.java

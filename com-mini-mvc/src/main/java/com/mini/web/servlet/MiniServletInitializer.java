@@ -38,7 +38,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
     // 默认父容器的Module
     @PropertySource("mini-application.properties")
     private static class InitConfigModule implements Module {
-        private final Set<Class<?>> classes = new HashSet<>();
+        private final List<Class<?>> classes = new ArrayList<>();
         private final ServletContext context;
 
         public InitConfigModule(ServletContext context, Set<Class<? extends WebMvcConfigure>> classes) {

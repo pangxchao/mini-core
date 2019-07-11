@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
  * Page Model 类实现
  * @author xchao
  */
-public final class ModelPage extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<ModelPage> {
+public final class PageModel extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<PageModel> {
     private static final long serialVersionUID = -1731063292578685253L;
     private int status = HttpServletResponse.SC_OK;
     private String contentType = "text/html";
@@ -22,30 +22,30 @@ public final class ModelPage extends LinkedHashMap<String, Object> implements Mi
     private String viewPath;
     private String message;
 
-    public ModelPage(IView view) {
+    public PageModel(IView view) {
         this.view = view;
     }
 
     @Override
-    public ModelPage toChild() {
+    public PageModel toChild() {
         return this;
     }
 
     @Override
-    public ModelPage sendError(int status) {
+    public PageModel sendError(int status) {
         this.status = status;
         return toChild();
     }
 
     @Override
-    public ModelPage sendError(int status, String message) {
+    public PageModel sendError(int status, String message) {
         this.message = message;
         this.status  = status;
         return toChild();
     }
 
     @Override
-    public ModelPage setContentType(String contentType) {
+    public PageModel setContentType(String contentType) {
         this.contentType = contentType;
         return toChild();
     }
@@ -56,7 +56,7 @@ public final class ModelPage extends LinkedHashMap<String, Object> implements Mi
      * @param value 数据值
      * @return {@Code #this}
      */
-    public ModelPage addData(String name, Object value) {
+    public PageModel addData(String name, Object value) {
         super.put(name, value);
         return toChild();
     }
@@ -66,7 +66,7 @@ public final class ModelPage extends LinkedHashMap<String, Object> implements Mi
      * @param viewPath The value of viewPath
      * @return {@Code #this}
      */
-    public ModelPage setViewPath(String viewPath) {
+    public PageModel setViewPath(String viewPath) {
         this.viewPath = viewPath;
         return toChild();
     }
@@ -114,6 +114,7 @@ public final class ModelPage extends LinkedHashMap<String, Object> implements Mi
         put("response", response);
         put("session", request.getSession());
         put("context", request.getServletContext());
+        put("contextPath", request.getContextPath());
         view.generator(this, viewPath, request, response);
     }
 

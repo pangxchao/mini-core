@@ -1,4 +1,4 @@
-package com.mini.code;
+package com.mini.code.util;
 
 import com.mini.callback.DatabaseMetaDataCallback;
 import com.mini.jdbc.JdbcTemplate;

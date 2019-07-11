@@ -11,25 +11,25 @@ import java.io.Writer;
  * Json List Model 类实现
  * @author xchao
  */
-public final class ModelJsonList extends MiniArrayList implements IModel<ModelJsonList> {
+public final class JsonListModel extends MiniArrayList implements IModel<JsonListModel> {
     private static final long serialVersionUID = 6324502603232680211L;
     private int status = HttpServletResponse.SC_OK;
     private String contentType = "text/plain";
     private String message;
 
     @Override
-    public ModelJsonList toChild() {
+    public JsonListModel toChild() {
         return this;
     }
 
     @Override
-    public ModelJsonList sendError(int status) {
+    public JsonListModel sendError(int status) {
         this.status = status;
         return toChild();
     }
 
     @Override
-    public ModelJsonList sendError(int status, String message) {
+    public JsonListModel sendError(int status, String message) {
         this.message = message;
         this.status  = status;
         return toChild();
@@ -37,7 +37,7 @@ public final class ModelJsonList extends MiniArrayList implements IModel<ModelJs
 
 
     @Override
-    public ModelJsonList setContentType(String contentType) {
+    public JsonListModel setContentType(String contentType) {
         this.contentType = contentType;
         return toChild();
     }
@@ -48,7 +48,7 @@ public final class ModelJsonList extends MiniArrayList implements IModel<ModelJs
      * @param value 数据值
      * @return {@Code #this}
      */
-    public ModelJsonList addData(Object value) {
+    public JsonListModel addData(Object value) {
         super.add(value);
         return toChild();
     }
@@ -60,7 +60,7 @@ public final class ModelJsonList extends MiniArrayList implements IModel<ModelJs
      * @param value 数据值
      * @return {@Code #this}
      */
-    public ModelJsonList addData(int index, Object value) {
+    public JsonListModel addData(int index, Object value) {
         super.set(index, value);
         return toChild();
     }

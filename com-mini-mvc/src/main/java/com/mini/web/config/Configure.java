@@ -9,7 +9,7 @@ import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
-import com.mini.web.model.factory.ModelFactory;
+import com.mini.web.model.factory.IModelFactory;
 import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;
@@ -29,13 +29,13 @@ import static java.util.Optional.ofNullable;
 
 @Singleton
 public final class Configure {
-    private final Map<Class<? extends IModel<?>>, Class<? extends ModelFactory<?>>> factory = new ConcurrentHashMap<>();
+    private final Map<Class<? extends IModel<?>>, Class<? extends IModelFactory<?>>> factory = new ConcurrentHashMap<>();
     private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
     private final Map<Class<? extends HttpServlet>, ServletElement> servlets = new ConcurrentHashMap<>();
     private final Map<Class<? extends Filter>, FilterElement> filters = new ConcurrentHashMap<>();
     private final Map<Class<?>, ArgumentResolver> resolverMap = new ConcurrentHashMap<>();
     private final MappingUri<ActionInvocationProxy> invocationProxy = new MappingUri<>();
-    private final Map<Class<?>, ModelFactory<?>> factoryMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, IModelFactory<?>> factoryMap = new ConcurrentHashMap<>();
     private final Set<Class<? extends EventListener>> listeners = new HashSet<>();
     private final Logger logger = LoggerFactory.getLogger(Configure.class);
     private Class<? extends IView> viewClass;
@@ -346,7 +346,7 @@ public final class Configure {
      * @param factory 数据模型工厂
      * @return 当前对象
      */
-    public final Configure addModelFactory(Class<? extends IModel<?>> clazz, Class<? extends ModelFactory<?>> factory) {
+    public final Configure addModelFactory(Class<? extends IModel<?>> clazz, Class<? extends IModelFactory<?>> factory) {
         this.factory.putIfAbsent(clazz, factory);
         return this;
     }
@@ -356,7 +356,7 @@ public final class Configure {
      * @param modelClass 数据模型实现类
      * @return 数据模型工厂实例
      */
-    public final ModelFactory<?> getFactory(Class<? extends IModel<?>> modelClass) {
+    public final IModelFactory<?> getFactory(Class<? extends IModel<?>> modelClass) {
         Objects.requireNonNull(injector, "Injector can not be null");
         return factoryMap.computeIfAbsent(modelClass, k -> ofNullable(factory.get(modelClass)) //
                 .map(clazz -> injector.getInstance(clazz)).orElse(null));

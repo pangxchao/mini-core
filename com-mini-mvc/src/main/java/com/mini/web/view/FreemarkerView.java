@@ -16,7 +16,7 @@ import java.util.Map;
 import static freemarker.template.Configuration.VERSION_2_3_28;
 
 @Singleton
-public class ViewFreemarker implements IView, Serializable {
+public class FreemarkerView implements IView, Serializable {
     private static final long serialVersionUID = 5687496460307660404L;
     private Configuration configuration;
 

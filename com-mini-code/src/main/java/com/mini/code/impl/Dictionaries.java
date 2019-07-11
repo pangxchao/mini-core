@@ -1,6 +1,7 @@
-package com.mini.code;
+package com.mini.code.impl;
 
 import com.mini.callback.DatabaseMetaDataCallback;
+import com.mini.code.Configure;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -23,8 +24,7 @@ import static com.mini.util.StringUtil.eq;
  */
 public class Dictionaries {
 
-    public static void main(String[] args) {
-        Configure configure = Config.getConfigure();
+    public static void run(Configure configure) {
         File file = new File(configure.getDocumentPath());
         if (!file.exists() && file.mkdirs()) {
             System.out.println("创建文件夹成功");
@@ -193,5 +193,4 @@ public class Dictionaries {
             e.printStackTrace();
         }
     }
-
 }

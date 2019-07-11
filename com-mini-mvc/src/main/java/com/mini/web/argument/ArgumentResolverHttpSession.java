@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Named
 @Singleton
-public final class ArgumentResolverSession implements ArgumentResolver {
+public final class ArgumentResolverHttpSession implements ArgumentResolver {
     @Override
     public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
         return request.getSession();

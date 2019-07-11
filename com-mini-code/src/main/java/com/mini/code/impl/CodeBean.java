@@ -1,5 +1,7 @@
-package com.mini.code;
+package com.mini.code.impl;
 
+import com.mini.code.Configure;
+import com.mini.code.util.Util;
 import com.mini.util.StringUtil;
 import com.squareup.javapoet.*;
 
@@ -101,10 +103,7 @@ public final class CodeBean {
         System.out.println("Code Bean : " + className + "\r\n");
     }
 
-    public static void main(String[] args) throws Exception {
-        Configure configure = Config.getConfigure();
-        for (String[] bean : configure.getDatabaseBeans()) {
-            run(configure, bean[0], bean[1], bean[2]);
-        }
+    public static void generator(Configure configure, Configure.BeanItem bean) throws Exception {
+        run(configure, bean.className, bean.tableName, bean.prefix);
     }
 }

@@ -1,5 +1,6 @@
-package com.mini.code;
+package com.mini.code.impl;
 
+import com.mini.code.Configure;
 import com.squareup.javapoet.*;
 
 import javax.inject.Inject;
@@ -80,10 +81,7 @@ public final class CodeServiceImpl {
         System.out.println("Code Service Impl : " + className + "\r\n");
     }
 
-    public static void main(String[] args) throws Exception {
-        Configure configure = Config.getConfigure();
-        for (String[] bean : configure.getDatabaseBeans()) {
-            run(configure, bean[0], bean[1], bean[2]);
-        }
+    public static void generator(Configure configure, Configure.BeanItem bean) throws Exception {
+        run(configure, bean.className, bean.tableName, bean.prefix);
     }
 }

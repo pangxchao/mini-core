@@ -2,7 +2,6 @@ package com.mini.web.filter;
 
 import javax.inject.Singleton;
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -16,7 +15,6 @@ public final class NoCacheFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-
         HttpServletResponse resp = (HttpServletResponse) response;
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "No-cache");

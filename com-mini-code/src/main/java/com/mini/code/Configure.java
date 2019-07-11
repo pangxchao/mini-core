@@ -2,10 +2,11 @@ package com.mini.code;
 
 import com.mini.jdbc.JdbcTemplate;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public interface Configure {
+    String SERVER_NAME = "192.168.1.200";
+    String PASSWORD = "Qwe123456!";
 
     /**
      * 获取项目基础路径
@@ -39,8 +40,19 @@ public interface Configure {
 
     /**
      * 数据表与实体类名
-     * @return [["实体类", "数据库表", "表前缀"]...]
+     * @return [BeanItem...]
      */
-    String[][] getDatabaseBeans();
+    BeanItem[] getDatabaseBeans();
 
+    class BeanItem {
+        public final String className;
+        public final String tableName;
+        public final String prefix;
+
+        public BeanItem(String className, String tableName, String prefix) {
+            this.className = className;
+            this.tableName = tableName;
+            this.prefix    = prefix;
+        }
+    }
 }

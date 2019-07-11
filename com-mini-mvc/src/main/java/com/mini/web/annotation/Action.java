@@ -1,7 +1,7 @@
 package com.mini.web.annotation;
 
 import com.mini.web.model.IModel;
-import com.mini.web.model.ModelPage;
+import com.mini.web.model.PageModel;
 
 import java.lang.annotation.*;
 
@@ -18,7 +18,7 @@ public @interface Action {
      * 返回数据类型
      * @return 数据类型
      */
-    Class<? extends IModel<?>> value() default ModelPage.class;
+    Class<? extends IModel<?>> value() default PageModel.class;
 
     /**
      * 访问地址
