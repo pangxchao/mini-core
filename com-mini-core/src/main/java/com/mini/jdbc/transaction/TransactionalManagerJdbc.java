@@ -1,53 +1,38 @@
 package com.mini.jdbc.transaction;
 
-import javax.annotation.Nullable;
+import com.mini.callback.ConnectionCallback;
+import com.mini.jdbc.JdbcTemplate;
+
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.mini.jdbc.util.JdbcUtil.getConnection;
-import static com.mini.jdbc.util.JdbcUtil.releaseConnection;
-
 /**
  * JDBC 事务实现
  * @author xchao
  */
-@Named
 @Singleton
 public final class TransactionalManagerJdbc implements TransactionalManager {
-    private List<DataSource> dataSourceList;
+    private List<JdbcTemplate> jdbcTemplateList;
 
-    /**
-     * The value of dataSourceList
-     * @param dataSourceList The value of dataSourceList
-     */
     @Inject
-    public void setDataSourceList(@Nullable List<DataSource> dataSourceList) {
-        this.dataSourceList = dataSourceList;
+    public void setJdbcTemplateList(@Nonnull List<JdbcTemplate> jdbcTemplateList) {
+        this.jdbcTemplateList = jdbcTemplateList;
     }
 
     @Override
     public <T> T open(TransactionalManagerCallback<T> callback) throws Throwable {
-        if (dataSourceList == null) return callback.apply();
-        return open(dataSourceList.iterator(), callback);
+        if (jdbcTemplateList == null) return callback.apply();
+        return open(jdbcTemplateList.iterator(), callback);
     }
 
-    private <T> T open(Iterator<DataSource> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
-        if (!iterator.hasNext()) return callback.apply();
-        Connection connection = null;
-        DataSource dataSource = null;
-        try {
-            // 获取连接和连接池
-            dataSource = iterator.next();
-            connection = getConnection(dataSource);
-
-            // 字义回滚点
+    private <T> T open(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
+        return iterator.hasNext() ? iterator.next().execute((ConnectionCallback<T>) connection -> {
+            // 定义回滚点
             Savepoint point = null;
             try {
                 // 设置不自动提交，并设置回调点
@@ -60,16 +45,16 @@ public final class TransactionalManagerJdbc implements TransactionalManager {
                 // 提交事务并返回
                 connection.commit();
                 return result;
-            } catch (SQLException e) {
+            } catch (Throwable e) {
                 if (point == null) {
                     connection.rollback();
-                } else connection.rollback(point);
-                throw e;
+                    throw new SQLException(e);
+                }
+                connection.rollback(point);
+                throw new RuntimeException(e);
             } finally {
                 connection.setAutoCommit(true);
             }
-        } finally {
-            releaseConnection(connection, dataSource);
-        }
+        }) : callback.apply();
     }
 }

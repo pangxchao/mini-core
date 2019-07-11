@@ -20,6 +20,6 @@ public final class DispatcherHttpServlet extends AbstractDispatcherHttpServlet i
 
     @Override
     protected ActionInvocationProxy getInvocationProxy(String uri, HttpServletRequest request) {
-        return this.getActionInvocationProxy(uri, request::setAttribute);
+        return getConfigure().getInvocationProxy(uri, request::setAttribute);
     }
 }

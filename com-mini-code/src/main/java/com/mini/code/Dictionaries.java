@@ -1,5 +1,6 @@
 package com.mini.code;
 
+import com.mini.callback.DatabaseMetaDataCallback;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -9,9 +10,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,122 +73,120 @@ public class Dictionaries {
             // 设置第八列宽， 字段说明列
             sheet.setColumnWidth(8, 18000);
 
-            HSSFRow row;
-            HSSFCell cell;
-            String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "主键", "非空", "自增", "默认值", "说明"};
-            try (Connection connection = configure.getConnection()) {
-                try (Statement statement = configure.getConnection().createStatement()) {
-                    try (ResultSet res = statement.executeQuery("show tables")) {
-                        for (int rowNum = 0; res.next(); ) {
-                            String tableName = res.getString(1);
-                            // 合并单元格
-                            sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 8));
-                            // 创建表格行
-                            row = sheet.createRow(rowNum);
-                            // 设置行高 405
-                            row.setHeightInPoints(20);
+            configure.getJdbcTemplate().execute((DatabaseMetaDataCallback<Object>) metaData -> {
+                HSSFRow row;
+                HSSFCell cell;
+                String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "主键", "非空", "自增", "默认值", "说明"};
+                List<String> tables = configure.getJdbcTemplate().query("show tables", (rs, number) -> rs.getString(1));
+                for (int i = 0, rowNum = 0; i < tables.size(); i++) {
+                    String tableName = tables.get(i);
+                    // 合并单元格
+                    sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 8));
+                    // 创建表格行
+                    row = sheet.createRow(rowNum);
+                    // 设置行高 405
+                    row.setHeightInPoints(20);
 
-                            // 表名称标题栏
+                    // 表名称标题栏
+                    cell = row.createCell(0);
+                    cell.setCellValue(tableName);
+                    cell.setCellStyle(style_center);
+                    for (int j = 1; j <= 8; j++) {
+                        cell = row.createCell(j);
+                        cell.setCellStyle(style_center);
+                    }
+
+                    rowNum = rowNum + 1;
+                    row    = sheet.createRow(rowNum);
+                    row.setHeightInPoints(20);
+
+                    for (int j = 0, l = cellTitle.length; j < l; j++) {
+                        cell = row.createCell(j);
+                        cell.setCellValue(cellTitle[j]);
+                        cell.setCellStyle(style_center);
+                    }
+
+                    // 获取主键字段
+                    List<String> PKFieldList = new ArrayList<>();
+                    try (ResultSet rs = metaData.getPrimaryKeys(configure.getDatabaseName(), null, tableName)) {
+                        while (rs != null && rs.next()) PKFieldList.add(rs.getString("COLUMN_NAME"));
+                    }
+
+                    try (ResultSet rs = metaData.getColumns(configure.getDatabaseName(), null, tableName, null)) {
+                        for (int index = 1; rs != null && rs.next(); index++) {
+                            rowNum = rowNum + 1;
+                            row    = sheet.createRow(rowNum);
+                            row.setHeightInPoints(15);
+
+                            // 获取字段的信息
+                            String name = rs.getString("COLUMN_NAME");
+                            String typeName = rs.getString("TYPE_NAME");
+                            int columnSize = rs.getInt("COLUMN_SIZE");
+                            String remarks = rs.getString("REMARKS");
+                            String isNull = rs.getString("IS_NULLABLE");
+                            String isAuto = rs.getString("IS_AUTOINCREMENT");
+                            String columnDef = rs.getString("COLUMN_DEF");
+
+                            // 序号
                             cell = row.createCell(0);
-                            cell.setCellValue(tableName);
-                            cell.setCellStyle(style_center);
-                            for (int j = 1; j <= 8; j++) {
-                                cell = row.createCell(j);
-                                cell.setCellStyle(style_center);
-                            }
+                            cell.setCellValue(index);
+                            cell.setCellStyle(style);
 
-                            rowNum = rowNum + 1;
-                            row    = sheet.createRow(rowNum);
-                            row.setHeightInPoints(20);
+                            // 字段名称
+                            cell = row.createCell(1);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(name);
 
-                            for (int j = 0, l = cellTitle.length; j < l; j++) {
-                                cell = row.createCell(j);
-                                cell.setCellValue(cellTitle[j]);
-                                cell.setCellStyle(style_center);
-                            }
+                            // 字段类型
+                            cell = row.createCell(2);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(typeName);
 
-                            // 获取主键字段
-                            List<String> PKFieldList = new ArrayList<>();
-                            try (ResultSet rs = connection.getMetaData().getPrimaryKeys(configure.getDatabaseName(), null, tableName)) {
-                                while (rs != null && rs.next()) PKFieldList.add(rs.getString("COLUMN_NAME"));
-                            }
+                            // 字段长度
+                            cell = row.createCell(3);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(columnSize);
 
-                            try (ResultSet rs = connection.getMetaData().getColumns(configure.getDatabaseName(), null, tableName, null)) {
-                                for (int index = 1; rs != null && rs.next(); index++) {
-                                    rowNum = rowNum + 1;
-                                    row    = sheet.createRow(rowNum);
-                                    row.setHeightInPoints(15);
+                            // 是否为主键
+                            cell = row.createCell(4);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(any(PKFieldList, text -> eq(text, name)) ? "是" : "");
 
-                                    // 获取字段的信息
-                                    String name = rs.getString("COLUMN_NAME");
-                                    String typeName = rs.getString("TYPE_NAME");
-                                    int columnSize = rs.getInt("COLUMN_SIZE");
-                                    String remarks = rs.getString("REMARKS");
-                                    String isNull = rs.getString("IS_NULLABLE");
-                                    String isAuto = rs.getString("IS_AUTOINCREMENT");
-                                    String columnDef = rs.getString("COLUMN_DEF");
+                            // 字段是否为非空字段
+                            cell = row.createCell(5);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(eq("NO", isNull) ? "是" : "");
 
-                                    // 序号
-                                    cell = row.createCell(0);
-                                    cell.setCellValue(index);
-                                    cell.setCellStyle(style);
+                            // 字段是否为自增字段
+                            cell = row.createCell(6);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(eq("YES", isAuto) ? "是" : "");
 
-                                    // 字段名称
-                                    cell = row.createCell(1);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(name);
+                            // 字段默认值
+                            cell = row.createCell(7);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(columnDef);
 
-                                    // 字段类型
-                                    cell = row.createCell(2);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(typeName);
-
-                                    // 字段长度
-                                    cell = row.createCell(3);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(columnSize);
-
-                                    // 是否为主键
-                                    cell = row.createCell(4);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(any(PKFieldList, text -> eq(text, name)) ? "是" : "");
-
-                                    // 字段是否为非空字段
-                                    cell = row.createCell(5);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(eq("NO", isNull) ? "是" : "");
-
-                                    // 字段是否为自增字段
-                                    cell = row.createCell(6);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(eq("YES", isAuto) ? "是" : "");
-
-                                    // 字段默认值
-                                    cell = row.createCell(7);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(columnDef);
-
-                                    // 字段说明
-                                    cell = row.createCell(8);
-                                    cell.setCellStyle(style);
-                                    cell.setCellValue(remarks);
-                                }
-                            }
-
-                            // 每个表结束之后有一个空白行
-                            rowNum = rowNum + 1;
-                            row    = sheet.createRow(rowNum);
-                            row.setHeightInPoints(20);
-
-                            // 准备下一个表格
-                            rowNum = rowNum + 1;
-                            row    = sheet.createRow(rowNum);
-                            row.setHeightInPoints(20);
+                            // 字段说明
+                            cell = row.createCell(8);
+                            cell.setCellStyle(style);
+                            cell.setCellValue(remarks);
                         }
                     }
 
+                    // 每个表结束之后有一个空白行
+                    rowNum = rowNum + 1;
+                    row    = sheet.createRow(rowNum);
+                    row.setHeightInPoints(20);
+
+                    // 准备下一个表格
+                    rowNum = rowNum + 1;
+                    row    = sheet.createRow(rowNum);
+                    row.setHeightInPoints(20);
                 }
-            }
+
+                return null;
+            });
             workBook.write(out);
             out.flush();
         } catch (Exception e) {

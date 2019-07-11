@@ -7,19 +7,25 @@ import com.mini.jdbc.mapper.IMapperSingle;
 import com.mini.jdbc.sql.SQL;
 import com.mini.jdbc.util.JdbcUtil;
 import com.mini.jdbc.util.Paging;
+import com.mini.util.ObjectUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static com.mini.jdbc.util.JdbcUtil.*;
+import static com.mini.jdbc.util.JdbcUtil.full;
 import static java.sql.ResultSet.CONCUR_READ_ONLY;
 import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public abstract class JdbcTemplate {
+    private static final JdbcThreadLocal resources = new JdbcThreadLocal();
     private final DataSource dataSource;
 
     public JdbcTemplate(@Nonnull DataSource dataSource) {
@@ -33,6 +39,61 @@ public abstract class JdbcTemplate {
     @Nonnull
     public final DataSource getDataSource() {
         return dataSource;
+    }
+
+    // 打开当前线程连接
+    @Nonnull
+    private static Connection getConnection(DataSource dataSource) {
+        Connection connection = null;
+        try {
+            // 获取当前线程的指定数据源的连接状态
+            Map<DataSource, ConnectionHolder> map = Objects.requireNonNull(resources.get());
+            ConnectionHolder connectionHolder = map.computeIfAbsent(dataSource, ds -> {
+                return new ConnectionHolder(); //
+            });
+
+            // 如果没有打开的连接，则重新设置连接
+            if (!connectionHolder.hasOpenConnection()) {
+                connection = dataSource.getConnection();
+                connectionHolder.setConnection(connection);
+            }
+            // 从 ConnectionHolder 对象中获取连接
+            connection = connectionHolder.getConnection();
+            connectionHolder.requestedConnection();
+            return connection;
+        } catch (SQLException | RuntimeException e) {
+            releaseConnection(connection, dataSource);
+            throw new RuntimeException(e);
+        }
+    }
+
+    // 关闭当前线程连接
+    private static void releaseConnection(@Nullable Connection connection, @Nullable DataSource dataSource) {
+        if (connection == null || dataSource == null) {
+            return;
+        }
+        try {
+            // 获取当前线程的指定数据源的连接状态
+            Map<DataSource, ConnectionHolder> map = Objects.requireNonNull(resources.get());
+            ConnectionHolder connectionHolder = map.computeIfAbsent(dataSource, ds -> {
+                return new ConnectionHolder(); //
+            });
+
+            Connection holder;
+            if (connectionHolder.hasOpenConnection()) {
+                holder = connectionHolder.getConnection();
+                if (ObjectUtil.equals(holder, connection)) {
+                    connectionHolder.releasedConnection();
+                    return;
+                }
+            }
+            // 如果连接未关闭，则关闭连接
+            if (!connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException | RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -54,6 +115,19 @@ public abstract class JdbcTemplate {
     }
 
     /**
+     * 执行 DatabaseMetaDataCallback 对象
+     * @param callback DatabaseMetaDataCallback 对象
+     * @param <T>      结果类型
+     * @return 执行结果
+     */
+    public <T> T execute(DatabaseMetaDataCallback<T> callback) {
+        return this.execute((ConnectionCallback<T>) connection -> {
+            DatabaseMetaData metaData = connection.getMetaData();
+            return callback.doDatabaseMetaData(metaData);
+        });
+    }
+
+    /**
      * 执行 StatementCallback 对象
      * @param creator  StatementCreator 创建器
      * @param callback StatementCallback 对象
@@ -61,7 +135,7 @@ public abstract class JdbcTemplate {
      * @return 执行结果
      */
     public final <T> T execute(StatementCreator creator, StatementCallback<T> callback) {
-        return JdbcTemplate.this.execute(connection -> {
+        return this.execute((ConnectionCallback<T>) connection -> {
             Statement statement = creator.get(connection);
             return callback.doStatement(statement);
         });
@@ -75,7 +149,7 @@ public abstract class JdbcTemplate {
      * @return 执行结果
      */
     public final <T> T execute(PreparedStatementCreator creator, PreparedStatementCallback<T> callback) {
-        return JdbcTemplate.this.execute(connection -> {
+        return this.execute((ConnectionCallback<T>) connection -> {
             PreparedStatement statement = creator.get(connection);
             return callback.doPreparedStatement(statement);
         });
@@ -89,7 +163,7 @@ public abstract class JdbcTemplate {
      * @return 执行结果
      */
     public final <T> T execute(CallableStatementCreator creator, CallableStatementCallback<T> callback) {
-        return JdbcTemplate.this.execute(connection -> {
+        return this.execute((ConnectionCallback<T>) connection -> {
             CallableStatement statement = creator.get(connection);
             return callback.doCallableStatement(statement);
         });
@@ -522,4 +596,53 @@ public abstract class JdbcTemplate {
      * @return 分页查询SQL
      */
     protected abstract String paging(Paging paging, String sql);
+
+
+    /**
+     * 当前线程数据库连接池管理
+     * @author xchao
+     */
+    private static final class JdbcThreadLocal extends ThreadLocal<Map<DataSource, ConnectionHolder>> {
+        protected Map<DataSource, ConnectionHolder> initialValue() {
+            return new ConcurrentHashMap<>();
+        }
+    }
+
+    /**
+     * 当前线程数据库连接管理
+     * @author xchao
+     */
+    private static final class ConnectionHolder {
+        private Connection connection;
+        private int referenceCount = 0;
+
+        public ConnectionHolder setConnection(Connection connection) {
+            this.connection = connection;
+            return this;
+        }
+
+        public Connection getConnection() {
+            return connection;
+        }
+
+        public void requestedConnection() {
+            this.referenceCount++;
+        }
+
+        public void releasedConnection() throws SQLException {
+            this.referenceCount--;
+            if (referenceCount <= 0) {
+                closeConnection();
+            }
+        }
+
+        public boolean hasOpenConnection() throws SQLException {
+            return connection != null && !connection.isClosed();
+        }
+
+        private void closeConnection() throws SQLException {
+            if (connection.isClosed()) return;
+            this.connection.close();
+        }
+    }
 }

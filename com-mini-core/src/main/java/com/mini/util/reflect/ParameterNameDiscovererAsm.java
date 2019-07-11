@@ -2,7 +2,9 @@ package com.mini.util.reflect;
 
 
 import com.mini.logger.Logger;
+import com.mini.util.StringUtil;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import javax.annotation.Nonnull;
@@ -11,20 +13,20 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 import static com.mini.util.ObjectUtil.defIfNull;
-import static com.mini.util.StringUtil.eq;
 import static com.mini.util.StringUtil.join;
 import static java.lang.ClassLoader.getSystemClassLoader;
+import static java.util.Comparator.comparingInt;
 import static org.objectweb.asm.ClassReader.EXPAND_FRAMES;
-import static org.objectweb.asm.Type.getConstructorDescriptor;
-import static org.objectweb.asm.Type.getMethodDescriptor;
 
 
 public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Serializable {
     private static final Logger logger = getLogger(ParameterNameDiscovererAsm.class);
     private static final long serialVersionUID = 6718496659106769030L;
+    private static final String INIT_METHOD = "<init>";
 
     @Nonnull
     @Override
@@ -33,7 +35,8 @@ public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Seri
         if (parameterTypes.length == 0) return new String[0];
 
         try (InputStream stream = getClassAsStream(method.getDeclaringClass())) {
-            return getParameterNames(stream, getMethodDescriptor(method));
+            String descriptor = Type.getMethodDescriptor(method);
+            return getParameterNames(stream, method.getName(), descriptor);
         } catch (Exception | Error e) {
             logger.error("ERROR!", e);
         }
@@ -47,7 +50,8 @@ public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Seri
         if (parameterTypes.length == 0) return new String[0];
 
         try (InputStream stream = getClassAsStream(constructor.getDeclaringClass())) {
-            return getParameterNames(stream, getConstructorDescriptor(constructor));
+            String descriptor = Type.getConstructorDescriptor(constructor);
+            return getParameterNames(stream, INIT_METHOD, descriptor);
         } catch (Exception | Error e) {
             logger.error("ERROR!", e);
         }
@@ -86,12 +90,17 @@ public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Seri
      * @return 参数名称列表
      */
     @Nonnull
-    private String[] getParameterNames(InputStream stream, String describe) throws IOException {
-        return this.getClassNode(stream).methods.stream()
-                .filter(node -> eq(describe, node.desc) && node.parameters != null)
-                .flatMap(node -> node.parameters.stream())
-                .map(parameter -> parameter.name)
-                .toArray(String[]::new);
+    private String[] getParameterNames(InputStream stream, String name, String describe) throws IOException {
+        return this.getClassNode(stream).methods.stream().filter(methodNode -> {
+            if (!StringUtil.eq(methodNode.desc, describe)) return false;
+            return StringUtil.eq(name, methodNode.name);
+        }).findAny().stream().flatMap(methodNode -> {
+            Objects.requireNonNull(methodNode.localVariables);
+            return methodNode.localVariables.stream();
+        }).sorted(comparingInt(v -> v.index)).filter(v -> {
+            // 非静态方法的第一个参数为 this，需要将其排除
+            return !StringUtil.eq("this", v.name);
+        }).map(v -> v.name).toArray(String[]::new);
     }
 
     /**

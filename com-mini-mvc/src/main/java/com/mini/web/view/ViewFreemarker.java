@@ -31,6 +31,9 @@ public class ViewFreemarker implements IView, Serializable {
     @Inject
     private ServletContext context;
 
+    protected final ServletContext getContext() {
+        return context;
+    }
 
     @Override
     public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -11,10 +11,6 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 
 public final class CodeService {
     protected static void run(Configure configure, String className, String tableName, String prefix) throws Exception {
-        System.out.println("====================================");
-        System.out.println("========= Start Code Service =======");
-        System.out.println("====================================");
-
         //  Package Name
         String serviceImplPackage = format("%s.service.impl", configure.getPackageName());
         String servicePackage = format("%s.service", configure.getPackageName());
@@ -53,9 +49,7 @@ public final class CodeService {
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("========= End Code Service =========");
-        System.out.println("====================================");
-        System.out.println("\r\n");
+        System.out.println("Code Service : " + className + "\r\n");
     }
 
     public static void main(String[] args) throws Exception {

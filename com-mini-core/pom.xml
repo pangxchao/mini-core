@@ -13,8 +13,8 @@
     <!-- 基础属性配置 -->
     <properties>
         <java.version>11</java.version>
+        <guice.version>4.2.2</guice.version>
         <junit.version>4.13-beta-2</junit.version>
-        <spring.version>5.1.8.RELEASE</spring.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -51,7 +51,6 @@
             <version>1.1</version>
         </dependency>
 
-
         <!-- Json 处理工具 -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -80,32 +79,18 @@
             <version>7.1</version>
         </dependency>
 
-        <!-- spring 依赖注入、AOP框架 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- spring jdbc 框架支持 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
         <!-- 谷歌依赖注入实现-->
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.2.2</version>
+            <version>${guice.version}</version>
         </dependency>
 
         <!-- 谷歌Set，Map 依赖注入实现 -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
-            <version>4.2.2</version>
+            <version>${guice.version}</version>
         </dependency>
 
         <!-- Mysql 连接工具 -->
@@ -113,13 +98,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.15</version>
-        </dependency>
-
-        <!-- atomikos 分布式事务支持 -->
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jdbc</artifactId>
-            <version>4.0.6</version>
         </dependency>
 
         <!-- 测试工具包 -->
@@ -141,9 +119,9 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
+                    <!--                    <compilerArgs>-->
+                    <!--                        <arg>-parameters</arg>-->
+                    <!--                    </compilerArgs>-->
                 </configuration>
                 <executions>
                     <execution>

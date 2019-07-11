@@ -1,6 +1,7 @@
 
 package com.mini.web.servlet;
 
+import com.google.inject.Injector;
 import com.mini.logger.Logger;
 import com.mini.util.ArraysUtil;
 import com.mini.util.Function;
@@ -8,17 +9,12 @@ import com.mini.util.StringUtil;
 import com.mini.util.reflect.MiniParameter;
 import com.mini.validate.ValidateException;
 import com.mini.web.annotation.Action;
-import com.mini.web.argument.ArgumentResolver;
-import com.mini.web.config.ActionInvocationProxyConfigure;
-import com.mini.web.config.ArgumentResolverConfigure;
-import com.mini.web.config.ViewConfigure;
+import com.mini.web.config.Configure;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
 import com.mini.web.model.factory.ModelFactory;
-import com.mini.web.view.IView;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -32,8 +28,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 import static com.mini.util.ArraysUtil.any;
@@ -54,110 +53,18 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     private static final int ERROR = SC_INTERNAL_SERVER_ERROR;
     private static final int NOT_FOUND = SC_NOT_FOUND;
 
-    private final Map<String, ModelFactory<?>> modelFactoryMap = new ConcurrentHashMap<>();
-    private final Map<String, ArgumentResolver> resolverMap = new ConcurrentHashMap<>();
-    private ActionInvocationProxyConfigure actionInvocationProxyConfigure;
-    private ArgumentResolverConfigure argumentResolverConfigure;
-    private ViewConfigure viewConfigure;
-    private ApplicationContext context;
-    private IView view;
-
-    /**
-     * 自动注入 ActionInvocationProxyConfigure 配置信息
-     * @param actionInvocationProxyConfigure 配置信息
-     */
     @Inject
-    public final void setActionInvocationProxyConfigure(ActionInvocationProxyConfigure actionInvocationProxyConfigure) {
-        this.actionInvocationProxyConfigure = actionInvocationProxyConfigure;
-    }
+    private Configure configure;
 
-    /**
-     * 自动注入 ArgumentResolverConfigure 配置信息
-     * @param argumentResolverConfigure 配置信息
-     */
     @Inject
-    public final void setArgumentResolverConfigure(ArgumentResolverConfigure argumentResolverConfigure) {
-        this.argumentResolverConfigure = argumentResolverConfigure;
+    private Injector injector;
+
+    public final Configure getConfigure() {
+        return configure;
     }
 
-    /**
-     * 自动注入 ViewConfigure 配置信息
-     * @param viewConfigure 配置信息
-     */
-    @Inject
-    public final void setViewConfigure(ViewConfigure viewConfigure) {
-        this.viewConfigure = viewConfigure;
-    }
-
-    /**
-     * 自动注入 ApplicationContext 上下文环境
-     * @param context 上下文环境
-     */
-    @Inject
-    public final void setContext(ApplicationContext context) {
-        this.context = context;
-    }
-
-    /**
-     * 根据URI获取 ActionInvocationProxy 对象
-     * @param uri  URI
-     * @param func 回调
-     * @return ActionInvocationProxy 对象
-     */
-    protected final ActionInvocationProxy getActionInvocationProxy(String uri, Function.F2<String, String> func) {
-        return actionInvocationProxyConfigure.getInvocationProxy(uri, func);
-    }
-
-    /**
-     * 根据URI获取 ActionInvocationProxy 对象
-     * @param uri URI
-     * @return ActionInvocationProxy 对象
-     */
-    protected final ActionInvocationProxy getActionInvocationProxy(String uri) {
-        return actionInvocationProxyConfigure.getInvocationProxy(uri);
-    }
-
-    /**
-     * 根据参数类型，获取参数解析器
-     * @param paramType 参数类型
-     * @return 数解析器
-     */
-    protected final ArgumentResolver getArgumentResolver(Class<?> paramType) {
-        Class<?> key = argumentResolverConfigure.getArgumentResolver(paramType);
-        return key != null ? resolverMap.computeIfAbsent(key.getName(), name -> {
-            return context.getBean(name, ArgumentResolver.class); //
-        }) : null;
-    }
-
-    /**
-     * 根据 Model Class 获取 ModelFactory 对象
-     * @param modelClass Model Class
-     * @return ModelFactory 对象
-     */
-    protected final ModelFactory<?> getModelFactory(Class<?> modelClass) {
-        return modelFactoryMap.computeIfAbsent(modelClass.getName(), name -> {
-            return context.getBean(name, ModelFactory.class); //
-        });
-    }
-
-    /**
-     * 获取依赖注入上下文环境
-     * @return 上下文环境
-     */
-    protected final ApplicationContext getContext() {
-        return context;
-    }
-
-    /**
-     * 获取视图实现类
-     * @return 视图实现类
-     */
-    protected final com.mini.web.view.IView getView() {
-        return Optional.ofNullable(view).orElseGet(() -> {
-            String name = viewConfigure.getClassName();
-            view = context.getBean(name, IView.class);
-            return view;
-        });
+    public final Injector getInjector() {
+        return injector;
     }
 
     /**
@@ -191,33 +98,18 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
      */
     protected final void doService(Action.Method method, String uri, HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
-        // 验证注入的 ActionInvocationProxyConfigure 对象是否为空，如果为空，返回 500 错误
-        if (require(actionInvocationProxyConfigure, response, ERROR, "ActionInvocationProxyConfigure can not be null", Objects::isNull)) {
-            return;
-        }
-
-        // 验证注入的 ArgumentResolverConfigure 对象是否为空，如果为空，返回 500 错误
-        if (require(argumentResolverConfigure, response, ERROR, "ArgumentResolverConfigure can not be null", Objects::isNull)) {
-            return;
-        }
-
-        // 验证注入的 ModelFactoryConfigure 对象是否为空，如果为空，返回 500 错误
-        if (require(modelFactoryMap, response, ERROR, "ModelFactoryMap can not be null", Objects::isNull)) {
-            return;
-        }
-
-        // 验证注入的 ViewConfigure 对象是否为空，如果为空，返回 500 错误
-        if (require(viewConfigure, response, ERROR, "ViewConfigure can not be null", Objects::isNull)) {
-            return;
-        }
-
-        // 验证注入的 ApplicationContext 对象是否为空，如果为空，返回 500 错误
-        if (require(context, response, ERROR, "ApplicationContext can not be null.", Objects::nonNull)) {
-            return;
-        }
-
         // 验证 RequestURI 是否为空，如果为空，返回 500 错误
         if (require(uri, response, ERROR, "Uri can not be null.", v -> !isEmpty(v))) {
+            return;
+        }
+
+        // 验证注入的 Injector 对象是否为空，如果为空，返回 500 错误
+        if (require(injector, response, ERROR, "Injector can not be null", Objects::nonNull)) {
+            return;
+        }
+
+        // 验证注入的 Configure 对象是否为空，如果为空，返回 500 错误
+        if (require(configure, response, ERROR, "Configure can not be null", Objects::nonNull)) {
             return;
         }
 
@@ -234,13 +126,13 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
 
         // 获取数据模型工厂并验证，如果该工厂为空，返回 500 错误
-        final ModelFactory<?> modelFactory = getModelFactory(proxy.getModelClass());
+        final ModelFactory<?> modelFactory = configure.getFactory(proxy.getModelClass());
         if (require(modelFactory, response, ERROR, "Model Factory can not be null.", Objects::nonNull)) {
             return;
         }
 
         // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
-        final IModel<?> model = modelFactory.getModel(getView(), proxy.getViewPath());
+        final IModel<?> model = modelFactory.getModel(configure.getView(), proxy.getViewPath());
         if (require(model, response, ERROR, "IModel can not be null.", v -> {
             request.setAttribute(MODEL_KEY, model);
             return model != null;
@@ -248,7 +140,9 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
         // 创建 ActionInvocation 对象
         ActionInvocation action = new ActionInvocation() {
+            private List<ActionInterceptor> interceptors;
             private Iterator<ActionInterceptor> iterator;
+            private Object instance;
 
             @Nonnull
             @Override
@@ -265,7 +159,10 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             @Nonnull
             @Override
             public Object getInstance() {
-                return proxy.getInstance();
+                return Optional.ofNullable(instance).orElseGet(() -> {
+                    instance = injector.getInstance(getClazz());
+                    return instance;
+                });
             }
 
             @Nonnull
@@ -283,7 +180,12 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             @Nonnull
             @Override
             public List<ActionInterceptor> getInterceptors() {
-                return proxy.getInterceptors();
+                return Optional.ofNullable(interceptors).orElseGet(() -> {
+                    interceptors = proxy.getInterceptors().stream().map(c -> {
+                        return injector.getInstance(c); //
+                    }).collect(Collectors.toList());
+                    return interceptors;
+                });
             }
 
             @Nonnull
@@ -341,7 +243,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             @Override
             public Object[] getParameterValues() {
                 return ArraysUtil.stream(getParameters()).map(parameter -> {
-                    ofNullable(getArgumentResolver(parameter.getType())).ifPresent(r -> {
+                    ofNullable(configure.getResolver(parameter.getType())).ifPresent(r -> {
                         try {
                             parameter.setValue(r.value(parameter.getName(), //
                                     parameter.getType(), request, response)); //

@@ -1,8 +1,8 @@
 package com.mini.web.argument;
 
-import com.mini.util.DateUtil;
+import com.mini.util.LocalDateUtil;
 import com.mini.util.StringUtil;
-import com.mini.web.config.WebMvcConfigureDefault;
+import com.mini.web.config.Configure;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -15,15 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 public final class ArgumentResolverDate extends ArgumentResolverBase {
 
-    private WebMvcConfigureDefault configureDefault;
+    private Configure configure;
 
     @Inject
-    public void setConfigureDefault(WebMvcConfigureDefault configureDefault) {
-        this.configureDefault = configureDefault;
+    public void setConfigure(Configure configure) {
+        this.configure = configure;
     }
 
     @Override
     protected Object parse(String text, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
-        return DateUtil.parse(text, StringUtil.def(configureDefault.getDateFormat(), "yyyy-MM-dd"));
+        return LocalDateUtil.parse(text, StringUtil.def(configure.getDateFormat(), "yyyy-MM-dd"));
     }
 }

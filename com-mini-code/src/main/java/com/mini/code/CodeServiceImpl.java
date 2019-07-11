@@ -3,6 +3,7 @@ package com.mini.code;
 import com.squareup.javapoet.*;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 
@@ -13,10 +14,6 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 
 public final class CodeServiceImpl {
     protected static void run(Configure configure, String className, String tableName, String prefix) throws Exception {
-        System.out.println("====================================");
-        System.out.println("========= Start Code Service Impl ==");
-        System.out.println("====================================");
-
         //  Package Name
         String serviceImplPackage = format("%s.service.impl", configure.getPackageName());
         String servicePackage = format("%s.service", configure.getPackageName());
@@ -40,6 +37,9 @@ public final class CodeServiceImpl {
                 .addModifiers(PUBLIC)
                 .addSuperinterface(serviceClass)
                 .addAnnotation(Singleton.class)
+                .addAnnotation(AnnotationSpec.builder(Named.class)
+                        .addMember("value", "$S", firstLowerCase(serviceClassName))
+                        .build())
                 .addJavadoc("$L.java \n", serviceImplClassName)
                 .addJavadoc("@author xchao \n");
 
@@ -77,9 +77,7 @@ public final class CodeServiceImpl {
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("========= End Code Service Impl ====");
-        System.out.println("====================================");
-        System.out.println("\r\n");
+        System.out.println("Code Service Impl : " + className + "\r\n");
     }
 
     public static void main(String[] args) throws Exception {

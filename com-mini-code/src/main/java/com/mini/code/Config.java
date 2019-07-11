@@ -1,8 +1,9 @@
 package com.mini.code;
 
+import com.mini.jdbc.JdbcTemplate;
+import com.mini.jdbc.JdbcTemplateMysql;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import static java.lang.String.format;
@@ -25,8 +26,8 @@ public final class Config {
 
     /** 获取配置信息 */
     public static Configure getConfigure() {
-        //return new MengyiCommonConfigure();
-        return new MengyiCloudConfigure();
+        return new MengyiCommonConfigure();
+        //return new MengyiCloudConfigure();
     }
 
     public static class MengyiCommonConfigure implements Configure {
@@ -53,14 +54,14 @@ public final class Config {
         }
 
         @Override
-        public Connection getConnection() throws SQLException {
+        public JdbcTemplate getJdbcTemplate() throws SQLException {
             MysqlDataSource dataSource = new MysqlDataSource();
             dataSource.setDatabaseName(getDatabaseName());
             dataSource.setServerName(SERVER_NAME);
             dataSource.setPassword(PASSWORD);
             dataSource.setUseSSL(false);
             dataSource.setUser("root");
-            return dataSource.getConnection();
+            return new JdbcTemplateMysql(dataSource);
         }
 
         @Override
@@ -111,14 +112,14 @@ public final class Config {
         }
 
         @Override
-        public Connection getConnection() throws SQLException {
+        public JdbcTemplate getJdbcTemplate() throws SQLException {
             MysqlDataSource dataSource = new MysqlDataSource();
             dataSource.setDatabaseName(getDatabaseName());
             dataSource.setServerName(SERVER_NAME);
             dataSource.setPassword(PASSWORD);
             dataSource.setUseSSL(false);
             dataSource.setUser("root");
-            return dataSource.getConnection();
+            return new JdbcTemplateMysql(dataSource);
         }
 
         @Override

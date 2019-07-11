@@ -1,11 +1,8 @@
 package com.mini.jdbc.util;
 
 import com.mini.callback.DatabaseMetaDataCallback;
-import com.mini.jdbc.holder.ConnectionHolder;
-import com.mini.util.ObjectUtil;
 import com.mini.util.StringUtil;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -13,78 +10,12 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class JdbcUtil {
-    private static final ThreadLocal<Map<DataSource, ConnectionHolder>> resources = ThreadLocal.withInitial(ConcurrentHashMap::new);
-
-    /**
-     * Obtain a Connection from the given DataSource. Translates SQLExceptions into the Spring hierarchy of unchecked generic data access exceptions,
-     * simplifying calling code and making any exception that is thrown more meaningful.
-     * @param dataSource the DataSource to obtain Connections from
-     * @return a JDBC Connection from the given DataSource
-     */
-    @Nonnull
-    public static Connection getConnection(DataSource dataSource) {
-        Connection connection = null;
-        try {
-            // 获取当前线程的指定数据源的连接状态
-            Map<DataSource, ConnectionHolder> map = Objects.requireNonNull(resources.get());
-            ConnectionHolder connectionHolder = map.computeIfAbsent(dataSource, ds -> {
-                return new ConnectionHolder(); //
-            });
-
-            // 如果没有打开的连接，则重新设置连接
-            if (!connectionHolder.hasOpenConnection()) {
-                connection = dataSource.getConnection();
-                connectionHolder.setConnection(connection);
-            }
-            // 从 ConnectionHolder 对象中获取连接
-            connection = connectionHolder.getConnection();
-            connectionHolder.requestedConnection();
-            return connection;
-        } catch (SQLException | RuntimeException e) {
-            releaseConnection(connection, dataSource);
-            throw new RuntimeException(e);
-        }
-    }
 
 
-    /**
-     * Close the given Connection, obtained from the given DataSource, if it is not managed externally (that is, not bound to the thread).
-     * @param connection the Connection to close if necessary (if this is {@code null}, the call will be ignored)
-     * @param dataSource the DataSource that the Connection was obtained from (may be {@code null})
-     * @see #getConnection
-     */
-    public static void releaseConnection(@Nullable Connection connection, @Nullable DataSource dataSource) {
-        if (connection == null || dataSource == null) {
-            return;
-        }
-        try {
-            // 获取当前线程的指定数据源的连接状态
-            Map<DataSource, ConnectionHolder> map = Objects.requireNonNull(resources.get());
-            ConnectionHolder connectionHolder = map.computeIfAbsent(dataSource, ds -> {
-                return new ConnectionHolder(); //
-            });
 
-            Connection holder;
-            if (connectionHolder.hasOpenConnection()) {
-                holder = connectionHolder.getConnection();
-                if (ObjectUtil.equals(holder, connection)) {
-                    connectionHolder.releasedConnection();
-                    return;
-                }
-            }
-            // 如果连接未关闭，则关闭连接
-            if (!connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException | RuntimeException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * 填充 PreparedStatement 参数
@@ -220,28 +151,7 @@ public final class JdbcUtil {
         return rs.getObject(index, requiredType);
     }
 
-    /**
-     * Extract database meta-data via the given DatabaseMetaDataCallback.
-     * <p>This method will open a connection to the database and retrieve the database meta-data.
-     * Since this method is called before the exception translation feature is configured for a datasource, this method can not rely on the SQLException
-     * translation functionality.
-     * <p>Any exceptions will be wrapped in a MetaDataAccessException. This is a checked exception
-     * and any calling code should catch and handle this exception. You can just log the error and hope for the best, but there is probably a more serious error
-     * that will reappear when you try to access the database again.
-     * @param dataSource the DataSource to extract meta-data for
-     * @param callback   callback that will do the actual work
-     * @return object containing the extracted information, as returned by the DatabaseMetaDataCallback's {@code processMetaData} method
-     */
-    public static <T> T extractDatabaseMetaData(DataSource dataSource, DatabaseMetaDataCallback<T> callback) throws SQLException {
-        Connection connection = null;
-        try {
-            connection = JdbcUtil.getConnection(dataSource);
-            DatabaseMetaData metaData = connection.getMetaData();
-            return callback.doDatabaseMetaData(Objects.requireNonNull(metaData));
-        } finally {
-            JdbcUtil.releaseConnection(connection, dataSource);
-        }
-    }
+
 
     /**
      * Return whether the given JDBC driver supports JDBC 2.0 batch updates.
@@ -307,36 +217,4 @@ public final class JdbcUtil {
         if (!StringUtil.isBlank(name)) return name;
         return metaData.getColumnName(columnIndex);
     }
-
-    ///**
-    // * Convert a column name with underscores to the corresponding property name using "camel case". A name like "customer_number" would match a
-    // * "customerNumber" property name.
-    // * @param name the column name to be converted
-    // * @return the name using "camel case"
-    // */
-    //public static String convertUnderscoreNameToPropertyName(@Nullable String name) {
-    //    StringBuilder result = new StringBuilder();
-    //    boolean nextIsUpper = false;
-    //    if (name != null && name.length() > 0) {
-    //        if (name.length() > 1 && name.charAt(1) == '_') {
-    //            result.append(Character.toUpperCase(name.charAt(0)));
-    //        } else {
-    //            result.append(Character.toLowerCase(name.charAt(0)));
-    //        }
-    //        for (int i = 1; i < name.length(); i++) {
-    //            char c = name.charAt(i);
-    //            if (c == '_') {
-    //                nextIsUpper = true;
-    //            } else {
-    //                if (nextIsUpper) {
-    //                    result.append(Character.toUpperCase(c));
-    //                    nextIsUpper = false;
-    //                } else {
-    //                    result.append(Character.toLowerCase(c));
-    //                }
-    //            }
-    //        }
-    //    }
-    //    return result.toString();
-    //}
 }

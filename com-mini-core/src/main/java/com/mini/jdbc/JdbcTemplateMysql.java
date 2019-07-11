@@ -4,8 +4,10 @@ import com.mini.jdbc.util.Paging;
 import com.mini.util.StringUtil;
 
 import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
+@Singleton
 public class JdbcTemplateMysql extends JdbcTemplate {
 
     public JdbcTemplateMysql(@Nonnull DataSource dataSource) {

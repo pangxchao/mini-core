@@ -1,8 +1,11 @@
 package com.mini.code;
 
+import com.mini.callback.DatabaseMetaDataCallback;
+import com.mini.jdbc.JdbcTemplate;
+
 import java.io.Serializable;
-import java.sql.*;
-import java.util.Date;
+import java.sql.Blob;
+import java.sql.ResultSet;
 import java.util.*;
 
 
@@ -279,191 +282,190 @@ public final class Util {
 
     /**
      * 获取指定表的创建表的SQL语句
-     * @param connection 数据库连接
+     * @param jdbcTemplate 数据库连接
      * @return 创建表语句
-     * @throws SQLException 读取错误
      */
-    public static String getCreateTable(Connection connection, String tableName) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement("SHOW CREATE TABLE " + tableName)) {
-            try (ResultSet rs = statement.executeQuery()) {
-                return rs.next() ? rs.getString(2) : "";
-            }
-        }
+    public static String getCreateTable(JdbcTemplate jdbcTemplate, String tableName) {
+        return jdbcTemplate.query("SHOW CREATE TABLE " + tableName, rs -> rs.next() ? rs.getString(2) : "");
     }
 
 
     /**
      * 获取所有字段的信息
-     * @param connection 数据库连接
+     * @param jdbcTemplate 数据库连接
      * @return 字段信息
-     * @throws SQLException 读取错误
      */
-    public static List<FieldInfo> getColumns(Connection connection, String databaseName, String tableName, String prefix) throws SQLException {
-        try (ResultSet rs = connection.getMetaData().getColumns(databaseName, null, tableName, null)) {
-            List<FieldInfo> columnList = new ArrayList<>();
-            while (rs != null && rs.next()) {
-                FieldInfo info = new FieldInfo();
-                // 字段名称
-                String columnName = rs.getString("COLUMN_NAME");
-                String fieldName = toFieldName(columnName, prefix);
-                info.setColumnName(columnName);
-                info.setFieldName(fieldName);
+    public static List<FieldInfo> getColumns(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String prefix) {
+        return jdbcTemplate.execute((DatabaseMetaDataCallback<List<FieldInfo>>) metaData -> {
+            try (ResultSet rs = metaData.getColumns(databaseName, null, tableName, null)) {
+                List<FieldInfo> columnList = new ArrayList<>();
+                while (rs != null && rs.next()) {
+                    FieldInfo info = new FieldInfo();
+                    // 字段名称
+                    String columnName = rs.getString("COLUMN_NAME");
+                    String fieldName = toFieldName(columnName, prefix);
+                    info.setColumnName(columnName);
+                    info.setFieldName(fieldName);
 
-                // 字段类型
-                String typeName = rs.getString("TYPE_NAME");
-                Class<?> typeClass = getTypes(typeName);
-                info.setTypeClass(typeClass);
+                    // 字段类型
+                    String typeName = rs.getString("TYPE_NAME");
+                    Class<?> typeClass = getTypes(typeName);
+                    info.setTypeClass(typeClass);
 
-                // 是否为自增字段 YES/NO
-                String auto = rs.getString("IS_AUTOINCREMENT");
-                info.setAuto("YES".equals(auto));
+                    // 是否为自增字段 YES/NO
+                    String auto = rs.getString("IS_AUTOINCREMENT");
+                    info.setAuto("YES".equals(auto));
 
-                // 字段刘明
-                String remarks = rs.getString("REMARKS");
-                info.setRemarks(remarks);
+                    // 字段刘明
+                    String remarks = rs.getString("REMARKS");
+                    info.setRemarks(remarks);
 
-                // 将字段加入列表
-                columnList.add(info);
+                    // 将字段加入列表
+                    columnList.add(info);
+                }
+                return columnList;
             }
-            return columnList;
-        }
+        });
     }
 
-    private static FieldInfo getColumn(Connection connection, String databaseName, String tableName, String columnName, String prefix) throws SQLException {
-        try (ResultSet rs = connection.getMetaData().getColumns(databaseName, null, tableName, columnName)) {
-            if (rs != null && rs.next()) {
-                FieldInfo info = new FieldInfo();
+    private static FieldInfo getColumn(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String columnName, String prefix) {
+        return jdbcTemplate.execute((DatabaseMetaDataCallback<FieldInfo>) metaData -> {
+            try (ResultSet rs = metaData.getColumns(databaseName, null, tableName, columnName)) {
+                if (rs != null && rs.next()) {
+                    FieldInfo info = new FieldInfo();
+                    // 字段名称
+                    String fieldName = toFieldName(columnName, prefix);
+                    info.setColumnName(columnName);
+                    info.setFieldName(fieldName);
 
-                // 字段名称
-                String fieldName = toFieldName(columnName, prefix);
-                info.setColumnName(columnName);
-                info.setFieldName(fieldName);
+                    // 字段类型
+                    String typeName = rs.getString("TYPE_NAME");
+                    Class<?> typeClass = getTypes(typeName);
+                    info.setTypeClass(typeClass);
 
-                // 字段类型
-                String typeName = rs.getString("TYPE_NAME");
-                Class<?> typeClass = getTypes(typeName);
-                info.setTypeClass(typeClass);
+                    // 是否为自增字段 YES/NO
+                    String auto = rs.getString("IS_AUTOINCREMENT");
+                    info.setAuto("YES".equals(auto));
 
-                // 是否为自增字段 YES/NO
-                String auto = rs.getString("IS_AUTOINCREMENT");
-                info.setAuto("YES".equals(auto));
+                    // 字段刘明
+                    String remarks = rs.getString("REMARKS");
+                    info.setRemarks(remarks);
 
-                // 字段刘明
-                String remarks = rs.getString("REMARKS");
-                info.setRemarks(remarks);
-
-                return info;
+                    return info;
+                }
+                return null;
             }
-            return null;
-        }
+        });
     }
 
     /**
      * 获取所有主键信息
-     * @param connection 数据库连接
-     * @param tableName  表名称
+     * @param jdbcTemplate 数据库连接
+     * @param tableName    表名称
      * @return 主键信息
-     * @throws SQLException 读取错误
      */
-    public static List<FieldInfo> getPrimaryKey(Connection connection, String databaseName, String tableName, String prefix) throws SQLException {
-        try (ResultSet rs = connection.getMetaData().getPrimaryKeys(databaseName, null, tableName)) {
-            List<FieldInfo> columnList = new ArrayList<>();
-            while (rs != null && rs.next()) {
-                // 字段信息
-                String columnName = rs.getString("COLUMN_NAME");
-                FieldInfo field = getColumn(connection, databaseName, tableName, columnName, prefix);
-                if (field == null) continue;
+    public static List<FieldInfo> getPrimaryKey(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String prefix) {
+        return jdbcTemplate.execute((DatabaseMetaDataCallback<List<FieldInfo>>) metaData -> {
+            try (ResultSet rs = metaData.getPrimaryKeys(databaseName, null, tableName)) {
+                List<FieldInfo> columnList = new ArrayList<>();
+                while (rs != null && rs.next()) {
+                    // 字段信息
+                    String columnName = rs.getString("COLUMN_NAME");
+                    FieldInfo field = getColumn(jdbcTemplate, databaseName, tableName, columnName, prefix);
+                    if (field == null) continue;
 
-                // 字段索引名称
-                String keyName = rs.getString("PK_NAME");
-                field.setKeyName(keyName);
+                    // 字段索引名称
+                    String keyName = rs.getString("PK_NAME");
+                    field.setKeyName(keyName);
 
-                // 字段索引位置
-                int index = rs.getInt("KEY_SEQ");
-                field.setIndex(index);
+                    // 字段索引位置
+                    int index = rs.getInt("KEY_SEQ");
+                    field.setIndex(index);
 
-                columnList.add(field);
+                    columnList.add(field);
+                }
+                columnList.sort(Comparator.comparingInt(v -> v.index));
+                return columnList;
             }
-            columnList.sort(Comparator.comparingInt(v -> v.index));
-            return columnList;
-        }
+        });
     }
 
     /**
      * 获取该表指向其它表的所有外键
-     * @param connection 数据库连接
+     * @param jdbcTemplate 数据库连接
      * @return 该表指向其它表的所有外键
-     * @throws SQLException 读取错误
      */
-    public static List<FieldInfo> getImportedKeys(Connection connection, String databaseName, String tableName, String prefix) throws SQLException {
-        try (ResultSet rs = connection.getMetaData().getImportedKeys(databaseName, null, tableName)) {
-            List<FieldInfo> columnList = new ArrayList<>();
-            while (rs != null && rs.next()) {
-                // 字段信息
-                String columnName = rs.getString("COLUMN_NAME");
-                FieldInfo field = getColumn(connection, databaseName, tableName, columnName, prefix);
-                if (field == null) continue;
+    public static List<FieldInfo> getImportedKeys(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String prefix) {
+        return jdbcTemplate.execute((DatabaseMetaDataCallback<List<FieldInfo>>) metaData -> {
+            try (ResultSet rs = metaData.getImportedKeys(databaseName, null, tableName)) {
+                List<FieldInfo> columnList = new ArrayList<>();
+                while (rs != null && rs.next()) {
+                    // 字段信息
+                    String columnName = rs.getString("COLUMN_NAME");
+                    FieldInfo field = getColumn(jdbcTemplate, databaseName, tableName, columnName, prefix);
+                    if (field == null) continue;
 
-                // 字段索引名称
-                String keyName = rs.getString("PK_NAME");
-                field.setKeyName(keyName);
+                    // 字段索引名称
+                    String keyName = rs.getString("PK_NAME");
+                    field.setKeyName(keyName);
 
-                // 字段索引位置
-                int index = rs.getInt("KEY_SEQ");
-                field.setIndex(index);
+                    // 字段索引位置
+                    int index = rs.getInt("KEY_SEQ");
+                    field.setIndex(index);
 
-                columnList.add(field);
+                    columnList.add(field);
+                }
+                columnList.sort(Comparator.comparingInt(v -> v.index));
+                return columnList;
             }
-            columnList.sort(Comparator.comparingInt(v -> v.index));
-            return columnList;
-        }
+        });
     }
 
     /**
      * 获取所有的索引
-     * @param connection 数据库连接
+     * @param jdbcTemplate 数据库连接
      * @return 索引信息
-     * @throws SQLException 读取错误
      */
-    public static List<FieldInfo> getIndexInfo(Connection connection, String databaseName, String tableName, String prefix) throws SQLException {
-        try (ResultSet rs = connection.getMetaData().getIndexInfo(databaseName, null, tableName, false, false)) {
-            List<FieldInfo> columnList = new ArrayList<>();
-            while (rs != null && rs.next()) {
-                // 字段信息
-                String columnName = rs.getString("COLUMN_NAME");
-                FieldInfo field = getColumn(connection, databaseName, tableName, columnName, prefix);
-                if (field == null) continue;
+    public static List<FieldInfo> getIndexInfo(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String prefix) {
+        return jdbcTemplate.execute((DatabaseMetaDataCallback<List<FieldInfo>>) metaData -> {
+            try (ResultSet rs = metaData.getIndexInfo(databaseName, null, tableName, false, false)) {
+                List<FieldInfo> columnList = new ArrayList<>();
+                while (rs != null && rs.next()) {
+                    // 字段信息
+                    String columnName = rs.getString("COLUMN_NAME");
+                    FieldInfo field = getColumn(jdbcTemplate, databaseName, tableName, columnName, prefix);
+                    if (field == null) continue;
 
-                // 字段索引名称
-                String keyName = rs.getString("PK_NAME");
-                field.setKeyName(keyName);
+                    // 字段索引名称
+                    String keyName = rs.getString("PK_NAME");
+                    field.setKeyName(keyName);
 
-                // 字段索引位置
-                int index = rs.getInt("KEY_SEQ");
-                field.setIndex(index);
+                    // 字段索引位置
+                    int index = rs.getInt("KEY_SEQ");
+                    field.setIndex(index);
 
-                // 索引是否检查重复
-                boolean nonUnique = rs.getBoolean("NON_UNIQUE");
-                field.setNonUnique(nonUnique);
+                    // 索引是否检查重复
+                    boolean nonUnique = rs.getBoolean("NON_UNIQUE");
+                    field.setNonUnique(nonUnique);
 
-                columnList.add(field);
+                    columnList.add(field);
+                }
+                columnList.sort(Comparator.comparing((FieldInfo v) -> v.keyName).thenComparingInt(v -> v.index));
+                return columnList;
             }
-            columnList.sort(Comparator.comparing((FieldInfo v) -> v.keyName).thenComparingInt(v -> v.index));
-            return columnList;
-        }
+        });
+
     }
 
 
     /**
      * 获取所有索引信息（包括主键和外键）
-     * @param connection 数据库连接
+     * @param jdbcTemplate 数据库连接
      * @return 所有索引信息
-     * @throws SQLException 读取错误
      */
-    //@SuppressWarnings("unchecked")
-    public static List<KeyIndexInfo> getIndexList(Connection connection, String databaseName, String tableName, String prefix) throws SQLException {
+    public static List<KeyIndexInfo> getIndexList(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String prefix) {
         List<KeyIndexInfo> columnList = new ArrayList<>();
-        for (FieldInfo field : getIndexInfo(connection, databaseName, tableName, prefix)) {
+        for (FieldInfo field : getIndexInfo(jdbcTemplate, databaseName, tableName, prefix)) {
             KeyIndexInfo keyInfo = null;
             if (columnList.size() > 0) {
                 KeyIndexInfo k = columnList.get(columnList.size() - 1);

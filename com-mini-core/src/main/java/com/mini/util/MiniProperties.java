@@ -1,5 +1,9 @@
 package com.mini.util;
 
+import com.mini.inject.annotation.PropertySource;
+import com.mini.inject.annotation.PropertySources;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -15,9 +19,13 @@ public class MiniProperties extends Properties {
      * @param reader Reader
      * @return {@Code this}
      */
-    public synchronized MiniProperties miniLoad(Reader reader) throws IOException {
-        super.load(reader);
-        return this;
+    public synchronized MiniProperties miniLoad(Reader reader) {
+        try {
+            super.load(reader);
+            return MiniProperties.this;
+        } catch (IOException | RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -25,9 +33,13 @@ public class MiniProperties extends Properties {
      * @param inStream 输入流
      * @return {@Code this}
      */
-    public synchronized MiniProperties miniLoad(InputStream inStream) throws IOException {
-        super.load(inStream);
-        return this;
+    public synchronized MiniProperties miniLoad(InputStream inStream) {
+        try {
+            super.load(inStream);
+            return MiniProperties.this;
+        } catch (IOException | RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -78,5 +90,44 @@ public class MiniProperties extends Properties {
             setPropertyIfAbsent(key, value);
         }
         return this;
+    }
+
+    /**
+     * 根据注解信息加载属性文件
+     * @param sources 注解信息
+     * @return 属性文件信息
+     */
+    @Nonnull
+    public static MiniProperties createProperties(PropertySources sources) {
+        if (sources == null) return new MiniProperties();
+        MiniProperties properties = new MiniProperties();
+        ArraysUtil.forEach(sources.value(), source -> { //
+            properties.putAll(createProperties(source));
+        });
+        return properties;
+    }
+
+    /**
+     * 根据注解信息加载属性文件
+     * @param source 注解信息
+     * @return 属性文件信息
+     */
+    @Nonnull
+    public static MiniProperties createProperties(PropertySource source) {
+        if (source == null) return new MiniProperties();
+        return createProperties(source.value());
+    }
+
+    /**
+     * 根据注解信息加载属性文件
+     * @param fileName 文件路径
+     * @return 属性文件信息
+     */
+    @Nonnull
+    public static MiniProperties createProperties(String fileName) {
+        if (StringUtil.isEmpty(fileName)) return new MiniProperties();
+        ClassLoader loader = MiniProperties.class.getClassLoader();
+        InputStream stream = loader.getResourceAsStream(fileName);
+        return new MiniProperties().miniLoad(stream);
     }
 }

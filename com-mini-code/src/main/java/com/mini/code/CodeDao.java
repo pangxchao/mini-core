@@ -11,10 +11,6 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 
 public final class CodeDao {
     protected static void run(Configure configure, String className, String tableName, String prefix) throws Exception {
-        System.out.println("====================================");
-        System.out.println("========= Start Code Dao ===========");
-        System.out.println("====================================");
-
         //  Package Name
         String daoImplPackage = format("%s.dao.impl", configure.getPackageName());
         String beanPackage = format("%s.entity", configure.getPackageName());
@@ -47,9 +43,7 @@ public final class CodeDao {
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("========= End Code  Dao ============");
-        System.out.println("====================================");
-        System.out.println("\r\n");
+        System.out.println("Code Dao : " + className + "\r\n");
     }
 
     public static void main(String[] args) throws Exception {

@@ -24,12 +24,6 @@ public interface ActionInvocationProxy {
     @Nonnull
     Class<?> getClazz();
 
-    /**
-     * 获取 Controller 实例
-     * @return Class对象
-     */
-    @Nonnull
-    Object getInstance();
 
     /**
      * 获取页面数据模型实现类
@@ -50,7 +44,7 @@ public interface ActionInvocationProxy {
      * @return 拦截器对象
      */
     @Nonnull
-    List<ActionInterceptor> getInterceptors();
+    List<Class<?extends ActionInterceptor>> getInterceptors();
 
     /**
      * 获取目标方法的所有参数信息

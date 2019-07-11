@@ -1,5 +1,7 @@
 package com.mini.code;
 
+import com.mini.jdbc.JdbcTemplate;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -33,7 +35,7 @@ public interface Configure {
      * 获取数据库连接模板
      * @return 数据库连接模板
      */
-    Connection getConnection() throws SQLException;
+    JdbcTemplate getJdbcTemplate() throws SQLException;
 
     /**
      * 数据表与实体类名

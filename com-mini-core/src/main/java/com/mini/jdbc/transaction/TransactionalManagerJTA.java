@@ -1,77 +1,67 @@
 package com.mini.jdbc.transaction;
 
-import javax.annotation.Nullable;
+import com.mini.callback.ConnectionCallback;
+import com.mini.jdbc.JdbcTemplate;
+
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import static com.mini.jdbc.util.JdbcUtil.getConnection;
-import static com.mini.jdbc.util.JdbcUtil.releaseConnection;
-
 /**
  * JPA 事务实现
  * @author xchao
  */
-@Named
 @Singleton
 public final class TransactionalManagerJTA implements TransactionalManager {
+    private Provider<UserTransaction> userTransactionProvider;
+    private List<JdbcTemplate> jdbcTemplateList;
 
-    private UserTransaction userTransaction;
-    private List<DataSource> dataSourceList;
-
-    /**
-     * The value of userTransaction
-     * @param userTransaction The value of userTransaction
-     */
     @Inject
-    public void setUserTransaction(@Nullable UserTransaction userTransaction) {
-        this.userTransaction = userTransaction;
+    public void setUserTransaction(@Nonnull Provider<UserTransaction> userTransactionProvider) {
+        this.userTransactionProvider = userTransactionProvider;
     }
 
-    /**
-     * The value of dataSourceList
-     * @param dataSourceList The value of dataSourceList
-     */
     @Inject
-    public void setDataSourceList(@Nullable List<DataSource> dataSourceList) {
-        this.dataSourceList = dataSourceList;
+    public void setJdbcTemplateList(@Nonnull List<JdbcTemplate> jdbcTemplateList) {
+        this.jdbcTemplateList = jdbcTemplateList;
+    }
+
+
+    private Iterator<JdbcTemplate> getIterator() {
+        return jdbcTemplateList.iterator();
     }
 
     @Override
     public <T> T open(TransactionalManagerCallback<T> callback) throws Throwable {
-        Objects.requireNonNull(userTransaction, "UserTransaction can not be null");
-        if (dataSourceList == null) return callback.apply();
-        Iterator<DataSource> i = dataSourceList.iterator();
+        UserTransaction userTransaction = null;
         try {
+            if (jdbcTemplateList == null) {
+                return callback.apply();
+            }
+            Objects.requireNonNull(userTransactionProvider);
+            userTransaction = userTransactionProvider.get();
             userTransaction.begin();
-            T r = open(i, callback);
+            T r = open(getIterator(), callback);
             userTransaction.commit();
             return r;
         } catch (Exception | Error e) {
-            userTransaction.rollback();
+            if (userTransaction != null) {
+                userTransaction.rollback();
+            }
             throw e;
         }
     }
 
-
-    private <T> T open(Iterator<DataSource> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
-        if (!iterator.hasNext()) return callback.apply();
-        Connection connection = null;
-        DataSource dataSource = null;
-        try {
-            // 获取连接和连接池
-            dataSource = iterator.next();
-            connection = getConnection(dataSource);
-
-            // 字义回滚点
+    private <T> T open(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
+        return iterator.hasNext() ? iterator.next().execute((ConnectionCallback<T>) connection -> {
+            // 定义回滚点
             Savepoint point = null;
             try {
                 // 设置不自动提交，并设置回调点
@@ -84,16 +74,16 @@ public final class TransactionalManagerJTA implements TransactionalManager {
                 // 提交事务并返回
                 connection.commit();
                 return result;
-            } catch (SQLException e) {
+            } catch (Throwable e) {
                 if (point == null) {
                     connection.rollback();
-                } else connection.rollback(point);
-                throw e;
+                    throw new SQLException(e);
+                }
+                connection.rollback(point);
+                throw new RuntimeException(e);
             } finally {
                 connection.setAutoCommit(true);
             }
-        } finally {
-            releaseConnection(connection, dataSource);
-        }
+        }) : callback.apply();
     }
 }

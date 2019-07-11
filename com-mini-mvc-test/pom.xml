@@ -62,6 +62,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- atomikos 分布式事务支持 -->
+        <dependency>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jdbc</artifactId>
+            <version>4.0.6</version>
+        </dependency>
+
         <!-- 测试工具 -->
         <dependency>
             <groupId>junit</groupId>
