@@ -3,9 +3,6 @@ package com.mini.jdbc.transaction;
 import com.mini.callback.ConnectionCallback;
 import com.mini.jdbc.JdbcTemplate;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Iterator;
@@ -15,12 +12,10 @@ import java.util.List;
  * JDBC 事务实现
  * @author xchao
  */
-@Singleton
 public final class TransactionalManagerJdbc implements TransactionalManager {
-    private List<JdbcTemplate> jdbcTemplateList;
+    private final List<JdbcTemplate> jdbcTemplateList;
 
-    @Inject
-    public void setJdbcTemplateList(@Nonnull List<JdbcTemplate> jdbcTemplateList) {
+    public TransactionalManagerJdbc(List<JdbcTemplate> jdbcTemplateList) {
         this.jdbcTemplateList = jdbcTemplateList;
     }
 

@@ -324,26 +324,32 @@ public interface BasicsDao<T> {
      * 添加实体信息
      * @param info 实体信息
      */
-    int insert(T info);
+    default int insert(T info) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * 删除用户信息
      * @param info 用户信息
      */
-    int delete(T info);
+    default int delete(T info) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
 
 
     /**
      * 修改实体信息
      * @param info 用户信息
      */
-    int update(T info);
+    default int update(T info) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * 根据ID删除数据
      * @param id 参数ID
      */
-    default int deleteById(long id) {
+    default int deleteById(long id) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
@@ -352,7 +358,7 @@ public interface BasicsDao<T> {
      * @param id 参数ID
      * @return 实体信息
      */
-    default T queryById(long id) {
+    default T queryById(long id) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
@@ -360,7 +366,7 @@ public interface BasicsDao<T> {
      * 查询所有实体信息
      * @return 信息列表
      */
-    default List<T> queryAll() {
+    default List<T> queryAll() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 }

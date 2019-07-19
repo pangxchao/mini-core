@@ -1,14 +1,13 @@
 package com.mini.web.model;
 
 import com.mini.util.TypeUtil;
-import com.mini.util.map.MiniMap;
+import com.mini.web.util.WebUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +19,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
  * Stream Model类实现
  * @author xchao
  */
-public final class StreamModel extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<StreamModel> {
+public final class StreamModel implements IModel<StreamModel> {
     private static final String REGEX = "(?:(bytes=)(?<NS>\\d)+(-)(?<NN>\\d)*)";
     private static final long serialVersionUID = -1731063292578685253L;
     private String contentType = "application/octet-stream";
@@ -87,15 +86,11 @@ public final class StreamModel extends LinkedHashMap<String, Object> implements 
 
     @Override
     public void submit(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
-        // 错误码处理和返回数据格式处理
-        response.setContentType(contentType);
-        if (status != HttpServletResponse.SC_OK) {
-            response.sendError(status, message);
-            return;
-        }
-
         // 如果输入流为空，不需要处理
-        if (inputStream == null) {
+        if (inputStream == null) return;
+        // 错误码处理和返回数据格式处理
+        WebUtil.setContentType(contentType, response);
+        if (WebUtil.sendError(status, message, response)) {
             return;
         }
 
@@ -125,7 +120,8 @@ public final class StreamModel extends LinkedHashMap<String, Object> implements 
                     }
                     position[2] = position[1] - position[0] + 1;
                     // Content-Range: bytes [文件块的开始字节]-[文件块结束字节]/[文件的总大小]
-                    response.setHeader("Content-Range", format("bytes %d-%d/%d", position[0], position[1], contentLength));
+                    response.setHeader("Content-Range", format("bytes %d-%d/%d", //
+                            position[0], position[1], contentLength));
                 } catch (Exception ignored) { }
             });
             // 只有设置了文件下载大小时， 才支持断点续传。

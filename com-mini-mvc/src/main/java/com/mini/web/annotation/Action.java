@@ -36,7 +36,15 @@ public @interface Action {
      * 该方法支持的请求类型
      * @return 请求类型数组
      */
-    Method[] method() default {Method.GET, Method.POST};
+    Method[] method() default {
+            Method.GET,
+            Method.HEAD,
+            Method.POST,
+            Method.PUT,
+            Method.DELETE,
+            Method.OPTIONS,
+            Method.TRACE
+    };
 
     /**
      * 扩展字段，允许用户自定义其含义
@@ -49,6 +57,6 @@ public @interface Action {
      * @author xchao
      */
     enum Method {
-        GET, POST
+        GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE
     }
 }

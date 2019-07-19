@@ -1,7 +1,7 @@
 package com.mini.http.builder;
 
+import com.mini.http.callback.Callback;
 import com.mini.http.converter.Converter;
-import com.mini.util.Function;
 import okhttp3.*;
 
 import javax.annotation.Nonnull;
@@ -16,6 +16,7 @@ import java.net.ProxySelector;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
     private static final OkHttpClient.Builder HTTP_CLIENT = new OkHttpClient.Builder();
@@ -307,12 +308,32 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
 
     /**
      * 发送同步请求并返回结果
+     * @param callback 结果回调
+     * @throws IOException 请求出现错误
+     */
+    public final void execute(Callback<Response> callback) throws IOException {
+        callback.accept(execute());
+    }
+
+    /**
+     * 发送同步请求并返回结果
+     * @param converter 数据转换器
      * @return 返回请求结果
      * @throws IOException 请求出现错误
      */
     public final V execute(@Nonnull Converter<V> converter) throws IOException {
         call = HTTP_CLIENT.build().newCall(request.build());
         return converter.apply(call, call.execute());
+    }
+
+    /**
+     * 发送同步请求并返回结果
+     * @param converter 数据转换器
+     * @param callback  结果回调
+     * @throws IOException 请求出现错误
+     */
+    public final void execute(@Nonnull Converter<V> converter, Callback<V> callback) throws IOException {
+        callback.accept(execute(converter));
     }
 
     /**
@@ -329,21 +350,21 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
      * 发送异步请求并回调
      * @param callback 回调方法
      */
-    public final T enqueue(@Nonnull Function.F1<V> callback) {
+    public final T enqueue(@Nonnull Consumer<V> callback) {
         return enqueue(new okhttp3.Callback() {
             public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-                callback.apply(null);
+                callback.accept(null);
             }
 
             public void onResponse(@Nonnull Call call, @Nonnull Response response) {
                 try {
                     if (AbstractBuilder.this.converter == null) {
-                        callback.apply(null);
+                        callback.accept(null);
                         return;
                     }
-                    callback.apply(converter.apply(call, response));
+                    callback.accept(converter.apply(call, response));
                 } catch (Exception e) {
-                    callback.apply(null);
+                    callback.accept(null);
                 }
             }
         });
@@ -354,21 +375,21 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
      * @param success 成功回调
      * @param fail    失败回调
      */
-    public final T enqueue(@Nonnull Function.F1<V> success, Function.F1<String> fail) {
+    public final T enqueue(@Nonnull Consumer<V> success, Consumer<String> fail) {
         return enqueue(new okhttp3.Callback() {
             public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-                fail.apply(e.getMessage());
+                fail.accept(e.getMessage());
             }
 
             public void onResponse(@Nonnull Call call, @Nonnull Response response) {
                 try {
                     if (AbstractBuilder.this.converter == null) {
-                        fail.apply("Converter is null.");
+                        fail.accept("Converter is null.");
                         return;
                     }
-                    success.apply(converter.apply(call, response));
+                    success.accept(converter.apply(call, response));
                 } catch (Exception e) {
-                    fail.apply(e.getMessage());
+                    fail.accept(e.getMessage());
                 }
             }
         });

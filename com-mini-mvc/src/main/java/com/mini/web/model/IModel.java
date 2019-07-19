@@ -1,7 +1,12 @@
 package com.mini.web.model;
 
+import com.mini.util.StringUtil;
+
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 
 public interface IModel<T extends IModel> extends Serializable {
@@ -43,4 +48,9 @@ public interface IModel<T extends IModel> extends Serializable {
      * @param response HttpServletResponse
      */
     void submit(HttpServletRequest request, HttpServletResponse response) throws Exception, Error;
+
+    // 是否为绝对路径
+    private boolean isAbsoluteHttpPath(String lower) throws Error {
+        return lower.matches("http(s)?://([\\s\\S])+");
+    }
 }

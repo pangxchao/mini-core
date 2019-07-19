@@ -1,21 +1,30 @@
 
 package com.mini.web.util;
 
+import com.mini.util.StringUtil;
+
+import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.mini.util.StringUtil.equalsIgnoreCase;
 import static com.mini.util.StringUtil.isBlank;
 import static com.mini.util.TypeUtil.*;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
  * WebUtil
  * @author XChao
  */
 public final class WebUtil {
+    public static final String URL_REGEX = "http(s)?://([\\s\\S])+";
+
     /**
      * 获取 ServletContext 的属性并转换成指定类型
      * @param context ServletContext 对象
@@ -545,6 +554,66 @@ public final class WebUtil {
      */
     public static void setAttribute(HttpSession session, String name, Object value) {
         if (session != null) session.setAttribute(name, value);
+    }
+
+    /**
+     * 设置HttpServletResponse返回数据类型，
+     * @param contentType Content-Type
+     * @param response    HttpServletResponse 对象
+     */
+    public static void setContentType(String contentType, HttpServletResponse response) {
+        response.setContentType(contentType);
+    }
+
+    /**
+     * 发送HttpServletResponse错误信息
+     * @param status   错误码
+     * @param message  错误消息
+     * @param response HttpServletResponse 对象
+     * @return status != HttpServletResponse.SC_OK
+     * @see HttpServletResponse#SC_OK
+     */
+    public static boolean sendError(int status, String message, HttpServletResponse response) throws IOException {
+        if (status == SC_OK) return false;
+        //  发送错误信息
+        response.sendError(status, message);
+        return true;
+    }
+
+    /**
+     * 请求转发
+     * @param viewPath 转发路径
+     * @param request  HttpServletRequest对象
+     * @param response HttpServletResponse对象
+     */
+    public static void forward(@Nonnull String viewPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        viewPath = viewPath.startsWith("/") ? viewPath : "/" + viewPath;
+        request.getRequestDispatcher(viewPath).forward(request, response);
+    }
+
+    /**
+     * 重定向处理
+     * @param viewPath 重定向路径
+     * @param request  HttpServletRequest对象
+     * @param response HttpServletResponse对象
+     */
+    public static void sendRedirect(@Nonnull String viewPath, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // http:// 或者 https:// 开头的绝对地址
+        if (viewPath.toLowerCase().matches(URL_REGEX)) {
+            response.sendRedirect(viewPath);
+            return;
+        }
+
+        // “/” 开头的绝对地址
+        if (StringUtil.startsWith(viewPath, "/")) {
+            response.sendRedirect(viewPath);
+            return;
+        }
+
+        // 构建绝对地址
+        String contextPath = request.getContextPath();
+        viewPath = contextPath + "/" + viewPath;
+        response.sendRedirect(viewPath);
     }
 
     /**

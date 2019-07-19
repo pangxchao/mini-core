@@ -1,7 +1,6 @@
 package com.mini.jdbc.sql;
 
 import com.mini.jdbc.sql.fragment.SQLFragment;
-import com.mini.util.StringUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class SQLInsert implements SQL, SQLFragment {
      * -获取参数列表
      * @return 参数列表
      */
-    public final Object[] params() {
+    public final Object[] toArray() {
         return params.toArray();
     }
 
@@ -69,7 +68,7 @@ public class SQLInsert implements SQL, SQLFragment {
      * @return 添加数据的所有字段
      */
     public final String keys() {
-        return StringUtil.join(", ", keys);
+        return toText(", ", keys);
     }
 
     /**
@@ -77,12 +76,13 @@ public class SQLInsert implements SQL, SQLFragment {
      * @return 添加数据所有字段值
      */
     public final String values() {
-        return StringUtil.join(", ", values);
+        return toText(", ", values);
     }
 
     @Nonnull
-    public String content() {
-        return StringUtil.join("", INSERT, INTO, name(), "(", keys(), ") ", VALUES, "(", values(), ")");
+    public String toString() {
+        return toText("", INSERT, INTO, name(), "(", keys(), ") ",//
+                VALUES, "(", values(), ")");
     }
 
 }

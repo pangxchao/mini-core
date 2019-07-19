@@ -11,7 +11,7 @@ public interface SQLWhere<T extends SQLWhere<T>> {
      * @return WHERE部分片断
      */
     default String whereToString() {
-        return getWhere().content();
+        return getWhere().toString();
     }
 
     /**
@@ -19,8 +19,18 @@ public interface SQLWhere<T extends SQLWhere<T>> {
      * @param connector 连接符
      * @return 当前对象
      */
-    default T connector(String connector) {
+    default T whereConnector(String connector) {
         getWhere().connector(connector);
+        return getSelf();
+    }
+
+    /**
+     * 设置所有条件是否取返
+     * @param isNot true-是
+     * @return 当前对象
+     */
+    default T whereSetNot(boolean isNot) {
+        getWhere().setNot(isNot);
         return getSelf();
     }
 

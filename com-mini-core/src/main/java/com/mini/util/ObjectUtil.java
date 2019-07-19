@@ -1,5 +1,7 @@
 package com.mini.util;
 
+import java.util.function.Supplier;
+
 /**
  * ObjectUtil.java
  * @author xchao
@@ -8,6 +10,11 @@ public final class ObjectUtil {
 
     public static <T> T defIfNull(T v, T def) {
         return v == null ? def : v;
+    }
+
+
+    public static <T> T defIfNull(T v, Supplier<T> func) {
+        return v == null ? func.get() : v;
     }
 
     public static void require(boolean bool) {

@@ -20,7 +20,7 @@
 </div >
 
 <script type="text/javascript" >
-    layui.use(['page'], function () {
+    layui.use(['template.page'], function () {
         var page = layui.page("#content", {
             elem: "content-page-button",
             count: 200,
@@ -28,7 +28,7 @@
             curr: 3,
             groups: 5,
             limits: [10, 20, 30, 40, 50],
-            layout: ['limit', 'count', 'prev', 'templates.page', 'next', 'refresh', 'skip'],
+            layout: ['limit', 'count', 'prev', 'template.page', 'next', 'refresh', 'skip'],
             onload: function (p) {
                 // 页面每次加载完成时回调
             }

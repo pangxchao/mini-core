@@ -1,20 +1,23 @@
 package com.mini.web.model;
 
 import com.mini.util.StringUtil;
-import com.mini.util.map.MiniMap;
+import com.mini.util.map.MiniHashMap;
+import com.mini.validate.ValidateUtil;
+import com.mini.web.util.WebUtil;
 import com.mini.web.view.IView;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.LinkedHashMap;
+
+import static com.mini.web.util.WebUtil.forward;
+import static com.mini.web.util.WebUtil.sendRedirect;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * Page Model 类实现
  * @author xchao
  */
-public final class PageModel extends LinkedHashMap<String, Object> implements MiniMap<String>, IModel<PageModel> {
+public final class PageModel extends MiniHashMap<String> implements IModel<PageModel> {
     private static final long serialVersionUID = -1731063292578685253L;
     private int status = HttpServletResponse.SC_OK;
     private String contentType = "text/html";
@@ -71,42 +74,24 @@ public final class PageModel extends LinkedHashMap<String, Object> implements Mi
         return toChild();
     }
 
-
     @Override
     public void submit(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+        ValidateUtil.isNotBlank(viewPath, SC_INTERNAL_SERVER_ERROR, "View path can not be null");
         // 错误码处理和返回数据格式处理
-        response.setContentType(contentType);
-        if (status != HttpServletResponse.SC_OK) {
-            response.sendError(status, message);
-            return;
-        }
-        // 视图或者视图的路径为空时，不处理数据
-        if (StringUtil.isBlank(viewPath)) {
+        WebUtil.setContentType(contentType, response);
+        if (WebUtil.sendError(status, message, response)) {
             return;
         }
 
         // 请求转发处理
-        if ((viewPath = viewPath.trim()).startsWith("f:")) {
-            viewPath = viewPath.substring(2);
-            if (!viewPath.startsWith("/")) {
-                viewPath = "/" + viewPath;
-            }
-            forward(request, response);
+        if (StringUtil.startsWith(viewPath = viewPath.trim(), "f:")) {
+            forward(viewPath.substring(2), request, response);
             return;
         }
 
         // 重定向处理
-        if ((viewPath = viewPath.trim()).startsWith("r:")) {
-            viewPath = StringUtil.substring(viewPath, 2);
-            if (isAbsolutePath(viewPath.toLowerCase())) {
-                response.sendRedirect(viewPath);
-                return;
-            }
-            String contextPath = request.getContextPath();
-            if (!StringUtil.startsWith(viewPath, "/")) {
-                viewPath = contextPath + "/" + viewPath;
-            }
-            response.sendRedirect(viewPath);
+        if (StringUtil.startsWith(viewPath = viewPath.trim(), "r:")) {
+            sendRedirect(viewPath.substring(2), request, response);
             return;
         }
         // 生成页面
@@ -114,15 +99,8 @@ public final class PageModel extends LinkedHashMap<String, Object> implements Mi
         put("response", response);
         put("session", request.getSession());
         put("context", request.getServletContext());
-        put("contextPath", request.getContextPath());
         view.generator(this, viewPath, request, response);
     }
 
-    private void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher(viewPath).forward(request, response);
-    }
 
-    private boolean isAbsolutePath(String lower) throws Error {
-        return lower.matches("http(s)?://([\\s\\S])+");
-    }
 }

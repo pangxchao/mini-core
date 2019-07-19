@@ -2,6 +2,7 @@ package com.mini.web.servlet;
 
 import com.google.auto.service.AutoService;
 import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
@@ -21,12 +22,14 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.HandlesTypes;
+import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
-import static com.google.inject.Guice.createInjector;
 import static com.mini.logger.LoggerFactory.getLogger;
+import static com.mini.util.MiniProperties.createProperties;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 @Named
 @Singleton
@@ -34,74 +37,74 @@ import static java.util.Objects.requireNonNull;
 @AutoService(ServletContainerInitializer.class)
 public final class MiniServletInitializer implements ServletContainerInitializer {
     private static final Logger LOGGER = getLogger(MiniServletInitializer.class);
+    private static final String PRO_NAME = "mini-application.properties";
 
     // 默认父容器的Module
-    @PropertySource("mini-application.properties")
-    private static class InitConfigModule implements Module {
-        private final List<Class<?>> classes = new ArrayList<>();
-        private final ServletContext context;
+    public final static class ConfigModule implements Module {
+        private final List<WebMvcConfigure> configures = new ArrayList<>();
+        private final ServletContext servletContext;
 
-        public InitConfigModule(ServletContext context, Set<Class<? extends WebMvcConfigure>> classes) {
-            this.classes.add(InitConfigModule.class);
-            this.classes.addAll(classes);
-            this.context = context;
+        public ConfigModule(ServletContext servletContext, List<WebMvcConfigure> configures) {
+            this.servletContext = servletContext;
+            this.configures.addAll(configures);
         }
 
         @Override
         public synchronized void configure(Binder binder) {
-            binder.bind(ServletContext.class).toInstance(context);
-            MiniProperties properties = new MiniProperties();
-            classes.forEach(c -> properties.putAll(createProperties(c)));
+            binder.bind(ServletContext.class).toInstance(servletContext);
+            MiniProperties properties = createProperties(PRO_NAME);
+            configures.forEach(c -> properties(properties, c));
             Names.bindProperties(binder, properties);
+            configures.forEach(binder::install);
         }
 
-        private MiniProperties createProperties(Class<?> clazz) {
-            PropertySources sources = clazz.getAnnotation(PropertySources.class);
-            MiniProperties properties = MiniProperties.createProperties(sources);
-            PropertySource source = clazz.getAnnotation(PropertySource.class);
-            properties.putAll(MiniProperties.createProperties(source));
-            return properties;
+        private synchronized void properties(MiniProperties properties, WebMvcConfigure configure) {
+            PropertySources sources = configure.getAnnotation(PropertySources.class);
+            PropertySource source = configure.getAnnotation(PropertySource.class);
+            properties.putAll(createProperties(sources));
+            properties.putAll(createProperties(source));
         }
     }
 
     @Override
     public final void onStartup(Set<Class<?>> initializer, ServletContext context) {
         try {
-            // 获取配置文件的Class对象
-            Set<Class<? extends WebMvcConfigure>> classes = getClasses(initializer);
-            ObjectUtil.require(!classes.isEmpty(), "WebMvcConfigure can not be empty.");
+            // 获取所有配置信息
+            List<WebMvcConfigure> configs = getWebMvcConfigureList(initializer);
+            ObjectUtil.require(!configs.isEmpty(), "WebMvcConfigure can not be empty.");
 
-            // 初始化第一个父容器
-            Injector parent = createInjector(new InitConfigModule(context, classes));
-            Configure configure = parent.getInstance(Configure.class);
-            requireNonNull(configure, "Configure can not be null");
+            // 创建Module对象和依赖注入的容器
+            ConfigModule configureModule = new ConfigModule(context, configs);
+            Injector injector = Guice.createInjector(configureModule);
 
-            // 获取所有自定义配置信息
-            WebMvcConfigure[] configures = getClasses(initializer).stream().map(clazz -> {
-                return Objects.requireNonNull(parent.getInstance(clazz)); //
-            }).toArray(WebMvcConfigure[]::new);
+            // 获取配置信息
+            Configure config = injector.getInstance(Configure.class);
+            requireNonNull(config, "Configure can not be null.");
 
-            // 初始化依赖注入的主容器
-            Injector injector = parent.createChildInjector(configures);
-            configure.setInjector(injector);
+            // 调用默认配置信息注册
+            configs.stream().map(c -> injector.getInstance(c.getClass()))
+                    .forEach(WebMvcConfigure::onStartup);
 
             // 注册 Listener、Servlet、Filter
-            registerListener(injector, configure, context);
-            registerServlet(injector, configure, context);
-            registerFilter(injector, configure, context);
+            registerListener(injector, config, context);
+            registerServlet(injector, config, context);
+            registerFilter(injector, config, context);
         } catch (Exception | Error e) {
             LOGGER.error("Initializer Error!", e);
         }
     }
 
-    private Set<Class<? extends WebMvcConfigure>> getClasses(Set<Class<?>> initializer) {
-        if (initializer == null || initializer.isEmpty()) return new CopyOnWriteArraySet<>();
-        AbstractSet<Class<? extends WebMvcConfigure>> classes = new CopyOnWriteArraySet<>();
-        initializer.stream().filter(WebMvcConfigure.class::isAssignableFrom).forEach(c -> {
-            classes.add(c.asSubclass(WebMvcConfigure.class)); //
-        });
-
-        return classes;
+    private List<WebMvcConfigure> getWebMvcConfigureList(Set<Class<?>> initializer) {
+        return ofNullable(initializer).stream().flatMap(Collection::stream).filter( //
+                WebMvcConfigure.class::isAssignableFrom).map(clazz -> {
+            try {
+                Constructor<?> constructor = clazz.getConstructor();
+                Object instance = constructor.newInstance();
+                return (WebMvcConfigure) instance;
+            } catch (Exception | Error ex) {
+                throw new RuntimeException();
+            }
+        }).collect(Collectors.toList());
     }
 
     // 注册Servlet
@@ -114,7 +117,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
             register.addMapping(element.getUrlPatterns());
             // 文件上传相关配置
             MultipartConfigElement e = element.getMultipartConfigElement();
-            Optional.ofNullable(e).ifPresent(register::setMultipartConfig);
+            ofNullable(e).ifPresent(register::setMultipartConfig);
         });
     }
 

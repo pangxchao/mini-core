@@ -3,8 +3,6 @@ package com.mini.jdbc.transaction;
 import com.mini.callback.ConnectionCallback;
 import com.mini.jdbc.JdbcTemplate;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.transaction.UserTransaction;
@@ -20,19 +18,13 @@ import java.util.Objects;
  */
 @Singleton
 public final class TransactionalManagerJTA implements TransactionalManager {
-    private Provider<UserTransaction> userTransactionProvider;
-    private List<JdbcTemplate> jdbcTemplateList;
+    private final Provider<UserTransaction> userTransactionProvider;
+    private final List<JdbcTemplate> jdbcTemplateList;
 
-    @Inject
-    public void setUserTransaction(@Nonnull Provider<UserTransaction> userTransactionProvider) {
+    public TransactionalManagerJTA(Provider<UserTransaction> userTransactionProvider, List<JdbcTemplate> jdbcTemplateList) {
         this.userTransactionProvider = userTransactionProvider;
+        this.jdbcTemplateList        = jdbcTemplateList;
     }
-
-    @Inject
-    public void setJdbcTemplateList(@Nonnull List<JdbcTemplate> jdbcTemplateList) {
-        this.jdbcTemplateList = jdbcTemplateList;
-    }
-
 
     private Iterator<JdbcTemplate> getIterator() {
         return jdbcTemplateList.iterator();

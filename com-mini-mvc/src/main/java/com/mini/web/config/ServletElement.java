@@ -57,6 +57,12 @@ public final class ServletElement {
         return this;
     }
 
+    public ServletElement clearUrlPatterns() {
+        urlPatterns.clear();
+        return this;
+    }
+
+
     public String[] getUrlPatterns() {
         return urlPatterns.toArray(new String[0]);
     }
@@ -88,6 +94,8 @@ public final class ServletElement {
     public long getMaxFileSize() {
         return maxFileSize;
     }
+
+
 
     public MultipartConfigElement getMultipartConfigElement() {
         if (!isMultipartEnabled()) return null;

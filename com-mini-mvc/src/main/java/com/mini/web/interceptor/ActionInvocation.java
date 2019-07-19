@@ -3,13 +3,15 @@ package com.mini.web.interceptor;
 import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.model.IModel;
-import com.mini.web.view.IView;
+import com.mini.web.util.WebUtil;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -119,6 +121,21 @@ public interface ActionInvocation {
     @Nonnull
     Object[] getParameterValues() throws Throwable;
 
+    /**
+     * 请求转发
+     * @param viewPath 转发路径
+     */
+    default void forward(String viewPath) throws ServletException, IOException {
+        WebUtil.forward(viewPath, getRequest(), getResponse());
+    }
+
+    /**
+     * 重定向处理
+     * @param viewPath 重定向路径
+     */
+    default void sendRedirect(String viewPath) throws IOException {
+        WebUtil.sendRedirect(viewPath, getRequest(), getResponse());
+    }
 
     /**
      * 调用目标方法或者下一个拦截器

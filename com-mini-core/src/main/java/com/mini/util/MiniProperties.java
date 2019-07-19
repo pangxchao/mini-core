@@ -101,9 +101,9 @@ public class MiniProperties extends Properties {
     public static MiniProperties createProperties(PropertySources sources) {
         if (sources == null) return new MiniProperties();
         MiniProperties properties = new MiniProperties();
-        ArraysUtil.forEach(sources.value(), source -> { //
+        for (PropertySource source : sources.value()) {
             properties.putAll(createProperties(source));
-        });
+        }
         return properties;
     }
 

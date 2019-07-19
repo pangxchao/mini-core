@@ -14,7 +14,7 @@ public interface SQLFrom<T extends SQLFrom<T>> {
      * @return FROM 部分片断
      */
     default String fromToString() {
-        return getFrom().content();
+        return getFrom().toString();
     }
 
     /**
@@ -54,7 +54,7 @@ public interface SQLFrom<T extends SQLFrom<T>> {
      * @return 当前对象
      */
     default T from(SQLSelect select, String alias) {
-        return from(select.content(), alias);
+        return from(select.toString(), alias);
     }
 
     /**
@@ -63,6 +63,6 @@ public interface SQLFrom<T extends SQLFrom<T>> {
      * @return 当前对象
      */
     default T from(SQLSelect select) {
-        return from(select.content());
+        return from(select.toString());
     }
 }

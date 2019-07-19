@@ -4,16 +4,11 @@ import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.*;
 
-public final class FilterElement   {
+public final class FilterElement {
     private final List<DispatcherType> dispatcherTypes = new ArrayList<>();
     private final Set<String> urlPatterns = new HashSet<>();
     private Class<? extends Filter> filter;
     private boolean matchAfter = true;
-
-    public FilterElement setFilter(Class<? extends Filter> filter) {
-        this.filter = filter;
-        return this;
-    }
 
     public FilterElement addDispatcherTypes(DispatcherType... dispatcherTypes) {
         Collections.addAll(this.dispatcherTypes, dispatcherTypes);
@@ -25,8 +20,18 @@ public final class FilterElement   {
         return this;
     }
 
+    public FilterElement setFilter(Class<? extends Filter> filter) {
+        this.filter = filter;
+        return this;
+    }
+
     public FilterElement setMatchAfter(boolean matchAfter) {
         this.matchAfter = matchAfter;
+        return this;
+    }
+
+    public FilterElement clearUrlPatterns() {
+        urlPatterns.clear();
         return this;
     }
 
@@ -45,4 +50,6 @@ public final class FilterElement   {
     public boolean isMatchAfter() {
         return matchAfter;
     }
+
+
 }

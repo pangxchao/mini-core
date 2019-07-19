@@ -8,11 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SQLDelete implements SQL, SQLFragment, SQLFrom<SQLDelete>, SQLJoins<SQLDelete>, SQLWhere<SQLDelete> {
+public class SQLDelete implements SQL, SQLFragment, SQLJoin<SQLDelete>, SQLWhere<SQLDelete> {
     private final List<Object> params = new ArrayList<>();
     private final DefaultWhere where = new DefaultWhere();
-    private final DefaultJoins joins = new DefaultJoins();
-    private final DefaultFrom from = new DefaultFrom();
+    private final DefaultJoin joins = new DefaultJoin();
+    private final String table;
+
+    public SQLDelete(String table) {
+        this.table = table;
+    }
 
     /**
      * -添加参数列表
@@ -25,7 +29,7 @@ public class SQLDelete implements SQL, SQLFragment, SQLFrom<SQLDelete>, SQLJoins
     }
 
     @Override
-    public final Object[] params() {
+    public final Object[] toArray() {
         return params.toArray();
     }
 
@@ -35,12 +39,7 @@ public class SQLDelete implements SQL, SQLFragment, SQLFrom<SQLDelete>, SQLJoins
     }
 
     @Override
-    public final DefaultFrom getFrom() {
-        return this.from;
-    }
-
-    @Override
-    public final DefaultJoins getJoin() {
+    public final DefaultJoin getJoin() {
         return this.joins;
     }
 
@@ -49,15 +48,17 @@ public class SQLDelete implements SQL, SQLFragment, SQLFrom<SQLDelete>, SQLJoins
         return this.where;
     }
 
+    public final String deleteFromToString() {
+        return DELETE + FROM + table;
+    }
+
     @Nonnull
     @Override
-    public String content() {
+    public String toString() {
         return StringUtil.join("",
-                DELETE,            // DELETE 关键字
-                FROM,              // FROM 关键字
-                fromToString(),    // 删除目标表
-                joinToString(),    // 联合表处理
-                whereToString());  // 条件处理
+                deleteFromToString(), // delete from 片断
+                joinToString(),       // join 片断
+                whereToString());     // where 片断
     }
 
 }

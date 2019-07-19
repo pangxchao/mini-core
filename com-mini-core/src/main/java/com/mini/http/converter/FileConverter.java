@@ -1,9 +1,8 @@
 package com.mini.http.converter;
 
-import com.mini.util.PKGenerator;
 import com.mini.http.HttpUtil;
 import com.mini.util.FileUtil;
-import com.mini.util.Function;
+import com.mini.util.PKGenerator;
 import okhttp3.Call;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -15,6 +14,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.LongConsumer;
+import java.util.function.ObjLongConsumer;
 
 public class FileConverter implements Converter<File> {
 
@@ -24,11 +26,11 @@ public class FileConverter implements Converter<File> {
     // 已下载长度
     private long length;
     // 请求暂停时回调
-    private Function.F1<Long> onCancel;
+    private LongConsumer onCancel;
     // 生成本地文件存放路径时回调
-    private Function.F1<File> onMakeFileName;
+    private Consumer<File> onMakeFileName;
     // 下载进度回调
-    private Function.F2<Long, Long> onDownload;
+    private ObjLongConsumer<Long> onDownload;
 
     public FileConverter() {}
 
@@ -52,18 +54,17 @@ public class FileConverter implements Converter<File> {
     }
 
 
-    public FileConverter setOnCancel(Function.F1<Long> onCancel) {
+    public FileConverter setOnCancel(LongConsumer onCancel) {
         this.onCancel = onCancel;
         return this;
     }
 
-
-    public FileConverter setOnMakeFileName(Function.F1<File> onMakeFileName) {
+    public FileConverter setOnMakeFileName(Consumer<File> onMakeFileName) {
         this.onMakeFileName = onMakeFileName;
         return this;
     }
 
-    public FileConverter setOnDownload(Function.F2<Long, Long> onDownload) {
+    public FileConverter setOnDownload(ObjLongConsumer<Long> onDownload) {
         this.onDownload = onDownload;
         return this;
     }
@@ -96,7 +97,7 @@ public class FileConverter implements Converter<File> {
                     fileName = HttpUtil.getContentDispositionFileName(response);
                 }
                 if (fileName == null || fileName.trim().length() == 0) {
-                    fileName = String.valueOf(PKGenerator.key());
+                    fileName = String.valueOf(PKGenerator.id());
                 }
                 outputFile = new File(outputFile, fileName);
             }
@@ -133,18 +134,18 @@ public class FileConverter implements Converter<File> {
     // 取消下载
     private void onCancel(long downloadLength) {
         if (onCancel == null) return;
-        this.onCancel.apply(downloadLength);
+        this.onCancel.accept(downloadLength);
     }
 
     // 生成本地文件对象回调
     private void onMakeFileName(File file) {
         if (onMakeFileName == null) return;
-        this.onMakeFileName.apply(file);
+        this.onMakeFileName.accept(file);
     }
 
     // 下载进度回调
     private void onDownload(long totalLength, long downloadLength) {
         if (FileConverter.this.onDownload == null) return;
-        onDownload.apply(totalLength, downloadLength);
+        onDownload.accept(totalLength, downloadLength);
     }
 }

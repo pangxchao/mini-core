@@ -11,7 +11,7 @@ public interface SQLHaving<T extends SQLHaving<T>> {
      * @return HAVING 部分片断
      */
     default String havingToString() {
-        return getHaving().content();
+        return getHaving().toString();
     }
 
     /**

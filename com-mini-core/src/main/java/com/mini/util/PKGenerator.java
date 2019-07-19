@@ -1,7 +1,8 @@
 package com.mini.util;
 
 import java.util.Random;
-import java.util.UUID;
+
+import static java.util.UUID.randomUUID;
 
 /**
  * 主键获取,规则：当前时间缀转36进制字符串 + 两位36进制IP码 + 一位36进制随机码
@@ -12,17 +13,18 @@ public final class PKGenerator {
     private static final Random RANDOM = new Random();
     private final static char[] DIGITS = new char[]{        //
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',//
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J',//
-            'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T',//
-            'U', 'V', 'W', 'X', 'Y', 'Z'};
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j',//
+            'k', 'm', 'n', 'p', 'q', 'r', 's', 't',//
+            'u', 'v', 'w', 'x', 'y', 'z'};
     private static final long BASE_TIME = 1451606400000L;
-    // 时间戳部分长度42位，设置一个基础时间戳，中以保证60年不重复
-    private static final long MAX = 0x7fffffffffffffffL; // 64 位全是1
-    private static final long MAX_TIME = 0xFFFFFFFFFFC00000L; // 44位1，22位0
-    // 自动增长序列部分，16位长度，每毫秒可以生成65535个不同ID
-    private static final long MAX_SEQUENCE = 0xffff; // 16位全是1
-    // 机器码6位长度，可以同时集群63台机器
-    private static final long MAX_WORK = 0x3f;// 6位全是1
+    // 时间戳部分长度42位，设置一个基础时间戳，中以保证60年不重复/64 位全是1
+    private static final long MAX = 0x7fffffffffffffffL;
+    // 44位1，22位0
+    private static final long MAX_TIME = 0xFFFFFFFFFFC00000L;
+    // 自动增长序列部分，16位长度，每毫秒可以生成65535个不同ID，// 16位全是1
+    private static final long MAX_SEQUENCE = 0xffff;
+    // 机器码6位长度，可以同时集群63台机器，// 6位全是1
+    private static final long MAX_WORK = 0x3f;
 
     private long workerId;
     private long sequence = 0L;
@@ -35,19 +37,19 @@ public final class PKGenerator {
     }
 
     /**
-     * 根据主键获取生成主键生成时的时间缀
-     * @param key 主键
+     * 根据主键获取ID中的时间戳
+     * @param id 主键
      * @return 时间戳
      */
-    public static long millis(long key) {
-        return INSTANCE.sequence(key);
+    public static long millis(long id) {
+        return INSTANCE.sequence(id);
     }
 
     /**
      * 生成主键
      * @return 主键
      */
-    public static long key() {
+    public static long id() {
         return INSTANCE.generate();
     }
 
@@ -56,8 +58,8 @@ public final class PKGenerator {
      * @return UUID
      */
     public static String uuid() {
-        String uuid = UUID.randomUUID().toString();
-        return uuid.replace("-", "").toUpperCase();
+        String uuid = randomUUID().toString();
+        return uuid.replace("-", "");
     }
 
     /**
@@ -110,8 +112,7 @@ public final class PKGenerator {
      * @return 根据用户ID生成的用户TOKEN
      */
     public static String token(long id) {
-        String token = Long.toHexString(id);
-        return token.toUpperCase();
+        return Long.toHexString(id);
     }
 
     /**
@@ -119,7 +120,7 @@ public final class PKGenerator {
      * @param token 用户TOKEN
      * @return 从TOKEN中获取的用户ID
      */
-    public static long decodeToken(String token) {
+    public static long decode(String token) {
         try {
             return Long.valueOf(token, 16);
         } catch (Exception e) {

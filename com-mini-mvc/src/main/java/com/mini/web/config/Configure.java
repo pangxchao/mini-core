@@ -1,9 +1,6 @@
 package com.mini.web.config;
 
 import com.google.inject.Injector;
-import com.mini.logger.Logger;
-import com.mini.logger.LoggerFactory;
-import com.mini.util.Function;
 import com.mini.util.MappingUri;
 import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.interceptor.ActionInterceptor;
@@ -13,6 +10,7 @@ import com.mini.web.model.factory.IModelFactory;
 import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -20,6 +18,7 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import static com.mini.util.ObjectUtil.defIfNull;
 import static com.mini.util.StringUtil.split;
@@ -37,78 +36,185 @@ public final class Configure {
     private final MappingUri<ActionInvocationProxy> invocationProxy = new MappingUri<>();
     private final Map<Class<?>, IModelFactory<?>> factoryMap = new ConcurrentHashMap<>();
     private final Set<Class<? extends EventListener>> listeners = new HashSet<>();
-    private final Logger logger = LoggerFactory.getLogger(Configure.class);
     private Class<? extends IView> viewClass;
     private IView view;
 
+    // 基础配置
+    private String encodingCharset = "UTF-8"; // 编码
+    private String asyncSupported = "true"; // 是否支持异步返回
+    private String urlPatterns = "*.htm"; // 拦截路径
+
+    // 默认文件上传配置（大小限制、缓冲区大小配置，路径配置）
+    private String multipartEnabled = "true"; // 开启文件上传
+    private String fileSizeThreshold = "4096";  // 上传文件缓冲区大小
+    private String maxRequestSize = "-1";  // 上传文件总大小限制
+    private String maxFileSize = "-1";  // 上传文件单个文件大小限制
+    private String location = "temp"; // 上传文件临时路径
+
+    // 默认日期时间格式配置
+    private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    private String dateFormat = "yyyy-MM-dd";
+    private String timeFormat = "HH:mm:ss";
+
+    // 默认视图配置（视图路径前缀和后缀）
+    private String ViewPrefix = "/WEB-INF/";
+    private String viewSuffix = ".ftl";
+
     // 依赖注入容器
-    @Inject
     private Injector injector;
 
-    // 编码
-    @Inject
-    @Named("mini.http.encoding.charset")
-    private String encodingCharset;
 
-    // 访问路径
+    /**
+     * 编码
+     * @param encodingCharset 编码
+     */
     @Inject
-    @Named("mini.http.servlet.urls")
-    private String urlPatterns;
+    public void setEncodingCharset(
+            @Named("mini.http.encoding.charset")
+            @Nullable String encodingCharset) {
+        this.encodingCharset = encodingCharset;
+    }
 
-    // 异步支持
+    /**
+     * 是否支持异步返回
+     * @param asyncSupported true-是
+     */
     @Inject
-    @Named("mini.http.async.supported")
-    private String asyncSupported;
+    public void setAsyncSupported(
+            @Named("mini.http.async.supported")
+            @Nullable String asyncSupported) {
+        this.asyncSupported = asyncSupported;
+    }
 
-    // 开启文件上传
+    /**
+     * 默认Servlet拦截路径
+     * @param urlPatterns 拦截路径
+     */
     @Inject
-    @Named("mini.http.multipart.enabled")
-    private String multipartEnabled;
+    public void setUrlPatterns(
+            @Named("mini.http.servlet.url-patterns")
+            @Nullable String urlPatterns) {
+        this.urlPatterns = urlPatterns;
+    }
 
-    // 上传文件缓冲区大小
+    /**
+     * 是否开启文件上传功能
+     * @param multipartEnabled true-是
+     */
     @Inject
-    @Named("mini.http.multipart.file-size-threshold")
-    private String fileSizeThreshold;
+    public void setMultipartEnabled(
+            @Named("mini.http.multipart.enabled")
+            @Nullable String multipartEnabled) {
+        this.multipartEnabled = multipartEnabled;
+    }
 
-    // 上传文件总大小限制
+    /**
+     * 文件上传缓冲区大小
+     * @param fileSizeThreshold 缓冲区大小
+     */
     @Inject
-    @Named("mini.http.multipart.max-request-size")
-    private String maxRequestSize;
+    public void setFileSizeThreshold(
+            @Named("mini.http.multipart.file-size-threshold")
+            @Nullable String fileSizeThreshold) {
+        this.fileSizeThreshold = fileSizeThreshold;
+    }
 
-    // 上传文件单个文件大小限制
+    /**
+     * 文件上传请求大小限制
+     * @param maxRequestSize 请求大小限制
+     */
     @Inject
-    @Named("mini.http.multipart.max-file-size")
-    private String maxFileSize;
+    public void setMaxRequestSize(
+            @Named("mini.http.multipart.max-request-size")
+            @Nullable String maxRequestSize) {
+        this.maxRequestSize = maxRequestSize;
+    }
 
-    // 上传文件临时路径
+    /**
+     * 文件上传单个文件大小限制
+     * @param maxFileSize 单个文件大小限制
+     */
     @Inject
-    @Named("mini.http.multipart.location")
-    private String location;
+    public void setMaxFileSize(
+            @Named("mini.http.multipart.max-file-size")
+            @Nullable String maxFileSize) {
+        this.maxFileSize = maxFileSize;
+    }
 
-    // 默认日期时间格式
+    /**
+     * 文件上传临时目录
+     * @param location 临时目录
+     */
     @Inject
-    @Named("mini.http.datetime-format")
-    private String dateTimeFormat;
+    public void setLocation(
+            @Named("mini.http.multipart.location")
+            @Nullable String location) {
+        this.location = location;
+    }
 
-    // 默认日期格式
+    /**
+     * 日期时间默认格式化
+     * @param dateTimeFormat 格式化
+     */
     @Inject
-    @Named("mini.http.date-format")
-    private String dateFormat;
+    public void setDateTimeFormat(
+            @Named("mini.http.datetime-format")
+            @Nullable String dateTimeFormat) {
+        this.dateTimeFormat = dateTimeFormat;
+    }
 
-    // 默认时间格式
+    /**
+     * 日期默认格式化
+     * @param dateFormat 格式化
+     */
     @Inject
-    @Named("mini.http.time-format")
-    private String timeFormat;
+    public void setDateFormat(
+            @Named("mini.http.time-format")
+            @Nullable String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
 
-    // 默认视图前缀
+    /**
+     * 时间默认格式化
+     * @param timeFormat 格式化
+     */
     @Inject
-    @Named("mini.mvc.view.prefix")
-    private String ViewPrefix;
+    public void setTimeFormat(
+            @Named("mini.http.date-format")
+            @Nullable String timeFormat) {
+        this.timeFormat = timeFormat;
+    }
 
-    // 默认视图后缀
+    /**
+     * 默认视图路径前缀
+     * @param viewPrefix 视图路径前缀
+     */
     @Inject
-    @Named("mini.mvc.view.suffix")
-    private String viewSuffix;
+    public void setViewPrefix(
+            @Named("mini.mvc.view.prefix")
+            @Nullable String viewPrefix) {
+        ViewPrefix = viewPrefix;
+    }
+
+    /**
+     * 默认视图路径后缀
+     * @param viewSuffix 视图路径后缀
+     */
+    @Inject
+    public void setViewSuffix(
+            @Named("mini.mvc.view.suffix")
+            @Nullable String viewSuffix) {
+        this.viewSuffix = viewSuffix;
+    }
+
+    /**
+     * 依赖注入容器上下文
+     * @param injector 容器上下文
+     */
+    @Inject
+    public void setInjector(Injector injector) {
+        this.injector = injector;
+    }
 
     /**
      * 获取配置文件编码
@@ -119,19 +225,19 @@ public final class Configure {
     }
 
     /**
-     * 获取默认 Servlet 访问路径
-     * @return Servlet 访问路径
-     */
-    public final String[] getUrlPatterns() {
-        return split(urlPatterns, "[,]");
-    }
-
-    /**
      * 获取异步支持
      * @return true-支持异步
      */
     public final boolean isAsyncSupported() {
         return castToBoolVal(asyncSupported);
+    }
+
+    /**
+     * 获取默认 Servlet 访问路径
+     * @return Servlet 访问路径
+     */
+    public final String[] getUrlPatterns() {
+        return split(urlPatterns, "[,]");
     }
 
     /**
@@ -216,14 +322,6 @@ public final class Configure {
 
 
     /**
-     * 依赖注入容器上下文
-     * @param injector 容器上下文
-     */
-    public final void setInjector(Injector injector) {
-        this.injector = injector;
-    }
-
-    /**
      * 添加一个Action代理对象
      * @param url             访问Action的URL
      * @param invocationProxy 代理对象实例
@@ -231,7 +329,6 @@ public final class Configure {
      */
     public final Configure addInvocationProxy(String url, ActionInvocationProxy invocationProxy) {
         this.invocationProxy.putIfAbsent(url, invocationProxy);
-        logger.debug("Register Action: " + url);
         return this;
     }
 
@@ -241,8 +338,16 @@ public final class Configure {
      * @param func 回调方法
      * @return Action代理对象
      */
-    public final ActionInvocationProxy getInvocationProxy(String uri, Function.F2<String, String> func) {
+    public final ActionInvocationProxy getInvocationProxy(String uri, BiConsumer<String, String> func) {
         return invocationProxy.get(uri, func);
+    }
+
+    /**
+     * 获取所有Action代理对象
+     * @return Action代理对象
+     */
+    public final MappingUri<ActionInvocationProxy> getInvocationProxy() {
+        return invocationProxy;
     }
 
     /**
@@ -253,7 +358,6 @@ public final class Configure {
     public final ActionInvocationProxy getInvocationProxy(String uri) {
         return invocationProxy.get(uri);
     }
-
 
     /**
      * 添加一个监听器
@@ -299,6 +403,16 @@ public final class Configure {
     public final FilterElement addFilter(Class<? extends Filter> filter) {
         FilterElement ele = new FilterElement().setFilter(filter);
         return defIfNull(filters.putIfAbsent(filter, ele), ele);
+    }
+
+    /**
+     * 删除一个默认的过虑器
+     * @param filter 过虑器
+     * @return 当前对象
+     */
+    public final Configure removeFilter(Class<? extends Filter> filter) {
+        filters.remove(filter);
+        return this;
     }
 
     /**

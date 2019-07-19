@@ -31,10 +31,9 @@ public abstract class MiniModule implements Module {
         binder.requestInjection(this);
         this.onStartup(binder);
 
-        if (this.getAnnotation(EnableTransaction.class) != null) {
-            MethodInterceptor inter = new TransactionalInterceptor();
-            binder.bindInterceptor(any(), annotatedWith(Transactional.class), inter);
-        }
+        if (getAnnotation(EnableTransaction.class) != null) return;
+        MethodInterceptor interceptor = new TransactionalInterceptor();
+        binder.bindInterceptor(any(), annotatedWith(Transactional.class), interceptor);
     }
 
     protected abstract void onStartup(Binder binder);

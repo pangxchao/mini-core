@@ -23,7 +23,7 @@ public final class CodeBean {
 
         // Class
         ClassName baseClass = ClassName.get(basePackage, baseClassName);
-        ClassName beanClass = ClassName.get(beanPackage, className);
+        // ClassName beanClass = ClassName.get(beanPackage, className);
 
         // 获取所有字段信息
         List<Util.FieldInfo> fieldList = Util.getColumns(configure.getJdbcTemplate(), //
@@ -32,7 +32,8 @@ public final class CodeBean {
         // 生成类信息
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                 .addModifiers(PUBLIC)
-                .addSuperinterface(ParameterizedTypeName.get(baseClass, beanClass))
+                //.addSuperinterface(ParameterizedTypeName.get(baseClass, beanClass))
+                .addSuperinterface(baseClass)
                 .addSuperinterface(Serializable.class)
                 // 生成  Serializable 的常量字段
                 .addField(FieldSpec.builder(long.class, "serialVersionUID")
@@ -86,13 +87,12 @@ public final class CodeBean {
             builder.addMethod(MethodSpec.methodBuilder("set" + StringUtil.firstUpperCase(name))
                     .addModifiers(PUBLIC)
                     // 设置返回类型
-                    .returns(beanClass)
+                    .returns(void.class)
                     // 添加方法参数列表
                     .addParameter(fieldInfo.getTypeClass(), name)
                     .addAnnotation(Override.class)
                     // 添加方法体内容
                     .addStatement("this.$L = $L", name, name)
-                    .addStatement("return this")
                     .build());
         }
         // 生成文件信息

@@ -48,8 +48,8 @@ public final class SQLBuilder implements SQL, SQLFragment {
      * @return #SqlBuilder
      */
     public SQLBuilder content(SQL sql) {
-        content(sql.content());
-        params(sql.params());
+        content(sql.toString());
+        params(sql.toArray());
         return this;
     }
 
@@ -58,7 +58,7 @@ public final class SQLBuilder implements SQL, SQLFragment {
      * @return SQL
      */
     @Nonnull
-    public String content() {
+    public final String toString() {
         return content.toString();
     }
 
@@ -66,7 +66,7 @@ public final class SQLBuilder implements SQL, SQLFragment {
      * -获取参数列表
      * @return 参数列表
      */
-    public Object[] params() {
+    public final Object[] toArray() {
         return params.toArray();
     }
 }

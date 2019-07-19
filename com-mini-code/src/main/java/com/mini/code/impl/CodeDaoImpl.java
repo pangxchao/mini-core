@@ -162,7 +162,7 @@ public final class CodeDaoImpl {
                 .returns(int.class)
                 .addParameter(beanClass, firstLowerCase(className))
                 .addAnnotation(Override.class)
-                .addStatement("$T update = new $T().from($T.TABLE)", SQLUpdate.class, SQLUpdate.class, beanClass);
+                .addStatement("$T update = new $T($T.TABLE)", SQLUpdate.class, SQLUpdate.class, beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
@@ -191,7 +191,7 @@ public final class CodeDaoImpl {
                 .returns(int.class)
                 .addParameter(beanClass, firstLowerCase(className))
                 .addAnnotation(Override.class)
-                .addStatement("$T delete = new $T().from($T.TABLE)", SQLDelete.class, SQLDelete.class, beanClass);
+                .addStatement("$T delete = new $T($T.TABLE)", SQLDelete.class, SQLDelete.class, beanClass);
         for (Util.FieldInfo fieldInfo : PKFieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
@@ -216,7 +216,7 @@ public final class CodeDaoImpl {
             method.addJavadoc("@param $L $L \n", name, def(fieldInfo.getRemarks(), name));
             method.addParameter(fieldInfo.getTypeClass(), name);
         }
-        method.addStatement("$T delete = new $T().from($T.TABLE)", SQLDelete.class, SQLDelete.class, beanClass);
+        method.addStatement("$T delete = new $T($T.TABLE)", SQLDelete.class, SQLDelete.class, beanClass);
         for (Util.FieldInfo fieldInfo : PKFieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), false);

@@ -61,12 +61,6 @@ public class FreemarkerView implements IView, Serializable {
     protected Configuration getConfiguration() {
         if (this.configuration != null) return configuration;
         configuration = new Configuration(VERSION_2_3_28);
-        if (StringUtil.startsWith(prefix, "classpath:")) {
-            String pre = StringUtil.substring(prefix, 10);
-            pre = StringUtil.def(pre, "templates");
-            setClassForTemplateLoading(pre);
-            return configuration;
-        }
         String pre = StringUtil.def(prefix, "WEB-INF");
         setServletContextForTemplateLoading(pre);
         return configuration;

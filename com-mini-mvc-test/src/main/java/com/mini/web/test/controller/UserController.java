@@ -3,7 +3,7 @@ package com.mini.web.test.controller;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
-import com.mini.web.model.JsonMapModel;
+import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
 
 import javax.inject.Singleton;
@@ -24,8 +24,8 @@ public class UserController {
         System.out.println("---------page.htm-----------");
     }
 
-    @Action(value = JsonMapModel.class, url = "group.htm")
-    public void group(JsonMapModel model, String fileId) {
+    @Action(value = MapModel.class, url = "group.htm")
+    public void group(MapModel model, String fileId) {
         System.out.println("---------group.htm-----------");
         model.addData("name", "value");
         System.out.println(fileId);

@@ -9,6 +9,7 @@ import java.util.List;
 public final class DefaultWhere implements SQLFragment {
     private final List<SQLFragment> wheres = new ArrayList<>();
     private String connector = SQL.AND;
+    private boolean isNot;
 
     /**
      * 设置多个条件的连接符
@@ -18,6 +19,14 @@ public final class DefaultWhere implements SQLFragment {
     public DefaultWhere connector(String connector) {
         this.connector = connector;
         return this;
+    }
+
+    /**
+     * 是否在所有条件中取反
+     * @param not true-是
+     */
+    public void setNot(boolean not) {
+        isNot = not;
     }
 
     /**
@@ -60,10 +69,16 @@ public final class DefaultWhere implements SQLFragment {
         return where(name, "=");
     }
 
+    private String getNot() {
+        return isNot ? SQL.NOT : "";
+    }
+
     @Nonnull
     @Override
-    public final String content() {
-        if (wheres.size() <= 0) return "";
-        return SQL.WHERE + "(" + text(connector, wheres) + ")";
+    public final String toString() {
+        if (wheres.size() <= 0) return SQL.EMPTY;
+        return toText("", SQL.WHERE, getNot(), "(",
+                toText(connector, wheres), ")");
+
     }
 }

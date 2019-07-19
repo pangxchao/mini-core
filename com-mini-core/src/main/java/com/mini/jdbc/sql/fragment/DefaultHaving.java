@@ -6,6 +6,8 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mini.jdbc.sql.SQL.HAVING;
+
 public class DefaultHaving implements SQLFragment {
     private final List<SQLFragment> having = new ArrayList<>();
     private String connector = SQL.AND;
@@ -62,8 +64,8 @@ public class DefaultHaving implements SQLFragment {
 
     @Nonnull
     @Override
-    public final String content() {
-        if (having.size() <= 0) return "";
-        return SQL.HAVING + "(" + text(connector, having) + ")";
+    public final String toString() {
+        if (having.size() <= 0) return SQL.EMPTY;
+        return HAVING + "(" + toText(connector, having) + ")";
     }
 }

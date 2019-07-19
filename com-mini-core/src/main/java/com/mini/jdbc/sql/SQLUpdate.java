@@ -8,12 +8,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SQLUpdate implements SQL, SQLFragment, SQLFrom<SQLUpdate>, SQLJoins<SQLUpdate>, SQLWhere<SQLUpdate> {
+public class SQLUpdate implements SQL, SQLFragment, SQLJoin<SQLUpdate>, SQLWhere<SQLUpdate> {
     private final List<String> values = new ArrayList<>();
     private final List<Object> params = new ArrayList<>();
     private final DefaultWhere where = new DefaultWhere();
-    private final DefaultJoins joins = new DefaultJoins();
-    private final DefaultFrom from = new DefaultFrom();
+    private final DefaultJoin joins = new DefaultJoin();
+    private final String table;
+
+    public SQLUpdate(String table) {
+        this.table = table;
+    }
 
     /**
      * -添加一个字段和字段值
@@ -46,7 +50,7 @@ public class SQLUpdate implements SQL, SQLFragment, SQLFrom<SQLUpdate>, SQLJoins
 
 
     @Override
-    public Object[] params() {
+    public Object[] toArray() {
         return params.toArray();
     }
 
@@ -55,13 +59,9 @@ public class SQLUpdate implements SQL, SQLFragment, SQLFrom<SQLUpdate>, SQLJoins
         return this;
     }
 
-    @Override
-    public final DefaultFrom getFrom() {
-        return this.from;
-    }
 
     @Override
-    public final DefaultJoins getJoin() {
+    public final DefaultJoin getJoin() {
         return this.joins;
     }
 
@@ -70,20 +70,22 @@ public class SQLUpdate implements SQL, SQLFragment, SQLFrom<SQLUpdate>, SQLJoins
         return this.where;
     }
 
-    public final String valuesToString() {
-        return StringUtil.join(", ", values);
+    public final String updateToString() {
+        return UPDATE + table + " ";
+    }
+
+    public final String setToString() {
+        return SET + toText(", ", values);
     }
 
     @Nonnull
     @Override
-    public String content() {
+    public String toString() {
         return StringUtil.join("",
-                UPDATE,            // UPDATE 关键字
-                fromToString(),    // 修改目标表
-                joinToString(),    // 联合表处理
-                SET,               // SET 关键字
-                valuesToString(),  // 修改字段和值
-                whereToString());  // 条件处理
+                updateToString(),   // update 片断
+                joinToString(),    // join 片断
+                setToString(),     // set 片断
+                whereToString());  // where 片断
 
     }
 

@@ -2,7 +2,6 @@ package com.mini.inject.annotation;
 
 import java.lang.annotation.*;
 
-@Inherited
 @Documented
 @Target(ElementType.TYPE)
 @Repeatable(PropertySources.class)

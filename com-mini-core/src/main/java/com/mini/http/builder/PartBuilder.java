@@ -1,7 +1,5 @@
 package com.mini.http.builder;
 
-import com.mini.http.builder.AbstractBuilder;
-import com.mini.util.Function;
 import com.mini.util.StringUtil;
 import okhttp3.Headers;
 import okhttp3.MediaType;
@@ -18,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.function.LongConsumer;
+import java.util.function.ObjLongConsumer;
 
 import static com.mini.util.FileUtil.getMiniType;
 import static okhttp3.MediaType.parse;
@@ -26,18 +26,18 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
     private final MultipartBody.Builder builder = new MultipartBody.Builder();
 
     // 请求暂停时回调
-    private Function.F1<Long> onCancel;
+    private LongConsumer onCancel;
     // 下载进度回调
-    private Function.F2<Long, Long> onUpload;
+    private ObjLongConsumer<Long> onUpload;
 
     /** 设置取消回调 */
-    public PartBuilder<V> setOnCancel(Function.F1<Long> onCancel) {
+    public PartBuilder<V> setOnCancel(LongConsumer onCancel) {
         this.onCancel = onCancel;
         return this;
     }
 
     /** 设置上传进度回调 */
-    public PartBuilder<V> setOnUpload(Function.F2<Long, Long> onUpload) {
+    public PartBuilder<V> setOnUpload(ObjLongConsumer<Long> onUpload) {
         this.onUpload = onUpload;
         return this;
     }
@@ -231,12 +231,12 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
     // 取消上传
     private void onCancel(long uploadLength) {
         if (onCancel == null) return;
-        this.onCancel.apply(uploadLength);
+        this.onCancel.accept(uploadLength);
     }
 
     // 上传进度回调
     private void onUpload(long totalLength, long downloadLength) {
         if (PartBuilder.this.onUpload == null) return;
-        onUpload.apply(totalLength, downloadLength);
+        onUpload.accept(totalLength, downloadLength);
     }
 }

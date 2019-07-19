@@ -4,7 +4,6 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.mini.inject.annotation.ComponentScan;
 import com.mini.inject.annotation.EnableTransaction;
-import com.mini.inject.annotation.PropertySource;
 import com.mini.jdbc.transaction.Transactional;
 import com.mini.jdbc.transaction.TransactionalInterceptor;
 import com.mini.jdbc.util.Paging;
@@ -16,13 +15,15 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
 import com.mini.web.annotation.Controller;
 import com.mini.web.argument.*;
+import com.mini.web.filter.AccessControlAllowOriginFilter;
+import com.mini.web.filter.CacheControlFilter;
 import com.mini.web.filter.CharacterEncodingFilter;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
-import com.mini.web.listener.ServletContextListenerListener;
+import com.mini.web.listener.MiniServletContextListener;
 import com.mini.web.model.*;
-import com.mini.web.model.factory.JsonListModelFactory;
-import com.mini.web.model.factory.JsonMapModelFactory;
+import com.mini.web.model.factory.ListModelFactory;
+import com.mini.web.model.factory.MapModelFactory;
 import com.mini.web.model.factory.PageModelFactory;
 import com.mini.web.model.factory.StreamModelFactory;
 import com.mini.web.servlet.DispatcherHttpServlet;
@@ -40,6 +41,9 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,7 +51,6 @@ import java.util.*;
 
 import static com.google.inject.matcher.Matchers.annotatedWith;
 import static com.google.inject.matcher.Matchers.any;
-import static com.mini.util.ArraysUtil.forEach;
 import static com.mini.util.ObjectUtil.defIfNull;
 import static com.mini.util.StringUtil.def;
 import static com.mini.util.StringUtil.join;
@@ -58,15 +61,29 @@ import static javax.servlet.DispatcherType.*;
  * Web 配置信息读取
  * @author xchao
  */
-@PropertySource("application.properties")
-@PropertySource("application.properties")
 public abstract class WebMvcConfigure implements Module {
-
+    @Inject
+    private ServletContext servletContext;
     @Inject
     private Configure configure;
 
     @Override
     public synchronized final void configure(Binder binder) {
+        WebMvcConfigure.this.onStartupBinding(binder);
+        // 数据库事务处理
+        if (getAnnotation(EnableTransaction.class) != null) return;
+        MethodInterceptor interceptor = new TransactionalInterceptor();
+        binder.bindInterceptor(any(), annotatedWith(Transactional.class), interceptor);
+    }
+
+    /**
+     * 该方法只难做依赖绑定相关操作
+     * @param binder 绑定器
+     */
+    protected synchronized void onStartupBinding(Binder binder) {}
+
+    public synchronized final void onStartup() {
+        Objects.requireNonNull(servletContext);
         Objects.requireNonNull(configure);
 
         // 注册默认的 ActionInvocationProxy
@@ -85,16 +102,15 @@ public abstract class WebMvcConfigure implements Module {
         registerView(configure);
 
         // 调用自定义初始化方法
-        onStartup(configure, binder);
-
-        // 数据库事务处理
-        if (this.getAnnotation(EnableTransaction.class) != null) {
-            MethodInterceptor inter = new TransactionalInterceptor();
-            binder.bindInterceptor(any(), annotatedWith(Transactional.class), inter);
-        }
+        onStartupRegister(servletContext, configure);
     }
 
-    protected abstract void onStartup(Configure configure, Binder binder);
+    /**
+     * 该方法在自动注入之后调用，使用时需要注意顺序
+     * @param servletContext ServletContext 对象
+     * @param configure      配置信息
+     */
+    protected void onStartupRegister(ServletContext servletContext, Configure configure) {}
 
     // 获取当前类指定注解信息
     public final <T extends Annotation> T getAnnotation(Class<T> clazz) {
@@ -111,7 +127,7 @@ public abstract class WebMvcConfigure implements Module {
             requireNonNull(controller, "@Controller can not be null");
 
             Before cBefore = clazz.getAnnotation(Before.class);
-            forEach(clazz.getMethods(), method -> {
+            Arrays.stream(clazz.getMethods()).forEach(method -> {
                 Action action = method.getAnnotation(Action.class);
                 if (action == null) return;
 
@@ -184,11 +200,12 @@ public abstract class WebMvcConfigure implements Module {
 
     // 注册默认监听器
     private void registerListener(Configure configure) {
-        configure.addListener(ServletContextListenerListener.class);
+        configure.addListener(MiniServletContextListener.class);
     }
 
     // 注册默认Servlet
     private void registerServlet(Configure configure) {
+        // 默认Action处理Servlet
         ServletElement element = configure.addServlet(DispatcherHttpServlet.class);
         element.setFileSizeThreshold(configure.getFileSizeThreshold());
         element.setMultipartEnabled(configure.isMultipartEnabled());
@@ -202,8 +219,19 @@ public abstract class WebMvcConfigure implements Module {
 
     // 配置默认过虑器
     private void registerFilter(Configure configure) {
+        // 编码统一管理过虑器
         FilterElement element = configure.addFilter(CharacterEncodingFilter.class);
         element.addDispatcherTypes(REQUEST, FORWARD, INCLUDE, ASYNC, ERROR);
+        element.addUrlPatterns("/*").setMatchAfter(true);
+
+        // 跨域请求过虑器
+        element = configure.addFilter(AccessControlAllowOriginFilter.class);
+        element.addDispatcherTypes(REQUEST, FORWARD, INCLUDE, ASYNC, ERROR);
+        element.addUrlPatterns("/*").setMatchAfter(true);
+
+        // 静态资源缓存过虑器
+        element = configure.addFilter(CacheControlFilter.class);
+        element.addDispatcherTypes(REQUEST, FORWARD, INCLUDE, ASYNC);
         element.addUrlPatterns("/*").setMatchAfter(true);
     }
 
@@ -252,10 +280,13 @@ public abstract class WebMvcConfigure implements Module {
         configure.addResolver(Part[].class, ArgumentResolverPartArray.class);
 
         // 日期时间类型
-        configure.addResolver(Date.class, ArgumentResolverDateTime.class);
-        configure.addResolver(LocalTime.class, ArgumentResolverTime.class);
-        configure.addResolver(LocalDate.class, ArgumentResolverDate.class);
+        configure.addResolver(java.util.Date.class, ArgumentResolverDateTime.class);
         configure.addResolver(LocalDateTime.class, ArgumentResolverDateTime.class);
+        configure.addResolver(Timestamp.class, ArgumentResolverDateTime.class);
+        configure.addResolver(LocalDate.class, ArgumentResolverDate.class);
+        configure.addResolver(LocalTime.class, ArgumentResolverTime.class);
+        configure.addResolver(Date.class, ArgumentResolverDate.class);
+        configure.addResolver(Time.class, ArgumentResolverTime.class);
 
         // Web上下文相关类型
         configure.addResolver(ServletContext.class, ArgumentResolverServletContext.class);
@@ -266,22 +297,21 @@ public abstract class WebMvcConfigure implements Module {
         configure.addResolver(HttpSession.class, ArgumentResolverHttpSession.class);
 
         // Model 类型
-        configure.addResolver(IModel.class, ArgumentResolverModel.class);
-        configure.addResolver(PageModel.class, ArgumentResolverModel.class);
-        configure.addResolver(JsonMapModel.class, ArgumentResolverModel.class);
-        configure.addResolver(JsonListModel.class, ArgumentResolverModel.class);
         configure.addResolver(StreamModel.class, ArgumentResolverModel.class);
+        configure.addResolver(PageModel.class, ArgumentResolverModel.class);
+        configure.addResolver(ListModel.class, ArgumentResolverModel.class);
+        configure.addResolver(MapModel.class, ArgumentResolverModel.class);
+        configure.addResolver(IModel.class, ArgumentResolverModel.class);
 
         // 其它类型
         configure.addResolver(Paging.class, ArgumentResolverPaging.class);
         configure.addResolver(StringBuilder.class, ArgumentResolverBody.class);
     }
 
-
     // 配置默认数据模型工厂/视图渲染器
     private void registerModelFactory(Configure configure) {
-        configure.addModelFactory(JsonListModel.class, JsonListModelFactory.class);
-        configure.addModelFactory(JsonMapModel.class, JsonMapModelFactory.class);
+        configure.addModelFactory(ListModel.class, ListModelFactory.class);
+        configure.addModelFactory(MapModel.class, MapModelFactory.class);
         configure.addModelFactory(StreamModel.class, StreamModelFactory.class);
         configure.addModelFactory(PageModel.class, PageModelFactory.class);
     }

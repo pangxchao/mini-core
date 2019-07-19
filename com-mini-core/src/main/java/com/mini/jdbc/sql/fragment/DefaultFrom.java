@@ -4,6 +4,9 @@ import com.mini.jdbc.sql.SQLSelect;
 
 import javax.annotation.Nonnull;
 
+import static com.mini.jdbc.sql.SQL.EMPTY;
+import static com.mini.jdbc.sql.SQL.FROM;
+
 public final class DefaultFrom implements SQLFragment {
     private SQLFragment content;
 
@@ -42,7 +45,7 @@ public final class DefaultFrom implements SQLFragment {
      * @return 当前对象
      */
     public DefaultFrom from(SQLSelect select, String alias) {
-        return from(select.content(), alias);
+        return from(select.toString(), alias);
     }
 
     /**
@@ -51,13 +54,13 @@ public final class DefaultFrom implements SQLFragment {
      * @return 当前对象
      */
     public DefaultFrom from(SQLSelect select) {
-        return from(select.content());
+        return from(select.toString());
     }
 
     @Nonnull
     @Override
-    public final String content() {
-        if (content == null) return "";
-        return content.content();
+    public final String toString() {
+        if (content == null) return EMPTY;
+        return FROM + content.toString();
     }
 }

@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 public final class ArgumentResolverPaging implements ArgumentResolver {
     @Override
-    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) throws Exception {
-        String page = request.getParameter("page"), rows = request.getParameter("rows");
-        return new Paging(TypeUtil.castToIntVal(page), TypeUtil.castToIntVal(rows));
+    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
+        String page = request.getParameter("page"), limit = request.getParameter("limit");
+        return new Paging(TypeUtil.castToIntVal(page), TypeUtil.castToIntVal(limit));
     }
 
 }

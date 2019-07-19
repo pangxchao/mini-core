@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mini.util.ArraysUtil.any;
 import static com.mini.util.StringUtil.eq;
 
 /**
@@ -107,9 +106,9 @@ public class Dictionaries {
                     }
 
                     // 获取主键字段
-                    List<String> PKFieldList = new ArrayList<>();
+                    List<String> pkFieldList = new ArrayList<>();
                     try (ResultSet rs = metaData.getPrimaryKeys(configure.getDatabaseName(), null, tableName)) {
-                        while (rs != null && rs.next()) PKFieldList.add(rs.getString("COLUMN_NAME"));
+                        while (rs != null && rs.next()) pkFieldList.add(rs.getString("COLUMN_NAME"));
                     }
 
                     try (ResultSet rs = metaData.getColumns(configure.getDatabaseName(), null, tableName, null)) {
@@ -150,7 +149,7 @@ public class Dictionaries {
                             // 是否为主键
                             cell = row.createCell(4);
                             cell.setCellStyle(style);
-                            cell.setCellValue(any(PKFieldList, text -> eq(text, name)) ? "是" : "");
+                            cell.setCellValue(pkFieldList.stream().anyMatch(text -> eq(text, name)) ? "是" : "");
 
                             // 字段是否为非空字段
                             cell = row.createCell(5);

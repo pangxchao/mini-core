@@ -185,7 +185,7 @@ public abstract class JdbcTemplate {
      * @return 执行结果
      */
     public final int[] batch(SQL sql, PreparedStatementCallback<int[]> callback) {
-        return batch(sql.content(), callback);
+        return batch(sql.toString(), callback);
     }
 
     /**
@@ -224,7 +224,7 @@ public abstract class JdbcTemplate {
      * @return 执行结果
      */
     public final int execute(SQL sql) {
-        return execute(sql.content(), sql.params());
+        return execute(sql.toString(), sql.toArray());
     }
 
     /**
@@ -233,7 +233,7 @@ public abstract class JdbcTemplate {
      * @return ID
      */
     public final int execute(KeyHolderGeneratedKeys holder, SQL sql) {
-        return execute(holder, sql.content(), sql.params());
+        return execute(holder, sql.toString(), sql.toArray());
     }
 
     /**
@@ -258,7 +258,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final <T> T query(SQL sql, ResultSetCallback<T> callback) {
-        return query(sql.content(), callback, sql.params());
+        return query(sql.toString(), callback, sql.toArray());
     }
 
     /**
@@ -289,7 +289,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final <T> List<T> query(SQL sql, IMapper<T> m) {
-        return query(sql.content(), m, sql.params());
+        return query(sql.toString(), m, sql.toArray());
     }
 
     /**
@@ -318,7 +318,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final <T> T queryOne(SQL sql, IMapper<T> m) {
-        return queryOne(sql.content(), m, sql.params());
+        return queryOne(sql.toString(), m, sql.toArray());
     }
 
 
@@ -360,7 +360,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final String queryString(SQL sql) {
-        return queryString(sql.content(), sql.params());
+        return queryForObject(sql, String.class);
     }
 
     /**
@@ -379,7 +379,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Long queryLong(SQL sql) {
-        return queryLong(sql.content(), sql.params());
+        return queryForObject(sql, Long.class);
     }
 
     /**
@@ -399,7 +399,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Integer queryInt(SQL sql) {
-        return queryInt(sql.content(), sql.params());
+        return queryForObject(sql, Integer.class);
     }
 
 
@@ -419,7 +419,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Short queryShort(SQL sql) {
-        return queryShort(sql.content(), sql.params());
+        return queryForObject(sql, Short.class);
     }
 
 
@@ -439,7 +439,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Byte queryByte(SQL sql) {
-        return queryByte(sql.content(), sql.params());
+        return queryForObject(sql, Byte.class);
     }
 
     /**
@@ -458,7 +458,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Double queryDouble(SQL sql) {
-        return queryDouble(sql.content(), sql.params());
+        return queryForObject(sql, Double.class);
     }
 
     /**
@@ -477,7 +477,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Float queryFloat(SQL sql) {
-        return queryFloat(sql.content(), sql.params());
+        return queryForObject(sql, Float.class);
     }
 
     /**
@@ -496,7 +496,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Boolean queryBoolean(SQL sql) {
-        return queryBoolean(sql.content(), sql.params());
+        return queryForObject(sql, Boolean.class);
     }
 
     /**
@@ -515,7 +515,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Timestamp queryTimestamp(SQL sql) {
-        return queryTimestamp(sql.content(), sql.params());
+        return queryForObject(sql, Timestamp.class);
     }
 
     /**
@@ -534,7 +534,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Date queryDate(SQL sql) {
-        return queryDate(sql.content(), sql.params());
+        return queryForObject(sql, Date.class);
     }
 
     /**
@@ -544,7 +544,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Time queryTime(String sql, Object... params) {
-        return queryForObject(sql, Time.class, params);
+        return queryForObject(sql, Time.class);
     }
 
     /**
@@ -553,7 +553,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final Time queryTime(SQL sql) {
-        return queryTime(sql.content(), sql.params());
+        return queryForObject(sql, Time.class);
     }
 
     /**
@@ -579,7 +579,7 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final <T> List<T> query(Paging paging, SQL sql, IMapper<T> m) {
-        return query(paging, sql.content(), m, sql.params());
+        return query(paging, sql.toString(), m, sql.toArray());
     }
 
     /**

@@ -3,7 +3,9 @@ package com.mini.code.impl;
 import com.mini.code.Configure;
 import com.mini.code.util.Util;
 import com.mini.util.StringUtil;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
 import java.io.Serializable;
@@ -21,8 +23,7 @@ public final class CodeBase {
         // Class Name
         String baseClassName = String.format("%sBase", className);
         // Class Name
-        ClassName baseClass = ClassName.get(basePackage, baseClassName);
-        TypeVariableName tName = TypeVariableName.get("T", baseClass);
+        //ClassName baseClass = ClassName.get(basePackage, baseClassName);
 
         // 获取所有字段信息
         List<Util.FieldInfo> fieldList = Util.getColumns(configure.getJdbcTemplate(), //
@@ -32,7 +33,6 @@ public final class CodeBase {
         TypeSpec.Builder builder = TypeSpec.interfaceBuilder(baseClassName)
                 .addModifiers(PUBLIC)
                 .addSuperinterface(Serializable.class)
-                .addTypeVariable(TypeVariableName.get("T", baseClass))
                 .addJavadoc("$L.java \n", baseClassName)
                 .addJavadoc("@author xchao \n");
 
@@ -57,7 +57,7 @@ public final class CodeBase {
             builder.addMethod(MethodSpec.methodBuilder("set" + StringUtil.firstUpperCase(name))
                     .addModifiers(PUBLIC, DEFAULT)
                     // 设置返回类型
-                    .returns(tName)
+                    .returns(void.class)
                     // 添加方法参数列表
                     .addParameter(fieldInfo.getTypeClass(), name)
                     .addException(UnsupportedOperationException.class)
@@ -66,7 +66,6 @@ public final class CodeBase {
                     // 生成方法 JAVA DOC
                     .addJavadoc("$L. \n", StringUtil.def(fieldInfo.getRemarks(), "Sets the value of " + name))
                     .addJavadoc("@param $L The value of $L \n", name, name)
-                    .addJavadoc("@return {@code this} \n")
                     .build());
         }
 

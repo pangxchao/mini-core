@@ -9,14 +9,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoins<SQLSelect>, SQLWhere<SQLSelect>, SQLGroup<SQLSelect>, SQLHaving<SQLSelect>,
-        SQLOrder<SQLSelect> {
+public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoin<SQLSelect>, SQLWhere<SQLSelect>, SQLGroupBy<SQLSelect>, SQLHaving<SQLSelect>,
+        SQLOrderBy<SQLSelect> {
+    private final DefaultOrderBy orderBy = new DefaultOrderBy();
     private final DefaultHaving having = new DefaultHaving();
     private final DefaultWhere where = new DefaultWhere();
     private final List<Object> params = new ArrayList<>();
-    private final DefaultGroup group = new DefaultGroup();
-    private final DefaultOrder order = new DefaultOrder();
-    private final DefaultJoins joins = new DefaultJoins();
+    private final DefaultGroupBy groupBy = new DefaultGroupBy();
+    private final DefaultJoin joins = new DefaultJoin();
     private final List<String> keys = new ArrayList<>();
     private final DefaultFrom from = new DefaultFrom();
 
@@ -51,7 +51,7 @@ public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoins
     }
 
     @Override
-    public Object[] params() {
+    public Object[] toArray() {
         return params.toArray();
     }
 
@@ -67,7 +67,7 @@ public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoins
     }
 
     @Override
-    public final DefaultJoins getJoin() {
+    public final DefaultJoin getJoin() {
         return this.joins;
     }
 
@@ -77,8 +77,8 @@ public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoins
     }
 
     @Override
-    public DefaultGroup getGroup() {
-        return this.group;
+    public DefaultGroupBy getGroupBy() {
+        return this.groupBy;
     }
 
     @Override
@@ -87,30 +87,28 @@ public class SQLSelect implements SQL, SQLFragment, SQLFrom<SQLSelect>, SQLJoins
     }
 
     @Override
-    public DefaultOrder getOrder() {
-        return this.order;
+    public DefaultOrderBy getOrderBy() {
+        return this.orderBy;
     }
 
     /**
      * 获取查询字段片断
      * @return 查询字段片断
      */
-    public final String keysToString() {
-        return StringUtil.join(", ", keys);
+    public final String selectToString() {
+        return SELECT + toText(", ", keys);
     }
 
     @Nonnull
     @Override
-    public String content() {
+    public String toString() {
         return StringUtil.join("",
-                SELECT,            // SELECT 关键字
-                keysToString(),    // 查询字段
-                FROM,              // FROM 关键字
-                fromToString(),    // 查询目标表
-                joinToString(),    // 联合表处理
-                whereToString(),   // 条件处理
-                groupToString(),   // 分组处理
-                havingToString(),  // 结果过虑
-                orderToString());  // 处理排序
+                selectToString(),   // select 片断
+                fromToString(),    // from 片断
+                joinToString(),    // join 片断
+                whereToString(),   // where 片断
+                groupByToString(), // group By 片断
+                havingToString(),  // having 片断
+                orderByToString());// order by 矁
     }
 }

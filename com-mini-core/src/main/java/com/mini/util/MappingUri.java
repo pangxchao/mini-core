@@ -3,6 +3,7 @@ package com.mini.util;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +21,7 @@ public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
      * @param func 回调
      * @return 匹配值
      */
-    public V get(String key, Function.F2<String, String> func) {
+    public V get(String key, BiConsumer<String, String> func) {
         return getOrDefault(key, entrySet().stream().sorted((v, o) -> {
             String[] vArr = split(v.getKey(), SPLIT_REGEX);
             String[] oArr = split(o.getKey(), SPLIT_REGEX);
@@ -38,9 +39,9 @@ public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
             while (m.find()) for (int i = 0; i < list.size(); i++) {
                 try {
                     String groupName = format("N%d", (i + 1));
-                    func.apply(list.get(i), m.group(groupName));
+                    func.accept(list.get(i), m.group(groupName));
                 } catch (Exception | Error e) {
-                    func.apply(list.get(i), "");
+                    func.accept(list.get(i), "");
                 }
             }
 

@@ -3,8 +3,6 @@ package com.mini.web.servlet;
 
 import com.google.inject.Injector;
 import com.mini.logger.Logger;
-import com.mini.util.ArraysUtil;
-import com.mini.util.Function;
 import com.mini.util.StringUtil;
 import com.mini.util.reflect.MiniParameter;
 import com.mini.validate.ValidateException;
@@ -28,14 +26,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.mini.logger.LoggerFactory.getLogger;
-import static com.mini.util.ArraysUtil.any;
 import static com.mini.util.StringUtil.isEmpty;
 import static com.mini.web.model.IModel.MODEL_KEY;
 import static java.util.Optional.ofNullable;
@@ -56,7 +51,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     @Inject
     private Configure configure;
 
-    @Inject
+    // @Inject
     private Injector injector;
 
     public final Configure getConfigure() {
@@ -65,6 +60,11 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
     public final Injector getInjector() {
         return injector;
+    }
+
+    @Inject
+    public final void setInjector(Injector injector) {
+        this.injector = injector;
     }
 
     /**
@@ -121,9 +121,9 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
         // 获取并验证请求方法是否支持，如果不支持，返回 500 错误
         final Action.Method[] methods = proxy.getSupportMethod();
-        if (require(methods, response, ERROR, "No support method: " + method, v -> any(v, m -> m == method))) {
-            return;
-        }
+        if (require(methods, response, ERROR, "No support method: " + method, v -> {
+            return Arrays.stream(v).anyMatch(m -> m == method); //
+        })) return;
 
         // 获取数据模型工厂并验证，如果该工厂为空，返回 500 错误
         final IModelFactory<?> modelFactory = configure.getFactory(proxy.getModelClass());
@@ -242,7 +242,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             @Nonnull
             @Override
             public Object[] getParameterValues() {
-                return ArraysUtil.stream(getParameters()).map(parameter -> {
+                return Arrays.stream(getParameters()).map(parameter -> {
                     ofNullable(configure.getResolver(parameter.getType())).ifPresent(r -> {
                         try {
                             parameter.setValue(r.value(parameter.getName(), //
@@ -304,28 +304,31 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
      * @param function 验证回调
      * @return true-验证未通过
      */
-    private <T> boolean require(T instance, HttpServletResponse response, int code, String message, Function.FR1<Boolean, T> function) throws IOException {
-        if (function.apply(instance)) return false;
+    private <T> boolean require(T instance, HttpServletResponse response, int code, String message, Predicate<T> function) throws IOException {
+        if (function.test(instance)) return false;
         response.sendError(code, message);
-        LOGGER.debug(message);
+        LOGGER.error(message);
         return true;
     }
 
     /**
      * 异常处理方法
-     * @param e 异常信息
+     * @param throwable 异常信息
      */
-    private void errorHandler(Throwable e, HttpServletResponse response) throws IOException {
-        LOGGER.error(e.getMessage(), e);
+    private void errorHandler(Throwable throwable, HttpServletResponse response) throws IOException {
+        // 输出错误日志
+        LOGGER.error(throwable.getMessage(), throwable);
         if (response.isCommitted()) return;
+
         // 参数验证错误处理
-        if (ValidateException.class.isAssignableFrom(e.getClass())) {
-            ValidateException ex = (ValidateException) e;
+        if (ValidateException.class.isAssignableFrom(throwable.getClass())) {
+            ValidateException ex = (ValidateException) throwable;
             response.sendError(ex.getStatus(), ex.getMessage());
             return;
         }
+
         // 其它异常信息处理
-        response.sendError(ERROR, e.getMessage());
+        response.sendError(ERROR, throwable.getMessage());
     }
 
 }

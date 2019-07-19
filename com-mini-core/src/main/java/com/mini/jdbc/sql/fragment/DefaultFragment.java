@@ -13,7 +13,7 @@ public final class DefaultFragment implements SQLFragment {
 
     @Nonnull
     @Override
-    public final String content() {
+    public final String toString() {
         return content;
     }
 }
