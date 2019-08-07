@@ -10,7 +10,7 @@ import java.util.Set;
 public final class ServletElement {
     private final Set<String> urlPatterns = new HashSet<>();
     private Class<? extends HttpServlet> servlet;
-    private boolean multipartEnabled = true;
+    private boolean multipartEnabled = false;
     private boolean asyncSupported = true;
     private int fileSizeThreshold = 4096;
     private long maxRequestSize = -1L;
@@ -94,8 +94,6 @@ public final class ServletElement {
     public long getMaxFileSize() {
         return maxFileSize;
     }
-
-
 
     public MultipartConfigElement getMultipartConfigElement() {
         if (!isMultipartEnabled()) return null;

@@ -1,24 +1,30 @@
-layui.define(['ajax', 'laypage', 'jquery'], function (exports) {
+layui.define(['ajax', 'laypage', 'jquery', 'layer'], function (exports) {
     var laypage = layui.laypage;
+    var layer = layui.layer;
     var $ = layui.$;
 
     /**
      * 分页数据显示
      * @param renderTo 分页数据显示节点
-     * @param options layui分页工具对象
+     * @param pageOptions layui分页工具对象
      * @constructor
      */
-    function MiniPage(renderTo, options) {
+    function MiniPage(renderTo, pageOptions) {
+        this.totalEl = renderTo + "-total-value";
+        this.pageEl = renderTo + "-page-value";
+        this.pageOptions = pageOptions;
         this.renderTo = renderTo;
-        this.options = options;
-        this.aOptions = {};
+        this.index = undefined;
+        this.dataOptions = {};
 
         var _this = this;
-        this.options.jump = function (obj, first) {
+        this.pageOptions.jump = function (obj, first) {
             if (first === true) return;
-            _this.options.curr = obj.curr;
-            _this.options.limit = obj.limit;
-            _this.load(_this.aOptions);
+            $.extend(_this.pageOptions, {
+                limit: obj.limit,
+                curr: obj.curr
+            });
+            _this.load(_this.dataOptions);
         };
     }
 
@@ -29,51 +35,64 @@ layui.define(['ajax', 'laypage', 'jquery'], function (exports) {
          */
         load: function (options) {
             var _this = this;
-
+            // 如果需要显示加载动画，则显示
+            if (_this.pageOptions.loading === true) {
+                _this.index = layer.load(2);
+            }
             // // 保存 Ajax 请求参数
-            this.aOptions = options;
+            $.extend(this.dataOptions, options, {
+                success: function (data) {
+                    $(_this.renderTo).html(data);
+                    $.extend(_this.pageOptions, {
+                        count: $(_this.totalEl).val(),
+                        curr: $(_this.pageEl).val()
+                    });
 
-            // 添加分页需要的参数
-            $.extend(this.aOptions.data, {
-                page: _this.options.curr,
-                rows: _this.options.limit
+                    // 关闭加载层
+                    if (_this.index !== undefined) {
+                        layer.close(_this.index);
+                        _this.index = undefined
+                    }
+
+                    // 显示完整的分页数据和按钮
+                    laypage.render(_this.pageOptions);
+                    if (typeof _this.pageOptions.onload === 'function') {
+                        _this.pageOptions.onload.call(_this, //
+                            _this.pageOptions);
+                    }
+                },
+                dataType: "text"
             });
 
-            // ajax 回调
-            _this.aOptions.dataType = "text";
-            _this.aOptions.success = function (data) {
-                $(_this.renderTo).html(data);
-                _this.options.curr = $(_this.renderTo + "-page-value").val();
-                _this.options.count = $(_this.renderTo + "-total-value").val();
-
-                // 显示完整的分页数据和按钮
-                laypage.render(_this.options);
-                if(typeof _this.options.onload === 'function') {
-                    _this.options.onload.call(_this);
-                }
-            };
+            // 添加分页需要的参数
+            $.extend(this.dataOptions.data, {
+                limit: _this.pageOptions.limit,
+                page: _this.pageOptions.curr,
+                dataType: 'text'
+            });
 
             // 使用ajax模块并发送ajax请求
-            layui.ajax(_this.aOptions);
+            layui.ajax(_this.dataOptions);
         },
 
         /**
          * 重新加载当前页
          */
-        reload: function () {
-            this.load(this.aOptions);
+        reload: function (data) {
+            $.extend(this.dataOptions.data, data || {});
+            this.load(this.dataOptions);
         }
     };
 
-    exports('template.page', function (renderTo, options) {
-        // 分页按钮停靠位置
-        if (!options.elem || options.elem === '') {
-            options.elem = $(renderTo).attr("id") + "-page-button";
-        }
-        // 自定义排版
-        if (!options.layout || !$.isArray(options.layout)) {
-            options.layout = ['limit', 'count', 'prev', 'template.page', 'next', 'refresh', 'skip'];
-        }
-        return new MiniPage(renderTo, options);
+    exports('page', function (renderTo, options) {
+        return new MiniPage(renderTo, $.extend({
+            layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'],
+            curr: options.page === undefined ? 1 : options.page,
+            elem: $(renderTo).attr("id") + "-page-button",
+            limits: [10, 20, 30, 40, 50],
+            loading: true,
+            groups: 5,
+            limit: 20
+        }, options));
     });
 });

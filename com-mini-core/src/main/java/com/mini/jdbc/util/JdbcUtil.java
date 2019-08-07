@@ -1,21 +1,15 @@
 package com.mini.jdbc.util;
 
-import com.mini.callback.DatabaseMetaDataCallback;
 import com.mini.util.StringUtil;
 
 import javax.annotation.Nullable;
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Objects;
 
 public final class JdbcUtil {
-
-
-
 
     /**
      * 填充 PreparedStatement 参数

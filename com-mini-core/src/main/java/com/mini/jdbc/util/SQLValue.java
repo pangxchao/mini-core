@@ -79,5 +79,4 @@ public final class SQLValue extends MiniHashMap<String> implements Serializable 
     public URL getAsURL(String key) {
         return getAs(key, URL.class);
     }
-
 }

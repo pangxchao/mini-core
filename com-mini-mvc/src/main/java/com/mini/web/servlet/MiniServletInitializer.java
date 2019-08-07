@@ -83,7 +83,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
 
             // 调用默认配置信息注册
             configs.stream().map(c -> injector.getInstance(c.getClass()))
-                    .forEach(WebMvcConfigure::onStartup);
+                    .forEach(WebMvcConfigure::onStartupRegister);
 
             // 注册 Listener、Servlet、Filter
             registerListener(injector, config, context);

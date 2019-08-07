@@ -12,7 +12,6 @@ public final class ObjectUtil {
         return v == null ? def : v;
     }
 
-
     public static <T> T defIfNull(T v, Supplier<T> func) {
         return v == null ? func.get() : v;
     }
@@ -28,6 +27,7 @@ public final class ObjectUtil {
     public static boolean equals(Object o, Object v) {
         return o != null && o.equals(v);
     }
+
 
     public static String toString(Object object) {
         return object == null ? null : object.toString();

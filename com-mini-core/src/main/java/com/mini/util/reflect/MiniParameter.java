@@ -18,6 +18,11 @@ public final class MiniParameter {
         this.name      = name;
     }
 
+    @Nonnull
+    public Parameter getParameter() {
+        return parameter;
+    }
+
     public Object getValue() {
         return value;
     }
@@ -28,7 +33,8 @@ public final class MiniParameter {
 
     public boolean equals(Object object) {
         if (object instanceof MiniParameter) {
-            return parameter.equals(((MiniParameter) object).parameter);
+            MiniParameter p = (MiniParameter) object;
+            return parameter.equals(p.parameter);
         }
         if (object instanceof Parameter) {
             return parameter.equals(object);
@@ -37,74 +43,74 @@ public final class MiniParameter {
     }
 
     public int hashCode() {
-        return this.parameter.hashCode();
+        return parameter.hashCode();
     }
 
     public boolean isNamePresent() {
-        return this.parameter.isNamePresent();
+        return parameter.isNamePresent();
     }
 
     public String toString() {
-        return this.parameter.toString();
+        return parameter.toString();
     }
 
     public Executable getDeclaringExecutable() {
-        return this.parameter.getDeclaringExecutable();
+        return parameter.getDeclaringExecutable();
     }
 
     public int getModifiers() {
-        return this.parameter.getModifiers();
+        return parameter.getModifiers();
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public Type getParameterizedType() {
-        return this.parameter.getParameterizedType();
+        return parameter.getParameterizedType();
     }
 
     public Class<?> getType() {
-        return this.parameter.getType();
+        return parameter.getType();
     }
 
     public AnnotatedType getAnnotatedType() {
-        return this.parameter.getAnnotatedType();
+        return parameter.getAnnotatedType();
     }
 
     public boolean isImplicit() {
-        return this.parameter.isImplicit();
+        return parameter.isImplicit();
     }
 
     public boolean isSynthetic() {
-        return this.parameter.isSynthetic();
+        return parameter.isSynthetic();
     }
 
     public boolean isVarArgs() {
-        return this.parameter.isVarArgs();
+        return parameter.isVarArgs();
     }
 
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return this.parameter.getAnnotation(annotationClass);
+        return parameter.getAnnotation(annotationClass);
     }
 
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return this.parameter.getAnnotationsByType(annotationClass);
+        return parameter.getAnnotationsByType(annotationClass);
     }
 
     public Annotation[] getDeclaredAnnotations() {
-        return this.parameter.getDeclaredAnnotations();
+        return parameter.getDeclaredAnnotations();
     }
 
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return this.parameter.getDeclaredAnnotation(annotationClass);
+        return parameter.getDeclaredAnnotation(annotationClass);
     }
 
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return this.parameter.getDeclaredAnnotationsByType(annotationClass);
+        return parameter.getDeclaredAnnotationsByType(annotationClass);
     }
 
     public Annotation[] getAnnotations() {
-        return this.parameter.getAnnotations();
+        return parameter.getAnnotations();
     }
 }

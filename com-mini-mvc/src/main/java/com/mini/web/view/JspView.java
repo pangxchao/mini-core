@@ -1,7 +1,5 @@
 package com.mini.web.view;
 
-import com.mini.web.util.ISession;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -25,10 +23,9 @@ public class JspView implements IView, Serializable {
 
     @Override
     public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        for (Map.Entry<String, Object> en : data.entrySet()) {
-            request.setAttribute(en.getKey(), en.getValue());
-        }
-        forward(prefix + viewPath + suffix, request, response);
+        String view = prefix + viewPath + suffix;
+        data.forEach(request::setAttribute);
+        forward(view, request, response);
     }
 
     private void forward(String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {

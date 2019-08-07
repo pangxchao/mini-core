@@ -1,6 +1,4 @@
 layui.define(['jquery'], function (exports) {
-    var $ = layui.$;
-
     /**
      * 给 FormData 添加数据
      * @param formData
@@ -8,15 +6,15 @@ layui.define(['jquery'], function (exports) {
      * @param value
      * @private
      */
-    function _formDataAppendArray(formData, key, value) {
-        if (!$.isArray(value)) {
+    var _dataAppendArray = function (formData, key, value) {
+        if (!layui.$.isArray(value)) {
             formData.append(key, value);
             return;
         }
-        $.each(value, function (index, val) {
+        layui.$.each(value, function (index, val) {
             formData.append(key, val);
         });
-    }
+    };
 
     /**
      *  给FormData对象添加数据
@@ -24,48 +22,46 @@ layui.define(['jquery'], function (exports) {
      * @param dataArray
      * @private
      */
-    function _formDataAppendAll(formData, dataArray) {
-        $.each(dataArray, function (key, val) {
-            _formDataAppendArray(formData, key, val);
+    var _dataAppendAll = function (formData, dataArray) {
+        layui.$.each(dataArray, function (key, val) {
+            _dataAppendArray(formData, key, val);
         });
-    }
+    };
 
     /**
-     * 初始化Ajax 参数
+     * 支持FormData Ajax 提交
      * @param options
-     * @private
+     * @constructor
      */
-    function _initMiniAjaxParameter(options) {
-        // 初始化请求类型
-        if (!options.type) {
-            options.type = "GET";
+    var formDataAjaxFunction = function (options) {
+        if (options.traditional === undefined) {
+            options.traditional = true;
         }
-
-        // 初始化返回参数
-        if (!options.dataType) {
-            options.dataType = "json";
+        if (!options.form || options.form === '') {
+            layui.$.ajax(options);
+            return;
         }
-    }
+        // processData与contentType必须为false
+        var dom = layui.jquery(options.form);
+        var f = new window.FormData(dom[0]);
+        _dataAppendAll(f, options.data);
+        options.contentType = false;
+        options.processData = false;
+        options.data = f;
+        $.ajax(options);
+    };
 
     // 支持FormData对象的提交方式
     if ((typeof window.FormData) === 'function') {
-        exports("ajax", function (options) {
-            _initMiniAjaxParameter(options);
-            if (options.form && options.form !== '') {
-                var form = new FormData(options.form);
-                _formDataAppendAll(form, options.data);
-                options.processData = false;
-                options.contentType = false;
-                options.data = form;
-            }
-            $.ajax(options);
-        });
+        exports("ajax", formDataAjaxFunction);
         return;
     }
 
     // 不支持FormData对象的提交方式
     exports('ajax', function (options) {
-        _initMiniAjaxParameter(options);
-        $.ajax(options);
+        if (options.traditional === undefined) {
+            options.traditional = true;
+        }
+        layui.$.ajax(options);
     });
 });

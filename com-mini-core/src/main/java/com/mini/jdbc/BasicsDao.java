@@ -1,7 +1,6 @@
 package com.mini.jdbc;
 
 import com.mini.jdbc.mapper.IMapper;
-import com.mini.jdbc.sql.SQL;
 import com.mini.jdbc.util.Paging;
 
 import java.sql.Date;
@@ -10,7 +9,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface BasicsDao<T> {
-
     /**
      * 获取数据写入 DaoTemplate 对象
      * @return DaoTemplate 对象
@@ -32,341 +30,291 @@ public interface BasicsDao<T> {
 
     /**
      * 执行SQL
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 执行结果
      */
-    default int execute(String sql, Object... params) {
-        return writeTemplate().execute(sql, params);
+    default int execute(String str, Object... params) {
+        return writeTemplate().execute(str, params);
     }
 
     /**
      * 执行SQL
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 执行结果
      */
-    default int execute(SQL sql) {
-        return writeTemplate().execute(sql);
+    default int execute(SQLBuilder builder) {
+        return writeTemplate().execute(builder);
     }
 
     /**
      * 查询结果
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default List<T> query(String sql, Object... params) {
-        return readTemplate().query(sql, getMapper(), params);
+    default List<T> query(String str, Object... params) {
+        return readTemplate().query(str, getMapper(), params);
     }
 
     /**
      * 查询结果
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default List<T> query(SQL sql) {
-        return readTemplate().query(sql, getMapper());
+    default List<T> query(SQLBuilder builder) {
+        return readTemplate().query(builder, getMapper());
     }
 
     /**
      * 查询结果
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default T queryOne(String sql, Object... params) {
-        return readTemplate().queryOne(sql, getMapper(), params);
+    default T queryOne(String str, Object... params) {
+        return readTemplate().queryOne(str, getMapper(), params);
     }
 
     /**
      * 查询结果
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default T queryOne(SQL sql) {
-        return readTemplate().queryOne(sql, getMapper());
+    default T queryOne(SQLBuilder builder) {
+        return readTemplate().queryOne(builder, getMapper());
     }
 
     /**
      * 查询String
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default String queryString(String sql, Object... params) {
-        return readTemplate().queryString(sql, params);
+    default String queryString(String str, Object... params) {
+        return readTemplate().queryString(str, params);
     }
 
     /**
      * 查询String
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default String queryString(SQL sql) {
-        return readTemplate().queryString(sql);
+    default String queryString(SQLBuilder builder) {
+        return readTemplate().queryString(builder);
     }
 
     /**
      * 查询Long
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default long queryLong(String sql, Object... params) {
-        return readTemplate().queryLong(sql, params);
+    default long queryLong(String str, Object... params) {
+        return readTemplate().queryLong(str, params);
     }
 
     /**
      * 查询Long
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default long queryLong(SQL sql) {
-        return readTemplate().queryLong(sql);
+    default long queryLong(SQLBuilder builder) {
+        return readTemplate().queryLong(builder);
     }
 
     /**
      * 查询Integer
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default int queryInt(String sql, Object... params) {
-        return readTemplate().queryInt(sql, params);
+    default int queryInt(String str, Object... params) {
+        return readTemplate().queryInt(str, params);
     }
 
 
     /**
      * 查询Integer
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default int queryInt(SQL sql) {
-        return readTemplate().queryInt(sql);
+    default int queryInt(SQLBuilder builder) {
+        return readTemplate().queryInt(builder);
     }
 
 
     /**
      * 查询Short
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default short queryShort(String sql, Object... params) {
-        return readTemplate().queryShort(sql, params);
+    default short queryShort(String str, Object... params) {
+        return readTemplate().queryShort(str, params);
     }
 
     /**
      * 查询Short
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default short queryShort(SQL sql) {
-        return readTemplate().queryShort(sql);
+    default short queryShort(SQLBuilder builder) {
+        return readTemplate().queryShort(builder);
     }
 
 
     /**
      * 查询Byte
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default byte queryByte(String sql, Object... params) {
-        return readTemplate().queryByte(sql, params);
+    default byte queryByte(String str, Object... params) {
+        return readTemplate().queryByte(str, params);
     }
 
     /**
      * 查询Byte
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default byte queryByte(SQL sql) {
-        return readTemplate().queryByte(sql);
+    default byte queryByte(SQLBuilder builder) {
+        return readTemplate().queryByte(builder);
     }
 
     /**
      * 查询Double
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default double queryDouble(String sql, Object... params) {
-        return readTemplate().queryDouble(sql, params);
+    default double queryDouble(String str, Object... params) {
+        return readTemplate().queryDouble(str, params);
     }
 
     /**
      * 查询Double
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default double queryDouble(SQL sql) {
-        return readTemplate().queryDouble(sql);
+    default double queryDouble(SQLBuilder builder) {
+        return readTemplate().queryDouble(builder);
     }
 
     /**
      * 查询Float
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default float queryFloat(String sql, Object... params) {
-        return readTemplate().queryFloat(sql, params);
+    default float queryFloat(String str, Object... params) {
+        return readTemplate().queryFloat(str, params);
     }
 
     /**
      * 查询Float
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default float queryFloat(SQL sql) {
-        return readTemplate().queryFloat(sql);
+    default float queryFloat(SQLBuilder builder) {
+        return readTemplate().queryFloat(builder);
     }
 
     /**
      * 查询Boolean
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default boolean queryBoolean(String sql, Object... params) {
-        return readTemplate().queryBoolean(sql, params);
+    default boolean queryBoolean(String str, Object... params) {
+        return readTemplate().queryBoolean(str, params);
     }
 
     /**
      * 查询Boolean
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default boolean queryBoolean(SQL sql) {
-        return readTemplate().queryBoolean(sql);
+    default boolean queryBoolean(SQLBuilder builder) {
+        return readTemplate().queryBoolean(builder);
     }
 
     /**
      * 查询Timestamp
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default Timestamp queryTimestamp(String sql, Object... params) {
-        return readTemplate().queryTimestamp(sql, params);
+    default Timestamp queryTimestamp(String str, Object... params) {
+        return readTemplate().queryTimestamp(str, params);
     }
 
     /**
      * 查询Timestamp
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default Timestamp queryTimestamp(SQL sql) {
-        return readTemplate().queryTimestamp(sql);
+    default Timestamp queryTimestamp(SQLBuilder builder) {
+        return readTemplate().queryTimestamp(builder);
     }
 
     /**
      * 查询Date
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default Date queryDate(String sql, Object... params) {
-        return readTemplate().queryDate(sql, params);
+    default Date queryDate(String str, Object... params) {
+        return readTemplate().queryDate(str, params);
     }
 
     /**
      * 查询Date
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default Date queryDate(SQL sql) {
-        return readTemplate().queryDate(sql);
+    default Date queryDate(SQLBuilder builder) {
+        return readTemplate().queryDate(builder);
     }
 
     /**
      * 查询Time
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default Time queryTime(String sql, Object... params) {
-        return readTemplate().queryTime(sql, params);
+    default Time queryTime(String str, Object... params) {
+        return readTemplate().queryTime(str, params);
     }
 
     /**
      * 查询Time
-     * @param sql SQL
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default Time queryTime(SQL sql) {
-        return readTemplate().queryTime(sql);
+    default Time queryTime(SQLBuilder builder) {
+        return readTemplate().queryTime(builder);
     }
 
     /**
      * 查询结果
      * @param paging paging 分页器
-     * @param sql    SQL
+     * @param str    SQL
      * @param params 参数
      * @return 查询结果
      */
-    default List<T> query(Paging paging, String sql, Object... params) {
-        return readTemplate().query(paging, sql, getMapper(), params);
+    default List<T> query(Paging paging, String str, Object... params) {
+        return readTemplate().query(paging, str, getMapper(), params);
     }
 
     /**
      * 查询结果
-     * @param paging 分页器
-     * @param sql    SQL
+     * @param paging  分页器
+     * @param builder SQLBuilder
      * @return 查询结果
      */
-    default List<T> query(Paging paging, SQL sql) {
-        return readTemplate().query(paging, sql, getMapper());
-    }
-
-    /**
-     * 添加实体信息
-     * @param info 实体信息
-     */
-    default int insert(T info) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * 删除用户信息
-     * @param info 用户信息
-     */
-    default int delete(T info) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-
-    /**
-     * 修改实体信息
-     * @param info 用户信息
-     */
-    default int update(T info) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * 根据ID删除数据
-     * @param id 参数ID
-     */
-    default int deleteById(long id) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * 根据ID 查询实体信息
-     * @param id 参数ID
-     * @return 实体信息
-     */
-    default T queryById(long id) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * 查询所有实体信息
-     * @return 信息列表
-     */
-    default List<T> queryAll() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+    default List<T> query(Paging paging, SQLBuilder builder) {
+        return readTemplate().query(paging, builder, getMapper());
     }
 }

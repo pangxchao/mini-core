@@ -16,7 +16,6 @@ import java.util.UUID;
 import static com.mini.util.StringUtil.equalsIgnoreCase;
 import static com.mini.util.StringUtil.isBlank;
 import static com.mini.util.TypeUtil.*;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
  * WebUtil
@@ -554,30 +553,6 @@ public final class WebUtil {
      */
     public static void setAttribute(HttpSession session, String name, Object value) {
         if (session != null) session.setAttribute(name, value);
-    }
-
-    /**
-     * 设置HttpServletResponse返回数据类型，
-     * @param contentType Content-Type
-     * @param response    HttpServletResponse 对象
-     */
-    public static void setContentType(String contentType, HttpServletResponse response) {
-        response.setContentType(contentType);
-    }
-
-    /**
-     * 发送HttpServletResponse错误信息
-     * @param status   错误码
-     * @param message  错误消息
-     * @param response HttpServletResponse 对象
-     * @return status != HttpServletResponse.SC_OK
-     * @see HttpServletResponse#SC_OK
-     */
-    public static boolean sendError(int status, String message, HttpServletResponse response) throws IOException {
-        if (status == SC_OK) return false;
-        //  发送错误信息
-        response.sendError(status, message);
-        return true;
     }
 
     /**

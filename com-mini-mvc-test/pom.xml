@@ -79,14 +79,6 @@
 
     <build>
         <defaultGoal>compile</defaultGoal>
-        <resources>
-            <resource>
-                <directory>src/main/resources-${profile.active}</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,9 +1,13 @@
 package com.mini.code.util;
 
 import com.mini.callback.DatabaseMetaDataCallback;
+import com.mini.code.Configure;
 import com.mini.jdbc.JdbcTemplate;
+import com.mini.util.StringUtil;
 
+import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.util.*;
@@ -484,5 +488,21 @@ public final class Util {
             keyInfo.setNonUnique(field.isNonUnique());
         }
         return columnList;
+    }
+
+    /**
+     * 验证配置中指定文件是否存在
+     * @param configure   指定配置文件
+     * @param packageName 指定文件包名
+     * @param name        指定文件名
+     * @return true-文件已经存在
+     */
+    public static boolean exists(Configure configure, String packageName, String name) throws RuntimeException {
+        Path outputDirectory = new File(configure.getClassPath()).toPath();
+        for (String component : StringUtil.split(packageName, "\\.")) {
+            outputDirectory = outputDirectory.resolve(component);
+        }
+        outputDirectory = outputDirectory.resolve(name + ".java");
+        return outputDirectory.toFile().exists();
     }
 }

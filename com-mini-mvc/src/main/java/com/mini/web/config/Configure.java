@@ -2,7 +2,9 @@ package com.mini.web.config;
 
 import com.google.inject.Injector;
 import com.mini.util.MappingUri;
+import com.mini.util.ObjectUtil;
 import com.mini.web.argument.ArgumentResolver;
+import com.mini.web.argument.ArgumentResolverBean;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
@@ -24,7 +26,6 @@ import static com.mini.util.ObjectUtil.defIfNull;
 import static com.mini.util.StringUtil.split;
 import static com.mini.util.TypeUtil.*;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 @Singleton
 public final class Configure {
@@ -62,7 +63,6 @@ public final class Configure {
 
     // 依赖注入容器
     private Injector injector;
-
 
     /**
      * 编码
@@ -216,6 +216,7 @@ public final class Configure {
         this.injector = injector;
     }
 
+
     /**
      * 获取配置文件编码
      * @return 配置文件编码
@@ -323,13 +324,15 @@ public final class Configure {
 
     /**
      * 添加一个Action代理对象
-     * @param url             访问Action的URL
-     * @param invocationProxy 代理对象实例
+     * @param url   访问Action的URL
+     * @param proxy 代理对象实例
      * @return 当前对象
      */
-    public final Configure addInvocationProxy(String url, ActionInvocationProxy invocationProxy) {
-        this.invocationProxy.putIfAbsent(url, invocationProxy);
-        return this;
+    public final Configure addInvocationProxy(String url, @Nonnull ActionInvocationProxy proxy) {
+        ActionInvocationProxy actionProxy = this.invocationProxy.putIfAbsent(url, proxy);
+        if (actionProxy == null || ObjectUtil.equals(actionProxy, proxy)) return this;
+        throw new RuntimeException(String.format("This action url '%s' already exists[%s, %s]", //
+                url, actionProxy.getMethod(), proxy.getMethod()));
     }
 
     /**
@@ -439,10 +442,12 @@ public final class Configure {
      * @param type 参数类型
      * @return 参数解析器实例
      */
-    public final ArgumentResolver getResolver(Class<?> type) {
-        Objects.requireNonNull(injector, "Injector can not be null");
-        return resolverMap.computeIfAbsent(type, k -> ofNullable(argumentResolvers.get(k)) //
-                .map(clazz -> injector.getInstance(clazz)).orElse(null));
+    public final ArgumentResolver getResolver(Class<?> type) throws RuntimeException {
+        return Configure.this.resolverMap.computeIfAbsent(type, resolverMapKey -> {
+            Class<? extends ArgumentResolver> clazz = argumentResolvers.get(type);
+            if (clazz == null) clazz = ArgumentResolverBean.class;
+            return injector.getInstance(clazz);
+        });
     }
 
     /**
@@ -471,9 +476,10 @@ public final class Configure {
      * @return 数据模型工厂实例
      */
     public final IModelFactory<?> getFactory(Class<? extends IModel<?>> modelClass) {
-        Objects.requireNonNull(injector, "Injector can not be null");
-        return factoryMap.computeIfAbsent(modelClass, k -> ofNullable(factory.get(modelClass)) //
-                .map(clazz -> injector.getInstance(clazz)).orElse(null));
+        return factoryMap.computeIfAbsent(modelClass, modelFactoryMapKey -> {
+            Class<? extends IModelFactory<?>> c = factory.get(modelClass);
+            return c == null ? null : injector.getInstance(c);
+        });
 
     }
 

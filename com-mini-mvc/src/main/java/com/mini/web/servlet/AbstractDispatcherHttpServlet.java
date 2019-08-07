@@ -4,7 +4,6 @@ package com.mini.web.servlet;
 import com.google.inject.Injector;
 import com.mini.logger.Logger;
 import com.mini.util.StringUtil;
-import com.mini.util.reflect.MiniParameter;
 import com.mini.validate.ValidateException;
 import com.mini.web.annotation.Action;
 import com.mini.web.config.Configure;
@@ -13,6 +12,7 @@ import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
 import com.mini.web.model.factory.IModelFactory;
+import com.mini.web.util.RequestParameter;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -26,13 +26,17 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 import static com.mini.util.StringUtil.isEmpty;
 import static com.mini.web.model.IModel.MODEL_KEY;
+import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
@@ -99,41 +103,41 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     protected final void doService(Action.Method method, String uri, HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
         // 验证 RequestURI 是否为空，如果为空，返回 500 错误
-        if (require(uri, response, ERROR, "Uri can not be null.", v -> !isEmpty(v))) {
+        if (require(uri, response, ERROR, "Server Error! " + uri, v -> !isEmpty(v))) {
             return;
         }
 
         // 验证注入的 Injector 对象是否为空，如果为空，返回 500 错误
-        if (require(injector, response, ERROR, "Injector can not be null", Objects::nonNull)) {
+        if (require(injector, response, ERROR, "Server Error! " + uri, Objects::nonNull)) {
             return;
         }
 
         // 验证注入的 Configure 对象是否为空，如果为空，返回 500 错误
-        if (require(configure, response, ERROR, "Configure can not be null", Objects::nonNull)) {
+        if (require(configure, response, ERROR, "Server Error! " + uri, Objects::nonNull)) {
             return;
         }
 
         // 获取并验证 Action 调用对象，如果该对象为空时，返回 404 错误
         final ActionInvocationProxy proxy = getInvocationProxy(uri, request);
-        if (require(proxy, response, NOT_FOUND, "ActionInvocationProxy can not be null.", Objects::nonNull)) {
+        if (require(proxy, response, NOT_FOUND, "Not Found Page! " + uri, Objects::nonNull)) {
             return;
         }
 
         // 获取并验证请求方法是否支持，如果不支持，返回 500 错误
         final Action.Method[] methods = proxy.getSupportMethod();
-        if (require(methods, response, ERROR, "No support method: " + method, v -> {
-            return Arrays.stream(v).anyMatch(m -> m == method); //
+        if (require(methods, response, ERROR, "No Support Method! " + uri, v -> {
+            return stream(v).anyMatch(m -> m == method); //
         })) return;
 
         // 获取数据模型工厂并验证，如果该工厂为空，返回 500 错误
         final IModelFactory<?> modelFactory = configure.getFactory(proxy.getModelClass());
-        if (require(modelFactory, response, ERROR, "Model Factory can not be null.", Objects::nonNull)) {
+        if (require(modelFactory, response, ERROR, "Server Error! " + uri, Objects::nonNull)) {
             return;
         }
 
         // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
         final IModel<?> model = modelFactory.getModel(configure.getView(), proxy.getViewPath());
-        if (require(model, response, ERROR, "IModel can not be null.", v -> {
+        if (require(model, response, ERROR, "Server Error! " + uri, v -> {
             request.setAttribute(MODEL_KEY, model);
             return model != null;
         })) return;
@@ -146,19 +150,19 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
             @Nonnull
             @Override
-            public Method getMethod() {
+            public synchronized final Method getMethod() {
                 return proxy.getMethod();
             }
 
             @Nonnull
             @Override
-            public Class<?> getClazz() {
+            public synchronized final Class<?> getClazz() {
                 return proxy.getClazz();
             }
 
             @Nonnull
             @Override
-            public Object getInstance() {
+            public synchronized final Object getInstance() {
                 return Optional.ofNullable(instance).orElseGet(() -> {
                     instance = injector.getInstance(getClazz());
                     return instance;
@@ -167,19 +171,19 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
             @Nonnull
             @Override
-            public Class<? extends IModel<?>> getModelClass() {
+            public synchronized final Class<? extends IModel<?>> getModelClass() {
                 return proxy.getModelClass();
             }
 
             @Nonnull
             @Override
-            public Action.Method[] getSupportMethod() {
+            public synchronized final Action.Method[] getSupportMethod() {
                 return methods;
             }
 
             @Nonnull
             @Override
-            public List<ActionInterceptor> getInterceptors() {
+            public synchronized final List<ActionInterceptor> getInterceptors() {
                 return Optional.ofNullable(interceptors).orElseGet(() -> {
                     interceptors = proxy.getInterceptors().stream().map(c -> {
                         return injector.getInstance(c); //
@@ -189,7 +193,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             }
 
             @Nonnull
-            private Iterator<ActionInterceptor> getIterator() {
+            private synchronized Iterator<ActionInterceptor> getIterator() {
                 return ofNullable(iterator).orElseGet(() -> {
                     iterator = getInterceptors().iterator();
                     return iterator;
@@ -198,65 +202,56 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
             @Nonnull
             @Override
-            public String getUrl() {
+            public synchronized final String getUrl() {
                 return uri;
             }
 
             @Override
-            public String getViewPath() {
+            public synchronized final String getViewPath() {
                 return proxy.getViewPath();
             }
 
             @Nonnull
             @Override
-            public IModel<?> getModel() {
+            public synchronized final IModel<?> getModel() {
                 return model;
             }
 
             @Override
-            public HttpServletRequest getRequest() {
+            public synchronized final HttpServletRequest getRequest() {
                 return request;
             }
 
             @Override
-            public HttpServletResponse getResponse() {
+            public synchronized final HttpServletResponse getResponse() {
                 return response;
             }
 
             @Override
-            public HttpSession getSession() {
+            public synchronized final HttpSession getSession() {
                 return request.getSession();
             }
 
             @Override
-            public ServletContext getServletContext() {
+            public synchronized final ServletContext getServletContext() {
                 return request.getServletContext();
             }
 
             @Nonnull
             @Override
-            public MiniParameter[] getParameters() {
+            public synchronized final RequestParameter[] getParameters() {
                 return proxy.getParameters();
             }
 
             @Nonnull
             @Override
-            public Object[] getParameterValues() {
-                return Arrays.stream(getParameters()).map(parameter -> {
-                    ofNullable(configure.getResolver(parameter.getType())).ifPresent(r -> {
-                        try {
-                            parameter.setValue(r.value(parameter.getName(), //
-                                    parameter.getType(), request, response)); //
-                        } catch (Exception | Error e) {
-                            LOGGER.error("Argument Error!", e);
-                        }
-                    });
-                    return parameter.getValue();
-                }).toArray();
+            public synchronized final Object[] getParameterValues() {
+                return stream(getParameters()).map(p -> p.getValue( //
+                        configure, request, response)).toArray();
             }
 
             @Override
-            public final Object invoke() throws Throwable {
+            public synchronized final Object invoke() throws Throwable {
                 try {
                     Iterator<ActionInterceptor> iterator;
                     if ((iterator = getIterator()).hasNext()) {
@@ -274,8 +269,19 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         try {
             // 调用目标方法
             action.invoke();
+        } catch (ValidateException e) {
+            response.sendError(e.getStatus(), //
+                    e.getMessage());
+            return;
         } catch (Throwable e) {
-            errorHandler(e, response);
+            // 输出错误日志
+            String message = e.getMessage();
+            LOGGER.error(message, e);
+
+            // 发送异常信息到客户端
+            if (!response.isCommitted()) {
+                response.sendError(ERROR, message);
+            }
             return;
         }
         // 这里加入错误码处理
@@ -283,7 +289,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             // 返回数据
             model.submit(request, response);
         } catch (Exception | Error e) {
-            errorHandler(e, response);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -310,25 +316,4 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         LOGGER.error(message);
         return true;
     }
-
-    /**
-     * 异常处理方法
-     * @param throwable 异常信息
-     */
-    private void errorHandler(Throwable throwable, HttpServletResponse response) throws IOException {
-        // 输出错误日志
-        LOGGER.error(throwable.getMessage(), throwable);
-        if (response.isCommitted()) return;
-
-        // 参数验证错误处理
-        if (ValidateException.class.isAssignableFrom(throwable.getClass())) {
-            ValidateException ex = (ValidateException) throwable;
-            response.sendError(ex.getStatus(), ex.getMessage());
-            return;
-        }
-
-        // 其它异常信息处理
-        response.sendError(ERROR, throwable.getMessage());
-    }
-
 }

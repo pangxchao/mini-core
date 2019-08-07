@@ -14,7 +14,7 @@ public final class TypeUtil {
      */
     public static long castToLongVal(String value) {
         if (isBlank(value)) return 0L;
-        return Long.valueOf(value);
+        return Long.parseLong(value);
     }
 
     /**
@@ -34,7 +34,7 @@ public final class TypeUtil {
      */
     public static int castToIntVal(String value) {
         if (isBlank(value)) return 0;
-        return Integer.valueOf(value);
+        return Integer.parseInt(value);
     }
 
     /**
@@ -54,7 +54,7 @@ public final class TypeUtil {
      */
     public static short castToShortVal(String value) {
         if (isBlank(value)) return (short) 0;
-        return Short.valueOf(value);
+        return Short.parseShort(value);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class TypeUtil {
      */
     public static byte castToByteVal(String value) {
         if (isBlank(value)) return (byte) 0;
-        return Byte.valueOf(value);
+        return Byte.parseByte(value);
     }
 
     /**
@@ -94,7 +94,7 @@ public final class TypeUtil {
      */
     public static double castToDoubleVal(String value) {
         if (isBlank(value)) return 0.0D;
-        return Double.valueOf(value);
+        return Double.parseDouble(value);
     }
 
     /**
@@ -114,7 +114,7 @@ public final class TypeUtil {
      */
     public static float castToFloatVal(String value) {
         if (isBlank(value)) return 0.0F;
-        return Float.valueOf(value);
+        return Float.parseFloat(value);
     }
 
     /**
@@ -134,7 +134,7 @@ public final class TypeUtil {
      */
     public static boolean castToBoolVal(String value) {
         if (isBlank(value)) return false;
-        return Boolean.valueOf(value);
+        return Boolean.parseBoolean(value);
     }
 
     /**

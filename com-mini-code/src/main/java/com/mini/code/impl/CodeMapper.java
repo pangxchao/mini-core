@@ -1,10 +1,11 @@
 package com.mini.code.impl;
 
 import com.mini.code.Configure;
+import com.mini.code.Configure.ClassInfo;
+import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.Util;
+import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.mapper.IMapper;
-import com.mini.jdbc.sql.SQLSelect;
-import com.mini.util.StringUtil;
 import com.squareup.javapoet.*;
 
 import javax.inject.Named;
@@ -14,83 +15,78 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static com.mini.code.util.Util.getColumns;
+import static com.mini.code.util.Util.getPrimaryKey;
 import static com.mini.util.StringUtil.firstLowerCase;
-import static com.mini.util.StringUtil.firstUpperCase;
-import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
 public final class CodeMapper {
-    protected static void run(Configure configure, String className, String tableName, String prefix) throws Exception {
-        // Bean package Name
-        String beanPackage = format("%s.entity", configure.getPackageName());
-        String mapperPackage = format("%s.entity.mapper", configure.getPackageName());
-        // Class Name
-        String mapperClassName = String.format("%sMapper", className);
-        // Class
-        ClassName beanClass = ClassName.get(beanPackage, className);
-
-        // 获取所有字段信息
-        List<Util.FieldInfo> fieldList = Util.getColumns(configure.getJdbcTemplate(),//
-                configure.getDatabaseName(), tableName, prefix);
-
+    /**
+     * 生成代码
+     * @param configure   数据库与实体配置信息
+     * @param info        所有类的信息
+     * @param tableName   数据库表名
+     * @param prefix      字段名前缀
+     * @param fieldList   所有字段信息
+     * @param pkFieldList 主键字段信息
+     */
+    protected static void run(Configure configure, ClassInfo info, String tableName, String prefix, //
+            List<Util.FieldInfo> fieldList, List<Util.FieldInfo> pkFieldList) throws Exception {
         // 生成类信息
-        TypeSpec.Builder builder = TypeSpec.classBuilder(mapperClassName)
+        TypeSpec.Builder builder = TypeSpec.classBuilder(info.mapperName)
                 .addModifiers(PUBLIC)
-                .addSuperinterface(ParameterizedTypeName.get(
-                        ClassName.get(IMapper.class), beanClass))
+                .addSuperinterface(ParameterizedTypeName.get(ClassName.get(IMapper.class), info.beanClass))
                 .addAnnotation(Singleton.class)
                 .addAnnotation(AnnotationSpec.builder(Named.class)
-                        .addMember("value", "$S", firstLowerCase(mapperClassName))
+                        .addMember("value", "$S", firstLowerCase(info.mapperName))
                         .build())
-                .addJavadoc("$L.java \n", mapperClassName)
+                .addJavadoc("$L.java \n", info.mapperName)
                 .addJavadoc("@author xchao \n");
 
-        // 实现的方法
-        MethodSpec.Builder method = MethodSpec.methodBuilder("get")
+        // 实现的方法 (get(ResultSet rs, int number))
+        builder.addMethod(new MethodSpecBuilder("get")
                 .addAnnotation(Override.class)
                 .addModifiers(PUBLIC)
-                .returns(beanClass)
+                .returns(info.beanClass)
                 .addParameter(ResultSet.class, "rs")
                 .addParameter(int.class, "number")
                 .addException(SQLException.class)
-                .addStatement("$T $L = new $T()", beanClass, firstLowerCase(className), beanClass);
+                .addMapperStatement(fieldList, info)
+                .build());
 
-        // 添加方法内容
-        for (Util.FieldInfo fieldInfo : fieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
-            method.addComment(fieldInfo.getRemarks());
-            method.addStatement("$L.set$L(rs.get$L($T.$L))", firstLowerCase(className), firstUpperCase(name),
-                    StringUtil.firstUpperCase(fieldInfo.getTypeClass().getSimpleName()), beanClass, db_name);
-        }
-        method.addStatement("return $L", firstLowerCase(className));
-        builder.addMethod(method.build());
-
-        // 获取基础SQL的方法
-        MethodSpec.Builder sqlMethod = MethodSpec.methodBuilder("sql")
+        // 初始化SQL方法
+        builder.addMethod(new MethodSpecBuilder("init")
                 .addModifiers(PUBLIC, STATIC)
-                .returns(SQLSelect.class)
-                .addCode("return new $T()", SQLSelect.class);
-        for (Util.FieldInfo fieldInfo : fieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            sqlMethod.addCode("\n// $L", fieldInfo.getRemarks());
-            sqlMethod.addCode("\n.keys($T.$L)", beanClass, db_name);
-        }
-        sqlMethod.addCode("\n// $L", "表名称");
-        sqlMethod.addCode("\n.from($T.TABLE)", beanClass);
-        sqlMethod.addCode(";");
-        builder.addMethod(sqlMethod.build());
+                .returns(void.class)
+                .addParameter(SQLBuilder.class, "builder")
+                .addMapperSqlStatement(fieldList, info)
+                .build());
 
         // 生成文件信息
-        JavaFile javaFile = JavaFile.builder(mapperPackage, builder.build()).build();
+        JavaFile javaFile = JavaFile.builder(info.mapperPackage, builder.build()).build();
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("Code Mapper : " + className + "\r\n");
+        System.out.println("Code Mapper : " + info.beanName + "\r\n");
     }
 
-    public static void generator(Configure configure, Configure.BeanItem bean) throws Exception {
-        run(configure, bean.className, bean.tableName, bean.prefix);
+    /**
+     * 生成java代码
+     * @param configure 数据库与实体配置信息
+     * @param bean      数据库表与实体关联配置
+     * @param isCover   是否覆盖已存在的文件
+     */
+    public static void generator(Configure configure, Configure.BeanItem bean, boolean isCover) throws Exception {
+        List<Util.FieldInfo> pkFieldList = getPrimaryKey(configure.getJdbcTemplate(), //
+                configure.getDatabaseName(), bean.tableName, bean.prefix);  //
+        List<Util.FieldInfo> fieldList = getColumns(configure.getJdbcTemplate(), //
+                configure.getDatabaseName(), bean.tableName, bean.prefix); //
+        ClassInfo info = new ClassInfo(configure, bean.className);
+
+        // 不存在或者覆盖时生成
+        if (isCover || !Util.exists(configure, info.mapperPackage, info.mapperName)) {
+            run(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
+        }
     }
 }

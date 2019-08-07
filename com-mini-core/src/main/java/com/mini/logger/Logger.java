@@ -46,6 +46,12 @@ public interface Logger {
 
     /**
      * 输出详细信息日志
+     * @param throwable 异常信息
+     */
+    void verbose(Throwable throwable);
+
+    /**
+     * 输出详细信息日志
      * @param message   日志内容
      * @param throwable 异常信息
      */
@@ -56,6 +62,12 @@ public interface Logger {
      * @param message 日志内容
      */
     void debug(Object message);
+
+    /**
+     * 输出调试日志
+     * @param throwable 异常信息
+     */
+    void debug(Throwable throwable);
 
     /**
      * 输出调试日志
@@ -72,6 +84,12 @@ public interface Logger {
 
     /**
      * 输出信息日志
+     * @param throwable 异常信息
+     */
+    void info(Throwable throwable);
+
+    /**
+     * 输出信息日志
      * @param message   日志内容
      * @param throwable 异常信息
      */
@@ -85,6 +103,12 @@ public interface Logger {
 
     /**
      * 输出警告日志
+     * @param throwable 异常信息
+     */
+    void warn(Throwable throwable);
+
+    /**
+     * 输出警告日志
      * @param message   日志内容
      * @param throwable 异常信息
      */
@@ -95,6 +119,12 @@ public interface Logger {
      * @param message 日志内容
      */
     void error(Object message);
+
+    /**
+     * 输出错误日志
+     * @param throwable 异常信息
+     */
+    void error(Throwable throwable);
 
     /**
      * 输出错误日志

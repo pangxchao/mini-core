@@ -13,6 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 public final class ArgumentResolverBooleanVal extends ArgumentResolverBase {
     @Override
     protected Object parse(String text, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
-        return TypeUtil.castToBool(text);
+        return TypeUtil.castToBoolVal(text);
     }
 }

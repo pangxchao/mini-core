@@ -10,7 +10,6 @@ import com.mini.jdbc.util.Paging;
 import com.mini.util.ClassUtil;
 import com.mini.util.MappingUri;
 import com.mini.util.StringUtil;
-import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
 import com.mini.web.annotation.Controller;
@@ -27,6 +26,7 @@ import com.mini.web.model.factory.MapModelFactory;
 import com.mini.web.model.factory.PageModelFactory;
 import com.mini.web.model.factory.StreamModelFactory;
 import com.mini.web.servlet.DispatcherHttpServlet;
+import com.mini.web.util.RequestParameter;
 import com.mini.web.view.FreemarkerView;
 import org.aopalliance.intercept.MethodInterceptor;
 
@@ -54,6 +54,7 @@ import static com.google.inject.matcher.Matchers.any;
 import static com.mini.util.ObjectUtil.defIfNull;
 import static com.mini.util.StringUtil.def;
 import static com.mini.util.StringUtil.join;
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static javax.servlet.DispatcherType.*;
 
@@ -82,7 +83,7 @@ public abstract class WebMvcConfigure implements Module {
      */
     protected synchronized void onStartupBinding(Binder binder) {}
 
-    public synchronized final void onStartup() {
+    public synchronized final void onStartupRegister() {
         Objects.requireNonNull(servletContext);
         Objects.requireNonNull(configure);
 
@@ -127,7 +128,7 @@ public abstract class WebMvcConfigure implements Module {
             requireNonNull(controller, "@Controller can not be null");
 
             Before cBefore = clazz.getAnnotation(Before.class);
-            Arrays.stream(clazz.getMethods()).forEach(method -> {
+            stream(clazz.getMethods()).forEach(method -> {
                 Action action = method.getAnnotation(Action.class);
                 if (action == null) return;
 
@@ -135,6 +136,7 @@ public abstract class WebMvcConfigure implements Module {
                 Before before = defIfNull(method.getAnnotation(Before.class), cBefore);
                 ActionInvocationProxy proxy = new ActionInvocationProxy() {
                     private List<Class<? extends ActionInterceptor>> interceptors;
+                    private RequestParameter[] parameters;
                     private String path;
 
                     @Nonnull
@@ -173,8 +175,13 @@ public abstract class WebMvcConfigure implements Module {
 
                     @Nonnull
                     @Override
-                    public MiniParameter[] getParameters() {
-                        return ClassUtil.getParameter(method);
+                    public RequestParameter[] getParameters() {
+                        return Optional.ofNullable(parameters).orElseGet(() -> {
+                            parameters = stream(ClassUtil.getParameter(method)) //
+                                    .map(RequestParameter::new)         //
+                                    .toArray(RequestParameter[]::new); //
+                            return parameters;
+                        });
                     }
 
                     @Override
@@ -189,7 +196,7 @@ public abstract class WebMvcConfigure implements Module {
                 };
 
                 // 获取方法上的 urls 列表
-                Arrays.stream(action.url().length > 0 ? action.url() : new String[]{method.getName()}).map(url -> {
+                stream(action.url().length > 0 ? action.url() : new String[]{method.getName()}).map(url -> {
                     return StringUtil.join("/", "", controller.url(), def(url, method.getName())); //
                 }).map(url -> MappingUri.slashRemove(url.replaceAll("(/)+", "/"))).forEach(url -> {
                     configure.addInvocationProxy(url, proxy); //

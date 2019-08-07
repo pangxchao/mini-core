@@ -1,52 +1,51 @@
 package com.mini.code.impl;
 
 import com.mini.code.Configure;
+import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.Util;
 import com.mini.util.StringUtil;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
-import static java.lang.String.format;
+import static com.mini.code.util.Util.getColumns;
+import static com.mini.code.util.Util.getPrimaryKey;
+import static com.mini.util.StringUtil.firstUpperCase;
+import static com.mini.util.StringUtil.toJavaName;
 import static javax.lang.model.element.Modifier.*;
 
 public final class CodeBean {
-    protected static void run(Configure configure, String className, String tableName, String prefix) throws Exception {
-        //  Package Name
-        String basePackage = format("%s.entity.base", configure.getPackageName());
-        String beanPackage = format("%s.entity", configure.getPackageName());
-
-        // Class Name
-        String baseClassName = StringUtil.format("%sBase", className);
-
-        // Class
-        ClassName baseClass = ClassName.get(basePackage, baseClassName);
-        // ClassName beanClass = ClassName.get(beanPackage, className);
-
-        // 获取所有字段信息
-        List<Util.FieldInfo> fieldList = Util.getColumns(configure.getJdbcTemplate(), //
-                configure.getDatabaseName(), tableName, prefix);
-
+    /**
+     * 生成代码
+     * @param configure   数据库与实体配置信息
+     * @param info        所有类的信息
+     * @param tableName   数据库表名
+     * @param prefix      字段名前缀
+     * @param fieldList   所有字段信息
+     * @param pkFieldList 主键字段信息
+     */
+    protected static void run(Configure configure, ClassInfo info, String tableName, String prefix, //
+            List<Util.FieldInfo> fieldList, List<Util.FieldInfo> pkFieldList) throws Exception {
         // 生成类信息
-        TypeSpec.Builder builder = TypeSpec.classBuilder(className)
+        TypeSpec.Builder builder = TypeSpec.classBuilder(info.beanName)
                 .addModifiers(PUBLIC)
-                //.addSuperinterface(ParameterizedTypeName.get(baseClass, beanClass))
-                .addSuperinterface(baseClass)
+                .addSuperinterface(info.baseClass)
                 .addSuperinterface(Serializable.class)
-                // 生成  Serializable 的常量字段
                 .addField(FieldSpec.builder(long.class, "serialVersionUID")
                         .addModifiers(PRIVATE, STATIC, FINAL)
                         .initializer("$L", "-1L")
                         .build())
-                // 生成表名常量
                 .addField(FieldSpec.builder(String.class, "TABLE")
                         .addModifiers(PUBLIC, STATIC, FINAL)
                         .addJavadoc(" 表名称 $L \n", tableName)
                         .initializer("$S", tableName)
                         .build())
-                .addJavadoc("$L.java \n", className)
+                .addJavadoc("$L.java \n", info.beanName)
                 .addJavadoc("@author xchao \n");
 
         // 处理字段常量
@@ -54,16 +53,14 @@ public final class CodeBean {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             builder.addField(FieldSpec.builder(String.class, db_name)
                     .addModifiers(PUBLIC, STATIC, FINAL)
-                    // 设置初始值
                     .initializer("$S ", fieldInfo.getColumnName())
-                    // 注释文档
                     .addJavadoc("$L \n", StringUtil.def(fieldInfo.getRemarks(), fieldInfo.getColumnName()))
                     .build());
         }
 
         // 处理属性
         for (Util.FieldInfo fieldInfo : fieldList) {
-            String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
+            String name = toJavaName(fieldInfo.getFieldName(), false);
             builder.addField(FieldSpec.builder(fieldInfo.getTypeClass(), name)
                     .addModifiers(PRIVATE)
                     .build());
@@ -71,10 +68,10 @@ public final class CodeBean {
 
         // 处理 Getter Setter 方法
         for (Util.FieldInfo fieldInfo : fieldList) {
-            String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
+            String name = toJavaName(fieldInfo.getFieldName(), false);
 
             // Getter 方法
-            builder.addMethod(MethodSpec.methodBuilder("get" + StringUtil.firstUpperCase(name))
+            builder.addMethod(MethodSpec.methodBuilder("get" + firstUpperCase(name))
                     .addModifiers(PUBLIC)
                     // 设置返回类型
                     .returns(fieldInfo.getTypeClass())
@@ -84,7 +81,7 @@ public final class CodeBean {
                     .build());
 
             // Setter 方法
-            builder.addMethod(MethodSpec.methodBuilder("set" + StringUtil.firstUpperCase(name))
+            builder.addMethod(MethodSpec.methodBuilder("set" + firstUpperCase(name))
                     .addModifiers(PUBLIC)
                     // 设置返回类型
                     .returns(void.class)
@@ -96,14 +93,29 @@ public final class CodeBean {
                     .build());
         }
         // 生成文件信息
-        JavaFile javaFile = JavaFile.builder(beanPackage, builder.build()).build();
+        JavaFile javaFile = JavaFile.builder(info.beanPackage, builder.build()).build();
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("Code Bean : " + className + "\r\n");
+        System.out.println("Code Bean : " + info.beanName + "\r\n");
     }
 
-    public static void generator(Configure configure, Configure.BeanItem bean) throws Exception {
-        run(configure, bean.className, bean.tableName, bean.prefix);
+    /**
+     * 生成java代码
+     * @param configure 数据库与实体配置信息
+     * @param bean      数据库表与实体关联配置
+     * @param isCover   是否覆盖已存在的文件
+     */
+    public static void generator(Configure configure, Configure.BeanItem bean, boolean isCover) throws Exception {
+        List<Util.FieldInfo> pkFieldList = getPrimaryKey(configure.getJdbcTemplate(), //
+                configure.getDatabaseName(), bean.tableName, bean.prefix);  //
+        List<Util.FieldInfo> fieldList = getColumns(configure.getJdbcTemplate(), //
+                configure.getDatabaseName(), bean.tableName, bean.prefix); //
+        ClassInfo info = new ClassInfo(configure, bean.className);
+
+        // 不存在或者覆盖时生成
+        if (isCover || !Util.exists(configure, info.beanPackage, info.beanName)) {
+            run(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
+        }
     }
 }

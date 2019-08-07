@@ -3,6 +3,7 @@ package com.mini.web.interceptor;
 import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.model.IModel;
+import com.mini.web.util.RequestParameter;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -51,7 +52,7 @@ public interface ActionInvocationProxy {
      * @return 所有参数信息
      */
     @Nonnull
-    MiniParameter[] getParameters();
+    RequestParameter[] getParameters();
 
     /**
      * 获取 Action 视图路径

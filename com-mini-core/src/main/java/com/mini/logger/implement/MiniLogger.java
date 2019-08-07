@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.mini.util.ObjectUtil.defIfNull;
+
 /**
  * 自定义日志实现
  * @author XChao
@@ -64,6 +66,11 @@ public final class MiniLogger implements Logger {
     }
 
     @Override
+    public void verbose(Throwable throwable) {
+        this.verbose(null, throwable);
+    }
+
+    @Override
     public void verbose(Object message, Throwable throwable) {
         log(Level.VERBOSE, message, throwable);
     }
@@ -71,6 +78,11 @@ public final class MiniLogger implements Logger {
     @Override
     public void debug(Object message) {
         this.debug(message, null);
+    }
+
+    @Override
+    public void debug(Throwable throwable) {
+        this.debug(null, throwable);
     }
 
     @Override
@@ -84,6 +96,11 @@ public final class MiniLogger implements Logger {
     }
 
     @Override
+    public void info(Throwable throwable) {
+        this.info(null, throwable);
+    }
+
+    @Override
     public void info(Object message, Throwable throwable) {
         log(Level.INFO, message, throwable);
     }
@@ -94,6 +111,11 @@ public final class MiniLogger implements Logger {
     }
 
     @Override
+    public void warn(Throwable throwable) {
+        this.warn(null, throwable);
+    }
+
+    @Override
     public void warn(Object message, Throwable throwable) {
         log(Level.WARN, message, throwable);
     }
@@ -101,6 +123,11 @@ public final class MiniLogger implements Logger {
     @Override
     public void error(Object message) {
         this.error(message, null);
+    }
+
+    @Override
+    public void error(Throwable throwable) {
+        this.error(null, throwable);
     }
 
     @Override
@@ -129,6 +156,7 @@ public final class MiniLogger implements Logger {
                 }
             }
             // 消息内容
+            message = defIfNull(message, "");
             builder.append(" ").append(message);
             System.out.println(builder.toString());
             if (e != null) e.printStackTrace(System.out);

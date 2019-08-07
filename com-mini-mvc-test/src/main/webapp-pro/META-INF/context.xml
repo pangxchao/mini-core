@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context reloadable="true" sessionCookiePath="/">
-    <Resource name="jdbc/mengyi" auth="Container" type="javax.sql.DataSource" maxTotal="5" maxIdle="2" maxWaitMillis="10000" username="root"
+    <Resource name="mini_test" auth="Container" type="javax.sql.DataSource" maxTotal="5" maxIdle="2" maxWaitMillis="10000" username="root"
               password="Qwe123456!" driverClassName="com.mysql.jdbc.Driver" testWhileIdle="true" validationQuery="select 1"
-              url="jdbc:mysql://192.168.1.200:3306/mengyi?useSSL=false"/>
+              url="jdbc:mysql://192.168.1.200:3306/mini_test?useSSL=false"/>
 </Context>

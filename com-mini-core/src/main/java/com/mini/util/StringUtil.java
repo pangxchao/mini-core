@@ -16,7 +16,7 @@ public final class StringUtil {
     }
 
     /**
-     * -判断字符串是否为空
+     * 判断字符串是否为空
      * @param self 字符串
      * @return true - 是
      */
@@ -26,7 +26,7 @@ public final class StringUtil {
 
 
     /**
-     * -判断字符串是否为空
+     * 判断字符串是否为空
      * @param self 字符串
      * @return true - 是
      */
@@ -45,6 +45,23 @@ public final class StringUtil {
     }
 
     /**
+     * 字符串连接
+     * @param builder StringBuilder
+     * @param join    连接符
+     * @param value   连接对象
+     * @return 连接结果
+     */
+    @Nonnull
+    @SafeVarargs
+    public static <T> StringBuilder join(StringBuilder builder, String join, T... value) {
+        for (int i = 0; value != null && i < value.length; i++) {
+            if (i > 0) builder.append(join).append(value[i]);
+            else builder.append(value[i]);
+        }
+        return builder;
+    }
+
+    /**
      * - 字符串连接
      * @param join  连接符
      * @param value 连接对象
@@ -54,15 +71,28 @@ public final class StringUtil {
     @SafeVarargs
     public static <T> String join(String join, T... value) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; value != null && i < value.length; i++) {
-            if (i > 0) result.append(join).append(value[i]);
-            else result.append(value[i]);
-        }
+        StringUtil.join(result, join, value);
         return result.toString();
     }
 
     /**
-     * -字符串连接
+     * 字符串连接
+     * @param builder StringBuilder
+     * @param join    连接符
+     * @param value   连接对象
+     * @return 连接结果
+     */
+    @Nonnull
+    public static <T> StringBuilder join(StringBuilder builder, String join, Iterator<T> value) {
+        for (int i = 0; value != null && value.hasNext(); i++) {
+            if (i > 0) builder.append(join).append(value.next());
+            else builder.append(value.next());
+        }
+        return builder;
+    }
+
+    /**
+     * 字符串连接
      * @param join  连接符
      * @param value 连接对象
      * @return 连接结果
@@ -70,22 +100,33 @@ public final class StringUtil {
     @Nonnull
     public static <T> String join(String join, Iterator<T> value) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; value != null && value.hasNext(); i++) {
-            if (i > 0) result.append(join).append(value.next());
-            else result.append(value.next());
-        }
+        StringUtil.join(result, join, value);
         return result.toString();
     }
 
     /**
-     * -字符串连接
+     * 字符串连接
+     * @param builder StringBuilder
+     * @param join    连接符
+     * @param value   连接对象
+     * @return 连接结果
+     */
+    @Nonnull
+    public static <T> StringBuilder join(StringBuilder builder, String join, Iterable<T> value) {
+        return value == null ? builder : join(builder, join, value.iterator());
+    }
+
+    /**
+     * 字符串连接
      * @param join  连接符
      * @param value 连接对象
      * @return 连接结果
      */
     @Nonnull
     public static <T> String join(String join, Iterable<T> value) {
-        return StringUtil.join(join, value == null ? null : value.iterator());
+        StringBuilder result = new StringBuilder();
+        StringUtil.join(result, join, value);
+        return result.toString();
     }
 
     /**

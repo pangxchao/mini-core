@@ -16,6 +16,14 @@ public final class ValidateUtil {
 
     /**
      * 设置错误码和错误消息
+     * @param error 错误码
+     */
+    public static void sendError(int error) {
+        sendError(error, null);
+    }
+
+    /**
+     * 设置错误码和错误消息
      * @param error   错误码
      * @param message 错误消息
      */
