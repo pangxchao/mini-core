@@ -41,37 +41,42 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
     }
 
     @Override
-    protected StreamModel model() {
+    protected final StreamModel model() {
         return this;
     }
 
-    public StreamModel setFileName(String fileName) {
+    public final StreamModel setFileName(String fileName) {
         this.fileName = fileName;
         return model();
     }
 
-    public StreamModel setContentLength(long contentLength) {
+    public final StreamModel setContentLength(long contentLength) {
         this.contentLength = contentLength;
         return model();
     }
 
-    public StreamModel setInputStream(InputStream inputStream) {
+    public final StreamModel setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
         return model();
     }
 
-    public StreamModel setWriteCallback(WriteCallback writeCallback) {
+    public final StreamModel setWriteCallback(WriteCallback writeCallback) {
         this.writeCallback = writeCallback;
         return model();
     }
 
-    public StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
+    public final StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
         this.acceptRangesSupport = acceptRangesSupport;
         return model();
     }
 
-    protected long getEnd() {
+    protected final long getEnd() {
         return contentLength - 1;
+    }
+
+    @Override
+    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendError(getStatus(), getMessage());
     }
 
     @Override

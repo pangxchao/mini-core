@@ -2,6 +2,7 @@ package com.mini.code;
 
 import com.mini.code.impl.*;
 import com.mini.code.impl.web.CodeControllerBack;
+import com.mini.code.impl.web.CodeControllerBackPage;
 import com.mini.code.impl.web.CodeControllerFront;
 import com.mini.code.impl.web.CodeControllerMobile;
 import com.mini.jdbc.JdbcTemplate;
@@ -28,6 +29,11 @@ public class ConfigureDefault implements Configure {
     @Override
     public String getPackageName() {
         return "com.mini.web.test";
+    }
+
+    @Override
+    public String getWebRootPath() {
+        return format("%s/src/main/webapp/WEB-INF", PATH);
     }
 
     @Override
@@ -117,5 +123,6 @@ public class ConfigureDefault implements Configure {
         CodeControllerBack.generator(configure, bean, false);
         CodeControllerFront.generator(configure, bean, false);
         CodeControllerMobile.generator(configure, bean, false);
+        CodeControllerBackPage.generator(configure, bean, false);
     }
 }

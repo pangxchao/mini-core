@@ -7,6 +7,7 @@ import com.mini.web.view.IView;
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -68,6 +69,11 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
     public PageModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         data.putAll(map);
         return model();
+    }
+
+    @Override
+    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendError(getStatus(), getMessage());
     }
 
     @Override

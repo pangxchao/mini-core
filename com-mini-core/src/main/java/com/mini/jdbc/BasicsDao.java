@@ -8,7 +8,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
-public interface BasicsDao<T> {
+public interface BasicsDao {
     /**
      * 获取数据写入 DaoTemplate 对象
      * @return DaoTemplate 对象
@@ -20,13 +20,6 @@ public interface BasicsDao<T> {
      * @return DaoTemplate 对象
      */
     JdbcTemplate readTemplate();
-
-
-    /**
-     * 获取 IMapper 对象
-     * @return IMapper 对象
-     */
-    IMapper<T> getMapper();
 
     /**
      * 执行SQL
@@ -50,39 +43,43 @@ public interface BasicsDao<T> {
     /**
      * 查询结果
      * @param str    SQL
+     * @param m      映射器
      * @param params 参数
      * @return 查询结果
      */
-    default List<T> query(String str, Object... params) {
-        return readTemplate().query(str, getMapper(), params);
+    default <T> List<T> query(String str, IMapper<T> m, Object... params) {
+        return readTemplate().query(str, m, params);
     }
 
     /**
      * 查询结果
      * @param builder SQLBuilder
+     * @param m       映射器
      * @return 查询结果
      */
-    default List<T> query(SQLBuilder builder) {
-        return readTemplate().query(builder, getMapper());
+    default <T> List<T> query(SQLBuilder builder, IMapper<T> m) {
+        return readTemplate().query(builder, m);
     }
 
     /**
      * 查询结果
      * @param str    SQL
+     * @param m      映射器
      * @param params 参数
      * @return 查询结果
      */
-    default T queryOne(String str, Object... params) {
-        return readTemplate().queryOne(str, getMapper(), params);
+    default <T> T queryOne(String str, IMapper<T> m, Object... params) {
+        return readTemplate().queryOne(str, m, params);
     }
 
     /**
      * 查询结果
      * @param builder SQLBuilder
+     * @param m       映射器
      * @return 查询结果
      */
-    default T queryOne(SQLBuilder builder) {
-        return readTemplate().queryOne(builder, getMapper());
+    default <T> T queryOne(SQLBuilder builder, IMapper<T> m) {
+        return readTemplate().queryOne(builder, m);
     }
 
     /**
@@ -301,20 +298,22 @@ public interface BasicsDao<T> {
      * 查询结果
      * @param paging paging 分页器
      * @param str    SQL
+     * @param m      映射器
      * @param params 参数
      * @return 查询结果
      */
-    default List<T> query(Paging paging, String str, Object... params) {
-        return readTemplate().query(paging, str, getMapper(), params);
+    default <T> List<T> query(Paging paging, String str, IMapper<T> m, Object... params) {
+        return readTemplate().query(paging, str, m, params);
     }
 
     /**
      * 查询结果
      * @param paging  分页器
      * @param builder SQLBuilder
+     * @param m       映射器
      * @return 查询结果
      */
-    default List<T> query(Paging paging, SQLBuilder builder) {
-        return readTemplate().query(paging, builder, getMapper());
+    default <T> List<T> query(Paging paging, SQLBuilder builder, IMapper<T> m) {
+        return readTemplate().query(paging, builder, m);
     }
 }

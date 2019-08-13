@@ -1,6 +1,5 @@
 package com.mini.web.interceptor;
 
-import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.model.IModel;
 import com.mini.web.util.RequestParameter;
@@ -38,13 +37,6 @@ public interface ActionInvocation {
      */
     @Nonnull
     Object getInstance();
-
-    /**
-     * 获取页面数据模型实现类
-     * @return 页面数据模型实现类
-     */
-    @Nonnull
-    Class<? extends IModel<?>> getModelClass();
 
     /**
      * 获取控制器支持的方法
@@ -120,7 +112,7 @@ public interface ActionInvocation {
      * @return 所有参数值
      */
     @Nonnull
-    Object[] getParameterValues() throws Throwable;
+    Object[] getParameterValues();
 
     /**
      * 请求转发

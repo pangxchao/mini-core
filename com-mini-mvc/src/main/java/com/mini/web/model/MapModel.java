@@ -1,16 +1,17 @@
 package com.mini.web.model;
 
-import com.alibaba.fastjson.JSON;
 import com.mini.util.map.MiniHashMap;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import static com.alibaba.fastjson.JSON.toJSONString;
 
 /**
  * Map Model 类实现
@@ -27,7 +28,6 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
 
     @Override
     protected MapModel model() {
-
         return this;
     }
 
@@ -68,9 +68,18 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
-        try (Writer writer = response.getWriter()) {
-            writer.write(JSON.toJSONString(data));
+    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+        try (PrintWriter writer = response.getWriter()) {
+            response.setStatus(getStatus());
+            writer.write(getMessage());
+            writer.flush();
+        }
+    }
+
+    @Override
+    protected final void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(toJSONString(data));
             writer.flush();
         }
     }

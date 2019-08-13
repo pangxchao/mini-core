@@ -1,5 +1,6 @@
 package com.mini.web.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.mini.util.StringUtil;
 import com.mini.web.util.WebUtil;
 
@@ -35,11 +36,13 @@ public abstract class IModel<T extends IModel> implements Serializable {
     }
 
     // 获取错误消息
+    @Nonnull
     protected final String getMessage() {
-        return message;
+        return def(message, "");
     }
 
     // 获取内容类型
+    @JSONField(serialize = false)
     protected final String getContentType() {
         return contentType;
     }
@@ -128,9 +131,9 @@ public abstract class IModel<T extends IModel> implements Serializable {
         // 错误码处理和返回数据格式处理
         response.setContentType(contentType);
 
-        //  发送错误信息
-        if (status != HttpServletResponse.SC_OK) {
-            response.sendError(status, message);
+        // 发送错误信息
+        if (getStatus() > 0 && getStatus() != HttpServletResponse.SC_OK) {
+            IModel.this.sendError(request, response);
             return;
         }
 
@@ -154,6 +157,9 @@ public abstract class IModel<T extends IModel> implements Serializable {
         // 处理具体数据
         IModel.this.submit(request, response, viewPath);
     }
+
+    // 发送错误信息
+    protected abstract void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error;
 
     protected abstract void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error;
 

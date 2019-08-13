@@ -31,6 +31,12 @@ public interface Configure {
     String getPackageName();
 
     /**
+     * 获取WEB页面的绝对路径
+     * @return WEB页面的绝对路径
+     */
+    String getWebRootPath();
+
+    /**
      * 获取数据库的库名
      * @return 数据库的库名
      */

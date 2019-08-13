@@ -1,67 +1,63 @@
 layui.define(['jquery'], function (exports) {
-    /**
-     * 给 FormData 添加数据
-     * @param formData
-     * @param key
-     * @param value
-     * @private
-     */
-    var _dataAppendArray = function (formData, key, value) {
-        if (!layui.$.isArray(value)) {
+    var $ = layui.$;
+    var append_array = function (formData, key, value) {
+        if (!layui.jquery.isArray(value)) {
             formData.append(key, value);
             return;
         }
-        layui.$.each(value, function (index, val) {
+        $.each(value, function (index, val) {
             formData.append(key, val);
         });
     };
 
-    /**
-     *  给FormData对象添加数据
-     * @param formData
-     * @param dataArray
-     * @private
-     */
-    var _dataAppendAll = function (formData, dataArray) {
-        layui.$.each(dataArray, function (key, val) {
-            _dataAppendArray(formData, key, val);
+
+    var append_all = function (formData, dataArray) {
+        $.each(dataArray, function (key, val) {
+            append_array(formData, key, val);
         });
+        return formData;
     };
 
-    /**
-     * 支持FormData Ajax 提交
-     * @param options
-     * @constructor
-     */
-    var formDataAjaxFunction = function (options) {
-        if (options.traditional === undefined) {
-            options.traditional = true;
-        }
+    var result = !!FormData ? function (url, options) {
         if (!options.form || options.form === '') {
-            layui.$.ajax(options);
+            layui.$.ajax($.extend({
+                traditional: true
+            }, options, {
+                url: url
+            }));
             return;
         }
-        // processData与contentType必须为false
-        var dom = layui.jquery(options.form);
-        var f = new window.FormData(dom[0]);
-        _dataAppendAll(f, options.data);
-        options.contentType = false;
-        options.processData = false;
-        options.data = f;
-        $.ajax(options);
+
+        var formData = new FormData($(options.form)[0]);
+        $.ajax($.extend({traditional: true}, options, {
+            data: append_all(formData, options.data),
+            contentType: false,
+            processData: false,
+            url: url
+        }));
+
+    } : function (url, options) {
+        layui.$.ajax($.extend({
+            traditional: true
+        }, options, {
+            url: url
+        }));
     };
 
-    // 支持FormData对象的提交方式
-    if ((typeof window.FormData) === 'function') {
-        exports("ajax", formDataAjaxFunction);
-        return;
-    }
+    result.get = function (url, data, options) {
+        result(url, $.extend({}, options, {
+            type: "GET",
+            data: data
+        }));
+    };
 
-    // 不支持FormData对象的提交方式
-    exports('ajax', function (options) {
-        if (options.traditional === undefined) {
-            options.traditional = true;
-        }
-        layui.$.ajax(options);
-    });
+    result.post = function (url, data, options) {
+        result(url, $.extend({}, options, {
+            type: "POST",
+            data: data
+        }));
+    };
+
+    // 返回对象
+    exports('ajax', result);
 });

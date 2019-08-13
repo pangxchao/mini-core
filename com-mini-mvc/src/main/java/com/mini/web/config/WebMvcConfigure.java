@@ -21,13 +21,10 @@ import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.listener.MiniServletContextListener;
 import com.mini.web.model.*;
-import com.mini.web.model.factory.ListModelFactory;
-import com.mini.web.model.factory.MapModelFactory;
-import com.mini.web.model.factory.PageModelFactory;
-import com.mini.web.model.factory.StreamModelFactory;
 import com.mini.web.servlet.DispatcherHttpServlet;
 import com.mini.web.util.RequestParameter;
 import com.mini.web.view.FreemarkerView;
+import com.mini.web.view.IView;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import javax.annotation.Nonnull;
@@ -97,8 +94,6 @@ public abstract class WebMvcConfigure implements Module {
         registerFilter(configure);
         // 注册默认参数解析器
         registerArgumentResolver(configure);
-        // 注册默认数据模型工厂/视图渲染器
-        registerModelFactory(configure);
         //  注册默认视图实现类
         registerView(configure);
 
@@ -151,10 +146,9 @@ public abstract class WebMvcConfigure implements Module {
                         return clazz;
                     }
 
-                    @Nonnull
                     @Override
-                    public Class<? extends IModel<?>> getModelClass() {
-                        return action.value();
+                    public IModel<?> getModel(IView view, String viewPath) {
+                        return action.value().getModel(view, viewPath);
                     }
 
                     @Nonnull
@@ -313,14 +307,6 @@ public abstract class WebMvcConfigure implements Module {
         // 其它类型
         configure.addResolver(Paging.class, ArgumentResolverPaging.class);
         configure.addResolver(StringBuilder.class, ArgumentResolverBody.class);
-    }
-
-    // 配置默认数据模型工厂/视图渲染器
-    private void registerModelFactory(Configure configure) {
-        configure.addModelFactory(ListModel.class, ListModelFactory.class);
-        configure.addModelFactory(MapModel.class, MapModelFactory.class);
-        configure.addModelFactory(StreamModel.class, StreamModelFactory.class);
-        configure.addModelFactory(PageModel.class, PageModelFactory.class);
     }
 
     // 配置默认视图实现类

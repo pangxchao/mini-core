@@ -84,7 +84,7 @@ public final class CodeDaoImpl {
                 .build());
 
         // 生成 getMapper() 方法
-        builder.addMethod(MethodSpec.methodBuilder("getMapper")
+        builder.addMethod(MethodSpec.methodBuilder("get" + info.mapperName)
                 .addModifiers(PUBLIC)
                 .returns(info.mapperClass)
                 .addAnnotation(Override.class)

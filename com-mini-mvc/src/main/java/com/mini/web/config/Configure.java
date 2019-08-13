@@ -7,8 +7,6 @@ import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.argument.ArgumentResolverBean;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
-import com.mini.web.model.IModel;
-import com.mini.web.model.factory.IModelFactory;
 import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;
@@ -29,13 +27,11 @@ import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class Configure {
-    private final Map<Class<? extends IModel<?>>, Class<? extends IModelFactory<?>>> factory = new ConcurrentHashMap<>();
     private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
     private final Map<Class<? extends HttpServlet>, ServletElement> servlets = new ConcurrentHashMap<>();
     private final Map<Class<? extends Filter>, FilterElement> filters = new ConcurrentHashMap<>();
     private final Map<Class<?>, ArgumentResolver> resolverMap = new ConcurrentHashMap<>();
     private final MappingUri<ActionInvocationProxy> invocationProxy = new MappingUri<>();
-    private final Map<Class<?>, IModelFactory<?>> factoryMap = new ConcurrentHashMap<>();
     private final Set<Class<? extends EventListener>> listeners = new HashSet<>();
     private Class<? extends IView> viewClass;
     private IView view;
@@ -169,7 +165,7 @@ public final class Configure {
      */
     @Inject
     public void setDateFormat(
-            @Named("mini.http.time-format")
+            @Named("mini.http.date-format")
             @Nullable String dateFormat) {
         this.dateFormat = dateFormat;
     }
@@ -180,7 +176,7 @@ public final class Configure {
      */
     @Inject
     public void setTimeFormat(
-            @Named("mini.http.date-format")
+            @Named("mini.http.time-format")
             @Nullable String timeFormat) {
         this.timeFormat = timeFormat;
     }
@@ -458,29 +454,6 @@ public final class Configure {
     public final ActionInterceptor getInterceptor(Class<? extends ActionInterceptor> interceptor) {
         Objects.requireNonNull(injector, "Injector can not be null");
         return requireNonNull(injector.getInstance(interceptor));
-    }
-
-    /**
-     * 添加一个数据模型工厂
-     * @param factory 数据模型工厂
-     * @return 当前对象
-     */
-    public final Configure addModelFactory(Class<? extends IModel<?>> clazz, Class<? extends IModelFactory<?>> factory) {
-        this.factory.putIfAbsent(clazz, factory);
-        return this;
-    }
-
-    /**
-     * 根据数据模型实现类获取数据模型工厂实例
-     * @param modelClass 数据模型实现类
-     * @return 数据模型工厂实例
-     */
-    public final IModelFactory<?> getFactory(Class<? extends IModel<?>> modelClass) {
-        return factoryMap.computeIfAbsent(modelClass, modelFactoryMapKey -> {
-            Class<? extends IModelFactory<?>> c = factory.get(modelClass);
-            return c == null ? null : injector.getInstance(c);
-        });
-
     }
 
     /**

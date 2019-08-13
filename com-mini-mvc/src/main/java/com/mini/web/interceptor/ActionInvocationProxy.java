@@ -1,9 +1,9 @@
 package com.mini.web.interceptor;
 
-import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.model.IModel;
 import com.mini.web.util.RequestParameter;
+import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -27,11 +27,12 @@ public interface ActionInvocationProxy {
 
 
     /**
-     * 获取页面数据模型实现类
-     * @return 页面数据模型实现类
+     * 获取数据模型实现类型
+     * @param view 视图渲染器
+     * @param viewPath 视图路径
+     * @return 数据模型实现类型
      */
-    @Nonnull
-    Class<? extends IModel<?>> getModelClass();
+    IModel<?> getModel(IView view, String viewPath);
 
     /**
      * 获取控制器支持的方法
@@ -45,7 +46,7 @@ public interface ActionInvocationProxy {
      * @return 拦截器对象
      */
     @Nonnull
-    List<Class<?extends ActionInterceptor>> getInterceptors();
+    List<Class<? extends ActionInterceptor>> getInterceptors();
 
     /**
      * 获取目标方法的所有参数信息

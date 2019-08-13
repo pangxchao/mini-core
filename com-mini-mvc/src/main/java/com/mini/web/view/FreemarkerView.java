@@ -36,12 +36,15 @@ public class FreemarkerView implements IView, Serializable {
     }
 
     @Override
-    public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        try (OutputStream outputStream = response.getOutputStream()) {
-            try (Writer out = new OutputStreamWriter(outputStream)) {
-                getTemplate(viewPath).process(data, out);
-            }
+    public void generator(Map<String, Object> data, String view, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try (PrintWriter out = response.getWriter()) {
+            getTemplate(view).process(data, out);
         }
+        //try (OutputStream outputStream = response.getOutputStream()) {
+        //    try (Writer out = new OutputStreamWriter(outputStream)) {
+        //        getTemplate(view).process(data, out);
+        //    }
+        //}
     }
 
     /**
@@ -66,10 +69,10 @@ public class FreemarkerView implements IView, Serializable {
         return configuration;
     }
 
-    private Configuration setClassForTemplateLoading(String basePackagePath) {
-        configuration.setClassForTemplateLoading(getClass(), basePackagePath);
-        return configuration;
-    }
+    //private  Configuration setClassForTemplateLoading(String basePackagePath) {
+    //    configuration.setClassForTemplateLoading(getClass(), basePackagePath);
+    //    return configuration;
+    //}
 
     private Configuration setServletContextForTemplateLoading(String basePackagePath) {
         configuration.setServletContextForTemplateLoading(context, basePackagePath);

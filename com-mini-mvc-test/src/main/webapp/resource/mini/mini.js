@@ -1,7 +1,8 @@
 layui.config({base: 'resource/mini/models/'}).extend({
     cascade: 'cascade', // 表单拉下级联扩展
-    ajax: 'ajax', // 扩展jQuery Ajax 方法扩展
-    page: 'page'  // 扩展LayUI laypage 模块扩展
+    ajax: 'ajax',  // 扩展Ajax
+    page: 'page',  // 扩展分页
+    wind: 'wind' // 弹出层扩展
 }).use(['jquery', 'ajax'], function () {
     window.$ = layui.$;
 });

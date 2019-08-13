@@ -11,7 +11,6 @@ import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
-import com.mini.web.model.factory.IModelFactory;
 import com.mini.web.util.RequestParameter;
 
 import javax.annotation.Nonnull;
@@ -129,21 +128,15 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             return stream(v).anyMatch(m -> m == method); //
         })) return;
 
-        // 获取数据模型工厂并验证，如果该工厂为空，返回 500 错误
-        final IModelFactory<?> modelFactory = configure.getFactory(proxy.getModelClass());
-        if (require(modelFactory, response, ERROR, "Server Error! " + uri, Objects::nonNull)) {
-            return;
-        }
-
         // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
-        final IModel<?> model = modelFactory.getModel(configure.getView(), proxy.getViewPath());
+        final IModel<?> model = proxy.getModel(configure.getView(), proxy.getViewPath());
         if (require(model, response, ERROR, "Server Error! " + uri, v -> {
             request.setAttribute(MODEL_KEY, model);
             return model != null;
         })) return;
 
         // 创建 ActionInvocation 对象
-        ActionInvocation action = new ActionInvocation() {
+        final ActionInvocation action = new ActionInvocation() {
             private List<ActionInterceptor> interceptors;
             private Iterator<ActionInterceptor> iterator;
             private Object instance;
@@ -167,12 +160,6 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
                     instance = injector.getInstance(getClazz());
                     return instance;
                 });
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final Class<? extends IModel<?>> getModelClass() {
-                return proxy.getModelClass();
             }
 
             @Nonnull
@@ -266,30 +253,22 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             }
         };
 
-        try {
-            // 调用目标方法
+        try { // 调用目标方法
             action.invoke();
-        } catch (ValidateException e) {
-            response.sendError(e.getStatus(), //
-                    e.getMessage());
-            return;
-        } catch (Throwable e) {
-            // 输出错误日志
-            String message = e.getMessage();
-            LOGGER.error(message, e);
-
-            // 发送异常信息到客户端
-            if (!response.isCommitted()) {
-                response.sendError(ERROR, message);
-            }
-            return;
+        } catch (ValidateException exception) {
+            String msg = exception.getMessage();
+            int error = exception.getStatus();
+            model.sendError(error, msg);
+        } catch (Throwable exception) {
+            LOGGER.error(exception);
+            model.sendError(ERROR);
         }
+
         // 这里加入错误码处理
-        try {
-            // 返回数据
+        try { // 返回数据
             model.submit(request, response);
-        } catch (Exception | Error e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (Exception | Error exception) {
+            LOGGER.error(exception);
         }
     }
 

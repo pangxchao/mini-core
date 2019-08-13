@@ -30,7 +30,7 @@ public final class ArgumentResolverDate extends ArgumentResolverBase {
         String format = def(configure.getDateFormat(), "yyyy-MM-dd");
         LocalDate date = LocalDateUtil.parse(text, format);
 
-        // java.time.LocalDateTime 类型的参数
+        // java.time.LocalDate 类型的参数
         if (LocalDate.class.isAssignableFrom(type)) {
             return date;
         }

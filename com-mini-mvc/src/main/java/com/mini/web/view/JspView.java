@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Singleton
 public class JspView implements IView, Serializable {
-    private static final long serialVersionUID = 4125460056674096998L;
+    private static final long serialVersionUID = -1L;
 
     @Inject
     @Named("mini.mvc.view.prefix")

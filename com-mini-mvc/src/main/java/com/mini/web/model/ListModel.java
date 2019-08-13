@@ -1,13 +1,18 @@
 package com.mini.web.model;
 
-import com.alibaba.fastjson.JSON;
 import com.mini.util.collection.MiniArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.Map;
+
+import static com.alibaba.fastjson.JSON.toJSONString;
+import static java.util.Map.of;
 
 /**
  * Json List Model 类实现
@@ -78,10 +83,18 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
-        // 写入返回数据 并刷新流
-        try (Writer writer = response.getWriter()) {
-            writer.write(JSON.toJSONString(data));
+    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+        try (PrintWriter writer = response.getWriter()) {
+            response.setStatus(getStatus());
+            writer.write(getMessage());
+            writer.flush();
+        }
+    }
+
+    @Override
+    protected final void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(toJSONString(data));
             writer.flush();
         }
     }
