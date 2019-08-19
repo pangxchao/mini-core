@@ -1,16 +1,15 @@
 package com.mini.code;
 
 import com.mini.code.impl.*;
-import com.mini.code.impl.web.CodeControllerBack;
-import com.mini.code.impl.web.CodeControllerBackPage;
-import com.mini.code.impl.web.CodeControllerFront;
-import com.mini.code.impl.web.CodeControllerMobile;
+import com.mini.code.impl.web.CodeController;
+import com.mini.code.impl.web.CodeControllerPage;
 import com.mini.jdbc.JdbcTemplate;
 import com.mini.jdbc.JdbcTemplateMysql;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.sql.SQLException;
 
+import static com.mini.code.impl.CodeDaoImpl.generator;
 import static java.lang.String.format;
 
 public class MengyiPermissionConfigure implements Configure {
@@ -68,64 +67,20 @@ public class MengyiPermissionConfigure implements Configure {
         Configure configure = new MengyiPermissionConfigure();
         for (BeanItem bean : configure.getDatabaseBeans()) {
             // 生成 Bean Mapper 代码生成
-            // 该代码生成完成后一般不需要修改
-            // 数据库表修改时，重新生成覆盖即可
-            beanGenerator(configure, bean);
+            CodeBase.generator(configure, bean, true);
+            CodeBean.generator(configure, bean, true);
+            CodeMapper.generator(configure, bean, true);
 
-            // 生成 Dao 与 Service Base接口相关代码
-            // 该代码生成数据库的基础查询操作和实现
-            // 数据库表修改时，重新生成覆盖即可
-            baseGenerator(configure, bean);
+            // 生成 DAO Base Dao 与Dao Impl代码
+            CodeDaoBase.generator(configure, bean, true);
+            CodeDao.generator(configure, bean, false);
+            generator(configure, bean, false);
 
-            // 生成 Dao 与 Service 接口代码生成
-            // 该代码创建一个用户自定义方法的接口
-            // 第一次生成完成后下次不再生成
-            interGenerator(configure, bean);
-
-            // 生成 Dao 与 Service Impl 代码生成
-            // 该代码生成一次基础的注入配置信息
-            // 第一次生成完成后下次不再生成
-            implGenerator(configure, bean);
-
-            // 生成Web相关代码
-            // 该代码用于初始时创建相关文件
-            // 第一次生成之后下次不再生成
-            webGenerator(configure, bean);
+            // 生成控制器与页面相关代码
+            CodeController.generator(configure, bean, false);
+            CodeControllerPage.generator(configure, bean, false);
         }
         // 生成数据库文档
         Dictionaries.run(configure);
-    }
-
-    // Bean Mapper 代码生成
-    private static void beanGenerator(Configure configure, BeanItem bean) throws Exception {
-        CodeBase.generator(configure, bean, true);
-        CodeBean.generator(configure, bean, true);
-        CodeMapper.generator(configure, bean, true);
-    }
-
-    // 生成  Dao 与 Service  Base 相关代码
-    private static void baseGenerator(Configure configure, BeanItem bean) throws Exception {
-        CodeDaoBase.generator(configure, bean, true);
-        CodeServiceBase.generator(configure, bean, true);
-    }
-
-    // 生成 Dao 与 Service 接口 代码生成
-    private static void interGenerator(Configure configure, BeanItem bean) throws Exception {
-        CodeDao.generator(configure, bean, false);
-        CodeService.generator(configure, bean, false);
-    }
-
-    // 生成 Dao 与 Service Impl 代码生成
-    private static void implGenerator(Configure configure, BeanItem bean) throws Exception {
-        CodeDaoImpl.generator(configure, bean, false);
-        CodeServiceImpl.generator(configure, bean, false);
-    }
-
-    // 生成Web相关代码
-    private static void webGenerator(Configure configure, BeanItem bean) throws Exception {
-        CodeControllerBack.generator(configure, bean, false);
-        CodeControllerFront.generator(configure, bean, false);
-        CodeControllerMobile.generator(configure, bean, false);
-        CodeControllerBackPage.generator(configure, bean, false);
     }
 }

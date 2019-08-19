@@ -29,7 +29,7 @@ import static com.mini.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class CodeControllerBack {
+public class CodeController {
     /**
      * 生成代码
      * @param configure   数据库与实体配置信息
@@ -43,18 +43,18 @@ public class CodeControllerBack {
             List<Util.FieldInfo> fieldList, List<Util.FieldInfo> pkFieldList) throws Exception {
 
         // 生成类信息
-        TypeSpec.Builder builder = TypeSpec.classBuilder(info.backControllerName)
+        TypeSpec.Builder builder = TypeSpec.classBuilder(info.controllerName)
                 .addModifiers(PUBLIC)
                 .addAnnotation(Singleton.class)
                 .addAnnotation(AnnotationSpec.builder(Controller.class)
                         .addMember("path", "$S", "back/" + firstLowerCase(info.beanName))
                         .addMember("url", "$S", "back/" + firstLowerCase(info.beanName))
                         .build())
-                .addJavadoc("$L.java \n", info.backControllerName)
+                .addJavadoc("$L.java \n", info.controllerName)
                 .addJavadoc("@author xchao \n");
 
         // Service 依赖注入属性定义
-        builder.addField(FieldSpec.builder(info.serviceClass, firstLowerCase(info.serviceName), PRIVATE)
+        builder.addField(FieldSpec.builder(info.daoClass, firstLowerCase(info.daoName), PRIVATE)
                 .addAnnotation(Inject.class)
                 .build());
 
@@ -83,7 +83,7 @@ public class CodeControllerBack {
                 .addJavadoc("实体列表数据分页 \n")
                 .addJavadoc("@param model 数据模型渲染器 \n")
                 .addJavadoc("@param paging 数据分页工具 \n");
-        method.addStatement("$T<$T> list = $N.queryAll(paging)", List.class, info.beanClass, firstLowerCase(info.serviceName));
+        method.addStatement("$T<$T> list = $N.queryAll(paging)", List.class, info.beanClass, firstLowerCase(info.daoName));
         method.addCode("model.addData($S, list.stream().map($N-> { \n", "data", firstLowerCase(info.beanName));
         method.addStatement("\t$T<$T, String> map = new $T<>()", Map.class, String.class, HashMap.class);
         for (Util.FieldInfo fieldInfo : fieldList) {
@@ -119,7 +119,7 @@ public class CodeControllerBack {
                 .addJavadoc("添加实体处理 \n")
                 .addJavadoc("@param model 数据模型渲染器 \n")
                 .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))
-                .addStatement("$N.insert($N)", firstLowerCase(info.serviceName), firstLowerCase(info.beanName))
+                .addStatement("$N.insert($N)", firstLowerCase(info.daoName), firstLowerCase(info.beanName))
                 .build());
 
         //  修改实体信息处理
@@ -135,7 +135,7 @@ public class CodeControllerBack {
                 .addJavadoc("修改实体处理 \n")
                 .addJavadoc("@param model 数据模型渲染器 \n")
                 .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))
-                .addStatement("$N.update($N)", firstLowerCase(info.serviceName), firstLowerCase(info.beanName))
+                .addStatement("$N.update($N)", firstLowerCase(info.daoName), firstLowerCase(info.beanName))
                 .build());
 
         //  删除实体信息
@@ -150,14 +150,14 @@ public class CodeControllerBack {
                 .addJavadoc("删除实体信息处理 \n")
                 .addJavadoc("@param model 数据模型渲染器 \n")
                 .addParameter(pkFieldList, true)
-                .addStatement("$N.deleteById($N)", firstLowerCase(info.serviceName), //
+                .addStatement("$N.deleteById($N)", firstLowerCase(info.daoName), //
                         StringUtil.join(",", pkFieldList.stream().map(fieldInfo -> //
                                 toJavaName(fieldInfo.getFieldName(), false)) //
                                 .collect(Collectors.toList())))
                 .build());
 
         // 生成文件信息
-        JavaFile javaFile = JavaFile.builder(info.backControllerPackage, builder.build()).build();
+        JavaFile javaFile = JavaFile.builder(info.controllerPackage, builder.build()).build();
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
@@ -178,7 +178,7 @@ public class CodeControllerBack {
         ClassInfo info = new ClassInfo(configure, bean.className);
 
         // 不存在或者覆盖时生成
-        if (isCover || !Util.exists(configure, info.backControllerPackage, info.backControllerName)) {
+        if (isCover || !Util.exists(configure, info.controllerPackage, info.controllerName)) {
             run(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
         }
     }

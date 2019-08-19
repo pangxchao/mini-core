@@ -53,6 +53,17 @@ public final class CodeDaoBase {
                 .addInsertStatement(fieldList, info)
                 .build());
 
+        // 生成 replace 方法
+        builder.addMethod(new MethodSpecBuilder("replace")
+                .addModifiers(DEFAULT, PUBLIC)
+                .returns(int.class)
+                .addParameter(info.beanClass, firstLowerCase(info.beanName))
+                .addJavadoc("添加实体信息 \n")
+                .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))
+                .addJavadoc("@return 执行结果 \n")
+                .addReplaceStatement(fieldList, info)
+                .build());
+
         // 生成 update 方法
         builder.addMethod(new MethodSpecBuilder("update")
                 .addModifiers(DEFAULT, PUBLIC)

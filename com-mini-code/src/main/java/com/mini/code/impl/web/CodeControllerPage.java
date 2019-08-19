@@ -23,7 +23,7 @@ import static com.mini.util.StringUtil.toJavaName;
 import static freemarker.template.Configuration.VERSION_2_3_28;
 import static java.lang.String.format;
 
-public class CodeControllerBackPage {
+public class CodeControllerPage {
     private static final Configuration config = new Configuration(VERSION_2_3_28);
 
     private static boolean index_exists(Configure configure, String beanName) throws RuntimeException, IOException {
@@ -198,26 +198,26 @@ public class CodeControllerBackPage {
                 configure.getDatabaseName(), bean.tableName, bean.prefix);  //
         List<Util.FieldInfo> fieldList = getColumns(configure.getJdbcTemplate(), //
                 configure.getDatabaseName(), bean.tableName, bean.prefix); //
-        config.setClassForTemplateLoading(CodeControllerBackPage.class, "/back/");
+        config.setClassForTemplateLoading(CodeControllerPage.class, "/back/");
         ClassInfo info = new ClassInfo(configure, bean.className);
 
         // 生成index.ftl文件
-        if (isCover || !CodeControllerBackPage.index_exists(configure, info.beanName)) {
+        if (isCover || !CodeControllerPage.index_exists(configure, info.beanName)) {
             index(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
         }
 
         // 生成pages.ftl文件
-        if (isCover || !CodeControllerBackPage.pages_exists(configure, info.beanName)) {
+        if (isCover || !CodeControllerPage.pages_exists(configure, info.beanName)) {
             pages(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
         }
 
         // 生成insert.ftl文件
-        if (isCover || !CodeControllerBackPage.insert_exists(configure, info.beanName)) {
+        if (isCover || !CodeControllerPage.insert_exists(configure, info.beanName)) {
             insert(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
         }
 
         // 生成update.ftl文件
-        if (isCover || !CodeControllerBackPage.update_exists(configure, info.beanName)) {
+        if (isCover || !CodeControllerPage.update_exists(configure, info.beanName)) {
             update(configure, info, bean.tableName, bean.prefix, fieldList, pkFieldList);
         }
     }

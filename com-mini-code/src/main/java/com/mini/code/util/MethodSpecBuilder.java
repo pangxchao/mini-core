@@ -101,6 +101,27 @@ public final class MethodSpecBuilder {
         return this;
     }
 
+
+    /**
+     * 将所有字段添加到replace方法的方法体中
+     * @param fieldList 所有的字段信息
+     * @param info      生成的类信息
+     * @return 当前对象
+     */
+    public MethodSpecBuilder addReplaceStatement(List<Util.FieldInfo> fieldList, ClassInfo info) {
+        builder.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
+        builder.addStatement("\treplace_into($T.TABLE)", info.beanClass);
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String db_name = fieldInfo.getFieldName().toUpperCase();
+            String name = toJavaName(fieldInfo.getFieldName(), true);
+            builder.addCode("\t// $L \n", fieldInfo.getRemarks());
+            builder.addStatement("\tvalues($T.$L)", info.beanClass, db_name);
+            builder.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
+        }
+        builder.addStatement("}})");
+        return this;
+    }
+
     /**
      * 将所有字段和所有主键字段添加到update方法的方法体中
      * @param fieldList   所有的字段信息
