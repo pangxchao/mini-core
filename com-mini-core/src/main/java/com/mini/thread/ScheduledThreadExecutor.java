@@ -13,14 +13,15 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ScheduledThreadExecutor {
     private static final Map<String, ScheduledFuture<?>> futures = new HashMap<>();
-    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2 * Runtime.getRuntime().availableProcessors());
+    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(//
+            2 * Runtime.getRuntime().availableProcessors());
 
     /**
      * 在后台线程执行一个任务
      * @param runnable 任务内容
      */
-    public static void schedule(Runnable runnable) {
-        executor.schedule(runnable, 0, TimeUnit.MILLISECONDS);
+    public static void execute(Runnable runnable) {
+        executor.execute(runnable);
     }
 
     /**

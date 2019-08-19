@@ -115,6 +115,10 @@
                         </dd>
                     </dl>
                 </li>
+                <!-- 首页连接 -->
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="web_socket/index.htm" target="center">WebSocket</a>
+                </li>
             </ul>
         </div>
     </div>

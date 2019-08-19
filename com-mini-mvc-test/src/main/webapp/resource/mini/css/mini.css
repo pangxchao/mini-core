@@ -52,3 +52,9 @@
 .mini-input-block {
     margin-left: 95px;
 }
+
+.clear, .mini-clear {
+    overflow: hidden;
+    clear: both;
+    height: 0;
+}

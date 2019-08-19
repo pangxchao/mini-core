@@ -2,7 +2,7 @@ package com.mini.jdbc.transaction;
 
 @FunctionalInterface
 public interface TransactionalManager {
-    <T> T open(TransactionalManagerCallback<T> callback) throws Throwable;
+    <T> T openTransaction(TransactionalManagerCallback<T> callback) throws Throwable;
 
     @FunctionalInterface
     interface TransactionalManagerCallback<T> {

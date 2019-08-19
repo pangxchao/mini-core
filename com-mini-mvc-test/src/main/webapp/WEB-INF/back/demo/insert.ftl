@@ -106,7 +106,8 @@
         <div class="layui-form-item">
             <div class="layui-input-block mini-input-block">
                 <button class="layui-btn layui-btn-sm" lay-submit lay-filter="insertButton"
-                        style="display: none;" id="insertButton">立即提交</button>
+                        style="display: none;" id="insertButton">立即提交
+                </button>
             </div>
         </div>
     </form>

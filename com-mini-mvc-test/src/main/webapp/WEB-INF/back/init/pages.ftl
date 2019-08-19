@@ -1,27 +1,36 @@
-<input type="hidden" id="content-page-value" value="${paging.page?c}"/>
-<input type="hidden" id="content-total-value" value="${paging.total?c}"/>
-
-<table class="layui-table" lay-data="{autoSort: false, limit: '${paging.limit?c}', page: false,  toolbar: '#headToolbar', defaultToolbar: []}"
-       lay-filter="init-table" id="init-table">
+<table lay-data="{url: 'back/init/pages.htm', autoSort: false, toolbar: '#headToolbar', defaultToolbar: [], page: true}"
+       class="layui-table" lay-filter="init-table" id="init-table">
     <thead>
     <tr>
-        <th lay-data="{field: 'id', type: 'checkbox', fixed: 'left', width: 40}"></th>
-            <th lay-data="{field: 'id', width: 200}">参数键</th>
-            <th lay-data="{field: 'value', width: 200}">参数值</th>
-            <th lay-data="{field: 'remarks', width: 200}">参数说明</th>
-        <th lay-data="{field: 'handle', fixed: 'right', toolbar: '#lineToolbar', width: '150'}">操作</th>
-
+        <th lay-data="{type: 'checkbox', fixed: 'left', width: 40}"></th>
+        <th lay-data="{field: 'id', templet: '#id_template', width: 200}">参数键</th>
+        <th lay-data="{field: 'value', templet: '#value_template', width: 200}">参数值</th>
+        <th lay-data="{field: 'remarks', templet: '#remarks_template', width: 200}">参数说明</th>
+        <th lay-data="{fixed: 'right', toolbar: '#lineToolbar', width: '150'}">操作</th>
     </tr>
     </thead>
-    <tbody>
-    <#list data as item>
-    <tr>
-        <td>${item.id?c}</td>
-            <td>${item.id}</td>
-            <td>${item.value}</td>
-            <td>${item.remarks}</td>
-        <td>${item.id?c}</td>
-    </tr>
-    </#list>
-    </tbody>
 </table>
+
+<script type="text/html" id="id_template">
+    {{= d.id}}
+</script>
+<script type="text/html" id="value_template">
+    {{= d.value}}
+</script>
+<script type="text/html" id="remarks_template">
+    {{= d.remarks}}
+</script>
+
+<!-- 头部工具拦模板 -->
+<script type="text/html" id="headToolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+    </div>
+</script>
+
+<!-- 每行的编辑工具拦模板 -->
+<script type="text/html" id="lineToolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>

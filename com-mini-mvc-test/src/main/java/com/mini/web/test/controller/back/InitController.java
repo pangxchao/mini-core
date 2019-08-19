@@ -1,5 +1,6 @@
 package com.mini.web.test.controller.back;
 
+import com.alibaba.fastjson.JSON;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
@@ -18,10 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author xchao
  */
 @Singleton
-@Controller(
-        path = "back/init",
-        url = "back/init"
-)
+@Controller(path = "back/init", url = "back/init")
 public class InitController {
     @Inject
     private InitService initService;
@@ -30,24 +28,23 @@ public class InitController {
      * 实体列表首页
      * @param model 数据模型渲染器
      */
-    @Action(
-            url = "index.htm"
-    )
+    @Action(url = "index.htm")
     public void index(PageModel model) {
     }
 
     /**
      * 实体列表数据分页
-     * @param model  数据模型渲染器
-     * @param paging 数据分页工具
+     * @param model   数据模型渲染器
+     * @param paging  数据分页工具
+     * @param request HttpServletRequest
      */
-    @Action(
-            url = "pages.htm"
-    )
-    public void pages(PageModel model, Paging paging, HttpServletRequest request) {
-        System.out.println(request.getParameterMap());
+    @Action(value = ModelType.MAP, url = "pages.htm")
+    public void pages(MapModel model, Paging paging, HttpServletRequest request) {
+        System.out.println(JSON.toJSONString(request.getParameterMap()));
         model.addData("data", initService.queryAll(paging));
-        model.addData("paging", paging);
+        model.addData("count", paging.getTotal());
+        model.addData("msg", "获取数据成功");
+        model.addData("code", 0);
     }
 
     /**
@@ -55,10 +52,7 @@ public class InitController {
      * @param model 数据模型渲染器
      * @param init  实体信息
      */
-    @Action(
-            value = ModelType.MAP,
-            url = "insert.htm"
-    )
+    @Action(value = ModelType.MAP, url = "insert.htm")
     public void insert(MapModel model, Init init) {
         initService.insert(init);
     }
@@ -68,10 +62,7 @@ public class InitController {
      * @param model 数据模型渲染器
      * @param init  实体信息
      */
-    @Action(
-            value = ModelType.MAP,
-            url = "update.htm"
-    )
+    @Action(value = ModelType.MAP, url = "update.htm")
     public void update(MapModel model, Init init) {
         initService.update(init);
     }
@@ -81,10 +72,7 @@ public class InitController {
      * @param model 数据模型渲染器
      * @param id    参数键
      */
-    @Action(
-            value = ModelType.MAP,
-            url = "delete.htm"
-    )
+    @Action(value = ModelType.MAP, url = "delete.htm")
     public void delete(MapModel model, int id) {
         initService.deleteById(id);
     }

@@ -41,46 +41,46 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
     }
 
     @Override
-    protected final StreamModel model() {
+    protected StreamModel model() {
         return this;
     }
 
-    public final StreamModel setFileName(String fileName) {
+    public StreamModel setFileName(String fileName) {
         this.fileName = fileName;
         return model();
     }
 
-    public final StreamModel setContentLength(long contentLength) {
+    public StreamModel setContentLength(long contentLength) {
         this.contentLength = contentLength;
         return model();
     }
 
-    public final StreamModel setInputStream(InputStream inputStream) {
+    public StreamModel setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
         return model();
     }
 
-    public final StreamModel setWriteCallback(WriteCallback writeCallback) {
+    public StreamModel setWriteCallback(WriteCallback writeCallback) {
         this.writeCallback = writeCallback;
         return model();
     }
 
-    public final StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
+    public StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
         this.acceptRangesSupport = acceptRangesSupport;
         return model();
     }
 
-    protected final long getEnd() {
+    protected long getEnd() {
         return contentLength - 1;
     }
 
     @Override
-    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.sendError(getStatus(), getMessage());
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
+    protected void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
         try (ServletOutputStream output = response.getOutputStream()) {
             if (!StringUtil.isBlank(StreamModel.this.fileName)) {
                 response.addHeader("Content-Disposition",  //

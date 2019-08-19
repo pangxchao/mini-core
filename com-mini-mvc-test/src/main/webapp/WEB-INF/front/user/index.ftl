@@ -15,7 +15,6 @@
 <body>
 
 
-
 <script type="text/javascript">
     layui.use(['page', 'table'], function () {
         var page = layui.page("#content", {

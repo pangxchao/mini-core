@@ -32,17 +32,17 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     }
 
     @Nonnull
-    public final Set<String> keySet() {
+    public Set<String> keySet() {
         return data.keySet();
     }
 
     @Nonnull
-    public final Collection<Object> values() {
+    public Collection<Object> values() {
         return data.values();
     }
 
     @Nonnull
-    public final Set<Map.Entry<String, Object>> entrySet() {
+    public Set<Map.Entry<String, Object>> entrySet() {
         return data.entrySet();
     }
 
@@ -68,7 +68,7 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     }
 
     @Override
-    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             response.setStatus(getStatus());
             writer.write(getMessage());
@@ -77,7 +77,7 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
+    protected void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             writer.write(toJSONString(data));
             writer.flush();

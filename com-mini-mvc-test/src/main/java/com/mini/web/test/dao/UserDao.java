@@ -3,7 +3,6 @@ package com.mini.web.test.dao;
 import com.google.inject.ImplementedBy;
 import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.Paging;
-import com.mini.util.LocalDateUtil;
 import com.mini.util.StringUtil;
 import com.mini.web.test.dao.base.BaseUserDao;
 import com.mini.web.test.dao.impl.UserDaoImpl;
@@ -14,6 +13,7 @@ import com.mini.web.test.entity.mapper.UserExtendMapper;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.mini.util.DateUtil.formatDate;
 import static com.mini.web.test.entity.User.*;
 
 /**
@@ -55,14 +55,13 @@ public interface UserDao extends BaseUserDao {
             // 开始时间
             if (startTime != null) {
                 where("%s >= ? ", CREATE_TIME);
-                params(LocalDateUtil.format(startTime));
+                params(formatDate(startTime));
             }
 
             // 结束时间
             if (endTime != null) {
                 where("%s < ? ", CREATE_TIME);
-                LocalDate end = endTime.plusDays(1);
-                params(LocalDateUtil.format(end));
+                params(formatDate(endTime.plusDays(1)));
             }
             // 排序
             order_by("%s %s", CREATE_TIME, (sortType == 1 ? "DESC" : "ASC"));

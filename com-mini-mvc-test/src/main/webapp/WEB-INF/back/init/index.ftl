@@ -42,29 +42,8 @@
             </div>
         </div>
     </form>
-
-    <div id="content">
-
-    </div>
-    <div id="content-page-button">
-
-    </div>
-
+    <#include "pages.ftl">
 </div>
-
-<!-- 头部工具拦模板 -->
-<script type="text/html" id="headToolbar">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
-        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
-    </div>
-</script>
-
-<!-- 每行的编辑工具拦模板 -->
-<script type="text/html" id="lineToolbar">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-</script>
 
 <script type="text/html" id="insertTemplate">
     <#include "insert.ftl">
@@ -76,21 +55,18 @@
 
 <script type="text/javascript">
     layui.use(['table', 'form', 'page', 'wind'], function () {
-        var form = layui.form, table = layui.table;
         layui.table.render();
         layui.form.render();
 
         // 该options为layui分页相关数据
-        var page = layui.page("#content", {
-            elem: "content-page-button",
-            complete: function () {
-                table.init('init-table', {
-                    id: 'init-table'
-                });
-            }
+        layui.form.on("submit(searchForm)", function (data) {
+            var d = $.extend({}, {search: ""}, data.field);
+            layui.table.reload('init-table', {
+                traditional: true,
+                where: d
+            });
+            return false;
         });
-        // 该 options 为Ajax相关数据
-        page.load('back/init/pages.htm', {});
 
         // 添加方法
         var insertFunction = function () {
@@ -107,7 +83,7 @@
                     layui.form.render();
 
                     // 绑定 Insert Form 提交事件
-                    form.on("submit(insertButton)", function (data) {
+                    layui.form.on("submit(insertButton)", function (data) {
                         layui.ajax('back/init/insert.htm', {
                             data: $.extend({}, data.field),
                             success: function (resp) {
@@ -115,7 +91,7 @@
                                 layer.close(index);
                                 console.log(resp);
                                 // 重新加载表格数据
-                                page.reload();
+                                layui.table.reload('init-table');
                             },
                             error: function (response, state) {
                                 layer.msg(response.responseText);
@@ -147,7 +123,7 @@
                     layui.form.val("updateForm", info);
 
                     // 绑定 Insert Form 提交事件
-                    form.on("submit(updateButton)", function (data) {
+                    layui.form.on("submit(updateButton)", function (data) {
                         layui.ajax('back/init/update.htm', {
                             data: $.extend(info, data.field, {
                                 id: info.id
@@ -157,7 +133,7 @@
                                 layer.close(index);
                                 console.log(resp);
                                 // 重新加载表格数据
-                                page.reload();
+                                layui.table.reload('init-table');
                             },
                             error: function (response, state) {
                                 layer.msg(response.responseText);
@@ -183,7 +159,7 @@
                         layer.msg("删除用户成功");
                         layer.close(index);
                         // 重新加载表格数据
-                        page.reload();
+                        layui.table.reload('init-table');
                     },
                     error: function (response, state) {
                         layer.msg(response.responseText);
@@ -198,7 +174,10 @@
         var initValue = {search: ""};
         layui.form.on("submit(searchForm)", function (data) {
             var d = $.extend({}, initValue, data.field);
-            page.reload(d);
+            layui.table.reload('init-table', {
+                traditional: true,
+                where: d
+            });
             return false;
         });
 

@@ -4,15 +4,11 @@ import com.mini.util.collection.MiniArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.Collection;
-import java.util.Map;
 
 import static com.alibaba.fastjson.JSON.toJSONString;
-import static java.util.Map.of;
 
 /**
  * Json List Model 类实现
@@ -28,7 +24,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     }
 
     @Override
-    protected final ListModel model() {
+    protected ListModel model() {
         return this;
     }
 
@@ -83,7 +79,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     }
 
     @Override
-    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             response.setStatus(getStatus());
             writer.write(getMessage());
@@ -92,7 +88,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
+    protected void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             writer.write(toJSONString(data));
             writer.flush();

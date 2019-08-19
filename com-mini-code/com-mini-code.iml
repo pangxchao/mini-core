@@ -40,18 +40,6 @@
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.15" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.freemarker:freemarker:2.3.28" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-catalina:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-servlet-api:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jsp-api:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-el-api:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-juli:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-annotations-api:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-api:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jni:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-coyote:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-util:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-util-scan:9.0.22" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jaspic-api:9.0.22" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml:3.5-FINAL" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi:3.5-FINAL" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: commons-logging:commons-logging:1.1" level="project" />

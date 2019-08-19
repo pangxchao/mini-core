@@ -1,18 +1,19 @@
 package com.mini.util;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.mini.util.StringUtil.split;
 import static java.lang.String.format;
+import static java.util.regex.Pattern.compile;
 
 public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
     private static final long serialVersionUID = -109530601761096337L;
     private static final String REGEX = "(?:(\\{)([\\w$])+?(?:}))";
+    private static final String PARAM = "(?<N%d>[\\\\w-$]+)+";
     private static final String SPLIT_REGEX = "(\\/)";
 
     /**
@@ -27,11 +28,11 @@ public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
             String[] oArr = split(o.getKey(), SPLIT_REGEX);
             return oArr.length - vArr.length;
         }).filter(entry -> {
-            Matcher matcher = Pattern.compile(REGEX).matcher(entry.getKey());
-            List<String> list = new CopyOnWriteArrayList<>();
-            String regex = matcher.replaceAll(result -> {
-                list.add(result.group(result.groupCount()));
-                return format("(?<N%d>[\\\\w-$]+)+", list.size());
+            Matcher matcher = compile(REGEX).matcher(entry.getKey());
+            ArrayList<String> list = new ArrayList<>();
+            String regex = matcher.replaceAll(res -> {
+                list.add(res.group(res.groupCount()));
+                return format(PARAM, list.size());
             });
 
             regex = StringUtil.format("(?:%s)", regex);
@@ -40,11 +41,10 @@ public final class MappingUri<V> extends ConcurrentHashMap<String, V> {
                 try {
                     String groupName = format("N%d", (i + 1));
                     func.accept(list.get(i), m.group(groupName));
-                } catch (Exception | Error e) {
+                } catch (Exception | Error exception) {
                     func.accept(list.get(i), "");
                 }
             }
-
             return m.matches();
         }).findFirst().map(Entry::getValue).orElse(null));
     }

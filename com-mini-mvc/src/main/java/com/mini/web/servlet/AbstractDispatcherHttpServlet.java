@@ -3,7 +3,6 @@ package com.mini.web.servlet;
 
 import com.google.inject.Injector;
 import com.mini.logger.Logger;
-import com.mini.util.StringUtil;
 import com.mini.validate.ValidateException;
 import com.mini.web.annotation.Action;
 import com.mini.web.config.Configure;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 import static com.mini.util.StringUtil.isEmpty;
-import static com.mini.web.model.IModel.MODEL_KEY;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
@@ -70,26 +68,24 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         this.injector = injector;
     }
 
-    /**
-     * 获取 RequestURI
-     * @param request HttpServletRequest
-     * @return RequestURI
-     */
-    protected final String getRequestURIReplace(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        String path = request.getContextPath();
-        if (isEmpty(uri) || isEmpty(path)) return uri;
-        return StringUtil.replaceFirst(uri, path, "");
-    }
-
     @Override
     protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        this.doService(Action.Method.GET, getRequestURIReplace(request), request, response);
+        this.doService(Action.Method.GET, request.getServletPath(), request, response);
     }
 
     @Override
     protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        this.doService(Action.Method.POST, getRequestURIReplace(request), request, response);
+        this.doService(Action.Method.POST, request.getServletPath(), request, response);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doService(Action.Method.POST, request.getServletPath(), request, response);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doService(Action.Method.POST, request.getServletPath(), request, response);
     }
 
     /**
@@ -117,23 +113,16 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
 
         // 获取并验证 Action 调用对象，如果该对象为空时，返回 404 错误
-        final ActionInvocationProxy proxy = getInvocationProxy(uri, request);
-        if (require(proxy, response, NOT_FOUND, "Not Found Page! " + uri, Objects::nonNull)) {
+        final ActionInvocationProxy proxy = getInvocationProxy(uri, method, request);
+        if (require(proxy, response, NOT_FOUND, "Not Found Page:" + uri, Objects::nonNull)) {
             return;
         }
 
-        // 获取并验证请求方法是否支持，如果不支持，返回 500 错误
-        final Action.Method[] methods = proxy.getSupportMethod();
-        if (require(methods, response, ERROR, "No Support Method! " + uri, v -> {
-            return stream(v).anyMatch(m -> m == method); //
-        })) return;
-
         // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
-        final IModel<?> model = proxy.getModel(configure.getView(), proxy.getViewPath());
-        if (require(model, response, ERROR, "Server Error! " + uri, v -> {
-            request.setAttribute(MODEL_KEY, model);
-            return model != null;
-        })) return;
+        final IModel<?> model = proxy.getModel(configure.getView(), proxy.getViewPath(), request);
+        if (require(model, response, ERROR, "Server Error:" + uri, Objects::nonNull)) {
+            return;
+        }
 
         // 创建 ActionInvocation 对象
         final ActionInvocation action = new ActionInvocation() {
@@ -160,12 +149,6 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
                     instance = injector.getInstance(getClazz());
                     return instance;
                 });
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final Action.Method[] getSupportMethod() {
-                return methods;
             }
 
             @Nonnull
@@ -263,7 +246,6 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             LOGGER.error(exception);
             model.sendError(ERROR);
         }
-
         // 这里加入错误码处理
         try { // 返回数据
             model.submit(request, response);
@@ -275,10 +257,12 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     /**
      * 获取 ActionInvocationProxy 对象
      * @param uri     RequestURI
+     * @param method  Action.Method
      * @param request HttpServletRequest
      * @return ActionInvocationProxy 对象
      */
-    protected abstract ActionInvocationProxy getInvocationProxy(String uri, HttpServletRequest request) throws ServletException, IOException;
+    protected abstract ActionInvocationProxy getInvocationProxy(String uri, Action.Method method, HttpServletRequest request) throws ServletException,
+            IOException;
 
     /**
      * 验证表达式，并返回错误信息

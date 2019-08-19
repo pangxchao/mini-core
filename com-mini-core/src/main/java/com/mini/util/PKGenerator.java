@@ -2,6 +2,7 @@ package com.mini.util;
 
 import java.util.Random;
 
+import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
 
 /**
@@ -122,7 +123,7 @@ public final class PKGenerator {
      */
     public static long decode(String token) {
         try {
-            return Long.valueOf(token, 16);
+            return parseLong(token, 16);
         } catch (Exception e) {
             return 0;
         }

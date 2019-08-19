@@ -16,7 +16,6 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
 public abstract class IModel<T extends IModel> implements Serializable {
     private static final long serialVersionUID = -8709093093109721059L;
     public static final String MODEL_KEY = "MINI_REQUEST_MODEL_KEY";
-    public static final String URL_REGEX = "http(s)?://([\\s\\S])+";
     private int status = HttpServletResponse.SC_OK;
     private String contentType, viewPath, message;
     private long lastModified = -1;

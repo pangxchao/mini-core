@@ -1,6 +1,6 @@
 package com.mini.web.argument;
 
-import com.mini.util.LocalDateUtil;
+import com.mini.util.StringUtil;
 import com.mini.web.config.Configure;
 
 import javax.annotation.Nonnull;
@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.time.LocalDate;
-
-import static com.mini.util.StringUtil.def;
+import java.time.format.DateTimeFormatter;
 
 @Named
 @Singleton
@@ -27,8 +26,9 @@ public final class ArgumentResolverDate extends ArgumentResolverBase {
 
     @Override
     protected Object parse(String text, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
-        String format = def(configure.getDateFormat(), "yyyy-MM-dd");
-        LocalDate date = LocalDateUtil.parse(text, format);
+        String format = StringUtil.def(configure.getDateFormat(), "yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        LocalDate date = LocalDate.parse(text, formatter);
 
         // java.time.LocalDate 类型的参数
         if (LocalDate.class.isAssignableFrom(type)) {

@@ -24,6 +24,6 @@ public final class TransactionalInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Objects.requireNonNull(transactionManager, "TransactionManager can not be null");
-        return transactionManager.open(invocation::proceed);
+        return transactionManager.openTransaction(invocation::proceed);
     }
 }

@@ -5,6 +5,7 @@ import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.Util;
 import com.mini.jdbc.util.Paging;
+import com.mini.util.DateUtil;
 import com.mini.util.StringUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
@@ -16,13 +17,15 @@ import com.squareup.javapoet.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mini.code.util.Util.getColumns;
 import static com.mini.code.util.Util.getPrimaryKey;
-import static com.mini.util.StringUtil.firstLowerCase;
-import static com.mini.util.StringUtil.toJavaName;
+import static com.mini.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -68,20 +71,40 @@ public class CodeControllerBack {
                 .build());
 
         // 实体列表数据分页方法
-        builder.addMethod(MethodSpec.methodBuilder("pages")
+        MethodSpec.Builder method = MethodSpec.methodBuilder("pages")
                 .addModifiers(PUBLIC)
                 .returns(void.class)
-                .addParameter(PageModel.class, "model")
+                .addParameter(MapModel.class, "model")
                 .addParameter(Paging.class, "paging")
                 .addAnnotation(AnnotationSpec.builder(Action.class)
+                        .addMember("value", "$T.MAP", ModelType.class)
                         .addMember("url", "$S", "pages.htm")
                         .build())
                 .addJavadoc("实体列表数据分页 \n")
                 .addJavadoc("@param model 数据模型渲染器 \n")
-                .addJavadoc("@param paging 数据分页工具 \n")
-                .addStatement("model.addData($S, $N.queryAll(paging))", "data", firstLowerCase(info.serviceName))
-                .addStatement("model.addData($S, $N)", "paging", "paging")
-                .build());
+                .addJavadoc("@param paging 数据分页工具 \n");
+        method.addStatement("$T<$T> list = $N.queryAll(paging)", List.class, info.beanClass, firstLowerCase(info.serviceName));
+        method.addCode("model.addData($S, list.stream().map($N-> { \n", "data", firstLowerCase(info.beanName));
+        method.addStatement("\t$T<$T, String> map = new $T<>()", Map.class, String.class, HashMap.class);
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String name = toJavaName(fieldInfo.getFieldName(), false);
+            if (Date.class.isAssignableFrom(fieldInfo.getTypeClass())) {
+                method.addStatement("\tmap.put($S, $T.formatDateTime($N.get$L()))", name, DateUtil.class, //
+                        firstLowerCase(info.beanName), firstUpperCase(name));
+            } else if (String.class.isAssignableFrom(fieldInfo.getTypeClass())) {
+                method.addStatement("\tmap.put($S, $N.get$L())", name, firstLowerCase(info.beanName), //
+                        firstUpperCase(name));
+            } else {
+                method.addStatement("\tmap.put($S, String.valueOf($N.get$L()))", name, //
+                        firstLowerCase(info.beanName), firstUpperCase(name));
+            }
+        }
+        method.addStatement("\treturn map");
+        method.addStatement("}).toArray())");
+        method.addStatement("model.addData($S, $N.getTotal())", "count", "paging")
+                .addStatement("model.addData($S, $S)", "msg", "获取数据成功")
+                .addStatement("model.addData($S, 0)", "code");
+        builder.addMethod(method.build());
 
         //  添加实体信息处理
         builder.addMethod(MethodSpec.methodBuilder("insert")
@@ -98,7 +121,6 @@ public class CodeControllerBack {
                 .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))
                 .addStatement("$N.insert($N)", firstLowerCase(info.serviceName), firstLowerCase(info.beanName))
                 .build());
-
 
         //  修改实体信息处理
         builder.addMethod(MethodSpec.methodBuilder("update")

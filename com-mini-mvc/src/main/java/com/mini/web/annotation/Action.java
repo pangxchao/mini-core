@@ -1,6 +1,5 @@
 package com.mini.web.annotation;
 
-import com.mini.web.model.IModel;
 import com.mini.web.model.factory.ModelType;
 
 import java.lang.annotation.*;
@@ -38,12 +37,9 @@ public @interface Action {
      */
     Method[] method() default {
             Method.GET,
-            Method.HEAD,
             Method.POST,
             Method.PUT,
-            Method.DELETE,
-            Method.OPTIONS,
-            Method.TRACE
+            Method.DELETE
     };
 
     /**

@@ -19,7 +19,6 @@ import com.mini.web.filter.CacheControlFilter;
 import com.mini.web.filter.CharacterEncodingFilter;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
-import com.mini.web.listener.MiniServletContextListener;
 import com.mini.web.model.*;
 import com.mini.web.servlet.DispatcherHttpServlet;
 import com.mini.web.util.RequestParameter;
@@ -86,8 +85,6 @@ public abstract class WebMvcConfigure implements Module {
 
         // 注册默认的 ActionInvocationProxy
         registerActionInvocationProxy(configure);
-        // 注册默认监听器
-        registerListener(configure);
         // 注册默认Servlet
         registerServlet(configure);
         // 注册默认过虑器
@@ -147,8 +144,8 @@ public abstract class WebMvcConfigure implements Module {
                     }
 
                     @Override
-                    public IModel<?> getModel(IView view, String viewPath) {
-                        return action.value().getModel(view, viewPath);
+                    public IModel<?> getModel(IView view, String viewPath, HttpServletRequest request) {
+                        return action.value().getModel(view, viewPath, request);
                     }
 
                     @Nonnull
@@ -197,11 +194,6 @@ public abstract class WebMvcConfigure implements Module {
                 });
             });
         });
-    }
-
-    // 注册默认监听器
-    private void registerListener(Configure configure) {
-        configure.addListener(MiniServletContextListener.class);
     }
 
     // 注册默认Servlet

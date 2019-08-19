@@ -13,17 +13,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * JPA 事务实现
+ * JTA 事务实现
  * @author xchao
  */
 @Singleton
 public final class TransactionalManagerJTA implements TransactionalManager {
-    private final Provider<UserTransaction> userTransactionProvider;
     private final List<JdbcTemplate> jdbcTemplateList;
+    private final Provider<UserTransaction> provider;
 
-    public TransactionalManagerJTA(Provider<UserTransaction> userTransactionProvider, List<JdbcTemplate> jdbcTemplateList) {
-        this.userTransactionProvider = userTransactionProvider;
-        this.jdbcTemplateList        = jdbcTemplateList;
+    public TransactionalManagerJTA(List<JdbcTemplate> jdbcTemplateList, Provider<UserTransaction> provider) {
+        this.jdbcTemplateList = jdbcTemplateList;
+        this.provider         = provider;
     }
 
     private Iterator<JdbcTemplate> getIterator() {
@@ -31,16 +31,16 @@ public final class TransactionalManagerJTA implements TransactionalManager {
     }
 
     @Override
-    public <T> T open(TransactionalManagerCallback<T> callback) throws Throwable {
+    public <T> T openTransaction(TransactionalManagerCallback<T> callback) throws Throwable {
         UserTransaction userTransaction = null;
         try {
             if (jdbcTemplateList == null) {
                 return callback.apply();
             }
-            Objects.requireNonNull(userTransactionProvider);
-            userTransaction = userTransactionProvider.get();
+            Objects.requireNonNull(provider);
+            userTransaction = provider.get();
             userTransaction.begin();
-            T r = open(getIterator(), callback);
+            T r = openTransaction(getIterator(), callback);
             userTransaction.commit();
             return r;
         } catch (Exception | Error e) {
@@ -51,7 +51,7 @@ public final class TransactionalManagerJTA implements TransactionalManager {
         }
     }
 
-    private <T> T open(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
+    private <T> T openTransaction(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
         return iterator.hasNext() ? iterator.next().execute((ConnectionCallback<T>) connection -> {
             // 定义回滚点
             Savepoint point = null;
@@ -61,7 +61,7 @@ public final class TransactionalManagerJTA implements TransactionalManager {
                 point = connection.setSavepoint();
 
                 // 开启下一个数据连接池的事务
-                T result = open(iterator, callback);
+                T result = openTransaction(iterator, callback);
 
                 // 提交事务并返回
                 connection.commit();

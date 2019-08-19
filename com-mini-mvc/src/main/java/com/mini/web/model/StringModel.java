@@ -15,92 +15,92 @@ public final class StringModel extends IModel<StringModel> implements Serializab
     }
 
     @Override
-    protected final StringModel model() {
+    protected StringModel model() {
         return this;
     }
 
-    public final StringModel append(Object text) {
+    public StringModel append(Object text) {
         builder.append(text);
         return this;
     }
 
-    public final StringModel append(String text) {
+    public StringModel append(String text) {
         builder.append(text);
         return this;
     }
 
-    public final StringModel append(StringBuffer buffer) {
+    public StringModel append(StringBuffer buffer) {
         builder.append(buffer);
         return this;
     }
 
-    public final StringModel append(CharSequence text) {
+    public StringModel append(CharSequence text) {
         builder.append(text);
         return this;
     }
 
-    public final StringModel append(CharSequence text, int start, int end) {
+    public StringModel append(CharSequence text, int start, int end) {
         builder.append(text, start, end);
         return this;
     }
 
-    public final StringModel append(char[] text) {
+    public StringModel append(char[] text) {
         builder.append(text);
         return this;
     }
 
-    public final StringModel append(char[] text, int offset, int len) {
+    public StringModel append(char[] text, int offset, int len) {
         builder.append(text, offset, len);
         return this;
     }
 
-    public final StringModel append(boolean bool) {
+    public StringModel append(boolean bool) {
         builder.append(bool);
         return this;
     }
 
-    public final StringModel append(char ch) {
+    public StringModel append(char ch) {
         builder.append(ch);
         return this;
     }
 
-    public final StringModel append(int i) {
+    public StringModel append(int i) {
         builder.append(i);
         return this;
     }
 
-    public final StringModel append(long lng) {
+    public StringModel append(long lng) {
         builder.append(lng);
         return this;
     }
 
-    public final StringModel append(float f) {
+    public StringModel append(float f) {
         builder.append(f);
         return this;
     }
 
-    public final StringModel append(double d) {
+    public StringModel append(double d) {
         builder.append(d);
         return this;
     }
 
-    public final StringModel delete(int start, int end) {
+    public StringModel delete(int start, int end) {
         builder.delete(start, end);
         return this;
     }
 
-    public final StringModel deleteCharAt(int index) {
+    public StringModel deleteCharAt(int index) {
         builder.deleteCharAt(index);
         return this;
     }
 
-    public final StringModel replace(int start, int end, String text) {
+    public StringModel replace(int start, int end, String text) {
         builder.replace(start, end, text);
         return this;
     }
 
     @Override
-    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             response.setStatus(getStatus());
             writer.write(getMessage());
@@ -109,12 +109,10 @@ public final class StringModel extends IModel<StringModel> implements Serializab
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
+    protected void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             writer.write(builder.toString());
             writer.flush();
         }
     }
-
-
 }

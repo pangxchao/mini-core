@@ -3,6 +3,7 @@ package com.mini.jdbc.transaction;
 import com.mini.callback.ConnectionCallback;
 import com.mini.jdbc.JdbcTemplate;
 
+import javax.inject.Singleton;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.List;
  * JDBC 事务实现
  * @author xchao
  */
+@Singleton
 public final class TransactionalManagerJdbc implements TransactionalManager {
     private final List<JdbcTemplate> jdbcTemplateList;
 
@@ -20,12 +22,12 @@ public final class TransactionalManagerJdbc implements TransactionalManager {
     }
 
     @Override
-    public <T> T open(TransactionalManagerCallback<T> callback) throws Throwable {
+    public <T> T openTransaction(TransactionalManagerCallback<T> callback) throws Throwable {
         if (jdbcTemplateList == null) return callback.apply();
-        return open(jdbcTemplateList.iterator(), callback);
+        return openTransaction(jdbcTemplateList.iterator(), callback);
     }
 
-    private <T> T open(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
+    private <T> T openTransaction(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
         return iterator.hasNext() ? iterator.next().execute((ConnectionCallback<T>) connection -> {
             // 定义回滚点
             Savepoint point = null;
@@ -35,7 +37,7 @@ public final class TransactionalManagerJdbc implements TransactionalManager {
                 point = connection.setSavepoint();
 
                 // 开启下一个数据连接池的事务
-                T result = open(iterator, callback);
+                T result = openTransaction(iterator, callback);
 
                 // 提交事务并返回
                 connection.commit();

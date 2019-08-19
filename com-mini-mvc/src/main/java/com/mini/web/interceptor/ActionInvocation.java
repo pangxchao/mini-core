@@ -39,13 +39,6 @@ public interface ActionInvocation {
     Object getInstance();
 
     /**
-     * 获取控制器支持的方法
-     * @return 控制器支持的方法
-     */
-    @Nonnull
-    Action.Method[] getSupportMethod();
-
-    /**
      * 获取所有拦截器对象
      * @return 拦截器对象
      */

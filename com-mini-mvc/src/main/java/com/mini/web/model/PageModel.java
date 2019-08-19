@@ -36,17 +36,17 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
     }
 
     @Nonnull
-    public final Set<String> keySet() {
+    public Set<String> keySet() {
         return data.keySet();
     }
 
     @Nonnull
-    public final Collection<Object> values() {
+    public Collection<Object> values() {
         return data.values();
     }
 
     @Nonnull
-    public final Set<Map.Entry<String, Object>> entrySet() {
+    public Set<Map.Entry<String, Object>> entrySet() {
         return data.entrySet();
     }
 
@@ -72,12 +72,12 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
     }
 
     @Override
-    protected final void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.sendError(getStatus(), getMessage());
     }
 
     @Override
-    protected final void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
+    protected void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
         ValidateUtil.isNotBlank(viewPath, SC_INTERNAL_SERVER_ERROR, "View path can not be null");
         // 生成页面
         data.put("request", request);

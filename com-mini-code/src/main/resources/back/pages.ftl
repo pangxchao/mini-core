@@ -1,27 +1,33 @@
-<input type="hidden" id="content-page-value" value="${r'${paging.page?c}'}"/>
-<input type="hidden" id="content-total-value" value="${r'${paging.total?c}'}"/>
-
-<table class="layui-table" lay-data="{autoSort: false, limit: '${r'${paging.limit?c}'}', page: false,  toolbar: '#headToolbar', defaultToolbar: []}"
-       lay-filter="${name}-table" id="${name}-table">
+<table lay-data="{url: 'back/${name}/pages.htm', autoSort: false, toolbar: '#headToolbar', defaultToolbar: [], page: true}"
+       class="layui-table" lay-filter="${name}-table" id="${name}-table">
     <thead>
     <tr>
-        <th lay-data="{field: 'id', type: 'checkbox', fixed: 'left', width: 40}"></th>
+        <th lay-data="{type: 'checkbox', fixed: 'left', width: 40}"></th>
         <#list fieldList as item>
-            <th lay-data="{field: '${item.name}', width: 200}">${item.remarks}</th>
+            <th lay-data="{field: '${item.name}', templet: '#${item.name}_template', width: 200}">${item.remarks}</th>
         </#list>
-        <th lay-data="{field: 'handle', fixed: 'right', toolbar: '#lineToolbar', width: '150'}">操作</th>
-
+        <th lay-data="{fixed: 'right', toolbar: '#lineToolbar', width: '150'}">操作</th>
     </tr>
     </thead>
-    <tbody>
-    ${r'<#list data as item>'}
-    <tr>
-        <td>${r'${item.id?c}'}</td>
-        <#list fieldList as item>
-            <td>${r'$'}${r'{'}item.${item.name!}${r'}'}</td>
-        </#list>
-        <td>${r'${item.id?c}'}</td>
-    </tr>
-    ${r'</#list>'}
-    </tbody>
 </table>
+
+<#list fieldList as item>
+    <script type="text/html" id="${item.name}_template">
+        {{= d.${item.name}}}
+    </script>
+
+</#list>
+
+<!-- 头部工具拦模板 -->
+<script type="text/html" id="headToolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+    </div>
+</script>
+
+<!-- 每行的编辑工具拦模板 -->
+<script type="text/html" id="lineToolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
