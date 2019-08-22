@@ -7,6 +7,7 @@
     <packaging>jar</packaging>
     <version>1.0</version>
 
+    <!-- 项目名称自己说明 -->
     <name>com-mini-core</name>
     <description>com mini core</description>
 
@@ -22,6 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <!-- 依赖配置 -->
     <dependencies>
         <!-- Google 自动初始化工具 -->
         <dependency>
@@ -101,6 +103,7 @@
         </dependency>
     </dependencies>
 
+    <!-- 插件配置 -->
     <build>
         <defaultGoal>compile</defaultGoal>
         <plugins>
@@ -136,6 +139,7 @@
         </plugins>
     </build>
 
+    <!-- 私有仓库配置 -->
     <distributionManagement>
         <repository>
             <id>releases</id>

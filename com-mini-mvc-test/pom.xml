@@ -3,15 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.mini</groupId>
     <artifactId>mvc-test</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>com.mini</groupId>
     <packaging>war</packaging>
+    <version>1.0</version>
 
+    <!-- 项目名称自己说明 -->
     <name>com-mini-mvc-test</name>
     <description>com mini mvc test</description>
 
+    <!-- 基础属性配置 -->
     <properties>
         <java.version>11</java.version>
         <maven.test.skip>true</maven.test.skip>
@@ -22,6 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <!-- 多环境配置 -->
     <profiles>
         <profile>
             <id>dev</id>
@@ -46,12 +48,13 @@
         </profile>
     </profiles>
 
+    <!-- 依赖配置 -->
     <dependencies>
         <!-- 公共工具类依赖 -->
         <dependency>
             <groupId>com.mini</groupId>
             <artifactId>mvc</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <!-- atomikos 分布式事务支持 -->
@@ -77,22 +80,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--        &lt;!&ndash; Java EE API &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>javax</groupId>-->
-        <!--            <artifactId>javaee-api</artifactId>-->
-        <!--            <version>8.0.1</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
-        <!--  -->
-        <!--        &lt;!&ndash; Tomcat 9 实现API（查看源码用） &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.tomcat</groupId>-->
-        <!--            <artifactId>tomcat-catalina</artifactId>-->
-        <!--            <version>9.0.22</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
-
         <!-- 测试工具 -->
         <dependency>
             <groupId>junit</groupId>
@@ -101,6 +88,7 @@
         </dependency>
     </dependencies>
 
+    <!-- 插件配置 -->
     <build>
         <defaultGoal>compile</defaultGoal>
         <plugins>
@@ -131,7 +119,7 @@
         </plugins>
     </build>
 
-
+    <!-- 私有仓库配置 -->
     <repositories>
         <repository>
             <id>GitHub</id>

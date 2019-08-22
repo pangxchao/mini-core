@@ -91,6 +91,9 @@ public final class MethodSpecBuilder {
         builder.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
         builder.addStatement("\tinsert_into($T.TABLE)", info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
+            // 自动增长字段不处理
+            if(fieldInfo.isAuto()) continue;
+            // 其它字段信息
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
             builder.addCode("\t// $L \n", fieldInfo.getRemarks());
@@ -133,6 +136,9 @@ public final class MethodSpecBuilder {
         builder.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
         builder.addStatement("\tupdate($T.TABLE)", info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
+            // 自动增长字段不处理
+            if(fieldInfo.isAuto()) continue;
+            // 其它字段信息
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
             builder.addCode("\t// $L \n", fieldInfo.getRemarks());
