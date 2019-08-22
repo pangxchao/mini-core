@@ -56,6 +56,7 @@ public abstract class JdbcTemplate {
                 connection = dataSource.getConnection();
                 connectionHolder.setConnection(connection);
             }
+
             // 从 ConnectionHolder 对象中获取连接
             connection = connectionHolder.getConnection();
             connectionHolder.requestedConnection();
@@ -78,6 +79,7 @@ public abstract class JdbcTemplate {
                 return new ConnectionHolder(); //
             });
 
+            // 从connectionHolder中获取连接
             Connection holder;
             if (connectionHolder.hasOpenConnection()) {
                 holder = connectionHolder.getConnection();
@@ -86,6 +88,7 @@ public abstract class JdbcTemplate {
                     return;
                 }
             }
+
             // 如果连接未关闭，则关闭连接
             if (!connection.isClosed()) {
                 connection.close();
@@ -184,7 +187,7 @@ public abstract class JdbcTemplate {
      * @return 执行结果
      */
     public final int[] batch(SQLBuilder builder, PreparedStatementCallback<int[]> callback) {
-        return batch(builder.toString(), callback);
+        return this.batch(builder.toString(), callback);
     }
 
     /**
@@ -214,7 +217,8 @@ public abstract class JdbcTemplate {
             }
             return result;
         };
-        return execute(connection -> connection.prepareStatement(str, RETURN_GENERATED_KEYS), callback);
+        return execute(connection -> connection.prepareStatement(str, //
+                RETURN_GENERATED_KEYS), callback);
     }
 
     /**
@@ -242,13 +246,13 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final <T> T query(String str, ResultSetCallback<T> callback, Object... params) {
-        PreparedStatementCreator creator = c -> c.prepareStatement(str, TYPE_FORWARD_ONLY, CONCUR_READ_ONLY);
         PreparedStatementCallback<T> preparedStatementCallback = statement -> {
             try (ResultSet rs = full(statement, params).executeQuery()) {
                 return callback.doResultSet(rs);
             }
         };
-        return execute(creator, preparedStatementCallback);
+        return execute(c -> c.prepareStatement(str, TYPE_FORWARD_ONLY, //
+                CONCUR_READ_ONLY), preparedStatementCallback);
     }
 
     /**
@@ -283,8 +287,8 @@ public abstract class JdbcTemplate {
     /**
      * 查询结果
      * @param builder SQLBuilder 对象
-     * @param m   映射器
-     * @param <T> 解析器类型
+     * @param m       映射器
+     * @param <T>     解析器类型
      * @return 查询结果
      */
     public final <T> List<T> query(SQLBuilder builder, IMapper<T> m) {
@@ -312,8 +316,8 @@ public abstract class JdbcTemplate {
     /**
      * 查询结果
      * @param builder SQLBuilder 对象
-     * @param m   映射器
-     * @param <T> 解析器类型
+     * @param m       映射器
+     * @param <T>     解析器类型
      * @return 查询结果
      */
     public final <T> T queryOne(SQLBuilder builder, IMapper<T> m) {
@@ -334,8 +338,8 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询单个值
-     * @param builder  SQL
-     * @param type 值的类型
+     * @param builder SQL
+     * @param type    值的类型
      * @return 查询结果
      */
     public final <T> T queryForObject(SQLBuilder builder, Class<T> type) {
@@ -571,10 +575,10 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询结果
-     * @param paging 分页器
-     * @param builder    SQL
-     * @param m      解析器
-     * @param <T>    解析器类型
+     * @param paging  分页器
+     * @param builder SQL
+     * @param m       解析器
+     * @param <T>     解析器类型
      * @return 查询结果
      */
     public final <T> List<T> query(Paging paging, SQLBuilder builder, IMapper<T> m) {
