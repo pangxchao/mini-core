@@ -1,7 +1,7 @@
 # sn-mini
 简单的mvc框架
 
-# 使用时通过如下方式引入Jar包
+### 使用时通过如下方式引入Jar包
 \<!-- 私有仓库配置 --\> <br />
 \<repositories> <br />
 	\<repository> <br />
