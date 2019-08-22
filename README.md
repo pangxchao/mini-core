@@ -7,15 +7,15 @@
 	\<repository> <br />
 		\<id>GitHub\</id> <br />
 		\<name>GitHub Private Maven\</name> <br />
-		\<url>https://raw.github.com/pangxchao/maven/master/\</url> <br />
+		\<url>\https://raw.github.com/pangxchao/maven/master/\</url> <br />
 	\</repository> <br />
 \</repositories><br />
 <br />
 \<!-- mini mvc 依赖库 --\><br />
-<dependency><br />
-	<groupId>com.mini</groupId><br />
-	<artifactId>mvc</artifactId><br />
-	<version>1.0</version><br />
+\<dependency><br />
+	<groupId>com.mini\</groupId><br />
+	<artifactId>mvc\</artifactId><br />
+	<version>1.0\</version><br />
 \</dependency><br />
 <br />
 \<!-- mini 工具类依赖库 --><br />
