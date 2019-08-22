@@ -7,7 +7,9 @@
 	\<repository> <br />
 		\<id>GitHub\</id> <br />
 		\<name>GitHub Private Maven\</name> <br />
-		\<url>\https://raw.github.com/pangxchao/maven/master/\</url> <br />
+		\<url>
+		\https://raw.github.com/pangxchao/maven/master/
+		\</url> <br />
 	\</repository> <br />
 \</repositories><br />
 <br />
