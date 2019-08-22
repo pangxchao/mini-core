@@ -1,5 +1,4 @@
-sn-mini
--------
+# sn-mini
 
 简单的mvc框架
 
@@ -14,7 +13,7 @@ sn-mini
             <url> https://raw.github.com/pangxchao/maven/master/ </url> 
         </repository> 
     </repositories>
-
+    
     <!-- mini mvc 依赖库 -->
     <dependency>
         <groupId>com.mini</groupId>
