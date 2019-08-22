@@ -53,15 +53,17 @@ public class MiniProperties extends Properties {
         return this;
     }
 
-    /**
-     * 获取属性，为空时添加默认属性
-     * @param key  属性Key
-     * @param func 回调
-     * @return 属性值
-     */
-    public synchronized String getPro(String key, Function<? super Object, ?> func) {
-        return ObjectUtil.toString(computeIfAbsent(key, func));
-    }
+    ///**
+    // * 获取属性，为空时添加默认属性
+    // * @param key  属性Key
+    // * @param func 回调
+    // * @return 属性值
+    // */
+    //public synchronized String getPro(String key, Function<? super Object, ?> func) {
+    //    return ObjectUtil.toString(computeIfAbsent(key, func));
+    //}
+
+
 
 
     /**

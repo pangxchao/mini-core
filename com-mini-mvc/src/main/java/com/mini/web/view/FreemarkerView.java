@@ -1,6 +1,5 @@
 package com.mini.web.view;
 
-import com.mini.util.StringUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
@@ -10,19 +9,19 @@ import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Map;
-
-import static freemarker.template.Configuration.VERSION_2_3_28;
 
 @Singleton
 public class FreemarkerView implements IView, Serializable {
-    private static final long serialVersionUID = 5687496460307660404L;
+    private static final long serialVersionUID = -1L;
     private Configuration configuration;
 
     @Inject
     @Named("mini.mvc.view.prefix")
-    private String prefix;
+    private String prefix = "";
 
     @Inject
     @Named("mini.mvc.view.suffix")
@@ -31,20 +30,12 @@ public class FreemarkerView implements IView, Serializable {
     @Inject
     private ServletContext context;
 
-    protected final ServletContext getContext() {
-        return context;
-    }
-
     @Override
-    public void generator(Map<String, Object> data, String view, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String view = this.prefix + viewPath + this.suffix;
         try (PrintWriter out = response.getWriter()) {
             getTemplate(view).process(data, out);
         }
-        //try (OutputStream outputStream = response.getOutputStream()) {
-        //    try (Writer out = new OutputStreamWriter(outputStream)) {
-        //        getTemplate(view).process(data, out);
-        //    }
-        //}
     }
 
     /**
@@ -52,30 +43,29 @@ public class FreemarkerView implements IView, Serializable {
      * @param viewPath 模板路径
      * @return Template 对象
      */
-    protected Template getTemplate(String viewPath) throws IOException {
-        Configuration config = getConfiguration();
-        return config.getTemplate(viewPath + suffix);
+    protected final Template getTemplate(String viewPath) throws IOException {
+        return getConfiguration(context).getTemplate(viewPath);
     }
 
     /**
      * 获取 Configuration 对象
-     * @return Configuration 对象
+     * @param context ServletContext对象
+     * @return Configuration对象
      */
-    protected Configuration getConfiguration() {
-        if (this.configuration != null) return configuration;
-        configuration = new Configuration(VERSION_2_3_28);
-        String pre = StringUtil.def(prefix, "WEB-INF");
-        setServletContextForTemplateLoading(pre);
-        return configuration;
+    protected final Configuration getConfiguration(ServletContext context) {
+        if (configuration != null) return configuration;
+        configuration = new MiniConfiguration(context);
+        return this.configuration;
     }
 
-    //private  Configuration setClassForTemplateLoading(String basePackagePath) {
-    //    configuration.setClassForTemplateLoading(getClass(), basePackagePath);
-    //    return configuration;
-    //}
+    private static class MiniConfiguration extends Configuration implements Cloneable {
+        public void setServletContext(ServletContext context) {
+            setServletContextForTemplateLoading(context, null);
+        }
 
-    private Configuration setServletContextForTemplateLoading(String basePackagePath) {
-        configuration.setServletContextForTemplateLoading(context, basePackagePath);
-        return configuration;
+        public MiniConfiguration(ServletContext context) {
+            super(Configuration.VERSION_2_3_28);
+            setServletContext(context);
+        }
     }
 }

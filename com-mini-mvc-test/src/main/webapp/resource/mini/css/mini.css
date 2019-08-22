@@ -33,6 +33,10 @@
     padding: 5px 0 !important;
 }
 
+.mini-fluid {
+    padding: 0;
+}
+
 /* 下面是自定义扩展，不影响原来的效果 */
 .mini-full {
     height: 100%;

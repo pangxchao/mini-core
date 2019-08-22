@@ -34,9 +34,7 @@ public class UserController {
      * @param model  数据模型渲染器
      * @param paging 数据分页工具
      */
-    @Action(
-            url = "pages.htm"
-    )
+    @Action(url = "pages.htm")
     public void pages(PageModel model, Paging paging) {
         model.addData("data", userService.queryAll(paging));
         model.addData("count", paging.getTotal());

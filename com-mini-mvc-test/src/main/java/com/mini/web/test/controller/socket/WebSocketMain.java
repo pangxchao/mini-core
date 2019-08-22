@@ -1,63 +1,64 @@
 package com.mini.web.test.controller.socket;
 
-import com.mini.thread.RunnableLinkedBlockingQueue;
+import com.mini.logger.Logger;
+import com.mini.util.ObjectUtil;
+import com.mini.web.util.ISession;
 
 import javax.websocket.*;
+import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
+import java.io.Serializable;
+import java.util.EventListener;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.mini.logger.LoggerFactory.getLogger;
+import static java.util.Optional.ofNullable;
+
 @ServerEndpoint("/socket/{username}")
-public class WebSocketMain {
-    private static Map<String, WebSocketMain> clients = new ConcurrentHashMap<>();
-    private static int onlineCount = 0;
-    private Session session;
-    private String username;
+public final class WebSocketMain implements Serializable, ISession, EventListener {
+    private static final Map<String, Session> clients = new ConcurrentHashMap<>();
+    private static final Logger logger = getLogger(WebSocketMain.class);
+    private static final long serialVersionUID = 5617290669921632800L;
 
     @OnOpen
-    public void onOpen(@PathParam("username") String username, Session session) throws IOException {
-        this.username = username;
-        this.session  = session;
-        clients.put(username, this);
-        System.out.println("已连接");
+    public final void onOpen(Session session, @PathParam("username") String username) {
+        System.out.println("---已连接, userName: " + username);
+        ObjectUtil.require(!clients.containsKey(username));
+        clients.put(username, session);
     }
 
     @OnClose
-    public void onClose() throws IOException {
+    public final void onClose(Session session, @PathParam("username") String username) {
+        System.out.println("---已关闭, userName: " + username);
         clients.remove(username);
-        System.out.println("已关闭");
     }
 
     @OnMessage
-    public void onMessage(String message) throws IOException {
-        System.out.println("---这是客户端发过来的消息？");
+    public final void onMessage(Session session, @PathParam("username") String username, String message) {
+        System.out.println("---这是客户端发过来的消息, userName: " + username);
         System.out.println(message);
-        System.out.println();
     }
 
     @OnError
-    public void onError(Session session, Throwable error) {
-        System.out.println("出错啦");
-        error.printStackTrace();
+    public final void onError(Session session, @PathParam("username") String username, Throwable error) {
+        System.out.println("---出错啦, userName: " + username);
+        logger.error(error);
+    }
+
+    public static void sendMessage(String message) {
+        clients.values().forEach(session -> { //
+            Async a = session.getAsyncRemote();
+            a.sendText(message);
+        });
     }
 
     public static void sendMessage(String message, String... users) {
-        RunnableLinkedBlockingQueue.put(() -> {
-            // 传入的用户名不存在，发送所有用户
-            if (users == null || users.length == 0) {
-                for (WebSocketMain item : clients.values()) {
-                    item.session.getAsyncRemote().sendText(message);
-                }
-                return;
-            }
-            for (String user : users) {
-                WebSocketMain item = clients.get(user);
-                if (item != null) {
-                    item.session.getAsyncRemote().sendText(message);
-                }
-            }
-        });
+        for (int i = 0; users != null && i < users.length; i++) {
+            ofNullable(clients.get(users[i])).ifPresent(s -> {
+                s.getAsyncRemote().sendText(message); //
+            });
+        }
     }
 }

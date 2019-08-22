@@ -523,7 +523,6 @@ public final class WebUtil {
         return request == null ? null : castToBool(request.getParameter(name));
     }
 
-
     /**
      * 获取sessionId
      * @param session session 对象

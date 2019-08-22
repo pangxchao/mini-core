@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mini</groupId>
     <artifactId>core</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>com.mini</groupId>
     <packaging>jar</packaging>
+    <version>1.0</version>
 
     <name>com-mini-core</name>
     <description>com mini core</description>
@@ -50,13 +50,6 @@
             <artifactId>transaction-api</artifactId>
             <version>1.1</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
-<!--        <dependency>-->
-<!--            <groupId>org.mybatis</groupId>-->
-<!--            <artifactId>mybatis</artifactId>-->
-<!--            <version>3.5.2</version>-->
-<!--        </dependency>-->
 
         <!-- Json 处理工具 -->
         <dependency>
@@ -142,4 +135,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>GitHub Private Maven</name>
+            <url>file:D:/workspace-maven-git/maven/</url>
+        </repository>
+    </distributionManagement>
 </project>

@@ -21,7 +21,8 @@ layui.define(['jquery'], function (exports) {
     var result = !!FormData ? function (url, options) {
         if (!options.form || options.form === '') {
             layui.$.ajax($.extend({
-                traditional: true
+                traditional: true,
+                dataType: 'json'
             }, options, {
                 url: url
             }));
@@ -29,7 +30,7 @@ layui.define(['jquery'], function (exports) {
         }
 
         var formData = new FormData($(options.form)[0]);
-        $.ajax($.extend({traditional: true}, options, {
+        $.ajax($.extend({traditional: true, dataType: 'json'}, options, {
             data: append_all(formData, options.data),
             contentType: false,
             processData: false,

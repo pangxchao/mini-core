@@ -56,13 +56,5 @@ public enum ModelType {
         }
     };
 
-    @Nonnull
-    @SuppressWarnings("unchecked")
-    public <T extends IModel<T>> T getModel(IView view, String viewPath, HttpServletRequest r) {
-        IModel<PageModel> model = new PageModel(view);
-        r.setAttribute(MODEL_KEY, model);
-        model.setViewPath(viewPath);
-        return (T) model;
-    }
-
+    public abstract <T extends IModel<T>> T getModel(IView view, String viewPath, HttpServletRequest r);
 }

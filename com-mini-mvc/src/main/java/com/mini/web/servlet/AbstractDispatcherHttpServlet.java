@@ -187,11 +187,13 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
                 return model;
             }
 
+            @Nonnull
             @Override
             public synchronized final HttpServletRequest getRequest() {
                 return request;
             }
 
+            @Nonnull
             @Override
             public synchronized final HttpServletResponse getResponse() {
                 return response;

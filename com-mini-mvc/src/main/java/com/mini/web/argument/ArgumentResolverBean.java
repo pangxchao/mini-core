@@ -1,6 +1,5 @@
 package com.mini.web.argument;
 
-import com.mini.logger.Logger;
 import com.mini.web.config.Configure;
 
 import javax.annotation.Nonnull;
@@ -10,19 +9,15 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
-import static com.mini.logger.LoggerFactory.getLogger;
 import static java.util.Optional.ofNullable;
 
 @Named
 @Singleton
 public final class ArgumentResolverBean implements ArgumentResolver {
-    private static final Logger logger = getLogger(ArgumentResolverBean.class);
-
     private Configure configure;
 
     @Inject
@@ -39,23 +34,18 @@ public final class ArgumentResolverBean implements ArgumentResolver {
             Object instance = constructor.newInstance();
             BeanInfo beanInfo = Introspector.getBeanInfo(type);
             Arrays.stream(beanInfo.getPropertyDescriptors()).forEach(descriptor -> {
-                ofNullable(configure.getResolver(descriptor.getPropertyType())).ifPresent(r -> {
-                    ofNullable(descriptor.getWriteMethod()).ifPresent(m -> {
-                        try {
-                            m.invoke(instance, r.value(descriptor.getName(), descriptor //
-                                    .getPropertyType(), request, response));
-                        } catch (Exception | ClassFormatError | AssertionError e) {
-                            logger.info("Parameter instantiation failure.");
-                        }
-                    });
+                ArgumentResolver resolve = configure.getResolver(descriptor.getPropertyType());
+                ofNullable(resolve).flatMap(r -> ofNullable(descriptor.getWriteMethod())).ifPresent(m -> {
+                    try {
+                        m.invoke(instance, resolve.value(descriptor.getName(), descriptor //
+                                .getPropertyType(), request, response));
+                    } catch (Exception | Error ignored) {}
                 });
             });
 
             return instance;
-        } catch (ReflectiveOperationException | IntrospectionException e) {
-            logger.info("Parameter instantiation failure.");
-            return null;
-        }
+        } catch (Exception | Error ignored) {}
+        return null;
     }
 
 

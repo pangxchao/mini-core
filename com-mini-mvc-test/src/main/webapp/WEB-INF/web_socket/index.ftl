@@ -23,7 +23,7 @@
 </div>
 <script type="text/javascript">
     layui.use(['ajax', 'jquery', 'layer'], function () {
-        var socket = new WebSocket("ws://127.0.0.1/mini/socket/admin");
+        var socket = new WebSocket("ws://127.0.0.1/mini/socket/${username}");
         console.log(socket);
 
         // 连接成功的回调
@@ -33,9 +33,8 @@
         };
 
         // 接收服务器发送过来的消息
-        socket.onmessage = function (message, evt) {
+        socket.onmessage = function (evt) {
             console.log("这是服务器发过来的消息？");
-            console.log(message);
             console.log(evt);
         };
 
@@ -67,12 +66,12 @@
                 title: '请输入消息内容',
                 formType: 2
             }, function (value, i) {
-                layui.ajax("web_socket/sendMessage.htm",{
-                    success: function(data, state) {
+                layui.ajax("web_socket/sendMessage.htm", {
+                    success: function (data, state) {
                         console.log("---成功--" + state)
                     },
                     data: {
-                        userName:'admin',
+                        userName: '${username}',
                         message: value
                     }
                 });
