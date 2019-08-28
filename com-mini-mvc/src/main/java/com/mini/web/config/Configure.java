@@ -106,7 +106,7 @@ public final class Configure {
      */
     @Inject
     public void setUseTrailingSlashMatch(
-            @Named("mini.http.servlet.suffix-match")
+            @Named("mini.http.servlet.trailing-slash")
             @Nullable String trailingSlash) {
         this.trailingSlash = trailingSlash;
     }
