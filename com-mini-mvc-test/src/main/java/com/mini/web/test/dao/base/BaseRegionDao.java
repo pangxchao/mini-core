@@ -5,6 +5,7 @@ import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.test.entity.Region;
 import com.mini.web.test.entity.mapper.RegionMapper;
+import com.mini.web.test.entity.mapper.RegionMapper.RegionBuilder;
 
 import java.util.List;
 
@@ -23,6 +24,32 @@ public interface BaseRegionDao extends BasicsDao {
     default int insert(Region region) {
         return execute(new SQLBuilder() {{
             insert_into(Region.TABLE);
+            // 地区码/地区ID
+            values(Region.ID);
+            params(region.getId());
+            // 地区名称
+            values(Region.NAME);
+            params(region.getName());
+            // 地区ID列表
+            values(Region.ID_URI);
+            params(region.getIdUri());
+            // 地区名称列表
+            values(Region.NAME_URI);
+            params(region.getNameUri());
+            // 上级地区ID
+            values(Region.REGION_ID);
+            params(region.getRegionId());
+        }});
+    }
+
+    /**
+     * 添加实体信息
+     * @param region 实体信息
+     * @return 执行结果
+     */
+    default int replace(Region region) {
+        return execute(new SQLBuilder() {{
+            replace_into(Region.TABLE);
             // 地区码/地区ID
             values(Region.ID);
             params(region.getId());
@@ -104,8 +131,7 @@ public interface BaseRegionDao extends BasicsDao {
      * @return 实体信息
      */
     default Region queryById(int id) {
-        return queryOne(new SQLBuilder() {{
-            RegionMapper.init(this);
+        return queryOne(new RegionBuilder() {{
             // 地区码/地区ID
             where("%s = ?", Region.ID);
             params(id);
@@ -117,8 +143,8 @@ public interface BaseRegionDao extends BasicsDao {
      * @return 实体信息列表
      */
     default List<Region> queryAll() {
-        return query(new SQLBuilder() {{
-            RegionMapper.init(this);
+        return query(new RegionBuilder() {{
+            //
         }}, getRegionMapper());
     }
 
@@ -128,8 +154,8 @@ public interface BaseRegionDao extends BasicsDao {
      * @return 实体信息列表
      */
     default List<Region> queryAll(Paging paging) {
-        return query(paging, new SQLBuilder() {{
-            RegionMapper.init(this);
+        return query(paging, new RegionBuilder() {{
+            //
         }}, getRegionMapper());
     }
 }

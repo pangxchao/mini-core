@@ -9,7 +9,6 @@ import com.mini.jdbc.transaction.TransactionalInterceptor;
 import com.mini.jdbc.util.Paging;
 import com.mini.util.ClassUtil;
 import com.mini.util.MappingUri;
-import com.mini.util.StringUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
 import com.mini.web.annotation.Controller;
@@ -187,11 +186,10 @@ public abstract class WebMvcConfigure implements Module {
                 };
 
                 // 获取方法上的 urls 列表
-                stream(action.url().length > 0 ? action.url() : new String[]{method.getName()}).map(url -> {
-                    return StringUtil.join("/", "", controller.url(), def(url, method.getName())); //
-                }).map(url -> MappingUri.slashRemove(url.replaceAll("(/)+", "/"))).forEach(url -> {
-                    configure.addInvocationProxy(url, proxy); //
-                });
+                stream(action.url().length > 0 ? action.url() : new String[]{method.getName()}).map(url ->  //
+                        join("/", "", controller.url(), def(url, method.getName()))).map(url ->  //
+                        MappingUri.slash_remove(url.replaceAll("(/)+", "/"))).forEach(url ->  //
+                        configure.addInvocationProxy(url, proxy));  //
             });
         });
     }

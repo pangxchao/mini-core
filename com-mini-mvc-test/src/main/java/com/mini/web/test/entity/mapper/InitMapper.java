@@ -28,14 +28,20 @@ public class InitMapper implements IMapper<Init> {
         return init;
     }
 
-    public static void init(SQLBuilder builder) {
-        // 参数键
-        builder.select(Init.ID);
-        // 参数值
-        builder.select(Init.VALUE);
-        // 参数说明
-        builder.select(Init.REMARKS);
-        // 表名称
-        builder.from(Init.TABLE);
+    /**
+     * InitBuilder.java
+     * @author xchao
+     */
+    public static class InitBuilder extends SQLBuilder {
+        public InitBuilder() {
+            // 参数键
+            select(Init.ID);
+            // 参数值
+            select(Init.VALUE);
+            // 参数说明
+            select(Init.REMARKS);
+            // 表名称
+            from(Init.TABLE);
+        }
     }
 }

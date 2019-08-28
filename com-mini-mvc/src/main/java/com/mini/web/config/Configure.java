@@ -44,6 +44,8 @@ public final class Configure {
     // 基础配置
     private String encodingCharset = "UTF-8"; // 编码
     private String asyncSupported = "true"; // 是否支持异步返回
+    private String suffixPattern = "true"; // 是否开启后缀匹配模式
+    private String trailingSlash = "true"; // 是否自动后缀路径模式匹配
     private String urlPatterns = "*.htm"; // 拦截路径
 
     // 默认文件上传配置（大小限制、缓冲区大小配置，路径配置）
@@ -88,6 +90,28 @@ public final class Configure {
     }
 
     /**
+     * 是否开启后缀匹配模式
+     * @param suffixPattern "true"-是
+     */
+    @Inject
+    public void setUseSuffixPatternMatch(
+            @Named("mini.http.servlet.suffix-pattern")
+            @Nullable String suffixPattern) {
+        this.suffixPattern = suffixPattern;
+    }
+
+    /**
+     * 是否自动后缀路径模式匹配
+     * @param trailingSlash "true"-是
+     */
+    @Inject
+    public void setUseTrailingSlashMatch(
+            @Named("mini.http.servlet.suffix-match")
+            @Nullable String trailingSlash) {
+        this.trailingSlash = trailingSlash;
+    }
+
+    /**
      * 默认Servlet拦截路径
      * @param urlPatterns 拦截路径
      */
@@ -100,7 +124,7 @@ public final class Configure {
 
     /**
      * 是否开启文件上传功能
-     * @param multipartEnabled true-是
+     * @param multipartEnabled "true"-是
      */
     @Inject
     public void setMultipartEnabled(
@@ -235,6 +259,22 @@ public final class Configure {
     }
 
     /**
+     * 是否开启后缀匹配模式
+     * @return true-是
+     */
+    public synchronized final boolean isSuffixPattern() {
+        return castToBoolVal(suffixPattern);
+    }
+
+    /**
+     * 是否自动后缀路径模式匹配
+     * @return true-是
+     */
+    public synchronized final boolean isTrailingSlash() {
+        return castToBoolVal(trailingSlash);
+    }
+
+    /**
      * 获取默认 Servlet 访问路径
      * @return Servlet 访问路径
      */
@@ -340,13 +380,17 @@ public final class Configure {
 
     /**
      * 根据URI获取一个Action代理对象
-     * @param uri    访问Action的URI
-     * @param method 请求的方法
-     * @param func   回调方法
+     * @param uri              访问Action的URI
+     * @param method           请求的方法
+     * @param useSuffixPattern 是否开启后缀匹配模式
+     * @param useTrailingSlash 是否自动后缀路径模式匹配
+     * @param func             回调方法
      * @return Action代理对象
      */
-    public synchronized final ActionInvocationProxy getInvocationProxy(String uri, Action.Method method, BiConsumer<String, String> func) {
-        return requireNonNull(invocation.putIfAbsent(method, new WebMappingUri())).get(uri, func);
+    public synchronized final ActionInvocationProxy getInvocationProxy(String uri, Action.Method method, //
+            boolean useSuffixPattern, boolean useTrailingSlash, BiConsumer<String, String> func) { //
+        return requireNonNull(invocation.putIfAbsent(method, new WebMappingUri())) //
+                .get(uri, useSuffixPattern, useTrailingSlash, func);
     }
 
     /**
@@ -484,13 +528,16 @@ public final class Configure {
 
 
         /**
-         * 根据URI获取一个Action代理对象
-         * @param uri  访问Action的URI
-         * @param func 回调方法
+         * 获取路径匹配值
+         * @param uri           路径
+         * @param suffixPattern 开启后缀匹配模式
+         * @param trailingSlash 自动后缀路径模式匹配
+         * @param func          回调
          * @return Action代理对象
          */
-        public synchronized final ActionInvocationProxy get(String uri, BiConsumer<String, String> func) {
-            return m.get(uri, func);
+        public synchronized final ActionInvocationProxy get(String uri, boolean suffixPattern, //
+                boolean trailingSlash, BiConsumer<String, String> func) {
+            return m.get(uri, suffixPattern, trailingSlash, func);
         }
 
         /**
@@ -501,13 +548,5 @@ public final class Configure {
             return m;
         }
 
-        /**
-         * 根据URI获取一个Action代理对象
-         * @param uri 访问Action的URI
-         * @return Action代理对象
-         */
-        public synchronized final ActionInvocationProxy get(String uri) {
-            return m.get(uri);
-        }
     }
 }

@@ -5,6 +5,7 @@ import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.test.entity.Init;
 import com.mini.web.test.entity.mapper.InitMapper;
+import com.mini.web.test.entity.mapper.InitMapper.InitBuilder;
 
 import java.util.List;
 
@@ -23,6 +24,26 @@ public interface BaseInitDao extends BasicsDao {
     default int insert(Init init) {
         return execute(new SQLBuilder() {{
             insert_into(Init.TABLE);
+            // 参数键
+            values(Init.ID);
+            params(init.getId());
+            // 参数值
+            values(Init.VALUE);
+            params(init.getValue());
+            // 参数说明
+            values(Init.REMARKS);
+            params(init.getRemarks());
+        }});
+    }
+
+    /**
+     * 添加实体信息
+     * @param init 实体信息
+     * @return 执行结果
+     */
+    default int replace(Init init) {
+        return execute(new SQLBuilder() {{
+            replace_into(Init.TABLE);
             // 参数键
             values(Init.ID);
             params(init.getId());
@@ -92,8 +113,7 @@ public interface BaseInitDao extends BasicsDao {
      * @return 实体信息
      */
     default Init queryById(int id) {
-        return queryOne(new SQLBuilder() {{
-            InitMapper.init(this);
+        return queryOne(new InitBuilder() {{
             // 参数键
             where("%s = ?", Init.ID);
             params(id);
@@ -105,8 +125,8 @@ public interface BaseInitDao extends BasicsDao {
      * @return 实体信息列表
      */
     default List<Init> queryAll() {
-        return query(new SQLBuilder() {{
-            InitMapper.init(this);
+        return query(new InitBuilder() {{
+            //
         }}, getInitMapper());
     }
 
@@ -116,8 +136,8 @@ public interface BaseInitDao extends BasicsDao {
      * @return 实体信息列表
      */
     default List<Init> queryAll(Paging paging) {
-        return query(paging, new SQLBuilder() {{
-            InitMapper.init(this);
+        return query(paging, new InitBuilder() {{
+            //
         }}, getInitMapper());
     }
 }

@@ -79,6 +79,7 @@ public interface Configure {
         // 生成的所有类的包名
         public final String daoBasePackage;
         public final String daoImplPackage;
+        //public final String builderPackage;
         public final String mapperPackage;
         public final String basePackage;
         public final String beanPackage;
@@ -87,6 +88,7 @@ public interface Configure {
         // 生成的所有类的类名
         public final String daoBaseName;
         public final String daoImplName;
+        public final String builderName;
         public final String mapperName;
         public final String baseName;
         public final String beanName;
@@ -95,6 +97,7 @@ public interface Configure {
         // 生成的所有的类的类对象
         public final ClassName daoBaseClass;
         public final ClassName daoImplClass;
+        // public final ClassName builderClass;
         public final ClassName mapperClass;
         public final ClassName baseClass;
         public final ClassName beanClass;
@@ -108,6 +111,7 @@ public interface Configure {
         public ClassInfo(Configure configure, String className) throws RuntimeException {
             // 生成的所有类的包名
             mapperPackage  = format("%s.entity.mapper", configure.getPackageName());
+            //builderPackage = format("%s.entity.mapper", configure.getPackageName());
             basePackage    = format("%s.entity.base", configure.getPackageName());
             daoBasePackage = format("%s.dao.base", configure.getPackageName());
             daoImplPackage = format("%s.dao.impl", configure.getPackageName());
@@ -117,6 +121,7 @@ public interface Configure {
             // 生成的所有类的类名
             daoBaseName = format("Base%sDao", className);
             daoImplName = format("%sDaoImpl", className);
+            builderName = format("%sBuilder", className);
             mapperName  = format("%sMapper", className);
             baseName    = format("Base%s", className);
             daoName     = format("%sDao", className);

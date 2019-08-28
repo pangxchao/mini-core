@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -113,7 +114,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
 
         // 获取并验证 Action 调用对象，如果该对象为空时，返回 404 错误
-        final ActionInvocationProxy proxy = getInvocationProxy(uri, method, request);
+        final ActionInvocationProxy proxy = this.getInvocationProxy(uri, method, request);
         if (require(proxy, response, NOT_FOUND, "Not Found Page:" + uri, Objects::nonNull)) {
             return;
         }
@@ -256,6 +257,35 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
     }
 
+
+    /**
+     * 获取实际的 InvocationProxy 对象的Uri
+     * @param servletPath 请求的 servletPath
+     * @return InvocationProxy Uri
+     */
+    protected abstract String getInvocationProxyUri(String servletPath);
+
+    /**
+     * 是否开启后缀匹配模式
+     * @param suffixPattern 配置文件中的该值
+     * @return true-是
+     */
+    protected abstract boolean useSuffixPatternMatch(boolean suffixPattern);
+
+    /**
+     * 是否自动后缀路径模式匹配
+     * @param trailingSlash 配置文件中的该值
+     * @return true-是
+     */
+    protected abstract boolean useTrailingSlashMatch(boolean trailingSlash);
+
+    /**
+     * 获取路径在匹配过程的参数回调
+     * @param request 配置文件中的该值
+     * @return BiConsumer 对象
+     */
+    protected abstract BiConsumer<String, String> getBiConsumer(HttpServletRequest request);
+
     /**
      * 获取 ActionInvocationProxy 对象
      * @param uri     RequestURI
@@ -263,8 +293,12 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
      * @param request HttpServletRequest
      * @return ActionInvocationProxy 对象
      */
-    protected abstract ActionInvocationProxy getInvocationProxy(String uri, Action.Method method, HttpServletRequest request) throws ServletException,
-            IOException;
+    private ActionInvocationProxy getInvocationProxy(String uri, Action.Method method, HttpServletRequest request) {
+        return getConfigure().getInvocationProxy(getInvocationProxyUri(uri), //
+                method, useSuffixPatternMatch(configure.isSuffixPattern()), //
+                useSuffixPatternMatch(configure.isTrailingSlash()), //
+                this.getBiConsumer(request));
+    }
 
     /**
      * 验证表达式，并返回错误信息

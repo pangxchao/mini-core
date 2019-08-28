@@ -49,38 +49,40 @@ public class UserExtendMapper implements IMapper<UserExtend> {
         return userExtend;
     }
 
-    public static void init(SQLBuilder builder) {
-        // 用户ID
-        builder.select(User.ID);
-        // 用户名
-        builder.select(User.NAME);
-        // MD5(密码)
-        builder.select(User.PASSWORD);
-        // 用户手机号
-        builder.select(User.PHONE);
-        // 0-未认证，1-已谁
-        builder.select(User.PHONE_AUTH);
-        // 用户姓名
-        builder.select(User.FULL_NAME);
-        // 用户邮箱地址
-        builder.select(User.EMAIL);
-        // 0-未认证，1-已认证
-        builder.select(User.EMAIL_AUTH);
-        // 用户头像地址
-        builder.select(User.HEAD_URL);
-        // 用户所属地区ID
-        builder.select(User.REGION_ID);
-        // 用户注册时间
-        builder.select(User.CREATE_TIME);
-        // 地区名称
-        builder.select(Region.NAME);
-        // 地区ID URI
-        builder.select(Region.ID_URI);
-        // 地区Name URI
-        builder.select(Region.NAME_URI);
-        // 表名称
-        builder.from(User.TABLE);
-        // 联合地区表
-        builder.join("%s ON %s = %s", Region.TABLE, User.REGION_ID, Region.ID);
+    public abstract static class UserExtendBuilder extends SQLBuilder {
+        public UserExtendBuilder() {
+            // 用户ID
+            select(User.ID);
+            // 用户名
+            select(User.NAME);
+            // MD5(密码)
+            select(User.PASSWORD);
+            // 用户手机号
+            select(User.PHONE);
+            // 0-未认证，1-已谁
+            select(User.PHONE_AUTH);
+            // 用户姓名
+            select(User.FULL_NAME);
+            // 用户邮箱地址
+            select(User.EMAIL);
+            // 0-未认证，1-已认证
+            select(User.EMAIL_AUTH);
+            // 用户头像地址
+            select(User.HEAD_URL);
+            // 用户所属地区ID
+            select(User.REGION_ID);
+            // 用户注册时间
+            select(User.CREATE_TIME);
+            // 地区名称
+            select(Region.NAME);
+            // 地区ID URI
+            select(Region.ID_URI);
+            // 地区Name URI
+            select(Region.NAME_URI);
+            // 表名称
+            from(User.TABLE);
+            // 联合地区表
+            join("%s ON %s = %s", Region.TABLE, User.REGION_ID, Region.ID);
+        }
     }
 }

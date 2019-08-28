@@ -2,7 +2,6 @@ package com.mini.code.util;
 
 import com.mini.code.Configure.ClassInfo;
 import com.mini.jdbc.SQLBuilder;
-import com.mini.util.StringUtil;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
@@ -10,7 +9,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import static com.mini.util.StringUtil.*;
+import static com.mini.util.StringUtil.firstLowerCase;
+import static com.mini.util.StringUtil.toJavaName;
 import static com.squareup.javapoet.MethodSpec.Builder;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 
@@ -21,47 +21,6 @@ public final class MethodSpecBuilder {
         builder = methodBuilder(name);
     }
 
-    /**
-     * 将所有主键字段添加到方法参数上
-     * <P>添加时会将参数添加到JavaDoc</P>
-     * @param fieldList 所有 字段信息
-     * @param info      生成的类信息
-     * @return 当前对象
-     */
-    public MethodSpecBuilder addMapperStatement(List<Util.FieldInfo> fieldList, ClassInfo info) {
-        builder.addStatement("$T $L = new $T()", info.beanClass, firstLowerCase(info.beanName), info.beanClass);
-        for (Util.FieldInfo fieldInfo : fieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
-            builder.addComment(fieldInfo.getRemarks());
-            builder.addStatement("$L.set$L(rs.get$L($T.$L))", //
-                    firstLowerCase(info.beanName), //
-                    firstUpperCase(name), //
-                    firstUpperCase(fieldInfo.getTypeClass().getSimpleName()), //
-                    info.beanClass, //
-                    db_name); //
-        }
-        builder.addStatement("return $L", firstLowerCase(info.beanName));
-        return this;
-    }
-
-    /**
-     * 将所有主键字段添加到方法参数上
-     * <P>添加时会将参数添加到JavaDoc</P>
-     * @param fieldList 所有 字段信息
-     * @param info      生成的类信息
-     * @return 当前对象
-     */
-    public MethodSpecBuilder addMapperSqlStatement(List<Util.FieldInfo> fieldList, ClassInfo info) {
-        for (Util.FieldInfo fieldInfo : fieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            builder.addCode("// $L \n", fieldInfo.getRemarks());
-            builder.addStatement("builder.select($T.$L)", info.beanClass, db_name);
-        }
-        builder.addCode("// $L \n", "表名称");
-        builder.addStatement("builder.from($T.TABLE)", info.beanClass);
-        return this;
-    }
 
     /**
      * 将所有主键字段添加到方法参数上
@@ -92,7 +51,7 @@ public final class MethodSpecBuilder {
         builder.addStatement("\tinsert_into($T.TABLE)", info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             // 自动增长字段不处理
-            if(fieldInfo.isAuto()) continue;
+            if (fieldInfo.isAuto()) continue;
             // 其它字段信息
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
@@ -125,96 +84,6 @@ public final class MethodSpecBuilder {
         return this;
     }
 
-    /**
-     * 将所有字段和所有主键字段添加到update方法的方法体中
-     * @param fieldList   所有的字段信息
-     * @param pkFieldList 所有主键字段信息
-     * @param info        生成的类信息
-     * @return 当前对象
-     */
-    public MethodSpecBuilder addUpdateStatement(List<Util.FieldInfo> fieldList, List<Util.FieldInfo> pkFieldList, ClassInfo info) {
-        builder.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
-        builder.addStatement("\tupdate($T.TABLE)", info.beanClass);
-        for (Util.FieldInfo fieldInfo : fieldList) {
-            // 自动增长字段不处理
-            if(fieldInfo.isAuto()) continue;
-            // 其它字段信息
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = toJavaName(fieldInfo.getFieldName(), true);
-            builder.addCode("\t// $L \n", fieldInfo.getRemarks());
-            builder.addStatement("\tset($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-            builder.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-        }
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = toJavaName(fieldInfo.getFieldName(), true);
-            builder.addCode("\t// $L \n", fieldInfo.getRemarks());
-            builder.addStatement("\twhere($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-            builder.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-        }
-        builder.addStatement("}})");
-        return this;
-    }
-
-    /**
-     * 将所有主键字段添加到delete方法体中
-     * @param pkFieldList 所有主键字段信息
-     * @param info        生成的类信息
-     * @return 当前对象
-     */
-    public MethodSpecBuilder addDeleteStatement(List<Util.FieldInfo> pkFieldList, ClassInfo info) {
-        builder.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
-        builder.addStatement("\tdelete().from($T.TABLE)", info.beanClass);
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = toJavaName(fieldInfo.getFieldName(), true);
-            builder.addCode("\t// $L \n", fieldInfo.getRemarks());
-            builder.addStatement("\twhere($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-            builder.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-        }
-        builder.addStatement("}})");
-        return this;
-    }
-
-    /**
-     * 将所有主键字段添加到deleteById方法体中
-     * @param pkFieldList 所有主键字段信息
-     * @param info        生成的类信息
-     * @return 当前对象
-     */
-    public MethodSpecBuilder addDeleteByIdStatement(List<Util.FieldInfo> pkFieldList, ClassInfo info) {
-        builder.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
-        builder.addStatement("\tdelete().from($T.TABLE)", info.beanClass);
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = toJavaName(fieldInfo.getFieldName(), true);
-            builder.addCode("\t// $L \n", fieldInfo.getRemarks());
-            builder.addStatement("\twhere($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-            builder.addStatement("\tparams($N)", firstLowerCase(name));
-        }
-        builder.addStatement("}})");
-        return this;
-    }
-
-    /**
-     * 将所有主键字段添加到queryById方法体中
-     * @param pkFieldList 所有主键字段信息
-     * @param info        生成的类信息
-     * @return 当前对象
-     */
-    public MethodSpecBuilder addQueryByIdStatement(List<Util.FieldInfo> pkFieldList, ClassInfo info) {
-        builder.addCode("return queryOne(new $T() {{ \n", SQLBuilder.class);
-        builder.addStatement("\t$T.init(this)", info.mapperClass);
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = toJavaName(fieldInfo.getFieldName(), true);
-            builder.addCode("\t// $L \n", fieldInfo.getRemarks());
-            builder.addStatement("\twhere($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-            builder.addStatement("\tparams($N)", firstLowerCase(name));
-        }
-        builder.addStatement("}}, get$L())", info.mapperName);
-        return this;
-    }
 
     public MethodSpecBuilder addJavadoc(String format, Object... args) {
         builder.addJavadoc(format, args);

@@ -2,10 +2,10 @@ package com.mini.code.impl;
 
 import com.mini.code.Configure;
 import com.mini.code.Configure.ClassInfo;
-import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.Util;
 import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.mapper.IMapper;
+import com.mini.util.StringUtil;
 import com.squareup.javapoet.*;
 
 import javax.inject.Named;
@@ -17,7 +17,7 @@ import java.util.List;
 
 import static com.mini.code.util.Util.getColumns;
 import static com.mini.code.util.Util.getPrimaryKey;
-import static com.mini.util.StringUtil.firstLowerCase;
+import static com.mini.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
@@ -44,23 +44,12 @@ public final class CodeMapper {
                 .addJavadoc("$L.java \n", info.mapperName)
                 .addJavadoc("@author xchao \n");
 
-        // 实现的方法 (get(ResultSet rs, int number))
-        builder.addMethod(new MethodSpecBuilder("get")
-                .addAnnotation(Override.class)
-                .addModifiers(PUBLIC)
-                .returns(info.beanClass)
-                .addParameter(ResultSet.class, "rs")
-                .addParameter(int.class, "number")
-                .addException(SQLException.class)
-                .addMapperStatement(fieldList, info)
+        // 实现的方法 get(ResultSet rs, int number)
+        builder.addMethod(get(info, fieldList) //
                 .build());
 
-        // 初始化SQL方法
-        builder.addMethod(new MethodSpecBuilder("init")
-                .addModifiers(PUBLIC, STATIC)
-                .returns(void.class)
-                .addParameter(SQLBuilder.class, "builder")
-                .addMapperSqlStatement(fieldList, info)
+        // builder 实现
+        builder.addType(builder(info, fieldList)
                 .build());
 
         // 生成文件信息
@@ -69,6 +58,50 @@ public final class CodeMapper {
 
         System.out.println("====================================");
         System.out.println("Code Mapper : " + info.beanName + "\r\n");
+    }
+
+    // 实现 get(ResultSet rs, int number) 方法
+    private static MethodSpec.Builder get(ClassInfo info, List<Util.FieldInfo> fieldList) {
+        MethodSpec.Builder method = MethodSpec.methodBuilder("get")
+                .addAnnotation(Override.class)
+                .addModifiers(PUBLIC)
+                .returns(info.beanClass)
+                .addParameter(ResultSet.class, "rs")
+                .addParameter(int.class, "number")
+                .addException(SQLException.class);
+        method.addStatement("$T $L = new $T()", info.beanClass, firstLowerCase(info.beanName), info.beanClass);
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String db_name = fieldInfo.getFieldName().toUpperCase();
+            String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
+            method.addComment(fieldInfo.getRemarks());
+            method.addStatement("$L.set$L(rs.get$L($T.$L))", //
+                    firstLowerCase(info.beanName), //
+                    firstUpperCase(name), //
+                    firstUpperCase(fieldInfo.getTypeClass().getSimpleName()), //
+                    info.beanClass, //
+                    db_name); //
+        }
+        method.addStatement("return $L", firstLowerCase(info.beanName));
+        return method;
+    }
+
+    // builder 实现
+    private static TypeSpec.Builder builder(ClassInfo info, List<Util.FieldInfo> fieldList) {
+        MethodSpec.Builder method = MethodSpec.constructorBuilder()
+                .addModifiers(PUBLIC);
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String db_name = fieldInfo.getFieldName().toUpperCase();
+            method.addCode("// $L \n", fieldInfo.getRemarks());
+            method.addStatement("select($T.$L)", info.beanClass, db_name);
+        }
+        method.addCode("// $L \n", "表名称");
+        method.addStatement("from($T.TABLE)", info.beanClass);
+        return TypeSpec.classBuilder(format("%sBuilder", info.beanName))
+                .addModifiers(PUBLIC, STATIC)
+                .superclass(SQLBuilder.class)
+                .addJavadoc("$N.java \n", format("%sBuilder", info.beanName))
+                .addJavadoc("@author xchao \n")
+                .addMethod(method.build());
     }
 
     /**

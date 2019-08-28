@@ -44,30 +44,36 @@ public class UserMapper implements IMapper<User> {
         return user;
     }
 
-    public static void init(SQLBuilder builder) {
-        // 用户ID
-        builder.select(User.ID);
-        // 用户名
-        builder.select(User.NAME);
-        // MD5(密码)
-        builder.select(User.PASSWORD);
-        // 用户手机号
-        builder.select(User.PHONE);
-        // 0-未认证，1-已谁
-        builder.select(User.PHONE_AUTH);
-        // 用户姓名
-        builder.select(User.FULL_NAME);
-        // 用户邮箱地址
-        builder.select(User.EMAIL);
-        // 0-未认证，1-已认证
-        builder.select(User.EMAIL_AUTH);
-        // 用户头像地址
-        builder.select(User.HEAD_URL);
-        // 用户所属地区ID
-        builder.select(User.REGION_ID);
-        // 用户注册时间
-        builder.select(User.CREATE_TIME);
-        // 表名称
-        builder.from(User.TABLE);
+    /**
+     * UserBuilder.java
+     * @author xchao
+     */
+    public static class UserBuilder extends SQLBuilder {
+        public UserBuilder() {
+            // 用户ID
+            select(User.ID);
+            // 用户名
+            select(User.NAME);
+            // MD5(密码)
+            select(User.PASSWORD);
+            // 用户手机号
+            select(User.PHONE);
+            // 0-未认证，1-已谁
+            select(User.PHONE_AUTH);
+            // 用户姓名
+            select(User.FULL_NAME);
+            // 用户邮箱地址
+            select(User.EMAIL);
+            // 0-未认证，1-已认证
+            select(User.EMAIL_AUTH);
+            // 用户头像地址
+            select(User.HEAD_URL);
+            // 用户所属地区ID
+            select(User.REGION_ID);
+            // 用户注册时间
+            select(User.CREATE_TIME);
+            // 表名称
+            from(User.TABLE);
+        }
     }
 }

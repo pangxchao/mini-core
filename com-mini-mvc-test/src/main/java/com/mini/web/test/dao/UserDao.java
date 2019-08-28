@@ -9,6 +9,7 @@ import com.mini.web.test.dao.impl.UserDaoImpl;
 import com.mini.web.test.entity.Region;
 import com.mini.web.test.entity.UserExtend;
 import com.mini.web.test.entity.mapper.UserExtendMapper;
+import com.mini.web.test.entity.mapper.UserExtendMapper.UserExtendBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,8 +27,7 @@ public interface UserDao extends BaseUserDao {
 
     default List<UserExtend> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri, LocalDate startTime,
             LocalDate endTime) {
-        return query(paging, new SQLBuilder() {{
-            UserExtendMapper.init(this);
+        return query(paging, new UserExtendBuilder() {{
             // 搜索关键字条件
             if (!StringUtil.isBlank(search)) {
                 where("(%s LIKE ? OR %s LIKE ? OR %s LIKE ?)", NAME, FULL_NAME, PHONE);

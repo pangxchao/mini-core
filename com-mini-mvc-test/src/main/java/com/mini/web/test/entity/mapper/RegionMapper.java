@@ -32,18 +32,24 @@ public class RegionMapper implements IMapper<Region> {
         return region;
     }
 
-    public static void init(SQLBuilder builder) {
-        // 地区码/地区ID
-        builder.select(Region.ID);
-        // 地区名称
-        builder.select(Region.NAME);
-        // 地区ID列表
-        builder.select(Region.ID_URI);
-        // 地区名称列表
-        builder.select(Region.NAME_URI);
-        // 上级地区ID
-        builder.select(Region.REGION_ID);
-        // 表名称
-        builder.from(Region.TABLE);
+    /**
+     * RegionBuilder.java
+     * @author xchao
+     */
+    public static class RegionBuilder extends SQLBuilder {
+        public RegionBuilder() {
+            // 地区码/地区ID
+            select(Region.ID);
+            // 地区名称
+            select(Region.NAME);
+            // 地区ID列表
+            select(Region.ID_URI);
+            // 地区名称列表
+            select(Region.NAME_URI);
+            // 上级地区ID
+            select(Region.REGION_ID);
+            // 表名称
+            from(Region.TABLE);
+        }
     }
 }

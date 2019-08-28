@@ -69,28 +69,10 @@ public final class CodeBean {
         // 处理 Getter Setter 方法
         for (Util.FieldInfo fieldInfo : fieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
-
             // Getter 方法
-            builder.addMethod(MethodSpec.methodBuilder("get" + firstUpperCase(name))
-                    .addModifiers(PUBLIC)
-                    // 设置返回类型
-                    .returns(fieldInfo.getTypeClass())
-                    .addAnnotation(Override.class)
-                    // 方法体内容
-                    .addStatement("return $L", name)
-                    .build());
-
+            builder.addMethod(getter(fieldInfo, name).build());
             // Setter 方法
-            builder.addMethod(MethodSpec.methodBuilder("set" + firstUpperCase(name))
-                    .addModifiers(PUBLIC)
-                    // 设置返回类型
-                    .returns(void.class)
-                    // 添加方法参数列表
-                    .addParameter(fieldInfo.getTypeClass(), name)
-                    .addAnnotation(Override.class)
-                    // 添加方法体内容
-                    .addStatement("this.$L = $L", name, name)
-                    .build());
+            builder.addMethod(setter(fieldInfo, name).build());
         }
         // 生成文件信息
         JavaFile javaFile = JavaFile.builder(info.beanPackage, builder.build()).build();
@@ -98,6 +80,30 @@ public final class CodeBean {
 
         System.out.println("====================================");
         System.out.println("Code Bean : " + info.beanName + "\r\n");
+    }
+
+    // 生成getter方法
+    private static MethodSpec.Builder getter(Util.FieldInfo fieldInfo, String name) {
+        return MethodSpec.methodBuilder("get" + firstUpperCase(name))
+                .addModifiers(PUBLIC)
+                // 设置返回类型
+                .returns(fieldInfo.getTypeClass())
+                .addAnnotation(Override.class)
+                // 方法体内容
+                .addStatement("return $L", name);
+    }
+
+    // 生成setter方法
+    private static MethodSpec.Builder setter(Util.FieldInfo fieldInfo, String name) {
+        return MethodSpec.methodBuilder("set" + firstUpperCase(name))
+                .addModifiers(PUBLIC)
+                // 设置返回类型
+                .returns(void.class)
+                // 添加方法参数列表
+                .addParameter(fieldInfo.getTypeClass(), name)
+                .addAnnotation(Override.class)
+                // 添加方法体内容
+                .addStatement("this.$L = $L", name, name);
     }
 
     /**

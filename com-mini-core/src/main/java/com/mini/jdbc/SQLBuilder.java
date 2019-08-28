@@ -393,7 +393,6 @@ public class SQLBuilder {
         protected final String getClose() {
             return " ";
         }
-
     }
 
     // Join Statement

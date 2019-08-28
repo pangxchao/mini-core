@@ -40,32 +40,9 @@ public final class CodeBase {
         for (Util.FieldInfo fieldInfo : fieldList) {
             String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
             // Getter 方法
-            builder.addMethod(MethodSpec.methodBuilder("get" + StringUtil.firstUpperCase(name))
-                    .addModifiers(PUBLIC, DEFAULT)
-                    // 设置返回类型
-                    .returns(fieldInfo.getTypeClass())
-                    .addException(UnsupportedOperationException.class)
-                    // 方法体内容
-                    .addStatement("throw new $T()", UnsupportedOperationException.class)
-                    // 生成方法 JAVA DOC
-                    .addJavadoc("$L. \n", StringUtil.def(fieldInfo.getRemarks(), "Gets the value of " + name))
-                    .addJavadoc("@return The value of $L \n", name)
-                    .build());
-
+            builder.addMethod(getter(fieldInfo, name).build());
             // Setter 方法
-            builder.addMethod(MethodSpec.methodBuilder("set" + StringUtil.firstUpperCase(name))
-                    .addModifiers(PUBLIC, DEFAULT)
-                    // 设置返回类型
-                    .returns(void.class)
-                    // 添加方法参数列表
-                    .addParameter(fieldInfo.getTypeClass(), name)
-                    .addException(UnsupportedOperationException.class)
-                    // 添加方法体内容
-                    .addStatement("throw new $T()", UnsupportedOperationException.class)
-                    // 生成方法 JAVA DOC
-                    .addJavadoc("$L. \n", StringUtil.def(fieldInfo.getRemarks(), "Sets the value of " + name))
-                    .addJavadoc("@param $L The value of $L \n", name, name)
-                    .build());
+            builder.addMethod(setter(fieldInfo, name).build());
         }
 
         // 生成文件信息
@@ -74,6 +51,36 @@ public final class CodeBase {
 
         System.out.println("====================================");
         System.out.println("Code Base : " + info.beanName + "\r\n");
+    }
+
+    // 生成 getter 方法
+    private static MethodSpec.Builder getter(Util.FieldInfo fieldInfo, String name) {
+        return MethodSpec.methodBuilder("get" + StringUtil.firstUpperCase(name))
+                .addModifiers(PUBLIC, DEFAULT)
+                // 设置返回类型
+                .returns(fieldInfo.getTypeClass())
+                .addException(UnsupportedOperationException.class)
+                // 方法体内容
+                .addStatement("throw new $T()", UnsupportedOperationException.class)
+                // 生成方法 JAVA DOC
+                .addJavadoc("$L. \n", StringUtil.def(fieldInfo.getRemarks(), "Gets the value of " + name))
+                .addJavadoc("@return The value of $L \n", name);
+    }
+
+    // 生成setter方法
+    private static MethodSpec.Builder setter(Util.FieldInfo fieldInfo, String name) {
+        return MethodSpec.methodBuilder("set" + StringUtil.firstUpperCase(name))
+                .addModifiers(PUBLIC, DEFAULT)
+                // 设置返回类型
+                .returns(void.class)
+                // 添加方法参数列表
+                .addParameter(fieldInfo.getTypeClass(), name)
+                .addException(UnsupportedOperationException.class)
+                // 添加方法体内容
+                .addStatement("throw new $T()", UnsupportedOperationException.class)
+                // 生成方法 JAVA DOC
+                .addJavadoc("$L. \n", StringUtil.def(fieldInfo.getRemarks(), "Sets the value of " + name))
+                .addJavadoc("@param $L The value of $L \n", name, name);
     }
 
     /**
