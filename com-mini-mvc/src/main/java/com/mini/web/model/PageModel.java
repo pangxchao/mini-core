@@ -1,6 +1,6 @@
 package com.mini.web.model;
 
-import com.mini.util.map.MiniHashMap;
+import com.mini.util.ObjectUtil;
 import com.mini.validate.ValidateUtil;
 import com.mini.web.view.IView;
 
@@ -9,9 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
@@ -21,9 +20,10 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
  */
 public final class PageModel extends IModel<PageModel> implements Serializable {
     private static final long serialVersionUID = -1731063292578685253L;
-    private final MiniHashMap<String> data = new MiniHashMap<>();
+    private final Map<String, Object> data = new HashMap<>();
     private static final String TYPE = "text/html";
     private final IView view;
+
 
     public PageModel(IView view) {
         setContentType(TYPE);
@@ -35,19 +35,12 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
         return this;
     }
 
-    @Nonnull
-    public Set<String> keySet() {
-        return data.keySet();
-    }
-
-    @Nonnull
-    public Collection<Object> values() {
-        return data.values();
-    }
-
-    @Nonnull
-    public Set<Map.Entry<String, Object>> entrySet() {
-        return data.entrySet();
+    /**
+     * 获取所有数据
+     * @return 所有数据
+     */
+    public Map<String, Object> getData() {
+        return data;
     }
 
     /**
@@ -69,11 +62,6 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
     public PageModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         data.putAll(map);
         return model();
-    }
-
-    @Override
-    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendError(getStatus(), getMessage());
     }
 
     @Override

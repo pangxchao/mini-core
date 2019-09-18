@@ -4,9 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
+import com.mini.web.model.IModel;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
-import com.mini.web.model.factory.ModelType;
+
 import com.mini.web.test.entity.Init;
 import com.mini.web.test.service.InitService;
 
@@ -38,7 +39,7 @@ public class InitController {
      * @param paging  数据分页工具
      * @param request HttpServletRequest
      */
-    @Action(value = ModelType.MAP, url = "pages.htm")
+    @Action(value = MapModel.class, url = "pages.htm")
     public void pages(MapModel model, Paging paging, HttpServletRequest request) {
         System.out.println(JSON.toJSONString(request.getParameterMap()));
         model.addData("data", initService.queryAll(paging));
@@ -52,7 +53,7 @@ public class InitController {
      * @param model 数据模型渲染器
      * @param init  实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
+    @Action(value = MapModel.class, url = "insert.htm")
     public void insert(MapModel model, Init init) {
         initService.insert(init);
     }
@@ -62,7 +63,7 @@ public class InitController {
      * @param model 数据模型渲染器
      * @param init  实体信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
+    @Action(value = MapModel.class, url = "update.htm")
     public void update(MapModel model, Init init) {
         initService.update(init);
     }
@@ -72,7 +73,7 @@ public class InitController {
      * @param model 数据模型渲染器
      * @param id    参数键
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
+    @Action(value = MapModel.class, url = "delete.htm")
     public void delete(MapModel model, int id) {
         initService.deleteById(id);
     }

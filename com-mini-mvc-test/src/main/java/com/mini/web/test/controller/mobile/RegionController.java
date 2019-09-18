@@ -4,7 +4,7 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.ListModel;
 import com.mini.web.model.MapModel;
-import com.mini.web.model.factory.ModelType;
+
 import com.mini.web.test.entity.Region;
 import com.mini.web.test.service.RegionService;
 
@@ -26,7 +26,7 @@ public class RegionController {
      * @param model 数据模型渲染器
      * @param id    父级地区ID
      */
-    @Action(value = ModelType.LIST, url = "list.htm")
+    @Action(value = ListModel.class, url = "list.htm")
     public void list(ListModel model, Long id) {
         if (id == null) return;
         model.addDataAll(regionService.queryByParent(id));
@@ -37,7 +37,7 @@ public class RegionController {
      * @param model  数据模型渲染器
      * @param region 实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
+    @Action(value = MapModel.class, url = "insert.htm")
     public void insert(MapModel model, Region region) {
         regionService.insert(region);
     }
@@ -47,7 +47,7 @@ public class RegionController {
      * @param model  数据模型渲染器
      * @param region 实体信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
+    @Action(value = MapModel.class, url = "update.htm")
     public void update(MapModel model, Region region) {
         regionService.update(region);
     }
@@ -57,7 +57,7 @@ public class RegionController {
      * @param model 数据模型渲染器
      * @param id    地区码/地区ID
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
+    @Action(value = MapModel.class, url = "delete.htm")
     public void delete(MapModel model, int id) {
         regionService.deleteById(id);
     }

@@ -7,10 +7,7 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +32,7 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
     private InputStream inputStream;
     private long contentLength;
     private String fileName;
+
 
     public StreamModel() {
         super(TYPE);
@@ -72,11 +70,6 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
 
     protected long getEnd() {
         return contentLength - 1;
-    }
-
-    @Override
-    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendError(getStatus(), getMessage());
     }
 
     @Override
@@ -203,14 +196,14 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
     }
 
     // 写入数据
-    private void copy(ServletOutputStream out, long start, long end) throws Exception {
+    private void copy(OutputStream out, long start, long end) throws Exception {
         getWriteCallback().copy(out, start, end);
     }
 
     @Nonnull
     private synchronized WriteCallback getWriteCallback() {
         return ObjectUtil.defIfNull(writeCallback, new WriteCallback() {
-            public void copy(ServletOutputStream out, long start, long end) throws IOException {
+            public void copy(OutputStream out, long start, long end) throws IOException {
                 if (StreamModel.this.inputStream == null) return;
                 try (InputStream source = StreamModel.this.inputStream) {
                     long sendLength = end - start + 1, skip = source.skip(start);
@@ -220,7 +213,7 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
                 }
             }
 
-            private void transferTo(ServletOutputStream out, InputStream source, long sendLength) throws IOException {
+            private void transferTo(OutputStream out, InputStream source, long sendLength) throws IOException {
                 int length, size = BUFFER_SIZE;
                 byte[] buffer = new byte[size];
                 for (; sendLength > 0; sendLength -= length) {
@@ -320,6 +313,6 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
 
     @FunctionalInterface
     public interface WriteCallback {
-        void copy(ServletOutputStream out, long start, long end) throws Exception;
+        void copy(OutputStream out, long start, long end) throws Exception;
     }
 }

@@ -6,9 +6,11 @@ import com.mini.logger.LoggerFactory;
 import com.mini.util.MappingUri;
 import com.mini.web.annotation.Action;
 import com.mini.web.argument.ArgumentResolver;
-import com.mini.web.argument.ArgumentResolverBean;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
+import com.mini.web.model.IModel;
+import com.mini.web.model.factory.IModelFactory;
+import com.mini.web.view.FreemarkerView;
 import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;
@@ -28,9 +30,11 @@ import static com.mini.util.StringUtil.split;
 import static com.mini.util.TypeUtil.*;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 @Singleton
 public final class Configure {
+    private final Map<Class<? extends IModel<?>>, Class<? extends IModelFactory<?>>> modelFactory = new ConcurrentHashMap<>();
     private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
     private final Map<Class<? extends HttpServlet>, ServletElement> servlets = new ConcurrentHashMap<>();
     private final Map<Class<? extends Filter>, FilterElement> filters = new ConcurrentHashMap<>();
@@ -38,7 +42,7 @@ public final class Configure {
     private final Map<Class<?>, ArgumentResolver> resolverMap = new ConcurrentHashMap<>();
     private final HashSet<Class<? extends EventListener>> listeners = new HashSet<>();
     private static final Logger logger = LoggerFactory.getLogger(Configure.class);
-    private Class<? extends IView> viewClass;
+    private Class<? extends IView> viewClass = FreemarkerView.class;
     private IView view;
 
     // 基础配置
@@ -393,6 +397,7 @@ public final class Configure {
                 .get(uri, useSuffixPattern, useTrailingSlash, func);
     }
 
+
     /**
      * 添加一个监听器
      * @param listener 监听器
@@ -458,6 +463,31 @@ public final class Configure {
     }
 
     /**
+     * 添加一个数据模型渲染器工厂
+     * @param mClass 数据模型渲染器类型
+     * @param fClass 数据模型渲染器工厂
+     * @return 当前对象
+     */
+    public synchronized final <T extends IModel<T>> Configure addModelFactory(Class<T> mClass, //
+            Class<? extends IModelFactory<T>> fClass) {
+        modelFactory.putIfAbsent(mClass, fClass);
+        return this;
+    }
+
+    /**
+     * 根据数据模型渲染器类型获取数据模型渲染器
+     * @param mClass   数据模型渲染器类型
+     * @param viewPath 页面视图路径
+     * @return 数据模型渲染器
+     */
+    public synchronized final IModel<?> getModel(Class<?> mClass, String viewPath) {
+        return Optional.ofNullable(modelFactory.get(mClass))  //
+                .map(fClass -> injector.getInstance(fClass)) //
+                .map(f -> f.getModel(getView(), viewPath)) //
+                .orElse(null);
+    }
+
+    /**
      * 添加一个参数解析器
      * @param clazz    参数类型
      * @param resolver 解析器类
@@ -473,11 +503,13 @@ public final class Configure {
      * @param type 参数类型
      * @return 参数解析器实例
      */
-    public synchronized final ArgumentResolver getResolver(Class<?> type) throws RuntimeException {
+    @Nonnull
+    public synchronized final ArgumentResolver getResolver(Class<?> type) throws UnregisteredException {
         return Configure.this.resolverMap.computeIfAbsent(type, resolverMapKey -> {
             Class<? extends ArgumentResolver> clazz = argumentResolvers.get(type);
-            if (clazz == null) clazz = ArgumentResolverBean.class;
-            return injector.getInstance(clazz);
+            return ofNullable(clazz).map(c -> injector.getInstance(c)).orElseThrow(() -> { //
+                return new UnregisteredException("Unregistered parameter types: " + type);
+            });
         });
     }
 
@@ -507,12 +539,19 @@ public final class Configure {
      */
     public synchronized final IView getView() {
         requireNonNull(injector, "Injector can not be null");
-        return Optional.ofNullable(view).orElseGet(() -> {
+        return ofNullable(view).orElseGet(() -> {
             view = injector.getInstance(viewClass);
             return view;
         });
     }
 
+    public static class UnregisteredException extends RuntimeException {
+        private static final long serialVersionUID = -2227012160825551352L;
+
+        public UnregisteredException(String message) {
+            super(message);
+        }
+    }
 
     private static final class WebMappingUri implements Serializable {
         private static final long serialVersionUID = 6411134887844922562L;
@@ -547,6 +586,5 @@ public final class Configure {
         public synchronized final MappingUri<ActionInvocationProxy> getAll() {
             return m;
         }
-
     }
 }

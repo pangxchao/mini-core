@@ -5,18 +5,19 @@ import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.RequestName;
 import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.config.Configure;
+import com.mini.web.config.Configure.UnregisteredException;
+import com.mini.web.interceptor.ActionInvocation;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
+import java.util.EventListener;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 
-public final class RequestParameter {
-    private static final Logger logger = getLogger(RequestParameter.class);
+public final class RequestParameter implements IStatus, ISession, EventListener {
+    private static final Logger logger = getLogger(Configure.class);
     private final MiniParameter param;
     private final String name;
 
@@ -30,19 +31,20 @@ public final class RequestParameter {
         return param.getType();
     }
 
-    private Object getValue(ArgumentResolver resolver, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return resolver == null ? null : resolver.value(getName(), getType(), request, response);
+    private Object getValue(ArgumentResolver resolver, ActionInvocation invoke) throws Exception {
+        return resolver.value(getName(), getType(), invoke);
     }
 
-    public Object getValue(Configure configure, HttpServletRequest request, HttpServletResponse response) {
+    public Object getValue(Configure configure, ActionInvocation invoke) {
         try {
             ArgumentResolver r = configure.getResolver(getType());
-            return getValue(r, request, response);
+            return getValue(r, invoke);
         } catch (NumberFormatException e) {
             return (byte) 0;
-        } catch (Exception | Error e) {
-            return null;
-        }
+        } catch (UnregisteredException e) {
+            logger.warn(e.getMessage());
+        } catch (Exception ignored) {}
+        return null;
     }
 
     public String getName() {

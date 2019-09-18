@@ -5,7 +5,7 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
-import com.mini.web.model.factory.ModelType;
+
 import com.mini.web.test.entity.Region;
 import com.mini.web.test.service.RegionService;
 
@@ -66,7 +66,7 @@ public class RegionController {
      * @param region 实体信息
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "hInsert.htm"
     )
     public void hInsert(MapModel model, Region region) {
@@ -91,7 +91,7 @@ public class RegionController {
      * @param region 实体信息
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "hUpdate.htm"
     )
     public void hUpdate(MapModel model, Region region) {
@@ -104,7 +104,7 @@ public class RegionController {
      * @param id    地区码/地区ID
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "delete.htm"
     )
     public void delete(MapModel model, int id) {

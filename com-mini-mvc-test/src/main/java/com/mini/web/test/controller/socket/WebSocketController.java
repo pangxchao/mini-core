@@ -6,7 +6,7 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
-import com.mini.web.model.factory.ModelType;
+
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class WebSocketController {
         model.addData("username", PKGenerator.uuid());
     }
 
-    @Action(value = ModelType.MAP, url = "sendMessage.htm")
+    @Action(value = MapModel.class, url = "sendMessage.htm")
     public void sendMessage(MapModel model, String userName, String message) {
         String[] users = StringUtil.split(userName, ",");
         WebSocketMain.sendMessage(message, users);

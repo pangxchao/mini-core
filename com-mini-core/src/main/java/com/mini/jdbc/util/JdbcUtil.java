@@ -5,14 +5,12 @@ import com.mini.util.StringUtil;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public final class JdbcUtil {
 
     /**
      * 填充 PreparedStatement 参数
+     *
      * @param statement PreparedStatement 对象
      * @param params    参数
      * @return PreparedStatement 对象
@@ -30,6 +28,7 @@ public final class JdbcUtil {
      * <p>Uses the {@code getObject(index)} method, but includes additional "hacks"
      * to get around Oracle 10g returning a non-standard object for its TIMESTAMP datatype and a {@code java.sql.Date} for DATE columns leaving out the time
      * portion: These columns will explicitly be extracted as standard {@code java.sql.Timestamp} object.
+     *
      * @param rs    is the ResultSet holding the data
      * @param index is the column index
      * @return the value object
@@ -75,6 +74,7 @@ public final class JdbcUtil {
      * {@link #getResultSetValue(java.sql.ResultSet, int)} for unknown types.
      * <p>Note that the returned value may not be assignable to the specified
      * required type, in case of an unknown type. Calling code needs to deal with this case appropriately, e.g. throwing a corresponding exception.
+     *
      * @param rs           is the ResultSet holding the data
      * @param index        is the column index
      * @param requiredType the required value type (may be {@code null})
@@ -84,46 +84,100 @@ public final class JdbcUtil {
      */
     @Nullable
     public static Object getResultSetValue(ResultSet rs, int index, @Nullable Class<?> requiredType) throws SQLException {
-        if (requiredType == null) return getResultSetValue(rs, index);
-        // 字符串返回类型
-        if (requiredType.isAssignableFrom(String.class)) {
+        if (requiredType == null) {
+            return getResultSetValue(rs, index);
+        }
+        // long 类型处理
+        if (long.class == requiredType) {
+            return rs.getLong(index);
+        }
+        // int 类型处理
+        if (int.class == requiredType) {
+            return rs.getInt(index);
+        }
+        // short 类型处理
+        if (short.class == requiredType) {
+            return rs.getShort(index);
+        }
+        // byte 类型处理
+        if (byte.class == requiredType) {
+            return rs.getByte(index);
+        }
+        // double 类型处理
+        if (double.class == requiredType) {
+            return rs.getDouble(index);
+        }
+        // float 类型处理
+        if (float.class == requiredType) {
+            return rs.getFloat(index);
+        }
+        // boolean 类型处理
+        if (boolean.class == requiredType) {
+            return rs.getBoolean(index);
+        }
+        // char 类型处理
+        if (char.class == requiredType) {
+            return rs.getInt(index);
+        }
+        // 空值处理
+        if (rs.wasNull()) {
+            return null;
+        }
+        // String 类型处理
+        if (String.class == requiredType) {
             return rs.getString(index);
         }
-        // long/Long 返回类型处理
-        if (long.class == requiredType || Long.class == requiredType) {
-            return rs.wasNull() ? null : rs.getLong(index);
+        // CharSequence 类型处理
+        if (CharSequence.class == requiredType) {
+            return rs.getString(index);
         }
-        // int/Integer 返回类型处理
-        if (int.class == requiredType || Integer.class == requiredType) {
-            return rs.wasNull() ? null : rs.getInt(index);
+        //  Long 类型处理
+        if (Long.class == requiredType) {
+            return rs.getLong(index);
         }
-        // short/Short 返回类型处理
-        if (short.class == requiredType || Short.class == requiredType) {
-            return rs.wasNull() ? null : rs.getShort(index);
+        //  Integer 类型处理
+        if (Integer.class == requiredType) {
+            return rs.getInt(index);
         }
-        // byte/Byte 返回类型处理
-        if (byte.class == requiredType || Byte.class == requiredType) {
-            return rs.wasNull() ? null : rs.getByte(index);
+        //  Short 类型处理
+        if (Short.class == requiredType) {
+            return rs.getShort(index);
         }
-        // float/Float 返回类型处理
-        if (float.class == requiredType || Float.class == requiredType) {
-            return rs.wasNull() ? null : rs.getFloat(index);
+        //  Byte 类型处理
+        if (Byte.class == requiredType) {
+            return rs.getByte(index);
         }
-        // double/Double/Number 返回类型处理
-        if (double.class == requiredType || Double.class == requiredType || Number.class == requiredType) {
-            return rs.wasNull() ? null : rs.getDouble(index);
+        //  Float 类型处理
+        if (Float.class == requiredType) {
+            return rs.getFloat(index);
         }
-        // java.sql.Timestamp/java.sql.Date/LocalDateTime  类型处理
-        if (java.sql.Timestamp.class == requiredType || java.util.Date.class == requiredType || LocalDateTime.class == requiredType) {
-            return rs.getTimestamp(index);
+        //  Double 类型处理
+        if (Double.class == requiredType) {
+            return rs.getDouble(index);
+        }
+        // Number 类型处理
+        if (Number.class == requiredType) {
+            return rs.getDouble(index);
         }
         // java.sql.Date 类型处理
-        if (java.sql.Date.class == requiredType || LocalDate.class == requiredType) {
-            return rs.getDate(index);
+        if (java.util.Date.class == requiredType) {
+            return rs.getTimestamp(index);
+        }
+        // java.sql.Timestamp类型处理
+        if (Timestamp.class == requiredType) {
+            return rs.getTimestamp(index);
         }
         // java.sql.Time 类型处理
-        if (java.sql.Time.class == requiredType || LocalTime.class == requiredType) {
+        if (Time.class == requiredType) {
             return rs.getTime(index);
+        }
+        // java.sql.Date 类型处理
+        if (Date.class == requiredType) {
+            return rs.getDate(index);
+        }
+        // BigDecimal 类型处理
+        if (BigDecimal.class == requiredType) {
+            return rs.getBigDecimal(index);
         }
         // byte[] 类型处理
         if (byte[].class == requiredType) {
@@ -137,14 +191,9 @@ public final class JdbcUtil {
         if (Clob.class == requiredType) {
             return rs.getClob(index);
         }
-        // BigDecimal 类型处理
-        if (BigDecimal.class == requiredType) {
-            return rs.getBigDecimal(index);
-        }
         // 其它类型处理
         return rs.getObject(index, requiredType);
     }
-
 
 
     /**
@@ -153,6 +202,7 @@ public final class JdbcUtil {
      * to decide whether the set of SQL statements should be executed through the JDBC 2.0 batch mechanism or simply in a traditional one-by-one fashion.
      * <p>Logs a warning if the "supportsBatchUpdates" methods throws an exception
      * and simply returns {@code false} in that case.
+     *
      * @param connection the Connection to check
      * @return whether JDBC 2.0 batch updates are supported
      * @see java.sql.DatabaseMetaData#supportsBatchUpdates()
@@ -165,6 +215,7 @@ public final class JdbcUtil {
 
     /**
      * Extract a common name for the target database in use even if various drivers/platforms provide varying names at runtime.
+     *
      * @param source the name as provided in database meta-data
      * @return the common name to be used (e.g. "DB2" or "Sybase")
      */
@@ -185,6 +236,7 @@ public final class JdbcUtil {
 
     /**
      * Check whether the given SQL type is numeric.
+     *
      * @param sqlType the SQL type to be checked
      * @return whether the type is numeric
      */
@@ -201,6 +253,7 @@ public final class JdbcUtil {
      * expressed in the JDBC 4.0 specification:
      * <p><i>columnLabel - the label for the column specified with the SQL AS clause.
      * If the SQL AS clause was not specified, then the label is the name of the column</i>.
+     *
      * @param metaData    the current meta-data to use
      * @param columnIndex the index of the column for the look up
      * @return the column name to use

@@ -1,12 +1,12 @@
 package com.mini.web.model;
 
-import com.mini.util.collection.MiniArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.alibaba.fastjson.JSON.toJSONString;
 
@@ -16,7 +16,7 @@ import static com.alibaba.fastjson.JSON.toJSONString;
  */
 public final class ListModel extends IModel<ListModel> implements Serializable {
     private static final long serialVersionUID = 6324502603232680211L;
-    private final MiniArrayList data = new MiniArrayList();
+    private final List<Object> data = new ArrayList<>();
     private static final String TYPE = "text/plain";
 
     public ListModel() {
@@ -32,7 +32,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
      * 获取所有的数据
      * @return 所有数据
      */
-    public MiniArrayList getList() {
+    public List<Object> getData() {
         return this.data;
     }
 
@@ -76,15 +76,6 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     public ListModel setDataAll(int index, Collection<?> values) {
         data.addAll(index, values);
         return model();
-    }
-
-    @Override
-    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
-        try (PrintWriter writer = response.getWriter()) {
-            response.setStatus(getStatus());
-            writer.write(getMessage());
-            writer.flush();
-        }
     }
 
     @Override

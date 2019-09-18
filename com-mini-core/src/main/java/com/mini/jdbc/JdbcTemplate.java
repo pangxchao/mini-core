@@ -33,6 +33,7 @@ public abstract class JdbcTemplate {
 
     /**
      * Gets the value of dataSource.
+     *
      * @return The value of dataSource
      */
     @Nonnull
@@ -100,6 +101,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行 ConnectionCallback 对象
+     *
      * @param callback ConnectionCallback 对象
      * @param <T>      结果类型
      * @return 执行结果
@@ -118,6 +120,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行 DatabaseMetaDataCallback 对象
+     *
      * @param callback DatabaseMetaDataCallback 对象
      * @param <T>      结果类型
      * @return 执行结果
@@ -131,6 +134,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行 StatementCallback 对象
+     *
      * @param creator  StatementCreator 创建器
      * @param callback StatementCallback 对象
      * @param <T>      结果类型
@@ -145,6 +149,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行 PreparedStatementCallback 对象
+     *
      * @param creator  PreparedStatementCreator 创建器
      * @param callback PreparedStatementCallback 对象
      * @param <T>      结果类型
@@ -159,6 +164,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行 PreparedStatementCallback 对象
+     *
      * @param creator  CallableStatementCreator 创建器
      * @param callback CallableStatementCallback 对象
      * @param <T>      结果类型
@@ -173,6 +179,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 批量操作
+     *
      * @param str      SQL
      * @param callback 回调接口
      * @return 执行结果
@@ -183,6 +190,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 批量操作
+     *
      * @param builder SQLBuilder 对象
      * @return 执行结果
      */
@@ -192,6 +200,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行SQL
+     *
      * @param str    SQL
      * @param params 参数
      * @return 执行结果
@@ -205,6 +214,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行SQL
+     *
      * @param str    SQL
      * @param params 参数
      * @return 执行结果
@@ -223,6 +233,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行SQL
+     *
      * @param builder SQLBuilder 对象
      * @return 执行结果
      */
@@ -232,6 +243,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 执行SQL
+     *
      * @param builder SQLBuilder 对象
      * @return ID
      */
@@ -241,6 +253,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询结果
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -257,6 +270,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询结果
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -266,6 +280,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询结果
+     *
      * @param str    SQL
      * @param m      映射器
      * @param params 参数
@@ -286,6 +301,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询结果
+     *
      * @param builder SQLBuilder 对象
      * @param m       映射器
      * @param <T>     解析器类型
@@ -296,7 +312,111 @@ public abstract class JdbcTemplate {
     }
 
     /**
+     * 返回查询分页总条数的SQL
+     *
+     * @param str SQL
+     * @return 查询总条数的SQL
+     */
+    protected abstract String totals(String str);
+
+    /**
+     * 根据分页参数，组装分页查询SQL
+     *
+     * @param start 查询起始位置
+     * @param limit 查询条数
+     * @param str   基础查询SQL
+     * @return 分页查询SQL
+     */
+    protected abstract String paging(int start, int limit, String str);
+
+    /**
      * 查询结果
+     *
+     * @param start  查询起始位置
+     * @param limit  查询条数
+     * @param str    SQL
+     * @param m      解析器
+     * @param params 参数
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    public final <T> List<T> query(int start, int limit, String str, IMapper<T> m, Object... params) {
+        return query(paging(start, limit, str), m, params);
+    }
+
+    /**
+     * 查询结果
+     *
+     * @param start   查询起始位置
+     * @param limit   查询条数
+     * @param m       解析器
+     * @param builder SQL
+     * @param <T>     解析器类型
+     * @return 查询结果
+     */
+    public final <T> List<T> query(int start, int limit, SQLBuilder builder, IMapper<T> m) {
+        return query(start, limit, builder.toString(), m, builder.toArray());
+    }
+
+    /**
+     * 查询结果
+     *
+     * @param limit  查询条数
+     * @param str    SQL
+     * @param m      解析器
+     * @param params 参数
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    public final <T> List<T> query(int limit, String str, IMapper<T> m, Object... params) {
+        return query(0, limit, str, m, params);
+    }
+
+    /**
+     * 查询结果
+     *
+     * @param limit   查询条数
+     * @param m       解析器
+     * @param builder SQL
+     * @param <T>     解析器类型
+     * @return 查询结果
+     */
+    public final <T> List<T> query(int limit, SQLBuilder builder, IMapper<T> m) {
+        return query(0, limit, builder, m);
+    }
+
+    /**
+     * 查询结果
+     *
+     * @param paging paging 分页器
+     * @param str    SQL
+     * @param m      解析器
+     * @param params 参数
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    public final <T> List<T> query(Paging paging, String str, IMapper<T> m, Object... params) {
+        paging.setTotal(query(totals(str), rs -> rs.next() ? rs.getInt(1) : 0, params));
+        return query(paging(paging.getSkip(), paging.getLimit(), str), m, params);
+    }
+
+    /**
+     * 查询结果
+     *
+     * @param paging  分页器
+     * @param builder SQL
+     * @param m       解析器
+     * @param <T>     解析器类型
+     * @return 查询结果
+     */
+    public final <T> List<T> query(Paging paging, SQLBuilder builder, IMapper<T> m) {
+        return query(paging, builder.toString(), m, builder.toArray());
+    }
+
+
+    /**
+     * 查询结果
+     *
      * @param str    SQL
      * @param m      映射器
      * @param params 参数
@@ -304,17 +424,13 @@ public abstract class JdbcTemplate {
      * @return 查询结果
      */
     public final <T> T queryOne(String str, IMapper<T> m, Object... params) {
-        return JdbcTemplate.this.query(str, res -> {
-            if (res != null && res.next()) {
-                int number = res.getRow();
-                return m.get(res, number);
-            }
-            return null;
-        }, params);
+        return query(paging(0, 1, str), rs -> rs.next() ? m.get(rs, //
+                rs.getRow()) : null, params);
     }
 
     /**
      * 查询结果
+     *
      * @param builder SQLBuilder 对象
      * @param m       映射器
      * @param <T>     解析器类型
@@ -324,9 +440,9 @@ public abstract class JdbcTemplate {
         return queryOne(builder.toString(), m, builder.toArray());
     }
 
-
     /**
      * 查询单个值
+     *
      * @param str    SQL
      * @param type   值的类型
      * @param params 参数
@@ -338,6 +454,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询单个值
+     *
      * @param builder SQL
      * @param type    值的类型
      * @return 查询结果
@@ -348,6 +465,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询String
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -359,6 +477,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询String
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -368,6 +487,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Long
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -378,6 +498,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Long
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -387,6 +508,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Integer
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -398,6 +520,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Integer
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -408,6 +531,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Short
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -418,6 +542,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Short
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -428,6 +553,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Byte
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -438,6 +564,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Byte
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -447,6 +574,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Double
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -457,6 +585,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Double
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -466,6 +595,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Float
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -476,6 +606,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Float
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -485,6 +616,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Boolean
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -495,6 +627,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Boolean
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -504,6 +637,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Timestamp
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -514,6 +648,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Timestamp
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -523,6 +658,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Date
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -533,6 +669,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Date
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -542,6 +679,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Time
+     *
      * @param str    SQL
      * @param params 参数
      * @return 查询结果
@@ -552,6 +690,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 查询Time
+     *
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
@@ -560,49 +699,8 @@ public abstract class JdbcTemplate {
     }
 
     /**
-     * 查询结果
-     * @param paging paging 分页器
-     * @param str    SQL
-     * @param m      解析器
-     * @param params 参数
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    public final <T> List<T> query(Paging paging, String str, IMapper<T> m, Object... params) {
-        paging.setTotal(this.queryInt(this.totals(str), params));
-        return query(paging(paging, str), m, params);
-    }
-
-    /**
-     * 查询结果
-     * @param paging  分页器
-     * @param builder SQL
-     * @param m       解析器
-     * @param <T>     解析器类型
-     * @return 查询结果
-     */
-    public final <T> List<T> query(Paging paging, SQLBuilder builder, IMapper<T> m) {
-        return query(paging, builder.toString(), m, builder.toArray());
-    }
-
-    /**
-     * 返回查询分页总条数的SQL
-     * @param str SQL
-     * @return 查询总条数的SQL
-     */
-    protected abstract String totals(String str);
-
-    /**
-     * 根据分页参数，组装分页查询SQL
-     * @param paging 分页参数
-     * @param str    基础查询SQL
-     * @return 分页查询SQL
-     */
-    protected abstract String paging(Paging paging, String str);
-
-
-    /**
      * 当前线程数据库连接池管理
+     *
      * @author xchao
      */
     private static final class JdbcThreadLocal extends ThreadLocal<Map<DataSource, ConnectionHolder>> {
@@ -613,6 +711,7 @@ public abstract class JdbcTemplate {
 
     /**
      * 当前线程数据库连接管理
+     *
      * @author xchao
      */
     private static final class ConnectionHolder {

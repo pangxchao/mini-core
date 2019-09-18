@@ -593,11 +593,27 @@ public final class WebUtil {
     /**
      * 获取访问该项目的基础URL
      * @param req request 对象
-     * @return 如 http://localhost:80
+     * @return 如：http://localhost:8080
      */
-    public static String getDoMain(HttpServletRequest req) {
-        return String.format("%s://%s:%d", req.getScheme(), //
-                req.getServerName(), req.getServerPort());
+    public static String getDomain(HttpServletRequest req) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(req.getScheme()).append("://");
+        builder.append(req.getServerName());
+        if (req.getServerPort() == 80) {
+            return builder.toString();
+        }
+        // 处理端口
+        builder.append(":").append(req.getServerPort());
+        return builder.toString();
+    }
+
+    /**
+     * 根据 Request 获取当前请求的绝对路径
+     * @param request HttpServletRequest 对象
+     * @return 如：http://localhost:8080/user/login.htm
+     */
+    public static String getAbsoluteUrl(HttpServletRequest request) {
+        return getDomain(request) + request.getRequestURI();
     }
 
     /**

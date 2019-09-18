@@ -19,10 +19,10 @@ import com.mini.web.filter.CharacterEncodingFilter;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.*;
+import com.mini.web.model.factory.*;
 import com.mini.web.servlet.DispatcherHttpServlet;
 import com.mini.web.util.RequestParameter;
 import com.mini.web.view.FreemarkerView;
-import com.mini.web.view.IView;
 import org.aopalliance.intercept.MethodInterceptor;
 
 import javax.annotation.Nonnull;
@@ -90,6 +90,8 @@ public abstract class WebMvcConfigure implements Module {
         registerFilter(configure);
         // 注册默认参数解析器
         registerArgumentResolver(configure);
+        // 注册数据模型渲染器工厂
+        registerModelFactory(configure);
         //  注册默认视图实现类
         registerView(configure);
 
@@ -142,9 +144,10 @@ public abstract class WebMvcConfigure implements Module {
                         return clazz;
                     }
 
+                    @Nonnull
                     @Override
-                    public IModel<?> getModel(IView view, String viewPath, HttpServletRequest request) {
-                        return action.value().getModel(view, viewPath, request);
+                    public Class<? extends IModel<?>> getModel() {
+                        return action.value();
                     }
 
                     @Nonnull
@@ -288,6 +291,7 @@ public abstract class WebMvcConfigure implements Module {
         configure.addResolver(HttpSession.class, ArgumentResolverHttpSession.class);
 
         // Model 类型
+        configure.addResolver(StringModel.class, ArgumentResolverModel.class);
         configure.addResolver(StreamModel.class, ArgumentResolverModel.class);
         configure.addResolver(PageModel.class, ArgumentResolverModel.class);
         configure.addResolver(ListModel.class, ArgumentResolverModel.class);
@@ -297,6 +301,15 @@ public abstract class WebMvcConfigure implements Module {
         // 其它类型
         configure.addResolver(Paging.class, ArgumentResolverPaging.class);
         configure.addResolver(StringBuilder.class, ArgumentResolverBody.class);
+    }
+
+    // 注册数据模型渲染器工厂
+    private void registerModelFactory(Configure configure) {
+        configure.addModelFactory(StreamModel.class, StreamModelFactory.class);
+        configure.addModelFactory(StringModel.class, StringModelFactory.class);
+        configure.addModelFactory(PageModel.class, PageModelFactory.class);
+        configure.addModelFactory(ListModel.class, ListModelFactory.class);
+        configure.addModelFactory(MapModel.class, MapModelFactory.class);
     }
 
     // 配置默认视图实现类

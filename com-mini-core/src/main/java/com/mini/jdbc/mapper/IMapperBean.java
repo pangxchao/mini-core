@@ -1,10 +1,12 @@
 package com.mini.jdbc.mapper;
 
 import com.alibaba.fastjson.JSONObject;
-import com.mini.jdbc.util.SQLValue;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
+
+import static com.mini.jdbc.mapper.IMapperMap.INSTANCE;
 
 /**
  * BeanMapper.java
@@ -19,7 +21,7 @@ public final class IMapperBean<T> implements IMapper<T> {
 
     @Override
     public T get(ResultSet rs, int number) throws SQLException {
-        SQLValue value = IMapperMap.INSTANCE.get(rs, number);
+        Map<String, Object> value = INSTANCE.get(rs, number);
         return new JSONObject(value).toJavaObject(clazz);
     }
 }

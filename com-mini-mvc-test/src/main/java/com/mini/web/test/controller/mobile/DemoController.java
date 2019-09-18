@@ -1,14 +1,13 @@
 package com.mini.web.test.controller.mobile;
 
-import com.mini.digest.MD5Util;
 import com.mini.jdbc.util.Paging;
+import com.mini.security.digest.MD5;
 import com.mini.util.PKGenerator;
 import com.mini.validate.ValidateUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.StreamModel;
-import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.entity.User;
 import com.mini.web.test.service.UserService;
 import com.mini.web.test.util.FileGenerator;
@@ -18,6 +17,8 @@ import javax.inject.Singleton;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.util.Date;
+
+import static com.mini.validate.ValidateUtil.sendError;
 
 /**
  * 该组接口是Back/Demo 与 Front/Demo 的功能扩展接口和文件下载的一些示例演示
@@ -35,7 +36,7 @@ public class DemoController {
      * @param model  数据模型渲染器
      * @param paging 数据分页工具
      */
-    @Action(value = ModelType.MAP, url = "list.htm")
+    @Action(value = MapModel.class, url = "list.htm")
     public void list(MapModel model, Paging paging) {
         model.addData("data", userService.queryAll(paging));
         model.addData("paging", paging);
@@ -46,19 +47,19 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
-    public void insert(MapModel model, User user) {
+    @Action(value = MapModel.class, url = "insert.htm")
+    public void insert(MapModel model, User user) throws Exception {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPassword(), 600, "用户密码不能为空");
         ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
         // 加密密码和生成用户ID
-        user.setPassword(MD5Util.encode(user.getPassword()));
+        user.setPassword(MD5.encode(user.getPassword()));
         user.setCreateTime(new Date());
         user.setId(PKGenerator.id());
         // 添加用户信息到数据库
         if (userService.insert(user) != 1) {
-            model.sendError(600, "添加用户信息失败");
+            sendError(600, "添加用户信息失败");
             return;
         }
         // 返回用户信息到客户端
@@ -70,7 +71,7 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  用户信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
+    @Action(value = MapModel.class, url = "update.htm")
     public void update(MapModel model, User user) {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
@@ -81,7 +82,7 @@ public class DemoController {
         user.setCreateTime(info.getCreateTime());
         user.setPassword(info.getPassword());
         if (userService.update(user) != 1) {
-            model.sendError(600, "修改用户信息失败");
+            sendError(600, "修改用户信息失败");
         }
     }
 
@@ -90,7 +91,7 @@ public class DemoController {
      * @param model  数据模型渲染器
      * @param idList 要删除的数据ID List
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
+    @Action(value = MapModel.class, url = "delete.htm")
     public void delete(MapModel model, long[] idList) {
         ValidateUtil.is(idList != null && idList.length > 0, 600, "未选中数据");
         userService.delete(idList);
@@ -103,7 +104,7 @@ public class DemoController {
      * @param mark  加密串
      * @param time  参数生成时间
      */
-    @Action(value = ModelType.MAP, url = "upload.htm")
+    @Action(value = MapModel.class, url = "upload.htm")
     public void upload(MapModel model, Part file, String mark, long time) throws IOException {
         ValidateUtil.isNotNull(file, 600, "上传文件不能为空");
         ValidateUtil.isNotBlank(mark, 600, "加密串不能为空");
@@ -129,7 +130,7 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param mark  参数
      */
-    @Action(value = ModelType.STREAM, url = "download.htm")
+    @Action(value = StreamModel.class, url = "download.htm")
     public void download(StreamModel model, String mark) throws FileNotFoundException {
         File file = new File("D:/My Docs/图片/image/psb2e.jpeg");
         InputStream input = new FileInputStream(file);
@@ -144,7 +145,7 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param mark  参数
      */
-    @Action(value = ModelType.STREAM, url = "slice.htm")
+    @Action(value = StreamModel.class, url = "slice.htm")
     public void slice(StreamModel model, String mark) {
         byte[] text = "0123456789\r\nabc\n\tdefghijklmnopqrstuvwxyz-=.,/".getBytes();
         ByteArrayInputStream input = new ByteArrayInputStream(text);

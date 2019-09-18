@@ -4,6 +4,7 @@ import com.mini.util.StringUtil;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.MultipartBody.Builder;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -15,130 +16,77 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.function.LongConsumer;
 import java.util.function.ObjLongConsumer;
+import java.util.stream.Stream;
 
 import static com.mini.util.FileUtil.getMiniType;
+import static com.mini.util.ObjectUtil.defIfNull;
+import static java.lang.String.valueOf;
 import static okhttp3.MediaType.parse;
 
-public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
-    private final MultipartBody.Builder builder = new MultipartBody.Builder();
+public final class PartBuilder<T> extends AbstractBuilder<T> {
+    private final Builder builder = new Builder();
 
-    // 请求暂停时回调
-    private LongConsumer onCancel;
     // 下载进度回调
     private ObjLongConsumer<Long> onUpload;
+    // 请求暂停时回调
+    private LongConsumer onCancel;
 
-    /** 设置取消回调 */
-    public PartBuilder<V> setOnCancel(LongConsumer onCancel) {
-        this.onCancel = onCancel;
-        return this;
-    }
-
-    /** 设置上传进度回调 */
-    public PartBuilder<V> setOnUpload(ObjLongConsumer<Long> onUpload) {
-        this.onUpload = onUpload;
-        return this;
-    }
 
     @Override
     public RequestBody getRequestBody() {
         return builder.build();
     }
 
-    @Override
-    protected PartBuilder<V> getSelf() {
+    /** 设置上传进度回调 */
+    public PartBuilder<T> setOnUpload(ObjLongConsumer<Long> onUpload) {
+        this.onUpload = onUpload;
         return this;
     }
 
-    public PartBuilder<V> setType(MediaType type) {
-        builder.setType(type); return getSelf();
+    /** 设置取消回调 */
+    public PartBuilder<T> setOnCancel(LongConsumer onCancel) {
+        this.onCancel = onCancel;
+        return this;
     }
 
-    public PartBuilder<V> addFormDataPart(String name, Object value) {
-        Object v = value == null ? "" : value;
-        builder.addFormDataPart(name, String.valueOf(v));
-        return getSelf();
+    public PartBuilder<T> setType(MediaType type) {
+        builder.setType(type);
+        return this;
     }
 
-    public PartBuilder<V> addFormDataPart(String name, @Nullable String fileName, RequestBody body) {
+    public PartBuilder<T> addFormDataPart(String name, Object value) {
+        builder.addFormDataPart(name, valueOf(defIfNull(value, "")));
+        return this;
+    }
+
+    public <E> PartBuilder<T> addFormDataPartStream(String name, Stream<E> stream) {
+        stream.forEach(e -> addFormDataPart(name, e));
+        return this;
+    }
+
+    public PartBuilder<T> addFormDataPart(String name, @Nullable String fileName, RequestBody body) {
         builder.addFormDataPart(name, fileName, body);
-        return getSelf();
+        return this;
     }
 
-    public PartBuilder<V> addPart(RequestBody body) {
+    public PartBuilder<T> addPart(RequestBody body) {
         builder.addPart(body);
-        return getSelf();
+        return this;
     }
 
-    public PartBuilder<V> addPart(Headers headers, RequestBody body) {
+    public PartBuilder<T> addPart(Headers headers, RequestBody body) {
         builder.addPart(headers, body);
-        return getSelf();
+        return this;
     }
 
-    public PartBuilder<V> addPart(MultipartBody.Part part) {
+    public PartBuilder<T> addPart(MultipartBody.Part part) {
         builder.addPart(part);
-        return getSelf();
+        return this;
     }
 
-    public <T> PartBuilder<V> addFormDataPartIterable(String name, Iterable<T> array) {
-        for (T t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public <T> PartBuilder<V> addFormDataPartIterator(String name, Iterator<T> array) {
-        for (; array.hasNext(); ) addFormDataPart(name, array.next());
-        return getSelf();
-    }
-
-    public <T> PartBuilder<V> addFormDataPartArray(String name, T[] array) {
-        for (T t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, long[] array) {
-        for (long t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, int[] array) {
-        for (int t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, short[] array) {
-        for (short t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, byte[] array) {
-        for (byte t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, double[] array) {
-        for (double t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, float[] array) {
-        for (float t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, boolean[] array) {
-        for (boolean t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-    public PartBuilder<V> addFormDataPartArray(String name, char[] array) {
-        for (char t : array) addFormDataPart(name, t);
-        return getSelf();
-    }
-
-
-    public PartBuilder<V> addPart(String name, String fileName, String contentType, byte[] content) {
+    public PartBuilder<T> addPart(String name, String fileName, String contentType, byte[] content) {
         return addPart(MultipartBody.Part.createFormData(name, fileName, new RequestBody() {
             public MediaType contentType() {
                 if (!StringUtil.isBlank(contentType)) {
@@ -156,7 +104,7 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
         }));
     }
 
-    public PartBuilder<V> addPart(String name, String fileName, String contentType, long contentLength, InputStream content) {
+    public PartBuilder<T> addPart(String name, String fileName, String contentType, long contentLength, InputStream content) {
         return addPart(MultipartBody.Part.createFormData(name, fileName, new RequestBody() {
             public MediaType contentType() {
                 if (!StringUtil.isBlank(contentType)) {
@@ -176,7 +124,7 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
         }));
     }
 
-    public PartBuilder<V> addPart(String name, File file, long offset, long contentLength) {
+    public PartBuilder<T> addPart(String name, File file, long offset, long contentLength) {
         return addPart(MultipartBody.Part.createFormData(name, file.getName(), new RequestBody() {
             @Nullable
             @Override
@@ -224,7 +172,7 @@ public final class PartBuilder<V> extends AbstractBuilder<PartBuilder<V>, V> {
         }));
     }
 
-    public PartBuilder<V> addPart(String name, File file) {
+    public PartBuilder<T> addPart(String name, File file) {
         return addPart(name, file, 0, file.length());
     }
 

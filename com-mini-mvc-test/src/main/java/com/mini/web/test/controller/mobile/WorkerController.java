@@ -4,7 +4,6 @@ import com.mini.util.PKGenerator;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.StringModel;
-import com.mini.web.model.factory.ModelType;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -14,14 +13,14 @@ import javax.servlet.http.HttpServletRequest;
  * @author xchao
  */
 @Singleton
-@Controller(path = "unique", url = "unique")
-public final class UniqueController {
+@Controller(path = "worker", url = "worker")
+public final class WorkerController {
 
     /**
      * 获取长整型类型的主键
      * @param model 数据模型渲染器
      */
-    @Action(value = ModelType.STRING, url = "id.htm")
+    @Action(value = StringModel.class, url = "id.htm")
     public void id(StringModel model, HttpServletRequest request) {
         model.append("" + PKGenerator.id());
     }
@@ -30,7 +29,7 @@ public final class UniqueController {
      * 获取长整型类型的主键
      * @param model 数据模型渲染器
      */
-    @Action(value = ModelType.STRING, url = "uuid.htm")
+    @Action(value = StringModel.class, url = "uuid.htm")
     public void uuid(StringModel model, HttpServletRequest request) {
         model.append(PKGenerator.uuid());
     }

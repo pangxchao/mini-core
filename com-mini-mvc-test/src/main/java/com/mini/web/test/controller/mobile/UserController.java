@@ -4,7 +4,7 @@ import com.mini.jdbc.util.Paging;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
-import com.mini.web.model.factory.ModelType;
+
 import com.mini.web.test.entity.User;
 import com.mini.web.test.service.UserService;
 
@@ -30,7 +30,7 @@ public class UserController {
      * @param paging 数据分页工具
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "list.htm"
     )
     public void list(MapModel model, Paging paging) {
@@ -44,7 +44,7 @@ public class UserController {
      * @param user  实体信息
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "insert.htm"
     )
     public void insert(MapModel model, User user) {
@@ -57,7 +57,7 @@ public class UserController {
      * @param user  实体信息
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "update.htm"
     )
     public void update(MapModel model, User user) {
@@ -70,7 +70,7 @@ public class UserController {
      * @param id    用户ID
      */
     @Action(
-            value = ModelType.MAP,
+            value = MapModel.class,
             url = "delete.htm"
     )
     public void delete(MapModel model, long id) {

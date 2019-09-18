@@ -1,21 +1,27 @@
 package com.mini.web.test;
 
-import com.mini.util.map.MiniConcurrentHashMap;
-import com.mini.util.map.MiniMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.mini.util.TypeUtil.castToLongVal;
 
 public final class R {
-    private static final MiniMap<Integer> PARAMETERS = new MiniConcurrentHashMap<>();
+    private static final Map<Integer, String> MAP = new ConcurrentHashMap<>();
 
     public static final int KEY_MARK = 1;
     public static final int KEY_PATH = 2;
     public static final int KEY_URL = 3;
 
-    public static void put(int key, Object value) {
-        PARAMETERS.put(key, value);
+    public static void put(int key, String value) {
+        MAP.put(key, value);
     }
 
     public static String get(int key) {
-        return PARAMETERS.getAsString(key);
+        return MAP.get(key);
+    }
+
+    public static long getAsLong(int key) {
+        return castToLongVal(get(key));
     }
 
     public static String getMark() {

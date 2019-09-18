@@ -1,21 +1,22 @@
 package com.mini.web.argument;
 
 import com.mini.jdbc.util.Paging;
-import com.mini.util.TypeUtil;
+import com.mini.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import static com.mini.util.TypeUtil.castToIntVal;
 
 @Named
 @Singleton
 public final class ArgumentResolverPaging implements ArgumentResolver {
     @Override
-    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
-        String page = request.getParameter("page"), limit = request.getParameter("limit");
-        return new Paging(TypeUtil.castToIntVal(page), TypeUtil.castToIntVal(limit));
+    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull ActionInvocation invocation) {
+        String limit = invocation.getRequest().getParameter("limit");
+        String page = invocation.getRequest().getParameter("page");
+        return new Paging(castToIntVal(page), castToIntVal(limit));
     }
 
 }

@@ -32,4 +32,8 @@ public final class ObjectUtil {
     public static String toString(Object object) {
         return object == null ? null : object.toString();
     }
+
+    public static void sendError(String message) {
+        throw new RuntimeException(message);
+    }
 }

@@ -124,7 +124,7 @@
                         <configuration>
                             <compilerArgument>-proc:none</compilerArgument>
                             <source>${java.version}</source>
-                            <target>11</target>
+                            <target>${java.version}</target>
                         </configuration>
                     </execution>
                     <execution>

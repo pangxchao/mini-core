@@ -16,8 +16,8 @@ public class JSONObjectConverter implements Converter<JSONObject> {
     @Override
     public JSONObject apply(@Nonnull Call call, @Nonnull Response response) throws IOException {
         if (!response.isSuccessful()) throw new IOException(response.message());
-        try (ResponseBody body = Objects.requireNonNull(response.body(), "Response body is null.")) {
-            String string = Objects.requireNonNull(body.string(), "Body content is null.");
+        try (ResponseBody body = Objects.requireNonNull(response.body())) {
+            String string = Objects.requireNonNull(body.string());
             return JSON.parseObject(string);
         }
     }

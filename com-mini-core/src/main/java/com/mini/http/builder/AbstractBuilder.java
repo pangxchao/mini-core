@@ -2,7 +2,9 @@ package com.mini.http.builder;
 
 import com.mini.http.callback.Callback;
 import com.mini.http.converter.Converter;
+import com.mini.util.FileUtil;
 import okhttp3.*;
+import okio.ByteString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,150 +12,155 @@ import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.function.LongConsumer;
+import java.util.function.ObjLongConsumer;
+import java.util.stream.Stream;
 
-public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
+import static okhttp3.MediaType.parse;
+
+public abstract class AbstractBuilder<T> {
     private static final OkHttpClient.Builder HTTP_CLIENT = new OkHttpClient.Builder();
     private final Request.Builder request = new Request.Builder();
-    private Converter<V> converter;
     private Call call;
 
     /** 全局设置 */
-    public final T connectTimeout(long timeout, TimeUnit unit) {
+    public final AbstractBuilder<T> connectTimeout(long timeout, TimeUnit unit) {
         HTTP_CLIENT.connectTimeout(timeout, unit);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T readTimeout(long timeout, TimeUnit unit) {
+    public final AbstractBuilder<T> readTimeout(long timeout, TimeUnit unit) {
         HTTP_CLIENT.readTimeout(timeout, unit);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T writeTimeout(long timeout, TimeUnit unit) {
+    public final AbstractBuilder<T> writeTimeout(long timeout, TimeUnit unit) {
         HTTP_CLIENT.writeTimeout(timeout, unit);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T pingInterval(long interval, TimeUnit unit) {
+    public final AbstractBuilder<T> pingInterval(long interval, TimeUnit unit) {
         HTTP_CLIENT.pingInterval(interval, unit);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T proxy(@Nullable Proxy proxy) {
+    public final AbstractBuilder<T> proxy(@Nullable Proxy proxy) {
         HTTP_CLIENT.proxy(proxy);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T proxySelector(@Nonnull ProxySelector proxySelector) {
+    public final AbstractBuilder<T> proxySelector(@Nonnull ProxySelector proxySelector) {
         HTTP_CLIENT.proxySelector(proxySelector);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T cookieJar(CookieJar cookieJar) {
+    public final AbstractBuilder<T> cookieJar(CookieJar cookieJar) {
         HTTP_CLIENT.cookieJar(cookieJar);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T cache(@Nullable Cache cache) {
+    public final AbstractBuilder<T> cache(@Nullable Cache cache) {
         HTTP_CLIENT.cache(cache);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T dns(Dns dns) {
+    public final AbstractBuilder<T> dns(Dns dns) {
         HTTP_CLIENT.dns(dns);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T socketFactory(SocketFactory socketFactory) {
+    public final AbstractBuilder<T> socketFactory(SocketFactory socketFactory) {
         HTTP_CLIENT.socketFactory(socketFactory);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T sslSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) {
+    public final AbstractBuilder<T> sslSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) {
         HTTP_CLIENT.sslSocketFactory(sslSocketFactory, trustManager);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T hostnameVerifier(HostnameVerifier hostnameVerifier) {
+    public final AbstractBuilder<T> hostnameVerifier(HostnameVerifier hostnameVerifier) {
         HTTP_CLIENT.hostnameVerifier(hostnameVerifier);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T certificatePinner(CertificatePinner certificatePinner) {
+    public final AbstractBuilder<T> certificatePinner(CertificatePinner certificatePinner) {
         HTTP_CLIENT.certificatePinner(certificatePinner);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T authenticator(Authenticator authenticator) {
+    public final AbstractBuilder<T> authenticator(Authenticator authenticator) {
         HTTP_CLIENT.authenticator(authenticator);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T proxyAuthenticator(Authenticator proxyAuthenticator) {
+    public final AbstractBuilder<T> proxyAuthenticator(Authenticator proxyAuthenticator) {
         HTTP_CLIENT.proxyAuthenticator(proxyAuthenticator);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T connectionPool(ConnectionPool connectionPool) {
+    public final AbstractBuilder<T> connectionPool(ConnectionPool connectionPool) {
         HTTP_CLIENT.connectionPool(connectionPool);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T followSslRedirects(boolean followProtocolRedirects) {
+    public final AbstractBuilder<T> followSslRedirects(boolean followProtocolRedirects) {
         HTTP_CLIENT.followSslRedirects(followProtocolRedirects);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T followRedirects(boolean followRedirects) {
+    public final AbstractBuilder<T> followRedirects(boolean followRedirects) {
         HTTP_CLIENT.followRedirects(followRedirects);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T retryOnConnectionFailure(boolean retryOnConnectionFailure) {
+    public final AbstractBuilder<T> retryOnConnectionFailure(boolean retryOnConnectionFailure) {
         HTTP_CLIENT.retryOnConnectionFailure(retryOnConnectionFailure);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T dispatcher(Dispatcher dispatcher) {
+    public final AbstractBuilder<T> dispatcher(Dispatcher dispatcher) {
         HTTP_CLIENT.dispatcher(dispatcher);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T protocols(List<Protocol> protocols) {
+    public final AbstractBuilder<T> protocols(List<Protocol> protocols) {
         HTTP_CLIENT.protocols(protocols);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T connectionSpecs(List<ConnectionSpec> connectionSpecs) {
+    public final AbstractBuilder<T> connectionSpecs(List<ConnectionSpec> connectionSpecs) {
         HTTP_CLIENT.connectionSpecs(connectionSpecs);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
@@ -162,9 +169,9 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
     }
 
     /** 全局设置 */
-    public final T addInterceptor(@Nonnull Interceptor interceptor) {
+    public final AbstractBuilder<T> addInterceptor(@Nonnull Interceptor interceptor) {
         HTTP_CLIENT.addInterceptor(interceptor);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
@@ -173,137 +180,199 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
     }
 
     /** 全局设置 */
-    public final T addNetworkInterceptor(@Nonnull Interceptor interceptor) {
+    public final AbstractBuilder<T> addNetworkInterceptor(@Nonnull Interceptor interceptor) {
         HTTP_CLIENT.addNetworkInterceptor(interceptor);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T eventListener(EventListener eventListener) {
+    public final AbstractBuilder<T> eventListener(EventListener eventListener) {
         HTTP_CLIENT.eventListener(eventListener);
-        return getSelf();
+        return this;
     }
 
     /** 全局设置 */
-    public final T eventListenerFactory(EventListener.Factory eventListenerFactory) {
+    public final AbstractBuilder<T> eventListenerFactory(EventListener.Factory eventListenerFactory) {
         HTTP_CLIENT.eventListenerFactory(eventListenerFactory);
-        return getSelf();
+        return this;
     }
 
-
     /** Request.Builder */
-    public final T url(HttpUrl url) {
+    public final AbstractBuilder<T> url(HttpUrl url) {
         request.url(url);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T url(String url) {
+    public final AbstractBuilder<T> url(String url) {
         request.url(url);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T url(URL url) {
+    public final AbstractBuilder<T> url(URL url) {
         request.url(url);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T header(String name, String value) {
+    public final AbstractBuilder<T> header(String name, String value) {
         request.header(name, value);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T addHeader(String name, String value) {
+    public final AbstractBuilder<T> addHeader(String name, String value) {
         request.addHeader(name, value);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T removeHeader(@Nonnull String name) {
+    public final AbstractBuilder<T> removeHeader(@Nonnull String name) {
         request.removeHeader(name);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T headers(Headers headers) {
+    public final AbstractBuilder<T> headers(Headers headers) {
         request.headers(headers);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T cacheControl(CacheControl cacheControl) {
+    public final AbstractBuilder<T> cacheControl(CacheControl cacheControl) {
         request.cacheControl(cacheControl);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final T tag(@Nullable Object tag) {
+    public final AbstractBuilder<T> tag(@Nullable Object tag) {
         request.tag(tag);
-        return getSelf();
+        return this;
     }
 
     /** Request.Builder */
-    public final <E> T tag(Class<? super E> type, @Nullable E tag) {
+    public final <E> AbstractBuilder<T> tag(Class<? super E> type, @Nullable E tag) {
         request.tag(type, tag);
-        return getSelf();
-    }
-
-    /** Request.Builder */
-    public final T get() {
-        return method("GET");
-    }
-
-    /** Request.Builder */
-    public final T head() {
-        return method("HEAD");
-    }
-
-    /** Request.Builder */
-    public final T post() {
-        return method("POST");
-    }
-
-    /** Request.Builder */
-    public final T delete() {
-        return method("DELETE");
-    }
-
-    /** Request.Builder */
-    public final T put() {
-        return method("PUT");
-    }
-
-    /** Request.Builder */
-    public final T patch() {
-        return method("PATCH");
-    }
-
-    /** Request.Builder */
-    public final T method(String method) {
-        request.method(method, getRequestBody());
-        return getSelf();
+        return this;
     }
 
     /** 获取请求体 */
     protected abstract RequestBody getRequestBody();
 
-    /** 设置数据转换器 */
-    public T setConverter(Converter<V> converter) {
-        this.converter = converter;
-        return getSelf();
+    /** Body Request */
+    public AbstractBuilder<T> setRequestBody(RequestBody body) {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * 发送同步请求并返回结果
-     * @return 返回请求结果
-     * @throws IOException 请求出现错误
-     */
-    public final Response execute() throws IOException {
-        call = HTTP_CLIENT.build().newCall(request.build());
-        return call.execute();
+    /** Form Request */
+    public AbstractBuilder<T> add(@Nonnull String name, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Form Request */
+    public <E> AbstractBuilder<T> addStream(String name, Stream<E> stream) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Form Request */
+    public AbstractBuilder<T> addEncoded(@Nonnull String name, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Form Request */
+    public <E> AbstractBuilder<T> addStreamEncoded(@Nonnull String name, Stream<E> stream) {
+        throw new UnsupportedOperationException();
+    }
+
+
+    /** Part Request */
+    public AbstractBuilder<T> setOnUpload(ObjLongConsumer<Long> onUpload) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> setOnCancel(LongConsumer onCancel) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> setType(MediaType type) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addFormDataPart(String name, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public <E> AbstractBuilder<T> addFormDataPartStream(String name, Stream<E> stream) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addFormDataPart(String name, @Nullable String fileName, RequestBody body) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(RequestBody body) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(Headers headers, RequestBody body) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(MultipartBody.Part part) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(String name, String fileName, String contentType, byte[] content) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(String name, String fileName, String contentType, long contentLength, InputStream content) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(String name, File file, long offset, long contentLength) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Part Request */
+    public AbstractBuilder<T> addPart(String name, File file) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** Request.Builder */
+    public final AbstractBuilder<T> get() {
+        this.request.get();
+        return this;
+    }
+
+    /** Request.Builder */
+    public final AbstractBuilder<T> post() {
+        request.post(getRequestBody());
+        return this;
+    }
+
+    /** Request.Builder */
+    public final AbstractBuilder<T> delete() {
+        request.delete(getRequestBody());
+        return this;
+    }
+
+    /** Request.Builder */
+    public final AbstractBuilder<T> put() {
+        request.put(getRequestBody());
+        return this;
     }
 
     /**
@@ -312,18 +381,8 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
      * @throws IOException 请求出现错误
      */
     public final void execute(Callback<Response> callback) throws IOException {
-        callback.accept(execute());
-    }
-
-    /**
-     * 发送同步请求并返回结果
-     * @param converter 数据转换器
-     * @return 返回请求结果
-     * @throws IOException 请求出现错误
-     */
-    public final V execute(@Nonnull Converter<V> converter) throws IOException {
-        call = HTTP_CLIENT.build().newCall(request.build());
-        return converter.apply(call, call.execute());
+        this.call = HTTP_CLIENT.build().newCall(request.build());
+        callback.accept(call.execute());
     }
 
     /**
@@ -332,76 +391,17 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
      * @param callback  结果回调
      * @throws IOException 请求出现错误
      */
-    public final void execute(@Nonnull Converter<V> converter, Callback<V> callback) throws IOException {
-        callback.accept(execute(converter));
+    public final void execute(@Nonnull Converter<T> converter, Callback<T> callback) throws IOException {
+        this.call = HTTP_CLIENT.build().newCall(request.build());
+        callback.accept(converter.apply(call, call.execute()));
     }
-
-    /**
-     * 发送异步请求并回调
-     * @param callback 回调方法
-     */
-    public final T enqueue(@Nonnull okhttp3.Callback callback) {
-        call = HTTP_CLIENT.build().newCall(request.build());
-        call.enqueue(callback);
-        return getSelf();
-    }
-
-    /**
-     * 发送异步请求并回调
-     * @param callback 回调方法
-     */
-    public final T enqueue(@Nonnull Consumer<V> callback) {
-        return enqueue(new okhttp3.Callback() {
-            public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-                callback.accept(null);
-            }
-
-            public void onResponse(@Nonnull Call call, @Nonnull Response response) {
-                try {
-                    if (AbstractBuilder.this.converter == null) {
-                        callback.accept(null);
-                        return;
-                    }
-                    callback.accept(converter.apply(call, response));
-                } catch (Exception e) {
-                    callback.accept(null);
-                }
-            }
-        });
-    }
-
-    /**
-     * 发送异步请求并回调
-     * @param success 成功回调
-     * @param fail    失败回调
-     */
-    public final T enqueue(@Nonnull Consumer<V> success, Consumer<String> fail) {
-        return enqueue(new okhttp3.Callback() {
-            public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-                fail.accept(e.getMessage());
-            }
-
-            public void onResponse(@Nonnull Call call, @Nonnull Response response) {
-                try {
-                    if (AbstractBuilder.this.converter == null) {
-                        fail.accept("Converter is null.");
-                        return;
-                    }
-                    success.accept(converter.apply(call, response));
-                } catch (Exception e) {
-                    fail.accept(e.getMessage());
-                }
-            }
-        });
-    }
-
 
     /** 取消已发送的请求 */
-    public final T cancel() {
-        if (call != null) {
+    public final AbstractBuilder<T> cancel() {
+        if (this.call != null) {
             call.cancel();
         }
-        return getSelf();
+        return this;
     }
 
     /**
@@ -409,7 +409,9 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
      * @return true-是
      */
     public final boolean isExecuted() {
-        if (call == null) return false;
+        if (this.call == null) {
+            return false;
+        }
         return call.isExecuted();
     }
 
@@ -418,13 +420,17 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
      * @return true-是
      */
     public final boolean isCanceled() {
-        if (call == null) return false;
+        if (this.call == null) {
+            return false;
+        }
         return call.isCanceled();
     }
 
     /** 获取请求对象 */
     public final Request request() {
-        if (call == null) return null;
+        if (this.call == null) {
+            return null;
+        }
         return call.request();
     }
 
@@ -433,9 +439,38 @@ public abstract class AbstractBuilder<T extends AbstractBuilder<T, V>, V> {
         return call;
     }
 
-    /** 获取当前实例 */
-    protected abstract T getSelf();
+    public static RequestBody create(MediaType mediaType, String content) {
+        return RequestBody.create(mediaType, content);
+    }
 
+    public static RequestBody create(MediaType mediaType, ByteString content) {
+        return RequestBody.create(mediaType, content);
+    }
+
+    public static RequestBody create(MediaType mediaType, byte[] content) {
+        return RequestBody.create(mediaType, content);
+    }
+
+    public static RequestBody create(MediaType mediaType, byte[] content, int offset, int byteCount) {
+        return RequestBody.create(mediaType, content, offset, byteCount);
+    }
+
+    public static RequestBody create(MediaType mediaType, File file) {
+        return RequestBody.create(mediaType, file);
+    }
+
+    public static RequestBody create(File file) {
+        String type = FileUtil.getMiniType(file);
+        return create(parse(type), file);
+    }
+
+    public RequestBody createJSONBody(String jsonString, String charset) {
+        return create(parse("application/json;charset=" + charset), charset);
+    }
+
+    public static RequestBody createJSONBody(String json) {
+        return create(parse("application/json"), json);
+    }
 }
 
 

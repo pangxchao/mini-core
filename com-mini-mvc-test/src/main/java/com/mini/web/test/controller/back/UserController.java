@@ -6,7 +6,6 @@ import com.mini.web.annotation.Controller;
 import com.mini.web.annotation.RequestName;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
-import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.entity.User;
 import com.mini.web.test.service.UserService;
 
@@ -47,8 +46,8 @@ public class UserController {
      * @param sortType  排序方式
      * @param types     用户类型
      */
-    @Action(value = ModelType.MAP, url = "pages.htm")
-    public void pages(MapModel model, Paging paging, int district, String token, String search, String sortField, int sortType,
+    @Action(url = "pages.htm")
+    public void pages(PageModel model, Paging paging, int district, String token, String search, String sortField, int sortType,
             @RequestName("types[]") int[] types, HttpServletRequest request) {
         List<User> userInfoList = new ArrayList<>();
         for (int i = 1; i <= 598; i++) {
@@ -80,7 +79,7 @@ public class UserController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
+    @Action(value = MapModel.class, url = "insert.htm")
     public void insert(MapModel model, User user) {
         userService.insert(user);
     }
@@ -90,7 +89,7 @@ public class UserController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
+    @Action(value = MapModel.class, url = "update.htm")
     public void update(MapModel model, User user) {
         userService.update(user);
     }
@@ -100,7 +99,7 @@ public class UserController {
      * @param model 数据模型渲染器
      * @param id    用户ID
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
+    @Action(value = MapModel.class, url = "delete.htm")
     public void delete(MapModel model, long id) {
         userService.deleteById(id);
     }

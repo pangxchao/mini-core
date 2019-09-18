@@ -4,7 +4,9 @@ import javax.annotation.Nonnull;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.Map;
 
+import static com.mini.validate.ValidateUtil.MOBILE;
 import static java.lang.Character.isUpperCase;
 
 /**
@@ -147,6 +149,22 @@ public final class StringUtil {
     @Nonnull
     public static String format(String self, Object... args) {
         return self == null ? "" : String.format(self, args);
+    }
+
+    /**
+     * 自定义格式化字符串
+     * @param self 字符串内容
+     * @param map  格式化参数
+     * @return 格式化结果
+     */
+    public static String format(String self, Map<String, Object> map) {
+        if (self == null || self.isBlank()) return self;
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = StringUtil.def(entry.getKey(), "");
+            String val = String.valueOf(entry.getValue());
+            self = self.replaceAll("\\{" + key + "}", val);
+        }
+        return self;
     }
 
     /**
@@ -543,6 +561,9 @@ public final class StringUtil {
      * @return 脱敏后的手机号
      */
     public static String phoneEncode(String self) {
-        return self == null || self.length() <= 7 ? self : self.substring(0, 3) + "****" + self.substring(7);
+        if (!matches(self, MOBILE)) return self;
+        return self.substring(0, 3) + "****" //
+                + self.substring(7);
+
     }
 }

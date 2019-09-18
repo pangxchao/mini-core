@@ -1,10 +1,10 @@
 package com.mini.web.argument;
 
+import com.mini.web.interceptor.ActionInvocation;
+
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static com.mini.util.ObjectUtil.defIfNull;
 import static com.mini.web.util.ISession.SESSION_KEY;
@@ -13,7 +13,8 @@ import static com.mini.web.util.ISession.SESSION_KEY;
 @Singleton
 public final class ArgumentResolverISession implements ArgumentResolver {
     @Override
-    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
-        return defIfNull(request.getSession().getAttribute(SESSION_KEY), request.getAttribute(SESSION_KEY));
+    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull ActionInvocation invocation) {
+        Object value = invocation.getRequest().getSession().getAttribute(SESSION_KEY);
+        return defIfNull(value, invocation.getRequest().getAttribute(SESSION_KEY));
     }
 }

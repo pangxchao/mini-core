@@ -2,7 +2,6 @@ package com.mini.util;
 
 import java.util.Random;
 
-import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
 
 /**
@@ -10,31 +9,32 @@ import static java.util.UUID.randomUUID;
  * @author XChao
  */
 public final class PKGenerator {
-    private static final PKGenerator INSTANCE = new PKGenerator();
     private static final Random RANDOM = new Random();
     private final static char[] DIGITS = new char[]{        //
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',//
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j',//
             'k', 'm', 'n', 'p', 'q', 'r', 's', 't',//
             'u', 'v', 'w', 'x', 'y', 'z'};
-    private static final long BASE_TIME = 1451606400000L;
-    // 时间戳部分长度42位，设置一个基础时间戳，中以保证60年不重复/64 位全是1
-    private static final long MAX = 0x7fffffffffffffffL;
-    // 44位1，22位0
-    private static final long MAX_TIME = 0xFFFFFFFFFFC00000L;
-    // 自动增长序列部分，16位长度，每毫秒可以生成65535个不同ID，// 16位全是1
-    private static final long MAX_SEQUENCE = 0xffff;
-    // 机器码6位长度，可以同时集群63台机器，// 6位全是1
-    private static final long MAX_WORK = 0x3f;
+    private static WorkerId workerId;
+    private static long workId = 0;
 
-    private long workerId;
-    private long sequence = 0L;
-    private long lastTimestamp = -1L;
+    public static void setWorkerId(long workId) {
+        PKGenerator.workId = workId;
+    }
 
-    private PKGenerator() {}
+    public static synchronized long nextId() {
+        if (PKGenerator.workerId == null) {
+            workerId = new WorkerId(workId);
+        }
+        return workerId.nextId();
+    }
 
-    public static void setWorkerId(long workerId) {
-        INSTANCE.workerId = workerId;
+    /**
+     * 生成主键
+     * @return 主键
+     */
+    public static synchronized long id() {
+        return PKGenerator.nextId();
     }
 
     /**
@@ -43,16 +43,9 @@ public final class PKGenerator {
      * @return 时间戳
      */
     public static long millis(long id) {
-        return INSTANCE.sequence(id);
+        return WorkerId.millis(id);
     }
 
-    /**
-     * 生成主键
-     * @return 主键
-     */
-    public static long id() {
-        return INSTANCE.generate();
-    }
 
     /**
      * 生成一个UUID 替换掉"-"
@@ -74,6 +67,14 @@ public final class PKGenerator {
 
     /**
      * 获取一个随机字符
+     * @return 随机数
+     */
+    public static char nextNum() {
+        return DIGITS[nextInt(10)];
+    }
+
+    /**
+     * 获取一个随机字符
      * @return 随机字符
      */
     public static char nextChar() {
@@ -87,11 +88,11 @@ public final class PKGenerator {
      * @return 随机数字
      */
     public static String number(int length) {
-        StringBuilder result = new StringBuilder();
+        char[] result = new char[length];
         for (int i = 0; i < length; i++) {
-            result.append(nextInt(10));
+            result[i] = nextNum();
         }
-        return result.toString();
+        return new String(result);
     }
 
     /**
@@ -100,58 +101,10 @@ public final class PKGenerator {
      * @return 随机字符
      */
     public static String random(int length) {
-        StringBuilder result = new StringBuilder();
+        char[] result = new char[length];
         for (int i = 0; i < length; i++) {
-            result.append(nextChar());
+            result[i] = nextChar();
         }
-        return result.toString();
-    }
-
-    /**
-     * 重新创建用户token
-     * @param id 用户ID
-     * @return 根据用户ID生成的用户TOKEN
-     */
-    public static String token(long id) {
-        return Long.toHexString(id);
-    }
-
-    /**
-     * 解码token 获取用户 uid
-     * @param token 用户TOKEN
-     * @return 从TOKEN中获取的用户ID
-     */
-    public static long decode(String token) {
-        try {
-            return parseLong(token, 16);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    /**
-     * 生成主键
-     * @return 随机主键
-     */
-    private synchronized long generate() {
-        if (sequence > MAX_SEQUENCE) {
-            sequence = 0;
-        }
-        long timestamp = System.currentTimeMillis();
-        while (sequence == 0 && lastTimestamp > timestamp) {
-            lastTimestamp = timestamp;
-        }
-        long val = ((MAX & (timestamp - BASE_TIME) << 22));
-        val = val | ((sequence++ & MAX_SEQUENCE) << 6);
-        return val | ((workerId & MAX_WORK));
-    }
-
-    /**
-     * 根据主键获取生成主键时的时间缀
-     * @param generate 主键
-     * @return 时间戳
-     */
-    private long sequence(long generate) {
-        return ((generate & MAX_TIME) >> 22) + BASE_TIME;
+        return new String(result);
     }
 }

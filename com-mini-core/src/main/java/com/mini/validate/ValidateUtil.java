@@ -73,6 +73,16 @@ public final class ValidateUtil {
     }
 
     /**
+     * 验证传入对象是否为空
+     * @param object  传入对象
+     * @param error   错误码
+     * @param message 错误消息
+     */
+    public static void isNull(Object object, int error, String message) {
+        is(object == null, error, message);
+    }
+
+    /**
      * 验证传入字符串是否为邮箱格式
      * @param string  传入字符串
      * @param error   错误码

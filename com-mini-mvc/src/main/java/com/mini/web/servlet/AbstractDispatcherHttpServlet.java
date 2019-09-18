@@ -15,7 +15,6 @@ import com.mini.web.util.RequestParameter;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,22 +69,22 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     }
 
     @Override
-    protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         this.doService(Action.Method.GET, request.getServletPath(), request, response);
     }
 
     @Override
-    protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         this.doService(Action.Method.POST, request.getServletPath(), request, response);
     }
 
     @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         this.doService(Action.Method.POST, request.getServletPath(), request, response);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         this.doService(Action.Method.POST, request.getServletPath(), request, response);
     }
 
@@ -96,8 +95,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
      * @param request  HttpServletRequest 对象
      * @param response HttpServletResponse 对象
      */
-    protected final void doService(Action.Method method, String uri, HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    protected final void doService(Action.Method method, String uri, HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 验证 RequestURI 是否为空，如果为空，返回 500 错误
         if (require(uri, response, ERROR, "Server Error! " + uri, v -> !isEmpty(v))) {
             return;
@@ -120,7 +118,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
 
         // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
-        final IModel<?> model = proxy.getModel(configure.getView(), proxy.getViewPath(), request);
+        final IModel<?> model = configure.getModel(proxy.getModel(), proxy.getViewPath());
         if (require(model, response, ERROR, "Server Error:" + uri, Objects::nonNull)) {
             return;
         }
@@ -219,8 +217,8 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             @Nonnull
             @Override
             public synchronized final Object[] getParameterValues() {
-                return stream(getParameters()).map(p -> p.getValue( //
-                        configure, request, response)).toArray();
+                return stream(getParameters()).map(p -> p.getValue(//
+                        configure, this)).toArray();
             }
 
             @Override
@@ -244,19 +242,19 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         } catch (ValidateException exception) {
             String msg = exception.getMessage();
             int error = exception.getStatus();
-            model.sendError(error, msg);
+            model.setStatus(error);
+            model.setMessage(msg);
         } catch (Throwable exception) {
             LOGGER.error(exception);
-            model.sendError(ERROR);
+            model.setStatus(ERROR);
         }
-        // 这里加入错误码处理
+
         try { // 返回数据
             model.submit(request, response);
         } catch (Exception | Error exception) {
             LOGGER.error(exception);
         }
     }
-
 
     /**
      * 获取实际的 InvocationProxy 对象的Uri

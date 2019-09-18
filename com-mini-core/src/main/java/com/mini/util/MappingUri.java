@@ -128,7 +128,6 @@ public final class MappingUri<V> implements Serializable, EventListener {
                 info.partList.add(p);
             }
         }
-        System.out.println(info);
     }
 
     // 整个路径信息

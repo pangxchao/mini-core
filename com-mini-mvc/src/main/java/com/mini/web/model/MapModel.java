@@ -1,15 +1,12 @@
 package com.mini.web.model;
 
-import com.mini.util.map.MiniHashMap;
-
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static com.alibaba.fastjson.JSON.toJSONString;
 
@@ -19,7 +16,7 @@ import static com.alibaba.fastjson.JSON.toJSONString;
  */
 public final class MapModel extends IModel<MapModel> implements Serializable {
     private static final long serialVersionUID = -1731063292578685253L;
-    private final MiniHashMap<String> data = new MiniHashMap<>();
+    private final Map<String, Object> data = new HashMap<>();
     private static final String TYPE = "text/plain";
 
     public MapModel() {
@@ -31,19 +28,12 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
         return this;
     }
 
-    @Nonnull
-    public Set<String> keySet() {
-        return data.keySet();
-    }
-
-    @Nonnull
-    public Collection<Object> values() {
-        return data.values();
-    }
-
-    @Nonnull
-    public Set<Map.Entry<String, Object>> entrySet() {
-        return data.entrySet();
+    /**
+     * 获取所有数据
+     * @return 所有数据
+     */
+    public Map<String, Object> getData() {
+        return data;
     }
 
     /**
@@ -65,15 +55,6 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     public MapModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         data.putAll(map);
         return model();
-    }
-
-    @Override
-    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
-        try (PrintWriter writer = response.getWriter()) {
-            response.setStatus(getStatus());
-            writer.write(getMessage());
-            writer.flush();
-        }
     }
 
     @Override

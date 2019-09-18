@@ -5,6 +5,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
+/**
+ * StringModel.java
+ * @author xchao
+ */
 public final class StringModel extends IModel<StringModel> implements Serializable {
     private static final long serialVersionUID = -1731063292578685253L;
     private final StringBuilder builder = new StringBuilder();
@@ -16,6 +20,19 @@ public final class StringModel extends IModel<StringModel> implements Serializab
 
     @Override
     protected StringModel model() {
+        return this;
+    }
+
+    /**
+     * 获取所有数据
+     * @return 所有数据
+     */
+    public StringBuilder getBuilder() {
+        return builder;
+    }
+
+    public StringModel clear() {
+        builder.setLength(0);
         return this;
     }
 
@@ -94,18 +111,10 @@ public final class StringModel extends IModel<StringModel> implements Serializab
         return this;
     }
 
+
     public StringModel replace(int start, int end, String text) {
         builder.replace(start, end, text);
         return this;
-    }
-
-    @Override
-    protected void sendError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
-        try (PrintWriter writer = response.getWriter()) {
-            response.setStatus(getStatus());
-            writer.write(getMessage());
-            writer.flush();
-        }
     }
 
     @Override

@@ -72,7 +72,7 @@ public class FileConverter implements Converter<File> {
     @Override
     public File apply(@Nonnull Call call, @Nonnull Response response) throws IOException {
         if (!response.isSuccessful()) throw new IOException(response.message());
-        try (ResponseBody body = Objects.requireNonNull(response.body(), "Response body is null.")) {
+        try (ResponseBody body = Objects.requireNonNull(response.body())) {
             // 文件夹不存在，并且创建换
             File outputFile = new File(outputDir);
             if (!outputFile.exists() && !outputFile.mkdirs()) {

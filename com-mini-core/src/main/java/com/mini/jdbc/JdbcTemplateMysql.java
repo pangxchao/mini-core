@@ -1,7 +1,5 @@
 package com.mini.jdbc;
 
-import com.mini.jdbc.util.Paging;
-
 import javax.annotation.Nonnull;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -21,8 +19,7 @@ public final class JdbcTemplateMysql extends JdbcTemplate {
     }
 
     @Override
-    public final String paging(Paging paging, String str) {
-        return join("", str, " limit ", paging.getSkip(), //
-                ", ", paging.getLimit());
+    protected String paging(int start, int limit, String str) {
+        return join("", str, " limit ", start, ", ", limit);
     }
 }

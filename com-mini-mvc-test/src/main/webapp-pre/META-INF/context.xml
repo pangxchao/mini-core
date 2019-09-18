@@ -2,6 +2,6 @@
 <Context path="/users" docBase="/mnt/webroot/ROOT" reloadable="false" sessionCookiePath="/">
     <Resource name="mini_test" auth="Container" type="javax.sql.DataSource" maxTotal="100" maxIdle="10" maxWaitMillis="10000" username="root"
               password="6q!sa73Rrm%t1" driverClassName="com.mysql.jdbc.Driver" testWhileIdle="true" validationQuery="select 1"
-              url="jdbc:mysql://127.0.0.1:3306/mini_test?useSSL=false"/>
+              url="jdbc:mysql://127.0.0.1:3306/mini_test?useSSL=false&amp;serverTimezone=GMT%2B8"/>
 
 </Context>

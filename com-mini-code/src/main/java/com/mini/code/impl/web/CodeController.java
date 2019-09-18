@@ -11,7 +11,6 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
-import com.mini.web.model.factory.ModelType;
 import com.squareup.javapoet.*;
 
 import javax.inject.Inject;
@@ -77,7 +76,7 @@ public class CodeController {
                 .addParameter(MapModel.class, "model")
                 .addParameter(Paging.class, "paging")
                 .addAnnotation(AnnotationSpec.builder(Action.class)
-                        .addMember("value", "$T.MAP", ModelType.class)
+                        .addMember("value", "$T.class", MapModel.class)
                         .addMember("url", "$S", "pages.htm")
                         .build())
                 .addJavadoc("实体列表数据分页 \n")
@@ -113,7 +112,7 @@ public class CodeController {
                 .addParameter(MapModel.class, "model")
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))
                 .addAnnotation(AnnotationSpec.builder(Action.class)
-                        .addMember("value", "$T.MAP", ModelType.class)
+                        .addMember("value", "$T.class", MapModel.class)
                         .addMember("url", "$S", "insert.htm")
                         .build())
                 .addJavadoc("添加实体处理 \n")
@@ -129,7 +128,7 @@ public class CodeController {
                 .addParameter(MapModel.class, "model")
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))
                 .addAnnotation(AnnotationSpec.builder(Action.class)
-                        .addMember("value", "$T.MAP", ModelType.class)
+                        .addMember("value", "$T.class", MapModel.class)
                         .addMember("url", "$S", "update.htm")
                         .build())
                 .addJavadoc("修改实体处理 \n")
@@ -144,7 +143,7 @@ public class CodeController {
                 .returns(void.class)
                 .addParameter(MapModel.class, "model")
                 .addAnnotation(AnnotationSpec.builder(Action.class)
-                        .addMember("value", "$T.MAP", ModelType.class)
+                        .addMember("value", "$T.class", MapModel.class)
                         .addMember("url", "$S", "delete.htm")
                         .build())
                 .addJavadoc("删除实体信息处理 \n")

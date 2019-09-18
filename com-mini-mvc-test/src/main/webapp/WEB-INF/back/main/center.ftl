@@ -20,5 +20,8 @@
 <div class="mini-full center-main">
     <img src="resource/images/Welcome-logo.jpg" alt="欢迎图片">
 </div>
+<script type="text/javascript">
+    console.log(layui);
+</script>
 </body>
 </html>

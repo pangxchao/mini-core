@@ -1,8 +1,8 @@
 package com.mini.web.test.controller.back;
 
 import com.alibaba.fastjson.JSON;
-import com.mini.digest.MD5Util;
 import com.mini.jdbc.util.Paging;
+import com.mini.security.digest.MD5;
 import com.mini.util.DateUtil;
 import com.mini.util.PKGenerator;
 import com.mini.validate.ValidateUtil;
@@ -10,7 +10,6 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
-import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.entity.User;
 import com.mini.web.test.service.UserService;
 import com.mini.web.test.util.FileGenerator;
@@ -23,6 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mini.validate.ValidateUtil.sendError;
+
 /**
  * 该组接口用于演示使用 Layui table 功能编写的后台管理功能
  * <p>该接口与Front/Demo接口有一些功能是相同的，只在演示不同的实现</p>
@@ -31,10 +32,8 @@ import java.util.Map;
 @Singleton
 @Controller(path = "back/demo", url = "back/demo")
 public class DemoController {
-
     @Inject
     private UserService userService;
-
 
     /**
      * 实体列表首页
@@ -59,7 +58,7 @@ public class DemoController {
      * @param endTime   开始时间
      * @param request   HttpServletRequest
      */
-    @Action(value = ModelType.MAP, url = "pages.htm")
+    @Action(value = MapModel.class, url = "pages.htm")
     public void pages(MapModel model, Paging paging, String search, int sortType, int phone, int email,
             int province, int city, int district, LocalDate startTime, LocalDate endTime,
             HttpServletRequest request) {
@@ -106,19 +105,19 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
-    public void insert(MapModel model, User user) {
+    @Action(value = MapModel.class, url = "insert.htm")
+    public void insert(MapModel model, User user) throws Exception {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPassword(), 600, "用户密码不能为空");
         ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
         // 加密密码和生成用户ID
-        user.setPassword(MD5Util.encode(user.getPassword()));
+        user.setPassword(MD5.encode(user.getPassword()));
         user.setCreateTime(new Date());
         user.setId(PKGenerator.id());
         // 添加用户信息到数据库
         if (userService.insert(user) != 1) {
-            model.sendError(600, "添加用户信息失败");
+            sendError(600, "添加用户信息失败");
             return;
         }
         // 返回用户信息到客户端
@@ -130,7 +129,7 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
+    @Action(value = MapModel.class, url = "update.htm")
     public void update(MapModel model, User user) {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
@@ -141,7 +140,7 @@ public class DemoController {
         user.setCreateTime(info.getCreateTime());
         user.setPassword(info.getPassword());
         if (userService.update(user) != 1) {
-            model.sendError(600, "修改用户信息失败");
+            sendError(600, "修改用户信息失败");
         }
     }
 
@@ -150,7 +149,7 @@ public class DemoController {
      * @param model  数据模型渲染器
      * @param idList 要删除的数据ID List
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
+    @Action(value = MapModel.class, url = "delete.htm")
     public void delete(MapModel model, long[] idList) {
         ValidateUtil.is(idList != null && idList.length > 0, 600, "未选中数据");
         userService.delete(idList);
