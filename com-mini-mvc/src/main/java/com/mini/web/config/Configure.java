@@ -1,5 +1,26 @@
 package com.mini.web.config;
 
+import static com.mini.util.ObjectUtil.defIfNull;
+import static com.mini.util.StringUtil.split;
+import static com.mini.util.TypeUtil.*;
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
+
 import com.google.inject.Injector;
 import com.mini.logger.Logger;
 import com.mini.logger.LoggerFactory;
@@ -12,25 +33,6 @@ import com.mini.web.model.IModel;
 import com.mini.web.model.factory.IModelFactory;
 import com.mini.web.view.FreemarkerView;
 import com.mini.web.view.IView;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServlet;
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-
-import static com.mini.util.ObjectUtil.defIfNull;
-import static com.mini.util.StringUtil.split;
-import static com.mini.util.TypeUtil.*;
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 @Singleton
 public final class Configure {
@@ -250,6 +252,7 @@ public final class Configure {
      * 获取配置文件编码
      * @return 配置文件编码
      */
+
     public synchronized final String getEncodingCharset() {
         return encodingCharset;
     }
@@ -346,6 +349,7 @@ public final class Configure {
      * 默认时间格式
      * @return 默认时间格式
      */
+
     public synchronized final String getTimeFormat() {
         return timeFormat;
     }
@@ -354,6 +358,7 @@ public final class Configure {
      * 视图路径前缀
      * @return 视图路径前缀
      */
+
     public synchronized final String getViewPrefix() {
         return ViewPrefix;
     }
@@ -362,6 +367,7 @@ public final class Configure {
      * 视图路径后缀
      * @return 视图路径后缀
      */
+
     public synchronized final String getViewSuffix() {
         return viewSuffix;
     }
@@ -397,12 +403,24 @@ public final class Configure {
                 .get(uri, useSuffixPattern, useTrailingSlash, func);
     }
 
+    /**
+     * 获取所有的Action代理对象
+     * @return 所有的Action代理对象
+     */
+
+    public synchronized final Set<ActionInvocationProxy> getInvocationProxyAll() {
+        return invocation.values().stream().flatMap(v -> {
+            return v.values().stream(); //
+        }).collect(Collectors.toSet());
+    }
+
 
     /**
      * 添加一个监听器
      * @param listener 监听器
      * @return 当前对象
      */
+
     public synchronized final Configure addListener(Class<? extends EventListener> listener) {
         listeners.add(listener);
         return this;
@@ -449,6 +467,7 @@ public final class Configure {
      * @param filter 过虑器
      * @return 当前对象
      */
+
     public synchronized final Configure removeFilter(Class<? extends Filter> filter) {
         filters.remove(filter);
         return this;
@@ -468,6 +487,7 @@ public final class Configure {
      * @param fClass 数据模型渲染器工厂
      * @return 当前对象
      */
+
     public synchronized final <T extends IModel<T>> Configure addModelFactory(Class<T> mClass, //
             Class<? extends IModelFactory<T>> fClass) {
         modelFactory.putIfAbsent(mClass, fClass);
@@ -493,6 +513,7 @@ public final class Configure {
      * @param resolver 解析器类
      * @return 当前对象
      */
+
     public synchronized final Configure addResolver(Class<?> clazz, Class<? extends ArgumentResolver> resolver) {
         argumentResolvers.putIfAbsent(clazz, resolver);
         return this;
@@ -517,6 +538,7 @@ public final class Configure {
      * 根据拦截器实现类获取拦截器实例
      * @return 拦截器实例
      */
+
     @Nonnull
     public synchronized final ActionInterceptor getInterceptor(Class<? extends ActionInterceptor> interceptor) {
         requireNonNull(injector, "Injector can not be null");
@@ -548,7 +570,7 @@ public final class Configure {
     public static class UnregisteredException extends RuntimeException {
         private static final long serialVersionUID = -2227012160825551352L;
 
-        public UnregisteredException(String message) {
+        private UnregisteredException(String message) {
             super(message);
         }
     }
@@ -585,6 +607,10 @@ public final class Configure {
          */
         public synchronized final MappingUri<ActionInvocationProxy> getAll() {
             return m;
+        }
+
+        public Collection<ActionInvocationProxy> values() {
+            return m.values();
         }
     }
 }

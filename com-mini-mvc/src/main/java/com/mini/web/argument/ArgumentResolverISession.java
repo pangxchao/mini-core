@@ -1,13 +1,13 @@
 package com.mini.web.argument;
 
-import com.mini.web.interceptor.ActionInvocation;
+import static com.mini.util.ObjectUtil.defIfNull;
+import static com.mini.web.util.ISession.SESSION_KEY;
 
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import static com.mini.util.ObjectUtil.defIfNull;
-import static com.mini.web.util.ISession.SESSION_KEY;
+import com.mini.web.interceptor.ActionInvocation;
 
 @Named
 @Singleton

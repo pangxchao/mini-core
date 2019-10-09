@@ -1,12 +1,13 @@
 package com.mini.web.interceptor;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.mini.web.annotation.Action;
 import com.mini.web.model.IModel;
 import com.mini.web.util.RequestParameter;
-
-import javax.annotation.Nonnull;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public interface ActionInvocationProxy {
 

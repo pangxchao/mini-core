@@ -1,7 +1,9 @@
 package com.mini.web.view;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,10 +11,9 @@ import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.Map;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 @Singleton
 public class FreemarkerView implements IView, Serializable {
@@ -43,7 +44,8 @@ public class FreemarkerView implements IView, Serializable {
      * @param viewPath 模板路径
      * @return Template 对象
      */
-    protected final Template getTemplate(String viewPath) throws IOException {
+
+    private Template getTemplate(String viewPath) throws IOException {
         return getConfiguration(context).getTemplate(viewPath);
     }
 
@@ -52,18 +54,18 @@ public class FreemarkerView implements IView, Serializable {
      * @param context ServletContext对象
      * @return Configuration对象
      */
-    protected final Configuration getConfiguration(ServletContext context) {
+    private Configuration getConfiguration(ServletContext context) {
         if (configuration != null) return configuration;
         configuration = new MiniConfiguration(context);
         return this.configuration;
     }
 
     private static class MiniConfiguration extends Configuration implements Cloneable {
-        public void setServletContext(ServletContext context) {
+        void setServletContext(ServletContext context) {
             setServletContextForTemplateLoading(context, null);
         }
 
-        public MiniConfiguration(ServletContext context) {
+        MiniConfiguration(ServletContext context) {
             super(Configuration.VERSION_2_3_28);
             setServletContext(context);
         }

@@ -6,5 +6,5 @@ import java.sql.SQLException;
 @FunctionalInterface
 public interface CallableStatementCallback<T> {
 
-    T doCallableStatement(CallableStatement statement) throws SQLException;
+	T doCallableStatement(CallableStatement statement) throws SQLException;
 }

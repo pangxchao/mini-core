@@ -1,7 +1,8 @@
 <input type="hidden" id="content-page-value" value="${paging.page?c}"/>
 <input type="hidden" id="content-total-value" value="${paging.total?c}"/>
 
-<table class="layui-table" lay-data="{autoSort: false, limit: '${paging.limit?c}', page: false,  toolbar: '#headToolbar', defaultToolbar: []}"
+<table class="layui-table"
+       lay-data="{autoSort: false, limit: '${paging.limit?c}', page: false,  toolbar: '#headToolbar', defaultToolbar: []}"
        lay-filter="user-table" id="user-table">
     <thead>
     <tr>

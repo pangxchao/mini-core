@@ -1,16 +1,18 @@
 package com.mini.web.model;
 
-import com.mini.util.StringUtil;
-import com.mini.web.util.WebUtil;
+import static com.mini.util.StringUtil.*;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
+
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Date;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Serializable;
-import java.util.Date;
 
-import static com.mini.util.StringUtil.*;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
+import com.mini.util.StringUtil;
+import com.mini.web.util.WebUtil;
 
 /**
  * <h3>1xx. Retain</h3>
@@ -79,7 +81,6 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
  * <li>505 HTTP Version Not Supported 服务器不支持请求中所指明的HTTP版本。（HTTP 1.1新）</li>
  * </ul>
  * <br/>
- *
  * @author xchao
  */
 public abstract class IModel<T extends IModel> implements Serializable {
@@ -155,6 +156,7 @@ public abstract class IModel<T extends IModel> implements Serializable {
     }
 
     // 设置Response头部ETag信息
+
     public final T setETag(@Nonnull String eTag) {
         this.eTag = eTag;
         return model();
@@ -162,7 +164,6 @@ public abstract class IModel<T extends IModel> implements Serializable {
 
     /**
      * 提交渲染页面
-     *
      * @param request  HttpServletRequest
      * @param response HttpServletResponse
      */
@@ -172,8 +173,12 @@ public abstract class IModel<T extends IModel> implements Serializable {
         response.setStatus(this.getStatus());
 
         // 验证返回码是否错误，并发送错误信息
-        if (this.getStatus() < 200 || this.getStatus() >= 300) {
-            response.sendError(getStatus(), getMessage());
+        if (getStatus() < 200 || this.getStatus() >= 300) {
+            try (Writer writer = response.getWriter()) {
+                response.setStatus(this.getStatus());
+                writer.write(this.getMessage());
+                writer.flush();
+            }
             return;
         }
 
@@ -201,7 +206,7 @@ public abstract class IModel<T extends IModel> implements Serializable {
     protected abstract void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error;
 
     // 判断该请求资源是否没有修改过(直接使用缓存返回页面)
-    protected final boolean useModifiedOrNoneMatch(HttpServletRequest request, HttpServletResponse response) {
+    private boolean useModifiedOrNoneMatch(HttpServletRequest request, HttpServletResponse response) {
         // If-Modified与Etag都未设置，表示该请求不支持缓存
         if (lastModified < 0 && StringUtil.isBlank(eTag)) {
             return false;

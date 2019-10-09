@@ -1,14 +1,15 @@
 package com.mini.web.model;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static com.alibaba.fastjson.JSON.toJSONString;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.alibaba.fastjson.JSON.toJSONString;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Json List Model 类实现
@@ -51,6 +52,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
      * @param values 数据值
      * @return {@Code #this}
      */
+
     public ListModel addDataAll(Collection<?> values) {
         data.addAll(values);
         return model();
@@ -73,6 +75,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
      * @param values 数据值
      * @return {@Code #this}
      */
+
     public ListModel setDataAll(int index, Collection<?> values) {
         data.addAll(index, values);
         return model();

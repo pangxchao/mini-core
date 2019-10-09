@@ -1,14 +1,12 @@
 package com.mini.web.argument;
 
-import com.mini.web.interceptor.ActionInvocation;
+import static com.mini.util.TypeUtil.castToCharVal;
 
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import static com.mini.util.TypeUtil.castToCharVal;
+import com.mini.web.interceptor.ActionInvocation;
 
 @Named
 @Singleton

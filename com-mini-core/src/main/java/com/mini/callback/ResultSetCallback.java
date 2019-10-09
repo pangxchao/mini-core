@@ -6,5 +6,5 @@ import java.sql.SQLException;
 @FunctionalInterface
 public interface ResultSetCallback<T> {
 
-    T doResultSet(ResultSet rs) throws SQLException;
+	T doResultSet(ResultSet rs) throws SQLException;
 }

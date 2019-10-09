@@ -1,5 +1,35 @@
 package com.mini.web.config;
 
+import static com.google.inject.matcher.Matchers.annotatedWith;
+import static com.google.inject.matcher.Matchers.any;
+import static com.mini.util.ObjectUtil.defIfNull;
+import static com.mini.util.StringUtil.def;
+import static com.mini.util.StringUtil.join;
+import static java.util.Objects.requireNonNull;
+import static javax.servlet.DispatcherType.*;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+
+import org.aopalliance.intercept.MethodInterceptor;
+
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.mini.inject.annotation.ComponentScan;
@@ -9,6 +39,7 @@ import com.mini.jdbc.transaction.TransactionalInterceptor;
 import com.mini.jdbc.util.Paging;
 import com.mini.util.ClassUtil;
 import com.mini.util.MappingUri;
+import com.mini.util.StringUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
 import com.mini.web.annotation.Controller;
@@ -23,35 +54,6 @@ import com.mini.web.model.factory.*;
 import com.mini.web.servlet.DispatcherHttpServlet;
 import com.mini.web.util.RequestParameter;
 import com.mini.web.view.FreemarkerView;
-import org.aopalliance.intercept.MethodInterceptor;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-
-import static com.google.inject.matcher.Matchers.annotatedWith;
-import static com.google.inject.matcher.Matchers.any;
-import static com.mini.util.ObjectUtil.defIfNull;
-import static com.mini.util.StringUtil.def;
-import static com.mini.util.StringUtil.join;
-import static java.util.Arrays.stream;
-import static java.util.Objects.requireNonNull;
-import static javax.servlet.DispatcherType.*;
 
 /**
  * Web 配置信息读取
@@ -76,12 +78,12 @@ public abstract class WebMvcConfigure implements Module {
      * 该方法只难做依赖绑定相关操作
      * @param binder 绑定器
      */
-    protected synchronized void onStartupBinding(Binder binder) {}
+    protected synchronized void onStartupBinding(Binder binder) {
+    }
 
     public synchronized final void onStartupRegister() {
         Objects.requireNonNull(servletContext);
         Objects.requireNonNull(configure);
-
         // 注册默认的 ActionInvocationProxy
         registerActionInvocationProxy(configure);
         // 注册默认Servlet
@@ -94,7 +96,6 @@ public abstract class WebMvcConfigure implements Module {
         registerModelFactory(configure);
         //  注册默认视图实现类
         registerView(configure);
-
         // 调用自定义初始化方法
         onStartupRegister(servletContext, configure);
     }
@@ -104,7 +105,8 @@ public abstract class WebMvcConfigure implements Module {
      * @param servletContext ServletContext 对象
      * @param configure      配置信息
      */
-    protected void onStartupRegister(ServletContext servletContext, Configure configure) {}
+    protected void onStartupRegister(ServletContext servletContext, Configure configure) {
+    }
 
     // 获取当前类指定注解信息
     public final <T extends Annotation> T getAnnotation(Class<T> clazz) {
@@ -121,7 +123,7 @@ public abstract class WebMvcConfigure implements Module {
             requireNonNull(controller, "@Controller can not be null");
 
             Before cBefore = clazz.getAnnotation(Before.class);
-            stream(clazz.getMethods()).forEach(method -> {
+            Arrays.stream(clazz.getMethods()).forEach(method -> {
                 Action action = method.getAnnotation(Action.class);
                 if (action == null) return;
 
@@ -170,7 +172,7 @@ public abstract class WebMvcConfigure implements Module {
                     @Override
                     public RequestParameter[] getParameters() {
                         return Optional.ofNullable(parameters).orElseGet(() -> {
-                            parameters = stream(ClassUtil.getParameter(method)) //
+                            parameters = Arrays.stream(ClassUtil.getParameter(method)) //
                                     .map(RequestParameter::new)         //
                                     .toArray(RequestParameter[]::new); //
                             return parameters;
@@ -179,20 +181,21 @@ public abstract class WebMvcConfigure implements Module {
 
                     @Override
                     public String getViewPath() {
-                        return Optional.ofNullable(path).orElseGet(() -> {
-                            String cPath = def(controller.path(), "");
-                            String mPath = def(action.path(), method.getName());
-                            path = join("/", cPath, mPath).replaceAll("(/)+", "/");
-                            return path = (path.startsWith("/") ? path.substring(1) : path);
-                        });
+                        if (!StringUtil.isBlank(path)) {
+                            return path;
+                        }
+                        String cPath = def(controller.path(), "");
+                        String mPath = def(action.path(), method.getName());
+                        path = join("/", cPath, mPath).replaceAll("(/)+", "/");
+                        return path = (path.startsWith("/") ? path.substring(1) : path);
                     }
                 };
 
                 // 获取方法上的 urls 列表
-                stream(action.url().length > 0 ? action.url() : new String[]{method.getName()}).map(url ->  //
-                        join("/", "", controller.url(), def(url, method.getName()))).map(url ->  //
-                        MappingUri.slash_remove(url.replaceAll("(/)+", "/"))).forEach(url ->  //
-                        configure.addInvocationProxy(url, proxy));  //
+                Arrays.stream(action.url().length > 0 ? action.url() : new String[]{method.getName()})
+                        .map(url -> join("/", "", controller.url(), def(url, method.getName())))
+                        .map(url -> MappingUri.slash_remove(url.replaceAll("(/)+", "/")))
+                        .forEach(url -> configure.addInvocationProxy(url, proxy));
             });
         });
     }

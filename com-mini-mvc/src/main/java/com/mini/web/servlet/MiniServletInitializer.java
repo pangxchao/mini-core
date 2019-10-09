@@ -1,10 +1,28 @@
 package com.mini.web.servlet;
 
+import static com.mini.logger.LoggerFactory.getLogger;
+import static com.mini.util.MiniProperties.createProperties;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.inject.Singleton;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration.Dynamic;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.HandlesTypes;
+
 import com.google.auto.service.AutoService;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.mini.inject.annotation.PropertySource;
 import com.mini.inject.annotation.PropertySources;
@@ -14,24 +32,7 @@ import com.mini.util.ObjectUtil;
 import com.mini.web.config.Configure;
 import com.mini.web.config.WebMvcConfigure;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration.Dynamic;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.annotation.HandlesTypes;
-import java.lang.reflect.Constructor;
-import java.util.*;
-import java.util.stream.Collectors;
 
-import static com.mini.logger.LoggerFactory.getLogger;
-import static com.mini.util.MiniProperties.createProperties;
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
-
-@Named
 @Singleton
 @HandlesTypes(WebMvcConfigure.class)
 @AutoService(ServletContainerInitializer.class)
@@ -44,7 +45,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
         private final List<WebMvcConfigure> configures = new ArrayList<>();
         private final ServletContext servletContext;
 
-        public ConfigModule(ServletContext servletContext, List<WebMvcConfigure> configures) {
+        ConfigModule(ServletContext servletContext, List<WebMvcConfigure> configures) {
             this.servletContext = servletContext;
             this.configures.addAll(configures);
         }
@@ -56,6 +57,17 @@ public final class MiniServletInitializer implements ServletContainerInitializer
             configures.forEach(c -> properties(properties, c));
             Names.bindProperties(binder, properties);
             configures.forEach(binder::install);
+
+            // 注入初始化参数
+            ServletContext ctx = ConfigModule.this.servletContext;
+            Enumeration<String> names = ctx.getInitParameterNames();
+            names.asIterator().forEachRemaining(name -> {
+                String v = ctx.getInitParameter(name);
+                var b = binder.bind(String.class);
+                Named named = Names.named(name);
+                var a = b.annotatedWith(named);
+                a.toInstance(v);
+            });
         }
 
         private synchronized void properties(MiniProperties properties, WebMvcConfigure configure) {

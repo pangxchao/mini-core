@@ -1,8 +1,9 @@
 package com.mini.web.config;
 
+import java.util.*;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
-import java.util.*;
 
 public final class FilterElement {
     private final List<DispatcherType> dispatcherTypes = new ArrayList<>();
@@ -29,6 +30,7 @@ public final class FilterElement {
         this.matchAfter = matchAfter;
         return this;
     }
+
 
     public FilterElement clearUrlPatterns() {
         urlPatterns.clear();

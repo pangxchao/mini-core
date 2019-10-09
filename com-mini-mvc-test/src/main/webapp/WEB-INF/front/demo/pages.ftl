@@ -1,7 +1,8 @@
 <input type="hidden" id="content-page-value" value="${paging.page?c}"/>
 <input type="hidden" id="content-total-value" value="${paging.total?c}"/>
 
-<table class="layui-table" lay-data="{autoSort: false, limit: '${paging.limit?c}', page: false,  toolbar: '#toolbarDemo', defaultToolbar: []}"
+<table class="layui-table"
+       lay-data="{autoSort: false, limit: '${paging.limit?c}', page: false,  toolbar: '#toolbarDemo', defaultToolbar: []}"
        lay-filter="test" id="test">
     <thead>
     <tr>
@@ -49,7 +50,8 @@
             <td>${item.regionNameUri}</td>
             <td>${item.createTime?date}</td>
             <td>
-                <a class="layui-btn layui-btn-primary layui-btn-xs" href="https://www.layui.com/demo/form.html?id=${item.id?c}" target="_blank">
+                <a class="layui-btn layui-btn-primary layui-btn-xs" href="https://www.layui.com/demo/form.html?id=${item.id?c}"
+                   target="_blank">
                     查看
                 </a>
                 <a class="layui-btn layui-btn-xs" href="javascript:window.updateFunction('${item.id?c}')">

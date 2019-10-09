@@ -1,9 +1,10 @@
 package com.mini.web.model;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * StringModel.java
@@ -106,6 +107,7 @@ public final class StringModel extends IModel<StringModel> implements Serializab
         return this;
     }
 
+    @SuppressWarnings("unused")
     public StringModel deleteCharAt(int index) {
         builder.deleteCharAt(index);
         return this;

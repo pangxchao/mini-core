@@ -1,12 +1,6 @@
 package com.mini.web.util;
 
-import com.mini.logger.Logger;
-import com.mini.util.reflect.MiniParameter;
-import com.mini.web.annotation.RequestName;
-import com.mini.web.argument.ArgumentResolver;
-import com.mini.web.config.Configure;
-import com.mini.web.config.Configure.UnregisteredException;
-import com.mini.web.interceptor.ActionInvocation;
+import static com.mini.logger.LoggerFactory.getLogger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
@@ -14,7 +8,13 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 import java.util.EventListener;
 
-import static com.mini.logger.LoggerFactory.getLogger;
+import com.mini.logger.Logger;
+import com.mini.util.reflect.MiniParameter;
+import com.mini.web.annotation.RequestName;
+import com.mini.web.argument.ArgumentResolver;
+import com.mini.web.config.Configure;
+import com.mini.web.config.Configure.UnregisteredException;
+import com.mini.web.interceptor.ActionInvocation;
 
 public final class RequestParameter implements IStatus, ISession, EventListener {
     private static final Logger logger = getLogger(Configure.class);
@@ -43,7 +43,8 @@ public final class RequestParameter implements IStatus, ISession, EventListener 
             return (byte) 0;
         } catch (UnregisteredException e) {
             logger.warn(e.getMessage());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
@@ -63,6 +64,7 @@ public final class RequestParameter implements IStatus, ISession, EventListener 
         return param.hashCode();
     }
 
+    @SuppressWarnings("unused")
     public boolean isNamePresent() {
         return param.isNamePresent();
     }
@@ -71,55 +73,68 @@ public final class RequestParameter implements IStatus, ISession, EventListener 
         return param.toString() + "@" + name;
     }
 
+    @SuppressWarnings("unused")
     public Executable getDeclaringExecutable() {
         return param.getDeclaringExecutable();
     }
 
+    @SuppressWarnings("unused")
     public int getModifiers() {
         return param.getModifiers();
     }
 
+    @SuppressWarnings("unused")
     public Type getParameterizedType() {
         return param.getParameterizedType();
     }
 
 
+    @SuppressWarnings("unused")
     public AnnotatedType getAnnotatedType() {
         return param.getAnnotatedType();
     }
 
+    @SuppressWarnings("unused")
     public boolean isImplicit() {
         return param.isImplicit();
     }
 
+    @SuppressWarnings("unused")
     public boolean isSynthetic() {
         return param.isSynthetic();
     }
 
+    @SuppressWarnings("unused")
     public boolean isVarArgs() {
         return param.isVarArgs();
     }
 
+    @SuppressWarnings("unused")
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return param.getAnnotation(annotationClass);
     }
 
+    @SuppressWarnings("unused")
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
         return param.getAnnotationsByType(annotationClass);
     }
 
+    @SuppressWarnings("unused")
     public Annotation[] getDeclaredAnnotations() {
         return param.getDeclaredAnnotations();
     }
 
+    @SuppressWarnings("unused")
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return param.getDeclaredAnnotation(annotationClass);
     }
 
+    @SuppressWarnings("unused")
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
         return param.getDeclaredAnnotationsByType(annotationClass);
     }
 
+    @SuppressWarnings("unused")
     public Annotation[] getAnnotations() {
         return param.getAnnotations();
     }

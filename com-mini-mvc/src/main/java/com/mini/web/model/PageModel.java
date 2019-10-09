@@ -1,18 +1,17 @@
 package com.mini.web.model;
 
-import com.mini.util.ObjectUtil;
-import com.mini.validate.ValidateUtil;
-import com.mini.web.view.IView;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.mini.validate.ValidateUtil;
+import com.mini.web.view.IView;
 
 /**
  * Page Model 类实现
@@ -59,6 +58,7 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
      * @param map Map数据
      * @return {@Code #this}
      */
+
     public PageModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         data.putAll(map);
         return model();

@@ -1,11 +1,12 @@
 package com.mini.web.argument;
 
-import com.mini.web.interceptor.ActionInvocation;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Optional;
+
+import com.mini.web.interceptor.ActionInvocation;
 
 @Named
 @Singleton

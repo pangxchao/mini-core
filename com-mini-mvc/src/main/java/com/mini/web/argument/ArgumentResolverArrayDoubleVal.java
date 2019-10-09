@@ -1,16 +1,13 @@
 package com.mini.web.argument;
 
-import com.mini.util.TypeUtil;
-import com.mini.web.interceptor.ActionInvocation;
+import static java.util.Arrays.stream;
 
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import static com.mini.util.TypeUtil.castToDoubleVal;
-import static java.util.Arrays.stream;
+import com.mini.util.TypeUtil;
+import com.mini.web.interceptor.ActionInvocation;
 
 @Named
 @Singleton

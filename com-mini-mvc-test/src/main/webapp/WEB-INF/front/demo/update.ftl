@@ -77,7 +77,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label mini-form-label">所属地区</label>
             <div class="layui-input-inline">
-                <select name="provinceEdit" id="provinceEdit" url="mobile/region/list.htm?id=" child="cityEdit" def="${province!}" placeholder="请选择省">
+                <select name="provinceEdit" id="provinceEdit" url="mobile/region/list.htm?id=" child="cityEdit" def="${province!}"
+                        placeholder="请选择省">
                     <option value="">请选择省</option>
                     <option value="浙江" selected="">浙江省</option>
                     <option value="你的工号" method>江西省</option>

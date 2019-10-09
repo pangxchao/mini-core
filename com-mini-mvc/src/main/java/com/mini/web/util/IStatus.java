@@ -1,5 +1,6 @@
 package com.mini.web.util;
 
+@SuppressWarnings("unused")
 public interface IStatus {
 
     // Retain

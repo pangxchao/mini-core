@@ -147,15 +147,12 @@
 
         layui.$("#exit").on("click", function (e) {
             console.log(e);
-            layui.ajax({
-                url: 'mobile/user/logout.htm',
-                type: "GET",
-                dataType: 'json',
-                data: {id: '1'},
+            layui.ajax('mobile/user/logout.htm', {
                 success: function (data, state) {
                     console.log(data);
                     console.log(state);
-                }
+                },
+                data: {id: '1'}
             });
         });
     });

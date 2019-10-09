@@ -1,38 +1,21 @@
 package com.mini.web.test;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static com.mini.util.TypeUtil.castToLongVal;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public final class R {
-    private static final Map<Integer, String> MAP = new ConcurrentHashMap<>();
+	@Inject
+	@Named("KEY_PATH")
+	private static String path;
+	@Inject
+	@Named("KEY_URL")
+	private static String url;
 
-    public static final int KEY_MARK = 1;
-    public static final int KEY_PATH = 2;
-    public static final int KEY_URL = 3;
+	public static String getPath() {
+		return path;
+	}
 
-    public static void put(int key, String value) {
-        MAP.put(key, value);
-    }
-
-    public static String get(int key) {
-        return MAP.get(key);
-    }
-
-    public static long getAsLong(int key) {
-        return castToLongVal(get(key));
-    }
-
-    public static String getMark() {
-        return get(KEY_MARK);
-    }
-
-    public static String getPath() {
-        return get(KEY_PATH);
-    }
-
-    public static String getUrl() {
-        return get(KEY_URL);
-    }
+	public static String getUrl() {
+		return url;
+	}
 }

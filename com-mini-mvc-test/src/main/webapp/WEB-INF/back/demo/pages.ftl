@@ -1,4 +1,5 @@
-<table class="layui-table" id="test" lay-data="{url: 'back/demo/pages.htm', autoSort: false, toolbar: '#toolbarDemo', defaultToolbar: [], page: true}"
+<table class="layui-table" id="test"
+       lay-data="{url: 'back/demo/pages.htm', autoSort: false, toolbar: '#toolbarDemo', defaultToolbar: [], page: true}"
        lay-filter="test">
     <thead>
     <tr>
@@ -52,7 +53,8 @@
 <!-- 该模板用于对每行数据的操作 -->
 <!-- 该模板的条件语句只为演示不同情况显示不同操作 -->
 <script type="text/html" id="lineBar">
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail" href="https://www.layui.com/demo/form.html" target="_blank">查看</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail" href="https://www.layui.com/demo/form.html" target="_blank">查看
+    </a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     {{# if(d.phoneAuth !== '1') { }}

@@ -1,16 +1,17 @@
 package com.mini.web.argument;
 
+import static com.mini.logger.LoggerFactory.getLogger;
+
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+
 import com.mini.logger.Logger;
 import com.mini.web.config.Configure;
 import com.mini.web.config.Configure.UnregisteredException;
 import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.util.IStatus;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import java.util.Optional;
-
-import static com.mini.logger.LoggerFactory.getLogger;
 
 public abstract class ArgumentResolverBean implements ArgumentResolver {
     private static final Logger logger = getLogger(Configure.class);
@@ -35,7 +36,8 @@ public abstract class ArgumentResolverBean implements ArgumentResolver {
             return (byte) 0;
         } catch (UnregisteredException e) {
             logger.warn(e.getMessage());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 

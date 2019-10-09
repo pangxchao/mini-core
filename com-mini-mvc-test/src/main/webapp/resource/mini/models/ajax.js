@@ -1,5 +1,6 @@
-layui.define(['jquery'], function (exports) {
-    var $ = layui.$;
+layui.define(['jquery', 'layer'], function (exports) {
+    var $ = layui.$, layer = layui.layer;
+
     var append_array = function (formData, key, value) {
         if (!layui.jquery.isArray(value)) {
             formData.append(key, value);
@@ -10,39 +11,22 @@ layui.define(['jquery'], function (exports) {
         });
     };
 
-
     var append_all = function (formData, dataArray) {
-        $.each(dataArray, function (key, val) {
+        $.each(dataArray || [], function (key, val) {
             append_array(formData, key, val);
         });
         return formData;
     };
 
-    var result = !!FormData ? function (url, options) {
-        if (!options.form || options.form === '') {
-            layui.$.ajax($.extend({
-                traditional: true,
-                dataType: 'json'
-            }, options, {
-                url: url
-            }));
-            return;
-        }
-
-        var formData = new FormData($(options.form)[0]);
-        $.ajax($.extend({traditional: true, dataType: 'json'}, options, {
-            data: append_all(formData, options.data),
-            contentType: false,
-            processData: false,
-            url: url
-        }));
-
-    } : function (url, options) {
-        layui.$.ajax($.extend({
-            traditional: true
-        }, options, {
-            url: url
-        }));
+    var result = function (url, options) {
+        layui.$.ajax(layui.$.extend({
+            error: function (response) {
+                var t = response.responseText;
+                layer.alert(t);
+            },
+            traditional: true,
+            dataType: 'json'
+        }, options, {url: url}));
     };
 
     result.get = function (url, data, options) {
@@ -59,6 +43,16 @@ layui.define(['jquery'], function (exports) {
         }));
     };
 
+    result.form = function (form, url, options) {
+        var data = new FormData($(form).get(0));
+        data = append_all(data, options.data);
+        result(url, $.extend({}, options, {
+            contentType: false,
+            processData: false,
+            type: "POST",
+            data: data
+        }));
+    };
     // 返回对象
     exports('ajax', result);
 });

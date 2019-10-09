@@ -1,14 +1,15 @@
 package com.mini.web.model;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static com.alibaba.fastjson.JSON.toJSONString;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.alibaba.fastjson.JSON.toJSONString;
+import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Map Model 类实现
@@ -52,6 +53,7 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
      * @param map Map数据
      * @return {@Code #this}
      */
+
     public MapModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         data.putAll(map);
         return model();

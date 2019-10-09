@@ -1,9 +1,9 @@
 package com.mini.web.annotation;
 
+import java.lang.annotation.*;
+
 import com.mini.web.model.IModel;
 import com.mini.web.model.PageModel;
-
-import java.lang.annotation.*;
 
 /**
  * 控制器方法注解
@@ -43,12 +43,6 @@ public @interface Action {
             Method.PUT,
             Method.DELETE
     };
-
-    /**
-     * 扩展字段，允许用户自定义其含义
-     * @return 自定义
-     */
-    String extend() default "";
 
     /**
      * 方法类型

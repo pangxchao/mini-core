@@ -1,10 +1,10 @@
 package com.mini.web.annotation;
 
-import com.mini.web.interceptor.ActionInterceptor;
-import org.aopalliance.intercept.Interceptor;
+import java.lang.annotation.*;
 
 import javax.annotation.Nonnull;
-import java.lang.annotation.*;
+
+import com.mini.web.interceptor.ActionInterceptor;
 
 /**
  * Web 拦截器

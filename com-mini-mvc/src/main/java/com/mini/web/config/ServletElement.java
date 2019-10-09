@@ -1,11 +1,12 @@
 package com.mini.web.config;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServlet;
 
 public final class ServletElement {
     private final Set<String> urlPatterns = new HashSet<>();
@@ -32,6 +33,7 @@ public final class ServletElement {
         return this;
     }
 
+
     public ServletElement setAsyncSupported(boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
         return this;
@@ -57,11 +59,11 @@ public final class ServletElement {
         return this;
     }
 
+
     public ServletElement clearUrlPatterns() {
         urlPatterns.clear();
         return this;
     }
-
 
     public String[] getUrlPatterns() {
         return urlPatterns.toArray(new String[0]);

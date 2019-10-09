@@ -1,10 +1,10 @@
 package com.mini.web.model.factory;
 
+import javax.inject.Singleton;
+
 import com.mini.web.model.IModel;
 import com.mini.web.model.ListModel;
 import com.mini.web.view.IView;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class ListModelFactory implements IModelFactory<ListModel> {

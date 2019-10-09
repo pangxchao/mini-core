@@ -1,21 +1,25 @@
 package com.mini.web.model;
 
-import com.mini.util.ObjectUtil;
-import com.mini.util.StringUtil;
+import static com.mini.util.ObjectUtil.require;
+import static java.lang.Math.min;
+import static java.lang.String.format;
+import static javax.servlet.http.HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.mini.util.ObjectUtil.require;
-import static java.lang.Long.parseLong;
-import static java.lang.Math.min;
-import static java.lang.String.format;
-import static javax.servlet.http.HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE;
+import com.mini.http.RangeParse;
+import com.mini.http.RangeParse.Range;
+import com.mini.util.ObjectUtil;
+import com.mini.util.StringUtil;
 
 /**
  * Stream Model类实现
@@ -43,34 +47,37 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
         return this;
     }
 
+
     public StreamModel setFileName(String fileName) {
         this.fileName = fileName;
         return model();
     }
+
 
     public StreamModel setContentLength(long contentLength) {
         this.contentLength = contentLength;
         return model();
     }
 
+
     public StreamModel setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
         return model();
     }
+
 
     public StreamModel setWriteCallback(WriteCallback writeCallback) {
         this.writeCallback = writeCallback;
         return model();
     }
 
+
     public StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
         this.acceptRangesSupport = acceptRangesSupport;
         return model();
     }
 
-    protected long getEnd() {
-        return contentLength - 1;
-    }
+
 
     @Override
     protected void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
@@ -82,7 +89,7 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
 
             // 不支持断点续传
             if (!this.acceptRangesSupport) {
-                copy(output, 0, getEnd());
+                copy(output, 0, contentLength - 1);
                 return;
             }
 
@@ -92,12 +99,12 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
 
             // 如果请求数据范围不存在，则客户端不需要断点续传，直接返回
             if (rangeText == null || StringUtil.isBlank(rangeText)) {
-                this.copy(output, 0, getEnd());
+                this.copy(output, 0, contentLength - 1);
                 return;
             }
 
             // 解析客户端提交的请求数据范围数据
-            List<Range> rangeList = this.parseRange(rangeText);
+            List<Range> rangeList = RangeParse.parseRange(rangeText);
             if (rangeList == null || rangeList.size() <= 0) {
                 response.addHeader("Content-Range", "bytes */" + contentLength);
                 response.sendError(SC_REQUESTED_RANGE_NOT_SATISFIABLE);
@@ -105,8 +112,10 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
             }
 
             // 验证客户端提交的请求头是否合法
-            for (StreamModel.Range range : rangeList) {
-                if (range.validate()) continue;
+            for (RangeParse.Range range : rangeList) {
+                if (range.validate(contentLength)) {
+                    continue;
+                }
 
                 // 如果Range对象不合法，返回错误信息
                 response.addHeader("Content-Range", "bytes */" + contentLength);
@@ -115,9 +124,9 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
             }
 
             // 客户端只传入一个数据范围
-            if (rangeList.size() == 1 && rangeList.get(0).validate()) {
+            if (rangeList.size() == 1) {
                 // 设置返回的数据范围
-                StreamModel.Range range = rangeList.get(0);
+                RangeParse.Range range = rangeList.get(0);
                 response.addHeader("Content-Range", format("bytes %d-%d/%d", range.getStart(), range.getEnd(), range.getLength()));
 
                 // 设置传回内容在大小和Buffer大小
@@ -132,7 +141,7 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
 
             // 客户端传入了多个数据范围
             response.setContentType("multipart/byteranges; boundary=" + MULTIPART_BOUNDARY);
-            for (StreamModel.Range range : rangeList) {
+            for (RangeParse.Range range : rangeList) {
                 // 输出每片数据的分隔符
                 output.println();
                 output.println("--" + MULTIPART_BOUNDARY);
@@ -152,47 +161,6 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
         } catch (Exception | Error exception) {
             response.setStatus(500);
         }
-    }
-
-    // 解析Range数据
-    private synchronized List<Range> parseRange(@Nonnull String rangeText) throws IOException {
-        // 读取器
-        StringReader reader = new StringReader(rangeText);
-        RangeParse parse = new RangeParse(reader);
-
-        // Range固定格式以"bytes="开头
-        parse.skipBlankCharacter();
-        if (!parse.skipConstant("bytes=")) {
-            return null;
-        }
-
-        // 数据容器
-        List<Range> result = new ArrayList<>();
-        do {
-            // 读取范围的开始字节
-            parse.skipBlankCharacter();
-            long start = parse.readLong();
-            if (start == -1) start = 0;
-
-            // 读取开始与结束之间的“-”
-            parse.skipBlankCharacter();
-            if (!parse.skipConstant("-")) {
-                return null;
-            }
-
-            // 读取范围的结束字节
-            parse.skipBlankCharacter();
-            long end = parse.readLong();
-            if (end == -1) end = getEnd();
-
-            // 创建Range并添加到列表中
-            Range range = new Range(contentLength, start, end);
-            result.add(range);
-
-            // 跳过空白字符
-            parse.skipBlankCharacter();
-        } while (parse.skipConstant(","));
-        return result;
     }
 
     // 写入数据
@@ -225,90 +193,6 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
                 }
             }
         });
-    }
-
-    // 下载分片数据
-    protected static final class Range {
-        private long length, start, end;
-
-        public Range(long length, long start, long end) {
-            this.length = length;
-            this.start  = start;
-            this.end    = end;
-        }
-
-        protected final long getLength() {
-            return length;
-        }
-
-        protected final long getStart() {
-            return start;
-        }
-
-        protected final long getEnd() {
-            return min(end, length - 1);
-        }
-
-        // 判断数据合法性
-        public final boolean validate() {
-            end = min(end, length - 1);
-            boolean re = start >= 0;
-            re = re && start <= end;
-            return re && length > 0;
-        }
-    }
-
-    protected static final class RangeParse {
-        private final StringReader reader;
-
-        public RangeParse(StringReader reader) {
-            this.reader = reader;
-        }
-
-        public boolean skipConstant(String constant) throws IOException {
-            int length = constant.length();
-            this.reader.mark(length);
-            for (int i = 0; i < length; i++) {
-                int c = reader.read();
-                if (c == -1 || c != constant.charAt(i)) {
-                    reader.reset();
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public long readLong() throws IOException {
-            String number = this.readNumber();
-            if (number.length() <= 0) {
-                return -1;
-            }
-            return parseLong(number);
-        }
-
-        @Nonnull
-        public String readNumber() throws IOException {
-            StringBuilder result = new StringBuilder();
-            this.reader.mark(1);
-            int c = reader.read();
-            while (c >= '0' && c <= '9') {
-                result.append((char) c);
-                this.reader.mark(1);
-                c = reader.read();
-            }
-            reader.reset();
-            return result.toString();
-        }
-
-        public void skipBlankCharacter() throws IOException {
-            this.reader.mark(1);
-            int c = reader.read(); // 32, 9, 10, 13
-            while (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-                this.reader.mark(1);
-                c = reader.read();
-            }
-            reader.reset();
-        }
     }
 
     @FunctionalInterface

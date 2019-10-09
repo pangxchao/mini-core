@@ -2,6 +2,7 @@ package com.mini.web.util;
 
 import java.util.EventListener;
 
+@SuppressWarnings("unused")
 public final class SignatureUtil implements IStatus, EventListener {
     // 所有参与签名的自定义头和未强制签名的头信息
     private static final String X_Signature_headers = "X-Signature-Headers";

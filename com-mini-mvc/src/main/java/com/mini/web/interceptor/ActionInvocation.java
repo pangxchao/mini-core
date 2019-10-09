@@ -1,16 +1,17 @@
 package com.mini.web.interceptor;
 
-import com.mini.web.model.IModel;
-import com.mini.web.util.RequestParameter;
-import com.mini.web.util.WebUtil;
+import java.lang.reflect.Method;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.Method;
-import java.util.List;
+
+import com.mini.web.model.IModel;
+import com.mini.web.util.RequestParameter;
+import com.mini.web.util.WebUtil;
 
 public interface ActionInvocation {
 
@@ -91,6 +92,7 @@ public interface ActionInvocation {
      * 获取 ServletContext
      * @return ServletContext
      */
+
     ServletContext getServletContext();
 
     /**
@@ -128,6 +130,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default long getParameterToLongVal(String name) throws Error {
         return WebUtil.getParameterToLongVal(getRequest(), name);
 
@@ -138,6 +141,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Long getParameterToLong(String name) throws Error {
         return WebUtil.getParameterToLong(getRequest(), name);
     }
@@ -147,6 +151,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default int getParameterToIntVal(String name) throws Error {
         return WebUtil.getParameterToIntVal(getRequest(), name);
     }
@@ -156,6 +161,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Integer getParameterToInt(String name) throws Error {
         return WebUtil.getParameterToInt(getRequest(), name);
     }
@@ -165,6 +171,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default short getParameterToShortVal(String name) throws Error {
         return WebUtil.getParameterToShortVal(getRequest(), name);
     }
@@ -174,6 +181,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Short getParameterToShort(String name) throws Error {
         return WebUtil.getParameterToShort(getRequest(), name);
     }
@@ -183,6 +191,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default byte getParameterToByteVal(String name) throws Error {
         return WebUtil.getParameterToByteVal(getRequest(), name);
     }
@@ -192,6 +201,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Byte getParameterToByte(String name) throws Error {
         return WebUtil.getParameterToByte(getRequest(), name);
     }
@@ -201,6 +211,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default double getParameterToDoubleVal(String name) throws Error {
         return WebUtil.getParameterToDoubleVal(getRequest(), name);
     }
@@ -210,6 +221,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Double getParameterToDouble(String name) throws Error {
         return WebUtil.getParameterToDouble(getRequest(), name);
     }
@@ -219,6 +231,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default float getParameterToFloatVal(String name) throws Error {
         return WebUtil.getParameterToFloatVal(getRequest(), name);
     }
@@ -228,6 +241,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Float getParameterToFloat(String name) throws Error {
         return WebUtil.getParameterToFloat(getRequest(), name);
     }
@@ -237,6 +251,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default boolean getParameterToBoolVal(String name) throws Error {
         return WebUtil.getParameterToBoolVal(getRequest(), name);
     }
@@ -246,6 +261,7 @@ public interface ActionInvocation {
      * @param name 参数名称
      * @return 获取结果
      */
+
     default Boolean getParameterToBool(String name) throws Error {
         return WebUtil.getParameterToBool(getRequest(), name);
     }
@@ -254,6 +270,7 @@ public interface ActionInvocation {
      * 获取sessionId
      * @return session ID
      */
+
     default String getSessionId() throws Error {
         return WebUtil.getSessionId(getSession());
     }
@@ -264,6 +281,7 @@ public interface ActionInvocation {
      * @param clazz 返回类型
      * @return 返回对象
      */
+
     default <T> T getSessionAttr(String name, Class<T> clazz) throws Error {
         return WebUtil.getAttribute(getSession(), name, clazz);
     }
@@ -273,6 +291,7 @@ public interface ActionInvocation {
      * @param name  属性名称
      * @param value 属性值
      */
+
     default void setSessionAttr(String name, Object value) {
         WebUtil.setAttribute(getSession(), name, value);
     }
@@ -283,6 +302,7 @@ public interface ActionInvocation {
      * @param clazz 返回类型
      * @return 返回对象
      */
+
     default <T> T getRequestAttr(String name, Class<T> clazz) throws Error {
         return WebUtil.getAttribute(getRequest(), name, clazz);
     }
@@ -292,6 +312,7 @@ public interface ActionInvocation {
      * @param name  属性名称
      * @param value 属性值
      */
+
     default void setRequestAttr(String name, Object value) {
         WebUtil.setAttribute(getRequest(), name, value);
     }
