@@ -1,25 +1,24 @@
 package com.mini.web.model;
 
-import static com.mini.util.ObjectUtil.require;
-import static java.lang.Math.min;
-import static java.lang.String.format;
-import static javax.servlet.http.HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE;
+import com.mini.http.RangeParse;
+import com.mini.http.RangeParse.Range;
+import com.mini.util.ObjectUtil;
+import com.mini.util.StringUtil;
 
+import javax.annotation.Nonnull;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.mini.http.RangeParse;
-import com.mini.http.RangeParse.Range;
-import com.mini.util.ObjectUtil;
-import com.mini.util.StringUtil;
+import static com.mini.util.ObjectUtil.require;
+import static java.lang.Math.min;
+import static java.lang.String.format;
+import static javax.servlet.http.HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE;
 
 /**
  * Stream Model类实现
@@ -78,13 +77,11 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
     }
 
 
-
     @Override
-    protected void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
+    protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
         try (ServletOutputStream output = response.getOutputStream()) {
             if (!StringUtil.isBlank(StreamModel.this.fileName)) {
-                response.addHeader("Content-Disposition",  //
-                        "attachment; filename=" + fileName);
+                response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
             }
 
             // 不支持断点续传

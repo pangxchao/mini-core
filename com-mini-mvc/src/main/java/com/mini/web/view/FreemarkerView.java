@@ -1,9 +1,7 @@
 package com.mini.web.view;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.Map;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,9 +9,10 @@ import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Map;
 
 @Singleton
 public class FreemarkerView implements IView, Serializable {

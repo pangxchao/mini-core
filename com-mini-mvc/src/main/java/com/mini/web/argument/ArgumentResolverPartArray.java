@@ -1,15 +1,14 @@
 package com.mini.web.argument;
 
-import static java.util.Optional.ofNullable;
-
-import java.util.Collection;
+import com.mini.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.Part;
+import java.util.Collection;
 
-import com.mini.web.interceptor.ActionInvocation;
+import static java.util.Optional.ofNullable;
 
 @Named
 @Singleton

@@ -1,10 +1,9 @@
 package com.mini.web.model;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.Serializable;
 
 /**
  * StringModel.java
@@ -120,7 +119,7 @@ public final class StringModel extends IModel<StringModel> implements Serializab
     }
 
     @Override
-    protected void submit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
+    protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             writer.write(builder.toString());
             writer.flush();

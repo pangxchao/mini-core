@@ -1,12 +1,11 @@
 package com.mini.web.config;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServlet;
 
 public final class ServletElement {
     private final Set<String> urlPatterns = new HashSet<>();

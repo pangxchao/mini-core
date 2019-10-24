@@ -7,5 +7,5 @@ import java.sql.Statement;
 @FunctionalInterface
 public interface StatementCreator {
 
-	Statement get(Connection connection) throws SQLException;
+    Statement get(Connection connection) throws SQLException;
 }

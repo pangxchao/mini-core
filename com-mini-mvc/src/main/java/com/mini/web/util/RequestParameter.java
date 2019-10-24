@@ -1,13 +1,5 @@
 package com.mini.web.util;
 
-import static com.mini.logger.LoggerFactory.getLogger;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Type;
-import java.util.EventListener;
-
 import com.mini.logger.Logger;
 import com.mini.util.reflect.MiniParameter;
 import com.mini.web.annotation.RequestName;
@@ -15,6 +7,14 @@ import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.config.Configure;
 import com.mini.web.config.Configure.UnregisteredException;
 import com.mini.web.interceptor.ActionInvocation;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Type;
+import java.util.EventListener;
+
+import static com.mini.logger.LoggerFactory.getLogger;
 
 public final class RequestParameter implements IStatus, ISession, EventListener {
     private static final Logger logger = getLogger(Configure.class);

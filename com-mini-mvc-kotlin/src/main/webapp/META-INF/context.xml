@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context reloadable="false">
+    <Resource name="mini_test" auth="Container" type="javax.sql.DataSource" maxTotal="5" maxIdle="2"
+              maxWaitMillis="10000" username="root"
+              password="Qwe123456!" driverClassName="com.mysql.cj.jdbc.Driver" testWhileIdle="true"
+              validationQuery="select 1"
+              url="jdbc:mysql://192.168.1.200:3306/mini_test?useSSL=false&amp;serverTimezone=GMT%2B8"/>
+
+    <Parameter name="KEY_PATH" value="d:/static/"/>
+    <Parameter name="KEY_URL" value="/static/"/>
+</Context>
+

@@ -1,10 +1,10 @@
 package com.mini.web.argument;
 
-import static java.util.Optional.ofNullable;
+import com.mini.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
 
-import com.mini.web.interceptor.ActionInvocation;
+import static java.util.Optional.ofNullable;
 
 public abstract class ArgumentResolverBase implements ArgumentResolver {
 

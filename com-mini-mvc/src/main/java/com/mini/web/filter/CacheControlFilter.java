@@ -1,6 +1,6 @@
 package com.mini.web.filter;
 
-import java.io.IOException;
+import com.mini.util.TypeUtil;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -8,8 +8,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
-
-import com.mini.util.TypeUtil;
+import java.io.IOException;
 
 /**
  * 缓存拦截器

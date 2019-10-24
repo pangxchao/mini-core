@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Repeatable(PropertySources.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PropertySource {
-	String value();
+    String value();
 }

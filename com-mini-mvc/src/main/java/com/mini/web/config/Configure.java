@@ -1,26 +1,5 @@
 package com.mini.web.config;
 
-import static com.mini.util.ObjectUtil.defIfNull;
-import static com.mini.util.StringUtil.split;
-import static com.mini.util.TypeUtil.*;
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServlet;
-
 import com.google.inject.Injector;
 import com.mini.logger.Logger;
 import com.mini.logger.LoggerFactory;
@@ -29,14 +8,31 @@ import com.mini.web.annotation.Action;
 import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocationProxy;
-import com.mini.web.model.IModel;
-import com.mini.web.model.factory.IModelFactory;
 import com.mini.web.view.FreemarkerView;
 import com.mini.web.view.IView;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServlet;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import static com.mini.util.ObjectUtil.defIfNull;
+import static com.mini.util.StringUtil.split;
+import static com.mini.util.TypeUtil.*;
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
 @Singleton
 public final class Configure {
-    private final Map<Class<? extends IModel<?>>, Class<? extends IModelFactory<?>>> modelFactory = new ConcurrentHashMap<>();
     private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
     private final Map<Class<? extends HttpServlet>, ServletElement> servlets = new ConcurrentHashMap<>();
     private final Map<Class<? extends Filter>, FilterElement> filters = new ConcurrentHashMap<>();
@@ -379,7 +375,7 @@ public final class Configure {
      * @return 当前对象
      */
     public synchronized final Configure addInvocationProxy(String url, @Nonnull ActionInvocationProxy proxy) {
-        logger.debug(format("Register Action[%s, %s]", Arrays.toString(proxy.getSupportMethod()), url));
+        logger.debug(format("Register Action[%s %s]", Arrays.toString(proxy.getSupportMethod()), url));
         Arrays.stream(proxy.getSupportMethod()).forEach(method -> { //
             invocation.computeIfAbsent(method, key -> { //
                 return new WebMappingUri();
@@ -479,32 +475,6 @@ public final class Configure {
      */
     public synchronized final Collection<FilterElement> getFilters() {
         return filters.values();
-    }
-
-    /**
-     * 添加一个数据模型渲染器工厂
-     * @param mClass 数据模型渲染器类型
-     * @param fClass 数据模型渲染器工厂
-     * @return 当前对象
-     */
-
-    public synchronized final <T extends IModel<T>> Configure addModelFactory(Class<T> mClass, //
-            Class<? extends IModelFactory<T>> fClass) {
-        modelFactory.putIfAbsent(mClass, fClass);
-        return this;
-    }
-
-    /**
-     * 根据数据模型渲染器类型获取数据模型渲染器
-     * @param mClass   数据模型渲染器类型
-     * @param viewPath 页面视图路径
-     * @return 数据模型渲染器
-     */
-    public synchronized final IModel<?> getModel(Class<?> mClass, String viewPath) {
-        return Optional.ofNullable(modelFactory.get(mClass))  //
-                .map(fClass -> injector.getInstance(fClass)) //
-                .map(f -> f.getModel(getView(), viewPath)) //
-                .orElse(null);
     }
 
     /**

@@ -1,9 +1,8 @@
 package com.mini.web.config;
 
-import java.util.*;
-
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import java.util.*;
 
 public final class FilterElement {
     private final List<DispatcherType> dispatcherTypes = new ArrayList<>();

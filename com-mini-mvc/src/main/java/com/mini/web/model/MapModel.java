@@ -1,15 +1,14 @@
 package com.mini.web.model;
 
-import static com.alibaba.fastjson.JSON.toJSONString;
-
+import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import static com.alibaba.fastjson.JSON.toJSONString;
 
 /**
  * Map Model 类实现
@@ -60,7 +59,7 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     }
 
     @Override
-    protected void submit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
+    protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String v) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
             writer.write(toJSONString(data));
             writer.flush();

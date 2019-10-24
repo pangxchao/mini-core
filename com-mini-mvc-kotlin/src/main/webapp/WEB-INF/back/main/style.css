@@ -1,0 +1,30 @@
+.body-iframe {
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.mengyi-logo {
+    padding-left: 20px;
+    text-align: left;
+    font-size: 36px;
+    display: block;
+    height: 60px;
+    width: 200px;
+    color: #fff;
+}
+
+.center-main {
+    height: 100%;
+    width: 100%;
+}
+
+.center-main img {
+    max-height: 100%;
+    max-width: 100%;
+    display: block;
+    width: 100%;
+}

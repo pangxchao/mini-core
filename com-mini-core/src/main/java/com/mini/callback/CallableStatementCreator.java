@@ -6,5 +6,5 @@ import java.sql.SQLException;
 
 @FunctionalInterface
 public interface CallableStatementCreator {
-	CallableStatement get(Connection connection) throws SQLException;
+    CallableStatement get(Connection connection) throws SQLException;
 }

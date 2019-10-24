@@ -1,9 +1,12 @@
 package com.mini.web.annotation;
 
-import java.lang.annotation.*;
-
 import com.mini.web.model.IModel;
 import com.mini.web.model.PageModel;
+import com.mini.web.model.factory.ModelType;
+
+import java.lang.annotation.*;
+
+import static com.mini.web.model.factory.ModelType.PAGE;
 
 /**
  * 控制器方法注解
@@ -18,8 +21,7 @@ public @interface Action {
      * 返回数据类型
      * @return 数据类型
      */
-    Class<? extends IModel<?>> value() //
-            default PageModel.class;
+    ModelType value() default PAGE;
 
     /**
      * 访问地址

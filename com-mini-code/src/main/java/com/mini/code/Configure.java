@@ -1,144 +1,150 @@
 package com.mini.code;
 
-import static com.squareup.javapoet.ClassName.get;
-import static java.lang.String.format;
-
-import java.sql.SQLException;
-
 import com.mini.jdbc.JdbcTemplate;
 import com.mini.util.StringUtil;
 import com.squareup.javapoet.ClassName;
 
+import java.sql.SQLException;
+
+import static com.squareup.javapoet.ClassName.get;
+import static java.lang.String.format;
+
 public interface Configure {
-	String SERVER_NAME = "192.168.1.200";
-	String PASSWORD = "Qwe123456!";
+    String SERVER_NAME = "192.168.1.200";
+    String PASSWORD = "Qwe123456!";
 
-	/**
-	 * 获取项目基础路径
-	 * @return 项目基础路径
-	 */
-	String getClassPath();
+    default boolean generatorSerialVersionUID() {
+        return false;
+    }
 
-	/**
-	 * 获取文档基础路径
-	 * @return 文档基础路径
-	 */
-	String getDocumentPath();
+    /**
+     * 获取项目基础路径
+     * @return 项目基础路径
+     */
+    String getClassPath();
 
-	/**
-	 * 获取基础包名
-	 * @return 基础包名
-	 */
-	String getPackageName();
+    /**
+     * 获取文档基础路径
+     * @return 文档基础路径
+     */
+    String getDocumentPath();
 
-	/**
-	 * 获取WEB页面的绝对路径
-	 * @return WEB页面的绝对路径
-	 */
-	String getWebRootPath();
+    /**
+     * 获取基础包名
+     * @return 基础包名
+     */
+    String getPackageName();
 
-	/**
-	 * 获取数据库的库名
-	 * @return 数据库的库名
-	 */
-	String getDatabaseName();
+    /**
+     * 获取WEB页面的绝对路径
+     * @return WEB页面的绝对路径
+     */
+    String getWebRootPath();
 
-	/**
-	 * 获取数据库连接模板
-	 * @return 数据库连接模板
-	 */
-	JdbcTemplate getJdbcTemplate() throws SQLException;
+    /**
+     * 获取数据库的库名
+     * @return 数据库的库名
+     */
+    String getDatabaseName();
 
-	/**
-	 * 数据表与实体类名
-	 * @return [BeanItem...]
-	 */
-	BeanItem[] getDatabaseBeans();
+    /**
+     * 获取数据库连接模板
+     * @return 数据库连接模板
+     */
+    JdbcTemplate getJdbcTemplate() throws SQLException;
 
-	/**
-	 * 数据库与实体关联信息
-	 * @author xchao
-	 */
-	class BeanItem {
-		public final String className;
-		public final String tableName;
-		public final String prefix;
+    /**
+     * 数据表与实体类名
+     * @return [BeanItem...]
+     */
+    BeanItem[] getDatabaseBeans();
 
-		public BeanItem(String className, String tableName, String prefix) {
-			this.className = className;
-			this.tableName = tableName;
-			this.prefix = prefix;
-		}
-	}
+    /**
+     * 数据库与实体关联信息
+     * @author xchao
+     */
+    class BeanItem {
+        public final String className;
+        public final String tableName;
+        public final String prefix;
 
-	/**
-	 * 生成类相关信息
-	 * @author xchao
-	 */
-	final class ClassInfo {
-		// 生成的所有类的包名
-		public final String daoBasePackage;
-		public final String daoImplPackage;
-		//public final String builderPackage;
-		public final String mapperPackage;
-		public final String basePackage;
-		public final String beanPackage;
-		public final String daoPackage;
+        public BeanItem(String className, String tableName, String prefix) {
+            this.className = className;
+            this.tableName = tableName;
+            this.prefix    = prefix;
+        }
+    }
 
-		// 生成的所有类的类名
-		public final String daoBaseName;
-		public final String daoImplName;
-		public final String builderName;
-		public final String mapperName;
-		public final String baseName;
-		public final String beanName;
-		public final String daoName;
+    /**
+     * 生成类相关信息
+     * @author xchao
+     */
+    final class ClassInfo {
+        // 实体信息相关包与类名、类对象
+        public final String beanPackage, builderPackage, abstractBuilderPackage;
+        public final ClassName beanClass, builderClass, abstractBuilderClass;
+        public final String beanName, builderName, abstractBuilderName;
 
-		// 生成的所有的类的类对象
-		public final ClassName daoBaseClass;
-		public final ClassName daoImplClass;
-		// public final ClassName builderClass;
-		public final ClassName mapperClass;
-		public final ClassName baseClass;
-		public final ClassName beanClass;
-		public final ClassName daoClass;
+        // Dao 相关的包名秘与类名、类对象
+        public final String daoPackage, daoBasePackage, daoImplPackage;
+        public final ClassName daoClass, daoBaseClass, daoImplClass;
+        public final String daoName, daoBaseName, daoImplName;
 
-		// Web Controller 类相关包、类与类对象
-		public final ClassName controllerClass;
-		public final String controllerPackage;
-		public final String controllerName;
+        // Mapper/SQL相关包名与类名、类对象
+        public final String mapperPackage, sqlPackage;
+        public final ClassName mapperClass, sqlClass;
+        public final String mapperName, sqlName;
 
-		public ClassInfo(Configure configure, String className) throws RuntimeException {
-			// 生成的所有类的包名
-			mapperPackage = format("%s.entity.mapper", configure.getPackageName());
-			//builderPackage = format("%s.entity.mapper", configure.getPackageName());
-			basePackage = format("%s.entity.base", configure.getPackageName());
-			daoBasePackage = format("%s.dao.base", configure.getPackageName());
-			daoImplPackage = format("%s.dao.impl", configure.getPackageName());
-			beanPackage = format("%s.entity", configure.getPackageName());
-			daoPackage = format("%s.dao", configure.getPackageName());
+        // Web Controller 类相关包、类与类对象
+        public final ClassName controllerClass;
+        public final String controllerPackage;
+        public final String controllerName;
 
-			// 生成的所有类的类名
-			daoBaseName = format("Base%sDao", className);
-			daoImplName = format("%sDaoImpl", className);
-			builderName = format("%sBuilder", className);
-			mapperName = format("%sMapper", className);
-			baseName = format("Base%s", className);
-			daoName = format("%sDao", className);
-			beanName = className;
+        public ClassInfo(Configure configure, String className) throws RuntimeException {
+            // 实体信息相关包与类名、类对象初始化 - Bean 对象
+            beanPackage = format("%s.entity", configure.getPackageName());
+            beanName    = className;
+            beanClass   = get(beanPackage, beanName);
 
-			// 生成所有的类对象
-			daoBaseClass = get(daoBasePackage, daoBaseName);
-			daoImplClass = get(daoImplPackage, daoImplName);
-			mapperClass = get(mapperPackage, mapperName);
-			baseClass = get(basePackage, baseName);
-			beanClass = get(beanPackage, beanName);
-			daoClass = get(daoPackage, daoName);
+            // 实体信息相关包与类名、类对象初始化 - AbstractBuilder 对象
+            abstractBuilderPackage = format("%s.entity", configure.getPackageName());
+            abstractBuilderName    = "AbstractBuilder";
+            abstractBuilderClass   = get(abstractBuilderPackage, beanName, abstractBuilderName);
 
-			// Web Controller 类相关包、类与类对象
-			controllerPackage = format("%s.controller.back", configure.getPackageName());
-			controllerName = StringUtil.format("%sController", className);
-			controllerClass = get(controllerPackage, controllerName);
-		}
-	}
+            // 实体信息相关包与类名、类对象初始化 - Builder 对象
+            builderPackage = format("%s.entity", configure.getPackageName());
+            builderName    = "Builder";
+            builderClass   = get(builderPackage, beanName, builderName);
+
+            // Mapper/SQL相关包名与类名、类对象 - Mapper 对象
+            mapperPackage = format("%s.entity.mapper", configure.getPackageName());
+            mapperName    = format("%sMapper", className);
+            mapperClass   = get(mapperPackage, mapperName);
+
+            // Mapper/SQL相关包名与类名、类对象 - SQL 对象
+            sqlPackage = format("%s.entity.mapper", configure.getPackageName());
+            sqlName    = format("%sBuilder", className);
+            sqlClass   = get(sqlPackage, mapperName, sqlName);
+
+            // Dao 相关的包名秘与类名、类对象 - DaoBase 对象
+            daoBasePackage = format("%s.dao.base", configure.getPackageName());
+            daoBaseName    = format("Base%sDao", className);
+            daoBaseClass   = get(daoBasePackage, daoBaseName);
+
+            // Dao 相关的包名秘与类名、类对象 - Dao 对象
+            daoPackage = format("%s.dao", configure.getPackageName());
+            daoName    = format("%sDao", className);
+            daoClass   = get(daoPackage, daoName);
+
+            // Dao 相关的包名秘与类名、类对象 - Impl 对象
+            daoImplPackage = format("%s.dao.impl", configure.getPackageName());
+            daoImplName    = format("%sDaoImpl", className);
+            daoImplClass   = get(daoImplPackage, daoImplName);
+
+            // Web Controller 类相关包、类与类对象
+            controllerPackage = format("%s.controller.back", configure.getPackageName());
+            controllerName    = StringUtil.format("%sController", className);
+            controllerClass   = get(controllerPackage, controllerName);
+        }
+    }
 }

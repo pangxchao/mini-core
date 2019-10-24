@@ -6,5 +6,5 @@ import java.sql.SQLException;
 @FunctionalInterface
 public interface DatabaseMetaDataCallback<T> {
 
-	T doDatabaseMetaData(DatabaseMetaData metaData) throws SQLException;
+    T doDatabaseMetaData(DatabaseMetaData metaData) throws SQLException;
 }

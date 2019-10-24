@@ -1,31 +1,33 @@
 package com.mini.jdbc.mapper;
 
+import com.mini.jdbc.util.JdbcUtil;
+
+import javax.annotation.Nonnull;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-
-import com.mini.jdbc.util.JdbcUtil;
 
 /**
  * MapMapper.java
  * @author xchao
  */
 public final class IMapperMap implements IMapper<HashMap<String, Object>> {
-	public static final IMapperMap INSTANCE = new IMapperMap();
+    public static final IMapperMap INSTANCE = new IMapperMap();
 
-	@Override
-	public HashMap<String, Object> get(ResultSet rs, int number) throws SQLException {
-		HashMap<String, Object> value = new HashMap<>();
-		ResultSetMetaData metaData = rs.getMetaData();
-		for (int i = 1; i <= metaData.getColumnCount(); i++) {
-			String column = JdbcUtil.lookupColumnName(metaData, i);
-			value.putIfAbsent(column, getColumnValue(rs, i));
-		}
-		return value;
-	}
+    @Nonnull
+    @Override
+    public HashMap<String, Object> get(ResultSet rs, int number) throws SQLException {
+        HashMap<String, Object> value = new HashMap<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            String column = JdbcUtil.lookupColumnName(metaData, i);
+            value.putIfAbsent(column, getColumnValue(rs, i));
+        }
+        return value;
+    }
 
-	private Object getColumnValue(ResultSet rs, int index) throws SQLException {
-		return JdbcUtil.getResultSetValue(rs, index);
-	}
+    private Object getColumnValue(ResultSet rs, int index) throws SQLException {
+        return JdbcUtil.getResultSetValue(rs, index);
+    }
 }

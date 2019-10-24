@@ -1,13 +1,13 @@
 package com.mini.web.interceptor;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import com.mini.web.annotation.Action;
 import com.mini.web.model.IModel;
 import com.mini.web.util.RequestParameter;
+import com.mini.web.view.IView;
+
+import javax.annotation.Nonnull;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public interface ActionInvocationProxy {
 
@@ -28,10 +28,12 @@ public interface ActionInvocationProxy {
 
     /**
      * 获取数据模型实现类型
+     * @param view     视图实现类
+     * @param viewPath 页面视图路径
      * @return 数据模型实现类型
      */
     @Nonnull
-    Class<? extends IModel<?>> getModel();
+    IModel<?> getModel(IView view, String viewPath);
 
     /**
      * 获取控制器支持的方法

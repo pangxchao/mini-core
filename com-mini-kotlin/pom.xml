@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mini</groupId>
-    <artifactId>core.kotlin</artifactId>
+    <artifactId>kotlin</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
 
     <!-- 项目名称自己说明 -->
-    <name>com.mini.core.kotlin</name>
-    <description>com mini core kotlin</description>
+    <name>com-mini-kotlin</name>
+    <description>com mini kotlin</description>
 
     <!-- 基础属性配置 -->
     <properties>
@@ -84,7 +84,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <!-- 私有仓库配置 -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>GitHub Private Maven</name>
+            <url>file:D:/workspace-maven-git/maven/</url>
+        </repository>
+    </distributionManagement>
 
 </project>

@@ -1,22 +1,5 @@
 package com.mini.web.servlet;
 
-import static com.mini.logger.LoggerFactory.getLogger;
-import static com.mini.util.MiniProperties.createProperties;
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
-
-import java.lang.reflect.Constructor;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.inject.Singleton;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration.Dynamic;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.annotation.HandlesTypes;
-
 import com.google.auto.service.AutoService;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -31,6 +14,22 @@ import com.mini.util.MiniProperties;
 import com.mini.util.ObjectUtil;
 import com.mini.web.config.Configure;
 import com.mini.web.config.WebMvcConfigure;
+
+import javax.inject.Singleton;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration.Dynamic;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.HandlesTypes;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.mini.logger.LoggerFactory.getLogger;
+import static com.mini.util.MiniProperties.createProperties;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 
 @Singleton

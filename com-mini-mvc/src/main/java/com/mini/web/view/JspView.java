@@ -1,13 +1,12 @@
 package com.mini.web.view;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Serializable;
+import java.util.Map;
 
 @Singleton
 @SuppressWarnings("unused")

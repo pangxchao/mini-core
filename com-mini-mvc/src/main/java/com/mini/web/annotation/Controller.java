@@ -1,8 +1,7 @@
 package com.mini.web.annotation;
 
-import java.lang.annotation.*;
-
 import javax.annotation.Nonnull;
+import java.lang.annotation.*;
 
 /**
  * 控制器类注解

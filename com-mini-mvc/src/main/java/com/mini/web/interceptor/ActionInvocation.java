@@ -1,17 +1,16 @@
 package com.mini.web.interceptor;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import com.mini.web.model.IModel;
+import com.mini.web.util.RequestParameter;
+import com.mini.web.util.WebUtil;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.mini.web.model.IModel;
-import com.mini.web.util.RequestParameter;
-import com.mini.web.util.WebUtil;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public interface ActionInvocation {
 

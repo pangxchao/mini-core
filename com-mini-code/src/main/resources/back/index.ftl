@@ -2,15 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    ${r'<#--noinspection FtlReferencesInspection-->'}
     <base href="${r'${request.contextPath}'}/"/>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>后台管理实体信息-首页</title>
+    ${r'<#--noinspection HtmlUnknownTarget-->'}
+    <#--noinspection HtmlUnknownTarget-->
     <link type="text/css" rel="stylesheet" href="resource/layui/css/layui.css"/>
+    ${r'<#--noinspection HtmlUnknownTarget-->'}
+    <#--noinspection HtmlUnknownTarget-->
     <link type="text/css" rel="stylesheet" href="resource/mini/css/mini.css">
+    ${r'<#--noinspection HtmlUnknownTarget-->'}
+    <#--noinspection HtmlUnknownTarget-->
     <script type="text/javascript" src="resource/layui/layui.js"></script>
+    ${r'<#--noinspection HtmlUnknownTarget-->'}
+    <#--noinspection HtmlUnknownTarget-->
     <script type="text/javascript" src="resource/mini/mini.js"></script>
     <style type="text/css">
         .layui-form-label {
@@ -37,6 +46,8 @@
 
         <div class="layui-form-item">
             <div class="layui-input-block mini-input-block">
+                ${r'<#--noinspection HtmlUnknownAttribute-->'}
+                <#--noinspection HtmlUnknownAttribute-->
                 <button class="layui-btn layui-btn-sm" lay-submit lay-filter="searchForm">搜索</button>
                 <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">清空/重置</button>
             </div>
@@ -61,6 +72,7 @@
         // form 提交事件(处理数据的搜索)
         layui.form.on("submit(searchForm)", function (data) {
             var d = $.extend({}, {search: ""}, data.field);
+            <#--noinspection FtlReferencesInspection-->
             layui.table.reload('${name}-table', {
                 traditional: true,
                 where: d
@@ -84,6 +96,7 @@
 
                     // 绑定 Insert Form 提交事件
                     layui.form.on("submit(insertButton)", function (data) {
+                        <#--noinspection FtlReferencesInspection-->
                         layui.ajax('back/${name}/insert.htm', {
                             data: $.extend({}, data.field),
                             success: function (resp) {
@@ -91,6 +104,7 @@
                                 layer.close(index);
                                 console.log(resp);
                                 // 重新加载表格数据
+                                <#--noinspection FtlReferencesInspection-->
                                 layui.table.reload('${name}-table');
                             },
                             error: function (response, state) {
@@ -124,6 +138,7 @@
 
                     // 绑定 Insert Form 提交事件
                     layui.form.on("submit(updateButton)", function (data) {
+                        <#--noinspection FtlReferencesInspection-->
                         layui.ajax('back/${name}/update.htm', {
                             data: $.extend(info, data.field, {
                                 id: info.id
@@ -133,6 +148,7 @@
                                 layer.close(index);
                                 console.log(resp);
                                 // 重新加载表格数据
+                                <#--noinspection FtlReferencesInspection-->
                                 layui.table.reload('${name}-table');
                             },
                             error: function (response, state) {
@@ -153,12 +169,14 @@
                 return;
             }
             layer.confirm("是否删除选中数据", function (index) {
+                <#--noinspection FtlReferencesInspection-->
                 layui.ajax('back/${name}/delete.htm', {
                     data: {idList: idList},
                     success: function () {
                         layer.msg("删除用户成功");
                         layer.close(index);
                         // 重新加载表格数据
+                        <#--noinspection FtlReferencesInspection-->
                         layui.table.reload('${name}-table');
                     },
                     error: function (response, state) {
@@ -171,6 +189,7 @@
         };
 
         // 监听头部工具栏点击事件
+        <#--noinspection FtlReferencesInspection-->
         layui.table.on('toolbar(${name}-table)', function (obj) {
             // 添加按钮
             if (obj.event === 'add') {
@@ -188,6 +207,7 @@
         });
 
         // 监听每行的工具条事件
+        <#--noinspection FtlReferencesInspection-->
         layui.table.on("tool(${name}-table)", function (obj) {
             // 编辑按钮事件
             if (obj.event === 'edit') {
