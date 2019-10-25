@@ -69,19 +69,16 @@ public final class CodeMapper {
                 .returns(info.beanClass).addParameter(ResultSet.class, "rs")
                 .addParameter(int.class, "number")
                 .addException(SQLException.class);
-        method.addStatement("$T $L = new $T()", info.beanClass, firstLowerCase(info.beanName), info.beanClass);
+        method.addStatement("$T builder = $T.builder()", info.builderClass, info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = StringUtil.toJavaName(fieldInfo.getFieldName(), false);
             method.addComment(fieldInfo.getRemarks());
-            method.addStatement("$L.set$L(rs.get$L($T.$L))", //
-                    firstLowerCase(info.beanName), //
-                    firstUpperCase(name), //
+            method.addStatement("builder.$L(rs.get$L($T.$L))", name, //
                     firstUpperCase(fieldInfo.getTypeClass().getSimpleName()), //
-                    info.beanClass, //
-                    db_name); //
+                    info.beanClass, db_name);
         }
-        method.addStatement("return $L", firstLowerCase(info.beanName));
+        method.addStatement("return builder.builder()");
         return method;
     }
 

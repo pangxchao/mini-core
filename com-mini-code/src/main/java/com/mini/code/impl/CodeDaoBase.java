@@ -192,7 +192,7 @@ public final class CodeDaoBase {
     }
 
     // 生成 delete 方法
-    private static MethodSpec.Builder delete(ClassInfo info, List<Util.FieldInfo> pkFieldList) {
+    private static MethodSpec.Builder delete(ClassInfo info, List<Util.FieldInfo> PKFieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("delete")//
                 .addModifiers(DEFAULT, PUBLIC)//
                 .returns(int.class)//
@@ -202,7 +202,7 @@ public final class CodeDaoBase {
                 .addJavadoc("@return 执行结果 \n");
         method.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
         method.addStatement("\tdelete().from($T.TABLE)", info.beanClass);
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
+        for (Util.FieldInfo fieldInfo : PKFieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
             method.addCode("\t// $L \n", fieldInfo.getRemarks());
@@ -214,12 +214,12 @@ public final class CodeDaoBase {
     }
 
     // 生成 deleteById 方法
-    private static MethodSpec.Builder deleteById(ClassInfo info, List<Util.FieldInfo> pkFieldList) {
+    private static MethodSpec.Builder deleteById(ClassInfo info, List<Util.FieldInfo> PKFieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("deleteById")//
                 .addModifiers(DEFAULT, PUBLIC)//
                 .returns(int.class)//
                 .addJavadoc("根据ID删除实体信息 \n");
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
+        for (Util.FieldInfo fieldInfo : PKFieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
             method.addParameter(fieldInfo.getTypeClass(), name);
             method.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
@@ -227,7 +227,7 @@ public final class CodeDaoBase {
         method.addJavadoc("@return 执行结果 \n");
         method.addCode("return execute(new $T() {{ \n", SQLBuilder.class);
         method.addStatement("\tdelete().from($T.TABLE)", info.beanClass);
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
+        for (Util.FieldInfo fieldInfo : PKFieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
             method.addCode("\t// $L \n", fieldInfo.getRemarks());
@@ -239,19 +239,19 @@ public final class CodeDaoBase {
     }
 
     // 生成 queryById 方法
-    private static MethodSpec.Builder queryById(ClassInfo info, List<Util.FieldInfo> pkFieldList) {
+    private static MethodSpec.Builder queryById(ClassInfo info, List<Util.FieldInfo> PKFieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("queryById") //
                 .addModifiers(DEFAULT, PUBLIC) //
                 .returns(info.beanClass) //
                 .addJavadoc("根据ID查询实体信息 \n");
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
+        for (Util.FieldInfo fieldInfo : PKFieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
             method.addParameter(fieldInfo.getTypeClass(), name);
             method.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
         }
         method.addJavadoc("@return 实体信息 \n");
         method.addCode("return queryOne(new $T() {{ \n", info.sqlClass);
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
+        for (Util.FieldInfo fieldInfo : PKFieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
             method.addCode("\t// $L \n", fieldInfo.getRemarks());

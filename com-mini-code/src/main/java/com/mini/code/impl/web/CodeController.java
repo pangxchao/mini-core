@@ -5,7 +5,6 @@ import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.Util;
 import com.mini.jdbc.util.Paging;
 import com.mini.util.DateUtil;
-import com.mini.util.StringUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
@@ -17,11 +16,7 @@ import com.squareup.javapoet.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static com.mini.code.util.Util.*;
 import static com.mini.util.StringUtil.*;
@@ -39,8 +34,8 @@ public class CodeController {
      * @param PKFieldList 主键字段信息
      * @param FKFieldList 外键字段信息
      */
-    protected static void run(Configure configure, ClassInfo info, String tableName, String prefix, List<Util.FieldInfo> fieldList,
-            List<Util.FieldInfo> PKFieldList, List<Util.FieldInfo> FKFieldList) throws Exception {
+    protected static void run(Configure configure, ClassInfo info, String tableName, String prefix, List<FieldInfo> fieldList,
+            List<FieldInfo> PKFieldList, List<FieldInfo> FKFieldList) throws Exception {
         // 生成类信息
         TypeSpec.Builder builder = TypeSpec.classBuilder(info.controllerName)
                 .addModifiers(PUBLIC)
@@ -84,7 +79,7 @@ public class CodeController {
         method.addStatement("$T<$T> list = $N.queryAll(paging)", List.class, info.beanClass, firstLowerCase(info.daoName));
         method.addCode("model.addData($S, list.stream().map($N-> { \n", "data", firstLowerCase(info.beanName));
         method.addStatement("\t$T<$T, String> map = new $T<>()", Map.class, String.class, HashMap.class);
-        for (Util.FieldInfo fieldInfo : fieldList) {
+        for (FieldInfo fieldInfo : fieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
             if (Date.class.isAssignableFrom(fieldInfo.getTypeClass())) {
                 method.addStatement("\tmap.put($S, $T.formatDateTime($N.get$L()))", name, DateUtil.class, //
@@ -105,13 +100,13 @@ public class CodeController {
         builder.addMethod(method.build());
 
         //  添加实体信息处理
-        insert(info, builder);
+        builder.addMethod(insert(info, fieldList).build());
 
         //  修改实体信息处理
-        update(info, builder);
+        builder.addMethod(update(info, fieldList).build());
 
         //  删除实体信息
-        delete(info, FKFieldList, builder);
+        builder.addMethod(delete(info, PKFieldList).build());
 
         // 生成文件信息
         JavaFile javaFile = JavaFile.builder(info.controllerPackage, builder.build()).build();
@@ -122,39 +117,62 @@ public class CodeController {
     }
 
     //  添加实体信息处理
-    private static void insert(ClassInfo info, TypeSpec.Builder builder) {
-        builder.addMethod(MethodSpec.methodBuilder("insert").addModifiers(PUBLIC)
-                .returns(void.class).addParameter(MapModel.class, "model")
-                .addParameter(info.beanClass, firstLowerCase(info.beanName))
+    private static MethodSpec.Builder insert(ClassInfo info, List<Util.FieldInfo> fieldList) {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("insert")
+                .addModifiers(PUBLIC)
+                .returns(void.class)
                 .addAnnotation(AnnotationSpec.builder(Action.class)
                         .addMember("value", "$T.MAP", ModelType.class)
                         .addMember("url", "$S", "insert.htm")
                         .build())
+                .addParameter(MapModel.class, "model")
                 .addJavadoc("添加实体处理 \n")
-                .addJavadoc("@param model 数据模型渲染器 \n")
-                .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))
-                .addStatement("$N.insert($N)", firstLowerCase(info.daoName), firstLowerCase(info.beanName))
-                .build());
+                .addJavadoc("@param model 数据模型渲染器 \n");
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String name = toJavaName(fieldInfo.getFieldName(), false);
+            builder.addParameter(fieldInfo.getTypeClass(), name);
+            builder.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
+        }
+        builder.addStatement("$T builder = $T.builder()", info.builderClass, info.beanClass);
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String name = toJavaName(fieldInfo.getFieldName(), false);
+            builder.addStatement("builder.$L($L)", name, name);
+        }
+        builder.addStatement("$N.insert(builder.builder())", firstLowerCase(info.daoName));
+        return builder;
     }
 
     //  修改实体信息处理
-    private static void update(ClassInfo info, TypeSpec.Builder builder) {
-        builder.addMethod(MethodSpec.methodBuilder("update").addModifiers(PUBLIC)
-                .returns(void.class).addParameter(MapModel.class, "model")
-                .addParameter(info.beanClass, firstLowerCase(info.beanName))
+    private static MethodSpec.Builder update(ClassInfo info, List<Util.FieldInfo> fieldList) {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("update")
+                .addModifiers(PUBLIC)
+                .returns(void.class)
                 .addAnnotation(AnnotationSpec.builder(Action.class)
                         .addMember("value", "$T.MAP", ModelType.class)
                         .addMember("url", "$S", "update.htm")
                         .build())
-                .addJavadoc("修改实体处理 \n").addJavadoc("@param model 数据模型渲染器 \n")
-                .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))
-                .addStatement("$N.update($N)", firstLowerCase(info.daoName), firstLowerCase(info.beanName))
-                .build());
+                .addParameter(MapModel.class, "model")
+                .addJavadoc("修改实体处理 \n")
+                .addJavadoc("@param model 数据模型渲染器 \n");
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String name = toJavaName(fieldInfo.getFieldName(), false);
+            builder.addParameter(fieldInfo.getTypeClass(), name);
+            builder.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
+        }
+        builder.addStatement("$T builder = $T.builder()", info.builderClass, info.beanClass);
+        for (Util.FieldInfo fieldInfo : fieldList) {
+            String name = toJavaName(fieldInfo.getFieldName(), false);
+            builder.addStatement("builder.$L($L)", name, name);
+        }
+        builder.addStatement("$N.update(builder.builder())", firstLowerCase(info.daoName));
+        return builder;
     }
 
     //  删除实体信息
-    private static void delete(ClassInfo info, List<Util.FieldInfo> pkFieldList, TypeSpec.Builder builder) {
-        MethodSpec.Builder method = MethodSpec.methodBuilder("delete").addModifiers(PUBLIC).returns(void.class)
+    private static MethodSpec.Builder delete(ClassInfo info, List<FieldInfo> PKFieldList) {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("delete")
+                .addModifiers(PUBLIC)
+                .returns(void.class)
                 .addParameter(MapModel.class, "model")
                 .addAnnotation(AnnotationSpec.builder(Action.class)
                         .addMember("value", "$T.MAP", ModelType.class)
@@ -162,17 +180,15 @@ public class CodeController {
                         .build())
                 .addJavadoc("删除实体信息处理 \n")
                 .addJavadoc("@param model 数据模型渲染器 \n");
-        for (Util.FieldInfo fieldInfo : pkFieldList) {
+        List<String> PKParams = new ArrayList<>();
+        for (FieldInfo fieldInfo : PKFieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
-            method.addParameter(fieldInfo.getTypeClass(), name);
-            method.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
+            builder.addParameter(fieldInfo.getTypeClass(), name);
+            builder.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
+            PKParams.add(name);
         }
-        method.addStatement("$N.deleteById($N)", firstLowerCase(info.daoName), //
-                StringUtil.join(",", pkFieldList.stream().map(fieldInfo -> //
-                        toJavaName(fieldInfo.getFieldName(), false)) //
-                        .collect(Collectors.toList())));
-
-        builder.addMethod(method.build());
+        builder.addStatement("$N.deleteById($N)", firstLowerCase(info.daoName), join(", ", PKParams));
+        return builder;
     }
 
     /**
@@ -182,11 +198,11 @@ public class CodeController {
      * @param isCover   是否覆盖已存在的文件
      */
     public static void generator(Configure configure, Configure.BeanItem bean, boolean isCover) throws Exception {
-        List<Util.FieldInfo> FKFileList = getImportedKeys(configure.getJdbcTemplate(), //
+        List<FieldInfo> FKFileList = getImportedKeys(configure.getJdbcTemplate(), //
                 configure.getDatabaseName(), bean.tableName, bean.prefix);
-        List<Util.FieldInfo> PKFieldList = getPrimaryKey(configure.getJdbcTemplate(), //
+        List<FieldInfo> PKFieldList = getPrimaryKey(configure.getJdbcTemplate(), //
                 configure.getDatabaseName(), bean.tableName, bean.prefix);  //
-        List<Util.FieldInfo> fieldList = getColumns(configure.getJdbcTemplate(), //
+        List<FieldInfo> fieldList = getColumns(configure.getJdbcTemplate(), //
                 configure.getDatabaseName(), bean.tableName, bean.prefix); //
         ClassInfo info = new ClassInfo(configure, bean.className);
 

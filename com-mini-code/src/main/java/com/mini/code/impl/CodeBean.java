@@ -112,7 +112,7 @@ public final class CodeBean {
     private static TypeSpec.Builder abstractBuilder(ClassInfo info, List<Util.FieldInfo> fieldList) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(info.abstractBuilderName)
                 .addTypeVariable(TypeVariableName.get("T"))
-                .addModifiers(PUBLIC, ABSTRACT, STATIC);
+                .addModifiers(PROTECTED, ABSTRACT, STATIC);
 
         // 生成实体的不可修改属性
         builder.addField(FieldSpec.builder(info.beanClass, firstLowerCase(info.beanName))
@@ -153,7 +153,7 @@ public final class CodeBean {
     private static TypeSpec.Builder builder(ClassInfo info) {
         TypeSpec.Builder builder = TypeSpec.classBuilder(info.builderName)
                 .superclass(ParameterizedTypeName.get(info.abstractBuilderClass, info.builderClass))
-                .addModifiers(PRIVATE, STATIC);
+                .addModifiers(PUBLIC, STATIC, FINAL);
 
         // 生成一个静态的获取子类的方法
         builder.addMethod(MethodSpec.methodBuilder("getThis")
