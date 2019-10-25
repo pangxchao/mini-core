@@ -80,20 +80,15 @@ public interface Configure {
      * @author xchao
      */
     final class ClassInfo {
-        // 实体信息相关包与类名、类对象
-        public final String beanPackage, builderPackage, abstractBuilderPackage;
-        public final ClassName beanClass, builderClass, abstractBuilderClass;
-        public final String beanName, builderName, abstractBuilderName;
-
         // Dao 相关的包名秘与类名、类对象
         public final String daoPackage, daoBasePackage, daoImplPackage;
         public final ClassName daoClass, daoBaseClass, daoImplClass;
         public final String daoName, daoBaseName, daoImplName;
 
-        // Mapper/SQL相关包名与类名、类对象
-        public final String mapperPackage, sqlPackage;
-        public final ClassName mapperClass, sqlClass;
-        public final String mapperName, sqlName;
+        // 实体信息相关包与类名、类对象
+        public final String beanPackage, builderPackage, sqlPackage;
+        public final ClassName beanClass, builderClass, sqlClass;
+        public final String beanName, builderName, sqlName;
 
         // Web Controller 类相关包、类与类对象
         public final ClassName controllerClass;
@@ -106,25 +101,15 @@ public interface Configure {
             beanName    = className;
             beanClass   = get(beanPackage, beanName);
 
-            // 实体信息相关包与类名、类对象初始化 - AbstractBuilder 对象
-            abstractBuilderPackage = format("%s.entity", configure.getPackageName());
-            abstractBuilderName    = "AbstractBuilder";
-            abstractBuilderClass   = get(abstractBuilderPackage, beanName, abstractBuilderName);
-
             // 实体信息相关包与类名、类对象初始化 - Builder 对象
             builderPackage = format("%s.entity", configure.getPackageName());
             builderName    = "Builder";
             builderClass   = get(builderPackage, beanName, builderName);
 
-            // Mapper/SQL相关包名与类名、类对象 - Mapper 对象
-            mapperPackage = format("%s.entity.mapper", configure.getPackageName());
-            mapperName    = format("%sMapper", className);
-            mapperClass   = get(mapperPackage, mapperName);
-
             // Mapper/SQL相关包名与类名、类对象 - SQL 对象
-            sqlPackage = format("%s.entity.mapper", configure.getPackageName());
+            sqlPackage = format("%s.entity", configure.getPackageName());
             sqlName    = format("%sBuilder", className);
-            sqlClass   = get(sqlPackage, mapperName, sqlName);
+            sqlClass   = get(sqlPackage, beanName, sqlName);
 
             // Dao 相关的包名秘与类名、类对象 - DaoBase 对象
             daoBasePackage = format("%s.dao.base", configure.getPackageName());

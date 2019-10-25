@@ -7,9 +7,8 @@ import com.mini.util.StringUtil;
 import com.mini.web.test.dao.base.BaseUserDao;
 import com.mini.web.test.dao.impl.UserDaoImpl;
 import com.mini.web.test.entity.Region;
-import com.mini.web.test.entity.extend.UserExtend;
-import com.mini.web.test.entity.extend.UserExtend.UserExtendBuilder;
-import com.mini.web.test.entity.extend.UserExtend.UserExtendMapper;
+import com.mini.web.test.entity.extend.UserExt;
+import com.mini.web.test.entity.extend.UserExt.UserExtendBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,9 +22,8 @@ import static com.mini.web.test.entity.User.*;
  */
 @ImplementedBy(UserDaoImpl.class)
 public interface UserDao extends BaseUserDao {
-    UserExtendMapper getUserExtendMapper();
 
-    default List<UserExtend> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
+    default List<UserExt> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
             LocalDate startTime, LocalDate endTime) {
         return query(paging, new UserExtendBuilder() {
             {
@@ -67,7 +65,7 @@ public interface UserDao extends BaseUserDao {
                 // 排序
                 order_by("%s %s", CREATE_TIME, (sortType == 1 ? "DESC" : "ASC"));
             }
-        }, getUserExtendMapper());
+        },  UserExt::mapper);
     }
 
     default int delete(long[] idList) {

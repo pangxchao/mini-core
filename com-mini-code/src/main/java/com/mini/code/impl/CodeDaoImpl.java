@@ -45,9 +45,6 @@ public final class CodeDaoImpl {
         // 生成JdbcTemplate属性
         builder.addField(FieldSpec.builder(JdbcTemplate.class, "jdbcTemplate", PRIVATE).build());
 
-        // 生成 Mapper 属性
-        builder.addField(FieldSpec.builder(info.mapperClass, firstLowerCase(info.mapperName), PRIVATE).build());
-
         // 生成 setJdbcTemplate() 方法，并添加依赖注入注解
         builder.addMethod(MethodSpec.methodBuilder("setJdbcTemplate")
                 .addModifiers(PUBLIC)
@@ -55,15 +52,6 @@ public final class CodeDaoImpl {
                 .addAnnotation(Inject.class)
                 .addParameter(JdbcTemplate.class, "jdbcTemplate")
                 .addStatement("this.$N = $N", "jdbcTemplate", "jdbcTemplate")
-                .build());
-
-        // 生成 setMapper() 方法并添加依赖注入注解
-        builder.addMethod(MethodSpec.methodBuilder("set" + info.mapperName)
-                .addModifiers(PUBLIC)
-                .returns(void.class)
-                .addAnnotation(Inject.class)
-                .addParameter(info.mapperClass, firstLowerCase(info.mapperName))
-                .addStatement("this.$N = $N", firstLowerCase(info.mapperName), firstLowerCase(info.mapperName))
                 .build());
 
         // 生成 writeTemplate() 方法
@@ -78,13 +66,6 @@ public final class CodeDaoImpl {
                 .returns(JdbcTemplate.class)
                 .addAnnotation(Override.class)
                 .addStatement("return jdbcTemplate")
-                .build());
-
-        // 生成 getMapper() 方法
-        builder.addMethod(MethodSpec.methodBuilder("get" + info.mapperName)
-                .addModifiers(PUBLIC).returns(info.mapperClass)
-                .addAnnotation(Override.class)
-                .addStatement("return $L", firstLowerCase(info.mapperName))
                 .build());
 
         // 生成文件信息

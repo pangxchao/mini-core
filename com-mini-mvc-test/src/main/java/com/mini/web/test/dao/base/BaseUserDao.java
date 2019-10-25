@@ -4,7 +4,6 @@ import com.mini.jdbc.BasicsDao;
 import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.test.entity.User;
-import com.mini.web.test.entity.mapper.UserMapper;
 import java.util.List;
 
 /**
@@ -12,8 +11,6 @@ import java.util.List;
  * @author xchao 
  */
 public interface BaseUserDao extends BasicsDao {
-  UserMapper getUserMapper();
-
   /**
    * 添加实体信息 
    * @param user 实体信息 
@@ -198,11 +195,11 @@ public interface BaseUserDao extends BasicsDao {
    * @return 实体信息 
    */
   default User queryById(long id) {
-    return queryOne(new UserMapper.UserBuilder() {{ 
+    return queryOne(new User.UserBuilder() {{ 
     	// 用户ID 
     	where("%s = ?", User.ID);
     	params(id);
-    }}, getUserMapper());
+    }}, User::mapper);
   }
 
   /**
@@ -210,9 +207,9 @@ public interface BaseUserDao extends BasicsDao {
    * @return 实体信息列表 
    */
   default List<User> queryAll() {
-    return query(new UserMapper.UserBuilder() {{ 
+    return query(new User.UserBuilder() {{ 
     // 	   
-    }}, getUserMapper());
+    }}, User::mapper);
   }
 
   /**
@@ -221,8 +218,8 @@ public interface BaseUserDao extends BasicsDao {
    * @return 实体信息列表 
    */
   default List<User> queryAll(Paging paging) {
-    return query(paging, new UserMapper.UserBuilder() {{ 
+    return query(paging, new User.UserBuilder() {{ 
     // 
-    }}, getUserMapper());
+    }}, User::mapper);
   }
 }

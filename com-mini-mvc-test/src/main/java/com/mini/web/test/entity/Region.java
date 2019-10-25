@@ -1,8 +1,11 @@
 package com.mini.web.test.entity;
 
+import com.mini.jdbc.SQLBuilder;
 import java.io.Serializable;
-import java.lang.Override;
 import java.lang.String;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.annotation.Nonnull;
 
 /**
  * Region.java 
@@ -49,6 +52,17 @@ public class Region implements Serializable {
 
   private int regionId;
 
+  public Region() {
+  }
+
+  private Region(Builder builder) {
+    setId(builder.id);
+    setName(builder.name);
+    setIdUri(builder.idUri);
+    setNameUri(builder.nameUri);
+    setRegionId(builder.regionId);
+  }
+
   public int getId() {
     return id;
   }
@@ -89,49 +103,83 @@ public class Region implements Serializable {
     this.regionId = regionId;
   }
 
-  public static Builder builder() {
+  public static Builder newBuilder() {
     return new Builder();
   }
 
-  protected abstract static class AbstractBuilder<T> {
-    private final Region region = new Region();
+  public static Builder newBuilder(Region copy) {
+    Builder builder = new Builder();
+    builder.id = copy.getId();
+    builder.name = copy.getName();
+    builder.idUri = copy.getIdUri();
+    builder.nameUri = copy.getNameUri();
+    builder.regionId = copy.getRegionId();
+    return builder;
+  }
 
-    protected abstract T getThis();
+  public static Region mapper(ResultSet rs, int number) throws SQLException {
+    Builder builder = Region.newBuilder();
+    builder.id = rs.getInt(ID);
+    builder.name = rs.getString(NAME);
+    builder.idUri = rs.getString(ID_URI);
+    builder.nameUri = rs.getString(NAME_URI);
+    builder.regionId = rs.getInt(REGION_ID);
+    return builder.build();
+  }
 
-    public Region builder() {
-      return this.region;
+  public static final class Builder {
+    private int id;
+
+    private String name;
+
+    private String idUri;
+
+    private String nameUri;
+
+    private int regionId;
+
+    private Builder() {
     }
 
-    public final T id(int id) {
-      region.setId(id);
-      return getThis();
+    public final Builder id(int id) {
+      this.id = id;
+      return this;
     }
 
-    public final T name(String name) {
-      region.setName(name);
-      return getThis();
+    public final Builder name(String name) {
+      this.name = name;
+      return this;
     }
 
-    public final T idUri(String idUri) {
-      region.setIdUri(idUri);
-      return getThis();
+    public final Builder idUri(String idUri) {
+      this.idUri = idUri;
+      return this;
     }
 
-    public final T nameUri(String nameUri) {
-      region.setNameUri(nameUri);
-      return getThis();
+    public final Builder nameUri(String nameUri) {
+      this.nameUri = nameUri;
+      return this;
     }
 
-    public final T regionId(int regionId) {
-      region.setRegionId(regionId);
-      return getThis();
+    public final Builder regionId(int regionId) {
+      this.regionId = regionId;
+      return this;
+    }
+
+    @Nonnull
+    public final Region build() {
+      return new Region(this);
     }
   }
 
-  public static final class Builder extends AbstractBuilder<Builder> {
-    @Override
-    protected Builder getThis() {
-      return this;
+  public static class RegionBuilder extends SQLBuilder {
+    protected RegionBuilder() {
+      select(ID);
+      select(NAME);
+      select(ID_URI);
+      select(NAME_URI);
+      select(REGION_ID);
+      select(TABLE);
     }
   }
 }

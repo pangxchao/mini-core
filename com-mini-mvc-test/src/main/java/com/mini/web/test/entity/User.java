@@ -1,9 +1,12 @@
 package com.mini.web.test.entity;
 
+import com.mini.jdbc.SQLBuilder;
 import java.io.Serializable;
-import java.lang.Override;
 import java.lang.String;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
+import javax.annotation.Nonnull;
 
 /**
  * User.java 
@@ -91,6 +94,23 @@ public class User implements Serializable {
   private int regionId;
 
   private Date createTime;
+
+  public User() {
+  }
+
+  private User(Builder builder) {
+    setId(builder.id);
+    setName(builder.name);
+    setPassword(builder.password);
+    setPhone(builder.phone);
+    setPhoneAuth(builder.phoneAuth);
+    setFullName(builder.fullName);
+    setEmail(builder.email);
+    setEmailAuth(builder.emailAuth);
+    setHeadUrl(builder.headUrl);
+    setRegionId(builder.regionId);
+    setCreateTime(builder.createTime);
+  }
 
   public long getId() {
     return id;
@@ -180,79 +200,143 @@ public class User implements Serializable {
     this.createTime = createTime;
   }
 
-  public static Builder builder() {
+  public static Builder newBuilder() {
     return new Builder();
   }
 
-  protected abstract static class AbstractBuilder<T> {
-    private final User user = new User();
+  public static Builder newBuilder(User copy) {
+    Builder builder = new Builder();
+    builder.id = copy.getId();
+    builder.name = copy.getName();
+    builder.password = copy.getPassword();
+    builder.phone = copy.getPhone();
+    builder.phoneAuth = copy.getPhoneAuth();
+    builder.fullName = copy.getFullName();
+    builder.email = copy.getEmail();
+    builder.emailAuth = copy.getEmailAuth();
+    builder.headUrl = copy.getHeadUrl();
+    builder.regionId = copy.getRegionId();
+    builder.createTime = copy.getCreateTime();
+    return builder;
+  }
 
-    protected abstract T getThis();
+  public static User mapper(ResultSet rs, int number) throws SQLException {
+    Builder builder = User.newBuilder();
+    builder.id = rs.getLong(ID);
+    builder.name = rs.getString(NAME);
+    builder.password = rs.getString(PASSWORD);
+    builder.phone = rs.getString(PHONE);
+    builder.phoneAuth = rs.getInt(PHONE_AUTH);
+    builder.fullName = rs.getString(FULL_NAME);
+    builder.email = rs.getString(EMAIL);
+    builder.emailAuth = rs.getInt(EMAIL_AUTH);
+    builder.headUrl = rs.getString(HEAD_URL);
+    builder.regionId = rs.getInt(REGION_ID);
+    builder.createTime = rs.getDate(CREATE_TIME);
+    return builder.build();
+  }
 
-    public User builder() {
-      return this.user;
+  public static final class Builder {
+    private long id;
+
+    private String name;
+
+    private String password;
+
+    private String phone;
+
+    private int phoneAuth;
+
+    private String fullName;
+
+    private String email;
+
+    private int emailAuth;
+
+    private String headUrl;
+
+    private int regionId;
+
+    private Date createTime;
+
+    private Builder() {
     }
 
-    public final T id(long id) {
-      user.setId(id);
-      return getThis();
+    public final Builder id(long id) {
+      this.id = id;
+      return this;
     }
 
-    public final T name(String name) {
-      user.setName(name);
-      return getThis();
+    public final Builder name(String name) {
+      this.name = name;
+      return this;
     }
 
-    public final T password(String password) {
-      user.setPassword(password);
-      return getThis();
+    public final Builder password(String password) {
+      this.password = password;
+      return this;
     }
 
-    public final T phone(String phone) {
-      user.setPhone(phone);
-      return getThis();
+    public final Builder phone(String phone) {
+      this.phone = phone;
+      return this;
     }
 
-    public final T phoneAuth(int phoneAuth) {
-      user.setPhoneAuth(phoneAuth);
-      return getThis();
+    public final Builder phoneAuth(int phoneAuth) {
+      this.phoneAuth = phoneAuth;
+      return this;
     }
 
-    public final T fullName(String fullName) {
-      user.setFullName(fullName);
-      return getThis();
+    public final Builder fullName(String fullName) {
+      this.fullName = fullName;
+      return this;
     }
 
-    public final T email(String email) {
-      user.setEmail(email);
-      return getThis();
+    public final Builder email(String email) {
+      this.email = email;
+      return this;
     }
 
-    public final T emailAuth(int emailAuth) {
-      user.setEmailAuth(emailAuth);
-      return getThis();
+    public final Builder emailAuth(int emailAuth) {
+      this.emailAuth = emailAuth;
+      return this;
     }
 
-    public final T headUrl(String headUrl) {
-      user.setHeadUrl(headUrl);
-      return getThis();
+    public final Builder headUrl(String headUrl) {
+      this.headUrl = headUrl;
+      return this;
     }
 
-    public final T regionId(int regionId) {
-      user.setRegionId(regionId);
-      return getThis();
+    public final Builder regionId(int regionId) {
+      this.regionId = regionId;
+      return this;
     }
 
-    public final T createTime(Date createTime) {
-      user.setCreateTime(createTime);
-      return getThis();
+    public final Builder createTime(Date createTime) {
+      this.createTime = createTime;
+      return this;
+    }
+
+    @Nonnull
+    public final User build() {
+      return new User(this);
     }
   }
 
-  public static final class Builder extends AbstractBuilder<Builder> {
-    @Override
-    protected Builder getThis() {
-      return this;
+  public static class UserBuilder extends SQLBuilder {
+    protected UserBuilder() {
+      select(ID);
+      select(NAME);
+      select(PASSWORD);
+      select(PHONE);
+      select(PHONE_AUTH);
+      select(FULL_NAME);
+      select(EMAIL);
+      select(EMAIL_AUTH);
+      select(HEAD_URL);
+      select(REGION_ID);
+      select(CREATE_TIME);
+      select(TABLE);
     }
   }
 }

@@ -1,6 +1,9 @@
 package com.mini.code;
 
-import com.mini.code.impl.*;
+import com.mini.code.impl.CodeBean;
+import com.mini.code.impl.CodeDao;
+import com.mini.code.impl.CodeDaoBase;
+import com.mini.code.impl.Dictionaries;
 import com.mini.code.impl.web.CodeController;
 import com.mini.code.impl.web.CodeControllerPage;
 import com.mini.jdbc.JdbcTemplate;
@@ -62,12 +65,11 @@ public class ConfigureDefault implements Configure {
     public static void main(String[] args) throws Exception {
         Configure configure = new ConfigureDefault();
         for (BeanItem bean : configure.getDatabaseBeans()) {
-            // 生成 Bean Mapper 代码生成
+            // 生成 Bean Mapper Base 代码生成
             CodeBean.generator(configure, bean, true);
-            CodeMapper.generator(configure, bean, true);
-
-            // 生成 DAO Base Dao 与Dao Impl代码
             CodeDaoBase.generator(configure, bean, true);
+
+            // 生成 DAO  与Dao Impl代码
             CodeDao.generator(configure, bean, false);
             generator(configure, bean, false);
 

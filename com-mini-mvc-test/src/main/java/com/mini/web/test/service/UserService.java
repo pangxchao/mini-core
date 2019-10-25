@@ -2,7 +2,7 @@ package com.mini.web.test.service;
 
 import com.google.inject.ImplementedBy;
 import com.mini.jdbc.util.Paging;
-import com.mini.web.test.entity.extend.UserExtend;
+import com.mini.web.test.entity.extend.UserExt;
 import com.mini.web.test.service.base.BaseUserService;
 import com.mini.web.test.service.impl.UserServiceImpl;
 
@@ -26,7 +26,7 @@ public interface UserService extends BaseUserService {
      * @param regionIdUri 所属地区ID Uri
      * @return 用户信息 + 扩展
      */
-    default List<UserExtend> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
+    default List<UserExt> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
             LocalDate startTime, LocalDate endTime) {
         return getUserDao().search(paging, search, sortType, phoneAuto, emailAuto, regionIdUri, startTime, endTime);
     }

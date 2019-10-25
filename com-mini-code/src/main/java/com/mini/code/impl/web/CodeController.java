@@ -133,12 +133,12 @@ public class CodeController {
             builder.addParameter(fieldInfo.getTypeClass(), name);
             builder.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
         }
-        builder.addStatement("$T builder = $T.builder()", info.builderClass, info.beanClass);
+        builder.addStatement("$T builder = $T.newBuilder()", info.builderClass, info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
             builder.addStatement("builder.$L($L)", name, name);
         }
-        builder.addStatement("$N.insert(builder.builder())", firstLowerCase(info.daoName));
+        builder.addStatement("$N.insert(builder.build())", firstLowerCase(info.daoName));
         return builder;
     }
 
@@ -159,12 +159,12 @@ public class CodeController {
             builder.addParameter(fieldInfo.getTypeClass(), name);
             builder.addJavadoc("@param $N $N \n", name, fieldInfo.getRemarks());
         }
-        builder.addStatement("$T builder = $T.builder()", info.builderClass, info.beanClass);
+        builder.addStatement("$T builder = $T.newBuilder()", info.builderClass, info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
             builder.addStatement("builder.$L($L)", name, name);
         }
-        builder.addStatement("$N.update(builder.builder())", firstLowerCase(info.daoName));
+        builder.addStatement("$N.update(builder.build())", firstLowerCase(info.daoName));
         return builder;
     }
 

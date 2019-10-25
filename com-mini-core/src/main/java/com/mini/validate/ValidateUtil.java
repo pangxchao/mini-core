@@ -176,7 +176,7 @@ public final class ValidateUtil {
     }
 
     /**
-     * 验证传入字符串是否为字母、数字和下划线组成,字母不能开头
+     * 验证传入字符串是否为字母、数字和下划线组成,数字不能开头
      * @param string  传入字符串
      * @param error   错误码
      * @param message 错误消息

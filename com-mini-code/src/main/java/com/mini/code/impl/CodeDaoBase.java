@@ -13,7 +13,8 @@ import java.util.List;
 
 import static com.mini.code.util.Util.*;
 import static com.mini.util.StringUtil.*;
-import static javax.lang.model.element.Modifier.*;
+import static javax.lang.model.element.Modifier.DEFAULT;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 public final class CodeDaoBase {
     /**
@@ -35,9 +36,6 @@ public final class CodeDaoBase {
                 .addSuperinterface(BasicsDao.class)
                 .addJavadoc("$L.java \n", info.daoBaseName)
                 .addJavadoc("@author xchao \n");
-
-        // 生成 getMapper() 方法
-        builder.addMethod(getMapper(info).build());
 
         // 生成 insert 方法
         builder.addMethod(insert(info, fieldList, PKFieldList, FKFieldList).build());
@@ -68,14 +66,7 @@ public final class CodeDaoBase {
         javaFile.writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("Code Dao Impl : " + info.beanName + "\r\n");
-    }
-
-    // 生成 getMapper() 方法
-    private static MethodSpec.Builder getMapper(ClassInfo info) {
-        return MethodSpec.methodBuilder("get" + info.mapperName)//
-                .addModifiers(ABSTRACT, PUBLIC)//
-                .returns(info.mapperClass);
+        System.out.println("Code Dao Base : " + info.beanName + "\r\n");
     }
 
     // 生成 insert 方法
@@ -258,7 +249,7 @@ public final class CodeDaoBase {
             method.addStatement("\twhere($S, $T.$L)", "%s = ?", info.beanClass, db_name);
             method.addStatement("\tparams($N)", firstLowerCase(name));
         }
-        method.addStatement("}}, get$L())", info.mapperName);
+        method.addStatement("}}, $T::mapper)", info.beanClass);
         return method;
 
     }
@@ -271,7 +262,7 @@ public final class CodeDaoBase {
                 .addJavadoc("@return 实体信息列表 \n") //
                 .addCode("return query(new $T() {{ \n", info.sqlClass) //
                 .addCode("// \t   \n") //
-                .addStatement("}}, get$L())", info.mapperName);
+                .addStatement("}}, $T::mapper)", info.beanClass);
     }
 
     // 生成 queryAll(Paging) 方法
@@ -284,7 +275,7 @@ public final class CodeDaoBase {
                 .addJavadoc("@return 实体信息列表 \n") //
                 .addCode("return query(paging, new $T() {{ \n", info.sqlClass) //
                 .addCode("// \n") //
-                .addStatement("}}, get$L())", info.mapperName);
+                .addStatement("}}, $T::mapper)", info.beanClass);
     }
 
     private static boolean isFKField(FieldInfo fieldInfo, List<Util.FieldInfo> PKFieldList, List<Util.FieldInfo> FKFieldList) {

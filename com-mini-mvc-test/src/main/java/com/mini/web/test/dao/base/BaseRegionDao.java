@@ -4,7 +4,6 @@ import com.mini.jdbc.BasicsDao;
 import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.test.entity.Region;
-import com.mini.web.test.entity.mapper.RegionMapper;
 import java.util.List;
 
 /**
@@ -12,8 +11,6 @@ import java.util.List;
  * @author xchao 
  */
 public interface BaseRegionDao extends BasicsDao {
-  RegionMapper getRegionMapper();
-
   /**
    * 添加实体信息 
    * @param region 实体信息 
@@ -129,11 +126,11 @@ public interface BaseRegionDao extends BasicsDao {
    * @return 实体信息 
    */
   default Region queryById(int id) {
-    return queryOne(new RegionMapper.RegionBuilder() {{ 
+    return queryOne(new Region.RegionBuilder() {{ 
     	// 地区码/地区ID 
     	where("%s = ?", Region.ID);
     	params(id);
-    }}, getRegionMapper());
+    }}, Region::mapper);
   }
 
   /**
@@ -141,9 +138,9 @@ public interface BaseRegionDao extends BasicsDao {
    * @return 实体信息列表 
    */
   default List<Region> queryAll() {
-    return query(new RegionMapper.RegionBuilder() {{ 
+    return query(new Region.RegionBuilder() {{ 
     // 	   
-    }}, getRegionMapper());
+    }}, Region::mapper);
   }
 
   /**
@@ -152,8 +149,8 @@ public interface BaseRegionDao extends BasicsDao {
    * @return 实体信息列表 
    */
   default List<Region> queryAll(Paging paging) {
-    return query(paging, new RegionMapper.RegionBuilder() {{ 
+    return query(paging, new Region.RegionBuilder() {{ 
     // 
-    }}, getRegionMapper());
+    }}, Region::mapper);
   }
 }

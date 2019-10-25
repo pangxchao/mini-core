@@ -23,6 +23,6 @@ public interface RegionDao extends BaseRegionDao {
                 where("%s = ?", REGION_ID);
                 params(parentId);
             }
-        }, getRegionMapper());
+        }, Region::mapper);
     }
 }

@@ -255,23 +255,78 @@ public final class DateUtil {
     }
 
     /**
+     * 将日期转换成时间戳
+     * @param date 日期
+     * @return 时间戳
+     */
+    public static long getTime(Date date) {
+        return date == null ? 0 : date.getTime();
+    }
+
+    /**
      * 判断日期d是否在date之后
      * @param date 日期
-     * @param d    被比较的日期
-     * @return date > d
+     * @param when 被比较的日期
+     * @return date > when
      */
-    public static boolean after(Date date, Date d) {
-        return date != null && d != null && date.after(d);
+    public static boolean after(Date date, Date when) {
+        if (date == null || when == null) return false;
+        return date.getTime() > when.getTime();
+    }
+
+    /**
+     * 判断日期d是否在date之后
+     * @param date 日期
+     * @param when 被比较的日期
+     * @return date > when
+     */
+    public static boolean afterOrNull(Date date, Date when) {
+        if (date == null || when == null) return true;
+        return date.getTime() > when.getTime();
     }
 
     /**
      * 判断日期d是否在date之前
      * @param date 日期
-     * @param d    被比较的日期
-     * @return date < d
+     * @param when 被比较的日期
+     * @return date < when
      */
-    public static boolean before(Date date, Date d) {
-        return date != null && d != null && date.before(d);
+    public static boolean before(Date date, Date when) {
+        if (date == null || when == null) return false;
+        return date.getTime() < when.getTime();
+    }
+
+    /**
+     * 判断日期d是否在date之前
+     * @param date 日期
+     * @param when 被比较的日期
+     * @return date < when
+     */
+    public static boolean beforeOrNull(Date date, Date when) {
+        if (date == null || when == null) return true;
+        return date.getTime() < when.getTime();
+    }
+
+    /**
+     * 判断日期d是否在date之前
+     * @param date  日期
+     * @param start 开始日期
+     * @param end   结束日期
+     * @return start < date < end
+     */
+    public static boolean between(Date date, Date start, Date end) {
+        return after(date, start) && before(date, end);
+    }
+
+    /**
+     * 判断日期d是否在date之前
+     * @param date  日期
+     * @param start 开始日期
+     * @param end   结束日期
+     * @return start < date < end
+     */
+    public static boolean betweenOrNull(Date date, Date start, Date end) {
+        return afterOrNull(date, start) && beforeOrNull(date, end);
     }
 
     /**
