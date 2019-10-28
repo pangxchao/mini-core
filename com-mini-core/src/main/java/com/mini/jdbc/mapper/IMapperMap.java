@@ -28,6 +28,6 @@ public final class IMapperMap implements IMapper<HashMap<String, Object>> {
     }
 
     private Object getColumnValue(ResultSet rs, int index) throws SQLException {
-        return JdbcUtil.getResultSetValue(rs, index);
+        return JdbcUtil.getObject(rs, index);
     }
 }

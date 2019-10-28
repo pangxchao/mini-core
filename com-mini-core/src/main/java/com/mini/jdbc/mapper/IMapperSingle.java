@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.mini.jdbc.util.JdbcUtil.getResultSetValue;
+import static com.mini.jdbc.util.JdbcUtil.getObject;
 
 public class IMapperSingle<T> implements IMapper<T> {
     private final Class<T> type;
@@ -19,6 +19,6 @@ public class IMapperSingle<T> implements IMapper<T> {
     @Override
     public T get(ResultSet rs, int number) throws SQLException {
         ObjectUtil.require(rs.getMetaData().getColumnCount() == 1);
-        return type.cast(getResultSetValue(rs, 1, type));
+        return type.cast(getObject(rs, 1, type));
     }
 }

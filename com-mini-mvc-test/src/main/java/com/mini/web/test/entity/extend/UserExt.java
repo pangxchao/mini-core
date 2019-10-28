@@ -17,20 +17,9 @@ import static com.mini.web.test.util.FileGenerator.getPublicFullUrl;
  * @author xchao
  */
 public class UserExt extends User implements Serializable {
-    private int regionId;
     private String regionName;
     private String regionIdUri;
     private String regionNameUri;
-
-    @Override
-    public int getRegionId() {
-        return regionId;
-    }
-
-    @Override
-    public void setRegionId(int regionId) {
-        this.regionId = regionId;
-    }
 
     public String getFullHeadUrl() {
         if (StringUtil.isBlank(getHeadUrl())) {

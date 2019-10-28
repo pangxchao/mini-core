@@ -552,7 +552,7 @@ public final class Configure {
         public synchronized final void put(String uri, ActionInvocationProxy proxy) {
             ActionInvocationProxy actionProxy = m.putIfAbsent(uri, proxy);
             if (actionProxy == null || actionProxy.equals(proxy)) return;
-            String m = format("The url '%s' already exists[%s, %s]", //
+            String m = format("The url '%s' already exists \n%s \n%s ", //
                     uri, actionProxy.getMethod(), proxy.getMethod());
             throw new RuntimeException(m);
         }

@@ -1,7 +1,5 @@
 package com.mini.web.annotation;
 
-import com.mini.web.model.IModel;
-import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 
 import java.lang.annotation.*;

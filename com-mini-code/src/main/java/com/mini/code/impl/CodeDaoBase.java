@@ -12,7 +12,8 @@ import java.io.File;
 import java.util.List;
 
 import static com.mini.code.util.Util.*;
-import static com.mini.util.StringUtil.*;
+import static com.mini.util.StringUtil.firstLowerCase;
+import static com.mini.util.StringUtil.toJavaName;
 import static javax.lang.model.element.Modifier.DEFAULT;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -38,13 +39,13 @@ public final class CodeDaoBase {
                 .addJavadoc("@author xchao \n");
 
         // 生成 insert 方法
-        builder.addMethod(insert(info, fieldList, PKFieldList, FKFieldList).build());
+        builder.addMethod(insert(info, fieldList).build());
 
         // 生成 replace 方法
-        builder.addMethod(replace(info, fieldList, PKFieldList, FKFieldList).build());
+        builder.addMethod(replace(info, fieldList).build());
 
         // 生成 update 方法
-        builder.addMethod(update(info, fieldList, PKFieldList, FKFieldList).build());
+        builder.addMethod(update(info, fieldList, PKFieldList).build());
 
         // 生成 delete 方法
         builder.addMethod(delete(info, PKFieldList).build());
@@ -70,8 +71,7 @@ public final class CodeDaoBase {
     }
 
     // 生成 insert 方法
-    private static MethodSpec.Builder insert(ClassInfo info, List<Util.FieldInfo> fieldList, List<Util.FieldInfo> PKFieldList,
-            List<Util.FieldInfo> FKFieldList) {
+    private static MethodSpec.Builder insert(ClassInfo info, List<Util.FieldInfo> fieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("insert")//
                 .addModifiers(DEFAULT, PUBLIC).returns(int.class)//
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))//
@@ -86,28 +86,16 @@ public final class CodeDaoBase {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
             // 该字段为int或者long类型，不为主键但是为外键的时候需要特殊处理
-            if (isFKField(fieldInfo, PKFieldList, FKFieldList)) {
-                method.addCode("\t// $L \n", fieldInfo.getRemarks());
-                method.addCode("\tif ($L.get$L() > 0) { \n", firstLowerCase(info.beanName), name);
-                method.addStatement("\t\tvalues($T.$L)", info.beanClass, db_name);
-                method.addStatement("\t\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-                method.addCode("\t} else if($L.get$L() < 0) { \n", firstLowerCase(info.beanName), name);
-                method.addStatement("\t\tvalues($T.$L)", info.beanClass, db_name);
-                method.addStatement("\t\tparams((Object) null)");
-                method.addCode("\t} \n");
-            } else {
-                method.addCode("\t// $L \n", fieldInfo.getRemarks());
-                method.addStatement("\tvalues($T.$L)", info.beanClass, db_name);
-                method.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-            }
+            method.addCode("\t// $L \n", fieldInfo.getRemarks());
+            method.addStatement("\tvalues($T.$L)", info.beanClass, db_name);
+            method.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
         }
         method.addStatement("}})");
         return method;
     }
 
     // 生成 replace 方法
-    private static MethodSpec.Builder replace(ClassInfo info, List<Util.FieldInfo> fieldList, List<Util.FieldInfo> PKFieldList,
-            List<Util.FieldInfo> FKFieldList) {
+    private static MethodSpec.Builder replace(ClassInfo info, List<Util.FieldInfo> fieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("replace")//
                 .addModifiers(DEFAULT, PUBLIC)//
                 .returns(int.class)//
@@ -120,28 +108,16 @@ public final class CodeDaoBase {
         for (Util.FieldInfo fieldInfo : fieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
-            if (isFKField(fieldInfo, PKFieldList, FKFieldList)) {
-                method.addCode("\t// $L \n", fieldInfo.getRemarks());
-                method.addCode("\tif ($L.get$L() > 0) { \n", firstLowerCase(info.beanName), name);
-                method.addStatement("\t\tvalues($T.$L)", info.beanClass, db_name);
-                method.addStatement("\t\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-                method.addCode("\t} else if($L.get$L() < 0) { \n", firstLowerCase(info.beanName), name);
-                method.addStatement("\t\tvalues($T.$L)", info.beanClass, db_name);
-                method.addStatement("\t\tparams((Object) null)");
-                method.addCode("\t} \n");
-            } else {
-                method.addCode("\t// $L \n", fieldInfo.getRemarks());
-                method.addStatement("\tvalues($T.$L)", info.beanClass, db_name);
-                method.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-            }
+            method.addCode("\t// $L \n", fieldInfo.getRemarks());
+            method.addStatement("\tvalues($T.$L)", info.beanClass, db_name);
+            method.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
         }
         method.addStatement("}})");
         return method;
     }
 
     // 生成 update 方法
-    private static MethodSpec.Builder update(ClassInfo info, List<Util.FieldInfo> fieldList, List<Util.FieldInfo> PKFieldList,
-            List<Util.FieldInfo> FKFieldList) {
+    private static MethodSpec.Builder update(ClassInfo info, List<Util.FieldInfo> fieldList, List<Util.FieldInfo> PKFieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("update")//
                 .addModifiers(DEFAULT, PUBLIC).returns(int.class)//
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))//
@@ -156,20 +132,9 @@ public final class CodeDaoBase {
             // 其它字段信息
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), true);
-            if (isFKField(fieldInfo, PKFieldList, FKFieldList)) {
-                method.addCode("\t// $L \n", fieldInfo.getRemarks());
-                method.addCode("\tif ($L.get$L() > 0) { \n", firstLowerCase(info.beanName), name);
-                method.addStatement("\t\tset($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-                method.addStatement("\t\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-                method.addCode("\t} else if($L.get$L() < 0) { \n", firstLowerCase(info.beanName), name);
-                method.addStatement("\t\tset($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-                method.addStatement("\t\tparams((Object) null)");
-                method.addCode("\t} \n");
-            } else {
-                method.addCode("\t// $L \n", fieldInfo.getRemarks());
-                method.addStatement("\tset($S, $T.$L)", "%s = ?", info.beanClass, db_name);
-                method.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
-            }
+            method.addCode("\t// $L \n", fieldInfo.getRemarks());
+            method.addStatement("\tset($S, $T.$L)", "%s = ?", info.beanClass, db_name);
+            method.addStatement("\tparams($L.get$L())", firstLowerCase(info.beanName), name);
         }
         for (Util.FieldInfo fieldInfo : PKFieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
@@ -276,15 +241,6 @@ public final class CodeDaoBase {
                 .addCode("return query(paging, new $T() {{ \n", info.sqlClass) //
                 .addCode("// \n") //
                 .addStatement("}}, $T::mapper)", info.beanClass);
-    }
-
-    private static boolean isFKField(FieldInfo fieldInfo, List<Util.FieldInfo> PKFieldList, List<Util.FieldInfo> FKFieldList) {
-        if (fieldInfo.getTypeClass() == int.class || fieldInfo.getTypeClass() == long.class) {
-            if (PKFieldList.stream().noneMatch(field -> eq(field.getFieldName(), fieldInfo.getFieldName()))) {
-                return FKFieldList.stream().anyMatch(field -> eq(field.getFieldName(), fieldInfo.getFieldName()));
-            }
-        }
-        return false;
     }
 
     /**

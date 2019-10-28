@@ -4,6 +4,7 @@ import com.mini.code.Configure;
 import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.Util;
 import com.mini.jdbc.SQLBuilder;
+import com.mini.jdbc.util.JdbcUtil;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -101,17 +102,6 @@ public final class CodeBean {
         System.out.println("Code Bean : " + info.beanName + "\r\n");
     }
 
-
-    // 生成属性
-    private static void prop_builder(List<FieldInfo> fieldList, TypeSpec.Builder builder) {
-        for (FieldInfo fieldInfo : fieldList) {
-            String name = toJavaName(fieldInfo.getFieldName(), false);
-            builder.addField(FieldSpec.builder(fieldInfo.getTypeClass(), name)
-                    .addModifiers(PRIVATE)
-                    .build());
-        }
-    }
-
     // 生成字段常量
     private static void const_builder(List<FieldInfo> fieldList, TypeSpec.Builder builder) {
         for (FieldInfo fieldInfo : fieldList) {
@@ -120,6 +110,16 @@ public final class CodeBean {
                     .addModifiers(PUBLIC, STATIC, FINAL)
                     .initializer("$S ", fieldInfo.getColumnName())
                     .addJavadoc("$L \n", def(fieldInfo.getRemarks(), fieldInfo.getColumnName()))
+                    .build());
+        }
+    }
+
+    // 生成属性
+    private static void prop_builder(List<FieldInfo> fieldList, TypeSpec.Builder builder) {
+        for (FieldInfo fieldInfo : fieldList) {
+            String name = toJavaName(fieldInfo.getFieldName(), false);
+            builder.addField(FieldSpec.builder(fieldInfo.getTypeClass(), name)
+                    .addModifiers(PRIVATE)
                     .build());
         }
     }
@@ -188,10 +188,10 @@ public final class CodeBean {
                 .addException(SQLException.class)
                 .addStatement("$T builder = $T.newBuilder()", info.builderClass, info.beanClass);
         for (FieldInfo fieldInfo : fieldList) {
+            String type_name = fieldInfo.getMapperGetName();
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), false);
-            String type_name = firstUpperCase(fieldInfo.getTypeClass().getSimpleName());
-            method.addStatement("builder.$L = rs.get$L($L)", name, type_name, db_name);
+            method.addStatement("builder.$L = $T.get$L(rs, $L)", name, JdbcUtil.class, type_name, db_name);
         }
         method.addStatement("return builder.build()");
         return method;

@@ -65,7 +65,7 @@ public interface UserDao extends BaseUserDao {
                 // 排序
                 order_by("%s %s", CREATE_TIME, (sortType == 1 ? "DESC" : "ASC"));
             }
-        },  UserExt::mapper);
+        }, UserExt::mapper);
     }
 
     default int delete(long[] idList) {

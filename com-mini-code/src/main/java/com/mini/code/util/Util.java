@@ -12,247 +12,117 @@ import java.sql.Blob;
 import java.sql.ResultSet;
 import java.util.*;
 
+import static com.mini.util.StringUtil.firstUpperCase;
+
 public final class Util {
     public static class FieldInfo implements Serializable {
-        private static final long serialVersionUID = -1L;
-
         private Class<?> typeClass;
         private boolean nonUnique;
         private String columnName;
         private String fieldName;
+        private boolean nullable;
         private String remarks;
         private String keyName;
         private boolean auto;
         private int index;
 
-        /**
-         * 字段对应 JAVA 对象的属性类型
-         * @return the value of typeClass
-         */
         public Class<?> getTypeClass() {
+            if (!this.nullable) {
+                return typeClass;
+            }
+            if (typeClass == long.class) {
+                return Long.class;
+            }
+            if (typeClass == int.class) {
+                return Integer.class;
+            }
             return typeClass;
         }
 
-        /**
-         * 字段对应 JAVA 对象的属性类型
-         * @param typeClass the value of typeClass
-         */
-        public FieldInfo setTypeClass(Class<?> typeClass) {
-            this.typeClass = typeClass;
-            return this;
+        public String getMapperGetName() {
+            if (this.nullable && typeClass == long.class) {
+                return "OLong";
+            }
+            return firstUpperCase(typeClass.getSimpleName());
         }
 
-        /**
-         * 字段为索引时，索引是否忽略重复
-         * @return the value of nonUnique
-         */
         public boolean isNonUnique() {
             return nonUnique;
         }
 
-        /**
-         * 字段为索引时，索引是否忽略重复
-         * @param nonUnique the value of nonUnique
-         */
-        public FieldInfo setNonUnique(boolean nonUnique) {
-            this.nonUnique = nonUnique;
-            return this;
-        }
-
-        /**
-         * 字段对应数据库的全名
-         * @return the value of columnName
-         */
         public String getColumnName() {
             return columnName;
         }
 
-        /**
-         * 字段对应数据库的全名
-         * @param columnName the value of columnName
-         */
-        public FieldInfo setColumnName(String columnName) {
-            this.columnName = columnName;
-            return this;
-        }
-
-        /**
-         * 字段对应数据库名称简写
-         * @return the value of fieldName
-         */
         public String getFieldName() {
             return fieldName;
         }
 
-        /**
-         * 字段对应数据库名称简写
-         * @param fieldName the value of fieldName
-         */
-        public FieldInfo setFieldName(String fieldName) {
-            this.fieldName = fieldName;
-            return this;
+        public boolean isNullable() {
+            return nullable;
         }
 
-        /**
-         * 字段说明
-         * @return the value of remarks
-         */
         public String getRemarks() {
             return remarks;
         }
 
-        /**
-         * 字段说明
-         * @param remarks the value of remarks
-         */
-        public FieldInfo setRemarks(String remarks) {
-            this.remarks = remarks;
-            return this;
-        }
-
-        /**
-         * 字段为索引时的索引名称
-         * @return the value of keyName
-         */
         public String getKeyName() {
             return keyName;
         }
 
-        /**
-         * 字段为索引时的索引名称
-         * @param keyName the value of keyName
-         */
-        public FieldInfo setKeyName(String keyName) {
-            this.keyName = keyName;
-            return this;
-        }
-
-        /**
-         * 字段是否为自动增长字段
-         * @return the value of auto
-         */
         public boolean isAuto() {
             return auto;
         }
 
-        /**
-         * 字段是否为自动增长字段
-         * @param auto the value of auto
-         */
-        public FieldInfo setAuto(boolean auto) {
-            this.auto = auto;
-            return this;
-        }
-
-        /**
-         * 字段为索引时的索引位置
-         * @return the value of index
-         */
         public int getIndex() {
             return index;
         }
-
-        /**
-         * 字段为索引时的索引位置
-         * @param index the value of index
-         */
-        public FieldInfo setIndex(int index) {
-            this.index = index;
-            return this;
-        }
     }
 
-    public static class KeyIndexInfo implements Serializable {
-        private static final long serialVersionUID = -1L;
-
-        private String keyName;
-        private boolean nonUnique;
+    public static class KeyIndexInfo implements Serializable, EventListener {
         private final List<FieldInfo> children = new ArrayList<>();
+        private boolean nonUnique;
+        private String keyName;
 
-        /**
-         * Gets the value of keyName.
-         * @return the value of keyName
-         */
         public String getKeyName() {
             return keyName;
         }
 
-        /**
-         * Sets the value of keyName.
-         * @param keyName the value of keyName
-         */
-        public KeyIndexInfo setKeyName(String keyName) {
-            this.keyName = keyName;
-            return this;
-        }
-
-        /**
-         * Gets the value of nonUnique.
-         * @return the value of nonUnique
-         */
         public boolean isNonUnique() {
             return nonUnique;
         }
 
-        /**
-         * Sets the value of nonUnique.
-         * @param nonUnique the value of nonUnique
-         * @return KeyIndexInfo
-         */
-        public KeyIndexInfo setNonUnique(boolean nonUnique) {
-            this.nonUnique = nonUnique;
-            return this;
-        }
-
-        /**
-         * Gets the value of children.
-         * @return the value of children
-         */
         public List<FieldInfo> getChildren() {
             return children;
         }
-
-        /**
-         * 添加一个字段信息
-         * @param field 字段信息
-         * @return 对象
-         */
-        public KeyIndexInfo addChild(FieldInfo field) {
-            this.children.add(field);
-            return this;
-        }
-
     }
 
-    private static final Map<String, Class<?>> TYPES = new HashMap<>() {
-        private static final long serialVersionUID = -1L;
+    private static final Map<String, Class<?>> TYPES = new HashMap<>() {{
+        put("MEDIUMTEXT", String.class);
+        put("VARCHAR", String.class);
+        put("CHAR", String.class);
+        put("BINARY", String.class);
+        put("TEXT", String.class);
 
-        {
-            put("VARCHAR", String.class);
-            put("CHAR", String.class);
-            put("BINARY", String.class);
-            put("TEXT", String.class);
+        put("BIGINT", long.class);
+        put("INT", int.class);
+        put("SMALLINT", int.class);
+        put("TINYINT", int.class);
 
-            put("BIGINT", long.class);
-            put("INT", int.class);
-            put("SMALLINT", int.class);
-            put("TINYINT", int.class);
+        put("BOOL", boolean.class);
+        put("BOOLEAN", boolean.class);
 
-            put("BOOL", boolean.class);
-            put("BOOLEAN", boolean.class);
+        put("DOUBLE", double.class);
+        put("FLOAT", float.class);
+        put("DECIMAL", double.class);
 
-            put("DOUBLE", double.class);
-            put("FLOAT", float.class);
-            put("DECIMAL", double.class);
+        put("DATE", Date.class);
+        put("TIME", Date.class);
+        put("DATETIME", Date.class);
+        put("TIMESTAMP", Date.class);
 
-            put("DATE", Date.class);
-            put("TIME", Date.class);
-            put("DATETIME", Date.class);
-            put("TIMESTAMP", Date.class);
-
-            put("BLOB", Blob.class);
-        }
-    };
+        put("BLOB", Blob.class);
+    }};
 
     /**
      * Gets the value of REGEX.
@@ -303,21 +173,24 @@ public final class Util {
                     // 字段名称
                     String columnName = rs.getString("COLUMN_NAME");
                     String fieldName = toFieldName(columnName, prefix);
-                    info.setColumnName(columnName);
-                    info.setFieldName(fieldName);
+                    info.columnName = columnName;
+                    info.fieldName  = fieldName;
 
                     // 字段类型
                     String typeName = rs.getString("TYPE_NAME");
-                    Class<?> typeClass = getTypes(typeName);
-                    info.setTypeClass(typeClass);
+                    info.typeClass = getTypes(typeName);
 
                     // 是否为自增字段 YES/NO
                     String auto = rs.getString("IS_AUTOINCREMENT");
-                    info.setAuto("YES".equals(auto));
+                    info.auto = "YES".equalsIgnoreCase(auto);
+
+
+                    // 字段是否可以为 Null
+                    String nullable = rs.getString("IS_NULLABLE");
+                    info.nullable = "YES".equalsIgnoreCase(nullable);
 
                     // 字段刘明
-                    String remarks = rs.getString("REMARKS");
-                    info.setRemarks(remarks);
+                    info.remarks = rs.getString("REMARKS");
 
                     // 将字段加入列表
                     columnList.add(info);
@@ -334,21 +207,24 @@ public final class Util {
                     FieldInfo info = new FieldInfo();
                     // 字段名称
                     String fieldName = toFieldName(columnName, prefix);
-                    info.setColumnName(columnName);
-                    info.setFieldName(fieldName);
+                    info.columnName = columnName;
+                    info.fieldName  = fieldName;
 
                     // 字段类型
                     String typeName = rs.getString("TYPE_NAME");
-                    Class<?> typeClass = getTypes(typeName);
-                    info.setTypeClass(typeClass);
+                    info.typeClass = getTypes(typeName);
 
                     // 是否为自增字段 YES/NO
                     String auto = rs.getString("IS_AUTOINCREMENT");
-                    info.setAuto("YES".equals(auto));
+                    info.auto = "YES".equalsIgnoreCase(auto);
+
+
+                    // 字段是否可以为 Null
+                    String nullable = rs.getString("IS_NULLABLE");
+                    info.nullable = "YES".equalsIgnoreCase(nullable);
 
                     // 字段刘明
-                    String remarks = rs.getString("REMARKS");
-                    info.setRemarks(remarks);
+                    info.remarks = rs.getString("REMARKS");
 
                     return info;
                 }
@@ -372,14 +248,10 @@ public final class Util {
                     String columnName = rs.getString("COLUMN_NAME");
                     FieldInfo field = getColumn(jdbcTemplate, databaseName, tableName, columnName, prefix);
                     if (field == null) continue;
-
                     // 字段索引名称
-                    String keyName = rs.getString("PK_NAME");
-                    field.setKeyName(keyName);
-
+                    field.keyName = rs.getString("PK_NAME");
                     // 字段索引位置
-                    int index = rs.getInt("KEY_SEQ");
-                    field.setIndex(index);
+                    field.index = rs.getInt("KEY_SEQ");
 
                     columnList.add(field);
                 }
@@ -403,14 +275,10 @@ public final class Util {
                     String columnName = rs.getString("FKCOLUMN_NAME");
                     FieldInfo field = getColumn(jdbcTemplate, databaseName, tableName, columnName, prefix);
                     if (field == null) continue;
-
                     // 字段索引名称
-                    String keyName = rs.getString("FK_NAME");
-                    field.setKeyName(keyName);
-
+                    field.keyName = rs.getString("FK_NAME");
                     // 字段索引位置
-                    int index = rs.getInt("KEY_SEQ");
-                    field.setIndex(index);
+                    field.index = rs.getInt("KEY_SEQ");
 
                     columnList.add(field);
                 }
@@ -434,19 +302,12 @@ public final class Util {
                     String columnName = rs.getString("COLUMN_NAME");
                     FieldInfo field = getColumn(jdbcTemplate, databaseName, tableName, columnName, prefix);
                     if (field == null) continue;
-
-                    // 字段索引名称
-                    String keyName = rs.getString("PK_NAME");
-                    field.setKeyName(keyName);
-
-                    // 字段索引位置
-                    int index = rs.getInt("KEY_SEQ");
-                    field.setIndex(index);
-
                     // 索引是否检查重复
-                    boolean nonUnique = rs.getBoolean("NON_UNIQUE");
-                    field.setNonUnique(nonUnique);
-
+                    field.nonUnique = rs.getBoolean("NON_UNIQUE");
+                    // 字段索引名称
+                    field.keyName = rs.getString("PK_NAME");
+                    // 字段索引位置
+                    field.index = rs.getInt("KEY_SEQ");
                     columnList.add(field);
                 }
                 columnList.sort(Comparator.comparing((FieldInfo v) -> v.keyName).thenComparingInt(v -> v.index));
@@ -477,9 +338,9 @@ public final class Util {
                 columnList.add(keyInfo);
             }
 
-            keyInfo.addChild(field);
-            keyInfo.setKeyName(field.getKeyName());
-            keyInfo.setNonUnique(field.isNonUnique());
+            keyInfo.nonUnique = field.isNonUnique();
+            keyInfo.keyName   = field.getKeyName();
+            keyInfo.children.add(field);
         }
         return columnList;
     }
@@ -491,6 +352,7 @@ public final class Util {
      * @param name        指定文件名
      * @return true-文件已经存在
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean exists(Configure configure, String packageName, String name) throws RuntimeException {
         Path outputDirectory = new File(configure.getClassPath()).toPath();
         for (String component : StringUtil.split(packageName, "\\.")) {

@@ -1,13 +1,13 @@
 <#--noinspection HtmlUnknownAttribute,FtlReferencesInspection-->
 <table lay-data="{url: 'back/${name}/pages.htm', autoSort: false, toolbar: '#headToolbar', defaultToolbar: [], page: true}"
-       <#--noinspection FtlReferencesInspection-->
+        <#--noinspection FtlReferencesInspection-->
        class="layui-table" lay-filter="${name}-table" id="${name}-table">
     <thead>
     <tr>
         <th lay-data="{type: 'checkbox', fixed: 'left', width: 40}"></th>
         <#--noinspection FtlReferencesInspection-->
         <#list fieldList as item>
-            <#--noinspection HtmlUnknownAttribute-->
+        <#--noinspection HtmlUnknownAttribute-->
             <th lay-data="{field: '${item.name}', templet: '#${item.name}_template', width: 200}">${item.remarks}</th>
         </#list>
         <#--noinspection HtmlUnknownAttribute-->
