@@ -9,7 +9,6 @@ import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.dao.UserDao;
 import com.mini.web.test.entity.User;
-import com.mini.web.test.entity.User.Builder;
 import com.mini.web.util.IStatus;
 
 import javax.inject.Inject;
@@ -18,8 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.mini.web.test.entity.User.newBuilder;
 
 /**
  * UserController.java
@@ -95,20 +92,20 @@ public class UserController implements IStatus {
             url = "insert.htm"
     )
     public void insert(MapModel model, long id, String name, String password, String phone,
-            int phoneAuth, String fullName, String email, int emailAuth, String headUrl, int regionId,
+            int phoneAuth, String fullName, String email, int emailAuth, String headUrl, Integer regionId,
             Date createTime) {
-        Builder builder = newBuilder();
-        builder.id(id);
-        builder.name(name);
-        builder.password(password);
-        builder.phone(phone);
-        builder.phoneAuth(phoneAuth);
-        builder.fullName(fullName);
-        builder.email(email);
-        builder.emailAuth(emailAuth);
-        builder.headUrl(headUrl);
-        builder.regionId(regionId);
-        builder.createTime(createTime);
+        User.Builder builder = User.newBuilder();
+        builder.setId(id);
+        builder.setName(name);
+        builder.setPassword(password);
+        builder.setPhone(phone);
+        builder.setPhoneAuth(phoneAuth);
+        builder.setFullName(fullName);
+        builder.setEmail(email);
+        builder.setEmailAuth(emailAuth);
+        builder.setHeadUrl(headUrl);
+        builder.setRegionId(regionId);
+        builder.setCreateTime(createTime);
         userDao.insert(builder.build());
     }
 
@@ -132,20 +129,20 @@ public class UserController implements IStatus {
             url = "update.htm"
     )
     public void update(MapModel model, long id, String name, String password, String phone,
-            int phoneAuth, String fullName, String email, int emailAuth, String headUrl, int regionId,
+            int phoneAuth, String fullName, String email, int emailAuth, String headUrl, Integer regionId,
             Date createTime) {
-        Builder builder = newBuilder();
-        builder.id(id);
-        builder.name(name);
-        builder.password(password);
-        builder.phone(phone);
-        builder.phoneAuth(phoneAuth);
-        builder.fullName(fullName);
-        builder.email(email);
-        builder.emailAuth(emailAuth);
-        builder.headUrl(headUrl);
-        builder.regionId(regionId);
-        builder.createTime(createTime);
+        User.Builder builder = User.newBuilder();
+        builder.setId(id);
+        builder.setName(name);
+        builder.setPassword(password);
+        builder.setPhone(phone);
+        builder.setPhoneAuth(phoneAuth);
+        builder.setFullName(fullName);
+        builder.setEmail(email);
+        builder.setEmailAuth(emailAuth);
+        builder.setHeadUrl(headUrl);
+        builder.setRegionId(regionId);
+        builder.setCreateTime(createTime);
         userDao.update(builder.build());
     }
 

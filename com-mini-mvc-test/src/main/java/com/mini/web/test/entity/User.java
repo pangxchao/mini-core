@@ -4,6 +4,7 @@ import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.JdbcUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -153,6 +154,7 @@ public class User implements Serializable {
         this.phoneAuth = phoneAuth;
     }
 
+    @Nullable
     public String getFullName() {
         return fullName;
     }
@@ -161,6 +163,7 @@ public class User implements Serializable {
         this.fullName = fullName;
     }
 
+    @Nullable
     public String getEmail() {
         return email;
     }
@@ -177,6 +180,7 @@ public class User implements Serializable {
         this.emailAuth = emailAuth;
     }
 
+    @Nullable
     public String getHeadUrl() {
         return headUrl;
     }
@@ -185,6 +189,7 @@ public class User implements Serializable {
         this.headUrl = headUrl;
     }
 
+    @Nullable
     public Integer getRegionId() {
         return regionId;
     }
@@ -263,57 +268,57 @@ public class User implements Serializable {
         private Builder() {
         }
 
-        public final Builder id(long id) {
+        public final Builder setId(long id) {
             this.id = id;
             return this;
         }
 
-        public final Builder name(String name) {
+        public final Builder setName(String name) {
             this.name = name;
             return this;
         }
 
-        public final Builder password(String password) {
+        public final Builder setPassword(String password) {
             this.password = password;
             return this;
         }
 
-        public final Builder phone(String phone) {
+        public final Builder setPhone(String phone) {
             this.phone = phone;
             return this;
         }
 
-        public final Builder phoneAuth(int phoneAuth) {
+        public final Builder setPhoneAuth(int phoneAuth) {
             this.phoneAuth = phoneAuth;
             return this;
         }
 
-        public final Builder fullName(String fullName) {
+        public final Builder setFullName(String fullName) {
             this.fullName = fullName;
             return this;
         }
 
-        public final Builder email(String email) {
+        public final Builder setEmail(String email) {
             this.email = email;
             return this;
         }
 
-        public final Builder emailAuth(int emailAuth) {
+        public final Builder setEmailAuth(int emailAuth) {
             this.emailAuth = emailAuth;
             return this;
         }
 
-        public final Builder headUrl(String headUrl) {
+        public final Builder setHeadUrl(String headUrl) {
             this.headUrl = headUrl;
             return this;
         }
 
-        public final Builder regionId(Integer regionId) {
+        public final Builder setRegionId(Integer regionId) {
             this.regionId = regionId;
             return this;
         }
 
-        public final Builder createTime(Date createTime) {
+        public final Builder setCreateTime(Date createTime) {
             this.createTime = createTime;
             return this;
         }
@@ -337,7 +342,7 @@ public class User implements Serializable {
             select(HEAD_URL);
             select(REGION_ID);
             select(CREATE_TIME);
-            select(TABLE);
+            from(TABLE);
         }
     }
 }

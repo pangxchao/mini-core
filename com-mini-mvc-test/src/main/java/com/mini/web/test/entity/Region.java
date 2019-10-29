@@ -4,6 +4,7 @@ import com.mini.jdbc.SQLBuilder;
 import com.mini.jdbc.util.JdbcUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -96,6 +97,7 @@ public class Region implements Serializable {
         this.nameUri = nameUri;
     }
 
+    @Nullable
     public Integer getRegionId() {
         return regionId;
     }
@@ -142,27 +144,27 @@ public class Region implements Serializable {
         private Builder() {
         }
 
-        public final Builder id(int id) {
+        public final Builder setId(int id) {
             this.id = id;
             return this;
         }
 
-        public final Builder name(String name) {
+        public final Builder setName(String name) {
             this.name = name;
             return this;
         }
 
-        public final Builder idUri(String idUri) {
+        public final Builder setIdUri(String idUri) {
             this.idUri = idUri;
             return this;
         }
 
-        public final Builder nameUri(String nameUri) {
+        public final Builder setNameUri(String nameUri) {
             this.nameUri = nameUri;
             return this;
         }
 
-        public final Builder regionId(Integer regionId) {
+        public final Builder setRegionId(Integer regionId) {
             this.regionId = regionId;
             return this;
         }
@@ -180,7 +182,7 @@ public class Region implements Serializable {
             select(ID_URI);
             select(NAME_URI);
             select(REGION_ID);
-            select(TABLE);
+            from(TABLE);
         }
     }
 }

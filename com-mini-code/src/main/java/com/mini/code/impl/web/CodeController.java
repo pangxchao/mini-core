@@ -136,7 +136,7 @@ public class CodeController {
         builder.addStatement("$T builder = $T.newBuilder()", info.builderClass, info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
-            builder.addStatement("builder.$L($L)", name, name);
+            builder.addStatement("builder.set$L($L)", firstUpperCase(name), name);
         }
         builder.addStatement("$N.insert(builder.build())", firstLowerCase(info.daoName));
         return builder;
@@ -162,7 +162,7 @@ public class CodeController {
         builder.addStatement("$T builder = $T.newBuilder()", info.builderClass, info.beanClass);
         for (Util.FieldInfo fieldInfo : fieldList) {
             String name = toJavaName(fieldInfo.getFieldName(), false);
-            builder.addStatement("builder.$L($L)", name, name);
+            builder.addStatement("builder.set$L($L)", firstUpperCase(name), name);
         }
         builder.addStatement("$N.update(builder.build())", firstLowerCase(info.daoName));
         return builder;

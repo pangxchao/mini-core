@@ -11,6 +11,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -127,16 +128,22 @@ public final class CodeBean {
     // 生成setter setter 方法
     private static void getter_setter(List<FieldInfo> fieldList, TypeSpec.Builder builder) {
         for (FieldInfo fieldInfo : fieldList) {
+            Class<?> typeClass = fieldInfo.getTypeClass();
             String name = toJavaName(fieldInfo.getFieldName(), false);
 
-            // Getter 方法
-            builder.addMethod(MethodSpec.methodBuilder("get" + firstUpperCase(name))
+            MethodSpec.Builder getter = MethodSpec.methodBuilder("get" + firstUpperCase(name))
                     .addModifiers(PUBLIC)
-                    // 设置返回类型
-                    .returns(fieldInfo.getTypeClass())
-                    // 方法体内容
-                    .addStatement("return $L", name)
-                    .build());
+                    .returns(typeClass)
+                    .addStatement("return $L", name);
+            if (fieldInfo.isNullable() && typeClass != boolean.class && typeClass != byte.class //
+                    && typeClass != short.class && typeClass != int.class && //
+                    typeClass != long.class && typeClass != float.class //
+                    && typeClass != double.class) {
+                getter.addAnnotation(Nullable.class);
+            }
+
+            // Getter 方法
+            builder.addMethod(getter.build());
 
             // Setter 方法
             builder.addMethod(MethodSpec.methodBuilder("set" + firstUpperCase(name))
@@ -144,7 +151,7 @@ public final class CodeBean {
                     // 设置返回类型
                     .returns(void.class)
                     // 添加方法参数列表
-                    .addParameter(fieldInfo.getTypeClass(), name)
+                    .addParameter(typeClass, name)
                     // 添加方法体内容
                     .addStatement("this.$L = $L", name, name)
                     .build());
@@ -214,7 +221,7 @@ public final class CodeBean {
         for (Util.FieldInfo fieldInfo : fieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), false);
-            builder.addMethod(MethodSpec.methodBuilder(name)
+            builder.addMethod(MethodSpec.methodBuilder("set" + firstUpperCase(name))
                     .addModifiers(PUBLIC, FINAL)
                     .returns(info.builderClass)
                     .addParameter(fieldInfo.getTypeClass(), name)
@@ -244,7 +251,7 @@ public final class CodeBean {
             String name = toJavaName(fieldInfo.getFieldName(), false);
             method.addStatement("select($L)", db_name);
         }
-        method.addStatement("select(TABLE)");
+        method.addStatement("from(TABLE)");
         return TypeSpec.classBuilder(info.sqlName)
                 .addModifiers(PUBLIC, STATIC)
                 .superclass(SQLBuilder.class)

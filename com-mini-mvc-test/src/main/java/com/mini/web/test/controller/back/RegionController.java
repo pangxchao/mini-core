@@ -78,13 +78,13 @@ public class RegionController implements IStatus {
             url = "insert.htm"
     )
     public void insert(MapModel model, int id, String name, String idUri, String nameUri,
-            int regionId) {
+            Integer regionId) {
         Region.Builder builder = Region.newBuilder();
-        builder.id(id);
-        builder.name(name);
-        builder.idUri(idUri);
-        builder.nameUri(nameUri);
-        builder.regionId(regionId);
+        builder.setId(id);
+        builder.setName(name);
+        builder.setIdUri(idUri);
+        builder.setNameUri(nameUri);
+        builder.setRegionId(regionId);
         regionDao.insert(builder.build());
     }
 
@@ -102,13 +102,13 @@ public class RegionController implements IStatus {
             url = "update.htm"
     )
     public void update(MapModel model, int id, String name, String idUri, String nameUri,
-            int regionId) {
+            Integer regionId) {
         Region.Builder builder = Region.newBuilder();
-        builder.id(id);
-        builder.name(name);
-        builder.idUri(idUri);
-        builder.nameUri(nameUri);
-        builder.regionId(regionId);
+        builder.setId(id);
+        builder.setName(name);
+        builder.setIdUri(idUri);
+        builder.setNameUri(nameUri);
+        builder.setRegionId(regionId);
         regionDao.update(builder.build());
     }
 
