@@ -17,6 +17,7 @@ import static com.mini.util.StringUtil.toJavaName;
 import static javax.lang.model.element.Modifier.DEFAULT;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
+@SuppressWarnings("DuplicatedCode")
 public final class CodeDaoBase {
     /**
      * 生成代码
@@ -76,7 +77,7 @@ public final class CodeDaoBase {
                 .addModifiers(DEFAULT, PUBLIC)
                 .returns(int.class)//
                 .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
-                        .addMember("value", "DuplicatedCode")
+                        .addMember("value", "$S", "DuplicatedCode")
                         .build())
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))//
                 .addJavadoc("添加实体信息 \n")//
@@ -104,7 +105,7 @@ public final class CodeDaoBase {
                 .addModifiers(DEFAULT, PUBLIC)//
                 .returns(int.class)//
                 .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
-                        .addMember("value", "DuplicatedCode")
+                        .addMember("value", "$S", "DuplicatedCode")
                         .build())
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))//
                 .addJavadoc("添加实体信息 \n")//

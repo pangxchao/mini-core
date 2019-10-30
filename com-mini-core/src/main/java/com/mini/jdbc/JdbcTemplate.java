@@ -21,6 +21,7 @@ import static java.sql.ResultSet.CONCUR_READ_ONLY;
 import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 public abstract class JdbcTemplate {
     private static final JdbcThreadLocal resources = new JdbcThreadLocal();
@@ -489,6 +490,25 @@ public abstract class JdbcTemplate {
     }
 
     /**
+     * 查询Long
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final long queryLongVal(String str, Object... params) {
+        return ofNullable(queryLong(str, params)).orElse(0L);
+    }
+
+    /**
+     * 查询Long
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final long queryLongVal(SQLBuilder builder) {
+        return ofNullable(queryLong(builder)).orElse(0L);
+    }
+
+    /**
      * 查询Integer
      * @param str    SQL
      * @param params 参数
@@ -507,6 +527,25 @@ public abstract class JdbcTemplate {
     @Nullable
     public final Integer queryInt(SQLBuilder builder) {
         return queryForObject(builder, Integer.class);
+    }
+
+    /**
+     * 查询Integer
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final int queryIntVal(String str, Object... params) {
+        return ofNullable(queryInt(str, params)).orElse(0);
+    }
+
+    /**
+     * 查询Integer
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final int queryIntVal(SQLBuilder builder) {
+        return ofNullable(queryInt(builder)).orElse(0);
     }
 
     /**
@@ -531,6 +570,25 @@ public abstract class JdbcTemplate {
     }
 
     /**
+     * 查询Short
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final short queryShortVal(String str, Object... params) {
+        return ofNullable(queryShort(str, params)).orElse((short) 0);
+    }
+
+    /**
+     * 查询Short
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final short queryShortVal(SQLBuilder builder) {
+        return ofNullable(queryShort(builder)).orElse((short) 0);
+    }
+
+    /**
      * 查询Byte
      * @param str    SQL
      * @param params 参数
@@ -549,6 +607,25 @@ public abstract class JdbcTemplate {
     @Nullable
     public final Byte queryByte(SQLBuilder builder) {
         return queryForObject(builder, Byte.class);
+    }
+
+    /**
+     * 查询Byte
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final byte queryByteVal(String str, Object... params) {
+        return ofNullable(queryByte(str, params)).orElse((byte) 0);
+    }
+
+    /**
+     * 查询Byte
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final byte queryByteVal(SQLBuilder builder) {
+        return ofNullable(queryByte(builder)).orElse((byte) 0);
     }
 
     /**
@@ -573,6 +650,25 @@ public abstract class JdbcTemplate {
     }
 
     /**
+     * 查询Double
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final double queryDoubleVal(String str, Object... params) {
+        return ofNullable(queryDouble(str, params)).orElse(0D);
+    }
+
+    /**
+     * 查询Double
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final double queryDoubleVal(SQLBuilder builder) {
+        return ofNullable(queryDouble(builder)).orElse(0D);
+    }
+
+    /**
      * 查询Float
      * @param str    SQL
      * @param params 参数
@@ -594,6 +690,25 @@ public abstract class JdbcTemplate {
     }
 
     /**
+     * 查询Float
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final float queryFloatVal(String str, Object... params) {
+        return ofNullable(queryFloat(str, params)).orElse(0F);
+    }
+
+    /**
+     * 查询Float
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final float queryFloatVal(SQLBuilder builder) {
+        return ofNullable(queryFloat(builder)).orElse(0F);
+    }
+
+    /**
      * 查询Boolean
      * @param str    SQL
      * @param params 参数
@@ -612,6 +727,25 @@ public abstract class JdbcTemplate {
     @Nullable
     public final Boolean queryBoolean(SQLBuilder builder) {
         return queryForObject(builder, Boolean.class);
+    }
+
+    /**
+     * 查询Float
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    public final boolean queryBooleanVal(String str, Object... params) {
+        return ofNullable(queryBoolean(str, params)).orElse(false);
+    }
+
+    /**
+     * 查询Float
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    public final boolean queryBooleanVal(SQLBuilder builder) {
+        return ofNullable(queryBoolean(builder)).orElse(false);
     }
 
     /**

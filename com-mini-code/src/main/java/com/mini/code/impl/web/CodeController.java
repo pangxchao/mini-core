@@ -23,6 +23,7 @@ import static com.mini.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
+@SuppressWarnings("DuplicatedCode")
 public class CodeController {
     /**
      * 生成代码

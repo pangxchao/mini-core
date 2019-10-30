@@ -22,6 +22,7 @@ import static com.mini.code.util.Util.*;
 import static com.mini.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.*;
 
+@SuppressWarnings("DuplicatedCode")
 public final class CodeBean {
     /**
      * 生成代码
@@ -219,7 +220,6 @@ public final class CodeBean {
 
         // 为每个属性生成一个方法
         for (Util.FieldInfo fieldInfo : fieldList) {
-            String db_name = fieldInfo.getFieldName().toUpperCase();
             String name = toJavaName(fieldInfo.getFieldName(), false);
             builder.addMethod(MethodSpec.methodBuilder("set" + firstUpperCase(name))
                     .addModifiers(PUBLIC, FINAL)
@@ -248,7 +248,6 @@ public final class CodeBean {
         // 生成查询每个字体的SQL
         for (Util.FieldInfo fieldInfo : fieldList) {
             String db_name = fieldInfo.getFieldName().toUpperCase();
-            String name = toJavaName(fieldInfo.getFieldName(), false);
             method.addStatement("select($L)", db_name);
         }
         method.addStatement("from(TABLE)");

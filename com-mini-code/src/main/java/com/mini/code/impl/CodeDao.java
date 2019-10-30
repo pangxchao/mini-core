@@ -14,6 +14,7 @@ import java.util.List;
 import static com.mini.code.util.Util.*;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
+@SuppressWarnings("DuplicatedCode")
 public final class CodeDao {
     /**
      * 生成代码

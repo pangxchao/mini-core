@@ -170,27 +170,6 @@ public interface BasicsDao {
     }
 
     /**
-     * 查询String
-     * @param str    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    @Nullable
-    default String queryString(String str, Object... params) {
-        return readTemplate().queryString(str, params);
-    }
-
-    /**
-     * 查询String
-     * @param builder SQLBuilder
-     * @return 查询结果
-     */
-    @Nullable
-    default String queryString(SQLBuilder builder) {
-        return readTemplate().queryString(builder);
-    }
-
-    /**
      * 查询Long
      * @param str    SQL
      * @param params 参数
@@ -203,12 +182,31 @@ public interface BasicsDao {
 
     /**
      * 查询Long
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Long queryLong(SQLBuilder builder) {
         return readTemplate().queryLong(builder);
+    }
+
+    /**
+     * 查询Long
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default long queryLongVal(String str, Object... params) {
+        return readTemplate().queryLongVal(str, params);
+    }
+
+    /**
+     * 查询Long
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default long queryLongVal(SQLBuilder builder) {
+        return readTemplate().queryLongVal(builder);
     }
 
     /**
@@ -224,12 +222,31 @@ public interface BasicsDao {
 
     /**
      * 查询Integer
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Integer queryInt(SQLBuilder builder) {
         return readTemplate().queryInt(builder);
+    }
+
+    /**
+     * 查询Integer
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default int queryIntVal(String str, Object... params) {
+        return readTemplate().queryIntVal(str, params);
+    }
+
+    /**
+     * 查询Integer
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default int queryIntVal(SQLBuilder builder) {
+        return readTemplate().queryIntVal(builder);
     }
 
     /**
@@ -245,12 +262,31 @@ public interface BasicsDao {
 
     /**
      * 查询Short
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Short queryShort(SQLBuilder builder) {
         return readTemplate().queryShort(builder);
+    }
+
+    /**
+     * 查询Short
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default short queryShortVal(String str, Object... params) {
+        return readTemplate().queryShortVal(str, params);
+    }
+
+    /**
+     * 查询Short
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default short queryShortVal(SQLBuilder builder) {
+        return readTemplate().queryShortVal(builder);
     }
 
     /**
@@ -266,12 +302,31 @@ public interface BasicsDao {
 
     /**
      * 查询Byte
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Byte queryByte(SQLBuilder builder) {
         return readTemplate().queryByte(builder);
+    }
+
+    /**
+     * 查询Byte
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default byte queryByteVal(String str, Object... params) {
+        return readTemplate().queryByteVal(str, params);
+    }
+
+    /**
+     * 查询Byte
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default byte queryByteVal(SQLBuilder builder) {
+        return readTemplate().queryByteVal(builder);
     }
 
     /**
@@ -287,12 +342,31 @@ public interface BasicsDao {
 
     /**
      * 查询Double
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Double queryDouble(SQLBuilder builder) {
         return readTemplate().queryDouble(builder);
+    }
+
+    /**
+     * 查询Double
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default double queryDoubleVal(String str, Object... params) {
+        return readTemplate().queryDoubleVal(str, params);
+    }
+
+    /**
+     * 查询Double
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default double queryDoubleVal(SQLBuilder builder) {
+        return readTemplate().queryDoubleVal(builder);
     }
 
     /**
@@ -308,12 +382,31 @@ public interface BasicsDao {
 
     /**
      * 查询Float
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Float queryFloat(SQLBuilder builder) {
         return readTemplate().queryFloat(builder);
+    }
+
+    /**
+     * 查询Float
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default float queryFloatVal(String str, Object... params) {
+        return readTemplate().queryFloatVal(str, params);
+    }
+
+    /**
+     * 查询Float
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default float queryFloatVal(SQLBuilder builder) {
+        return readTemplate().queryFloatVal(builder);
     }
 
     /**
@@ -329,12 +422,31 @@ public interface BasicsDao {
 
     /**
      * 查询Boolean
-     * @param builder SQLBuilder
+     * @param builder SQLBuilder 对象
      * @return 查询结果
      */
     @Nullable
     default Boolean queryBoolean(SQLBuilder builder) {
         return readTemplate().queryBoolean(builder);
+    }
+
+    /**
+     * 查询Float
+     * @param str    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default boolean queryBooleanVal(String str, Object... params) {
+        return readTemplate().queryBooleanVal(str, params);
+    }
+
+    /**
+     * 查询Float
+     * @param builder SQLBuilder 对象
+     * @return 查询结果
+     */
+    default boolean queryBooleanVal(SQLBuilder builder) {
+        return readTemplate().queryBooleanVal(builder);
     }
 
     /**

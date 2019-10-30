@@ -69,6 +69,7 @@ public class CodeControllerPage {
      * @param pkFieldList 主键字段信息
      */
 
+    @SuppressWarnings("unused")
     private static void index(Configure configure, ClassInfo info, String tableName, String prefix, //
             List<Util.FieldInfo> fieldList, List<Util.FieldInfo> pkFieldList) throws Exception {
         String indexPath = String.format("back/%s/index.ftl", firstLowerCase(info.beanName));

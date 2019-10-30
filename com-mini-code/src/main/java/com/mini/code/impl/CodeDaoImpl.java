@@ -17,6 +17,7 @@ import static com.mini.util.StringUtil.firstLowerCase;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
+@SuppressWarnings("DuplicatedCode")
 public final class CodeDaoImpl {
     /**
      * 生成代码
