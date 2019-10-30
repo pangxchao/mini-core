@@ -73,7 +73,11 @@ public final class CodeDaoBase {
     // 生成 insert 方法
     private static MethodSpec.Builder insert(ClassInfo info, List<Util.FieldInfo> fieldList) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("insert")//
-                .addModifiers(DEFAULT, PUBLIC).returns(int.class)//
+                .addModifiers(DEFAULT, PUBLIC)
+                .returns(int.class)//
+                .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+                        .addMember("value", "DuplicatedCode")
+                        .build())
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))//
                 .addJavadoc("添加实体信息 \n")//
                 .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))//
@@ -99,6 +103,9 @@ public final class CodeDaoBase {
         MethodSpec.Builder method = MethodSpec.methodBuilder("replace")//
                 .addModifiers(DEFAULT, PUBLIC)//
                 .returns(int.class)//
+                .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+                        .addMember("value", "DuplicatedCode")
+                        .build())
                 .addParameter(info.beanClass, firstLowerCase(info.beanName))//
                 .addJavadoc("添加实体信息 \n")//
                 .addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.beanName))//

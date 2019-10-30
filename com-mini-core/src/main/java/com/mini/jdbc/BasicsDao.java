@@ -3,6 +3,8 @@ package com.mini.jdbc;
 import com.mini.jdbc.mapper.IMapper;
 import com.mini.jdbc.util.Paging;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -47,6 +49,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(String str, IMapper<T> m, Object... params) {
         return readTemplate().query(str, m, params);
     }
@@ -57,6 +60,7 @@ public interface BasicsDao {
      * @param m       映射器
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(SQLBuilder builder, IMapper<T> m) {
         return readTemplate().query(builder, m);
     }
@@ -71,6 +75,7 @@ public interface BasicsDao {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(int start, int limit, String str, IMapper<T> m, Object... params) {
         return readTemplate().query(start, limit, str, m, params);
     }
@@ -84,6 +89,7 @@ public interface BasicsDao {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(int start, int limit, SQLBuilder builder, IMapper<T> m) {
         return readTemplate().query(start, limit, builder, m);
     }
@@ -97,6 +103,7 @@ public interface BasicsDao {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(int limit, String str, IMapper<T> m, Object... params) {
         return readTemplate().query(limit, str, m, params);
     }
@@ -109,6 +116,7 @@ public interface BasicsDao {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(int limit, SQLBuilder builder, IMapper<T> m) {
         return readTemplate().query(limit, builder, m);
     }
@@ -121,6 +129,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(Paging paging, String str, IMapper<T> m, Object... params) {
         return readTemplate().query(paging, str, m, params);
     }
@@ -132,6 +141,7 @@ public interface BasicsDao {
      * @param m       映射器
      * @return 查询结果
      */
+    @Nonnull
     default <T> List<T> query(Paging paging, SQLBuilder builder, IMapper<T> m) {
         return readTemplate().query(paging, builder, m);
     }
@@ -143,6 +153,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     default <T> T queryOne(String str, IMapper<T> m, Object... params) {
         return readTemplate().queryOne(str, m, params);
     }
@@ -153,6 +164,7 @@ public interface BasicsDao {
      * @param m       映射器
      * @return 查询结果
      */
+    @Nullable
     default <T> T queryOne(SQLBuilder builder, IMapper<T> m) {
         return readTemplate().queryOne(builder, m);
     }
@@ -163,7 +175,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
+    @Nullable
     default String queryString(String str, Object... params) {
         return readTemplate().queryString(str, params);
     }
@@ -173,7 +185,7 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
+    @Nullable
     default String queryString(SQLBuilder builder) {
         return readTemplate().queryString(builder);
     }
@@ -184,8 +196,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default long queryLong(String str, Object... params) {
+    @Nullable
+    default Long queryLong(String str, Object... params) {
         return readTemplate().queryLong(str, params);
     }
 
@@ -194,8 +206,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
-    default long queryLong(SQLBuilder builder) {
+    @Nullable
+    default Long queryLong(SQLBuilder builder) {
         return readTemplate().queryLong(builder);
     }
 
@@ -205,8 +217,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default int queryInt(String str, Object... params) {
+    @Nullable
+    default Integer queryInt(String str, Object... params) {
         return readTemplate().queryInt(str, params);
     }
 
@@ -215,7 +227,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-    default int queryInt(SQLBuilder builder) {
+    @Nullable
+    default Integer queryInt(SQLBuilder builder) {
         return readTemplate().queryInt(builder);
     }
 
@@ -225,8 +238,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default short queryShort(String str, Object... params) {
+    @Nullable
+    default Short queryShort(String str, Object... params) {
         return readTemplate().queryShort(str, params);
     }
 
@@ -235,8 +248,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
-    default short queryShort(SQLBuilder builder) {
+    @Nullable
+    default Short queryShort(SQLBuilder builder) {
         return readTemplate().queryShort(builder);
     }
 
@@ -246,8 +259,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default byte queryByte(String str, Object... params) {
+    @Nullable
+    default Byte queryByte(String str, Object... params) {
         return readTemplate().queryByte(str, params);
     }
 
@@ -256,8 +269,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
-    default byte queryByte(SQLBuilder builder) {
+    @Nullable
+    default Byte queryByte(SQLBuilder builder) {
         return readTemplate().queryByte(builder);
     }
 
@@ -267,8 +280,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default double queryDouble(String str, Object... params) {
+    @Nullable
+    default Double queryDouble(String str, Object... params) {
         return readTemplate().queryDouble(str, params);
     }
 
@@ -277,8 +290,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
-    default double queryDouble(SQLBuilder builder) {
+    @Nullable
+    default Double queryDouble(SQLBuilder builder) {
         return readTemplate().queryDouble(builder);
     }
 
@@ -288,8 +301,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default float queryFloat(String str, Object... params) {
+    @Nullable
+    default Float queryFloat(String str, Object... params) {
         return readTemplate().queryFloat(str, params);
     }
 
@@ -298,8 +311,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
-    default float queryFloat(SQLBuilder builder) {
+    @Nullable
+    default Float queryFloat(SQLBuilder builder) {
         return readTemplate().queryFloat(builder);
     }
 
@@ -309,8 +322,8 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
-    default boolean queryBoolean(String str, Object... params) {
+    @Nullable
+    default Boolean queryBoolean(String str, Object... params) {
         return readTemplate().queryBoolean(str, params);
     }
 
@@ -319,8 +332,8 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
-    default boolean queryBoolean(SQLBuilder builder) {
+    @Nullable
+    default Boolean queryBoolean(SQLBuilder builder) {
         return readTemplate().queryBoolean(builder);
     }
 
@@ -330,7 +343,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
+    @Nullable
     default Timestamp queryTimestamp(String str, Object... params) {
         return readTemplate().queryTimestamp(str, params);
     }
@@ -340,7 +353,7 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
+    @Nullable
     default Timestamp queryTimestamp(SQLBuilder builder) {
         return readTemplate().queryTimestamp(builder);
     }
@@ -351,7 +364,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
+    @Nullable
     default Date queryDate(String str, Object... params) {
         return readTemplate().queryDate(str, params);
     }
@@ -361,7 +374,7 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
+    @Nullable
     default Date queryDate(SQLBuilder builder) {
         return readTemplate().queryDate(builder);
     }
@@ -372,7 +385,7 @@ public interface BasicsDao {
      * @param params 参数
      * @return 查询结果
      */
-
+    @Nullable
     default Time queryTime(String str, Object... params) {
         return readTemplate().queryTime(str, params);
     }
@@ -382,7 +395,7 @@ public interface BasicsDao {
      * @param builder SQLBuilder
      * @return 查询结果
      */
-
+    @Nullable
     default Time queryTime(SQLBuilder builder) {
         return readTemplate().queryTime(builder);
     }

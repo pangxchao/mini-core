@@ -27,6 +27,7 @@ public final class TransactionalManagerJdbc implements TransactionalManager {
         return openTransaction(jdbcTemplateList.iterator(), callback);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     private <T> T openTransaction(Iterator<JdbcTemplate> iterator, TransactionalManagerCallback<T> callback) throws Throwable {
         return iterator.hasNext() ? iterator.next().execute((ConnectionCallback<T>) connection -> {
             // 定义回滚点

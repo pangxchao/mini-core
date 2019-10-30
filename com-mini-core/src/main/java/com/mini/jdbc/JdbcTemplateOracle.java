@@ -11,11 +11,13 @@ public class JdbcTemplateOracle extends JdbcTemplate {
         super(dataSource);
     }
 
+    @Nonnull
     @Override
     public String totals(String str) {
         return join("", "select count(*) from (", str, ") t");
     }
 
+    @Nonnull
     @Override
     public String paging(int start, int limit, String str) {
         return join("", "select * from (", //

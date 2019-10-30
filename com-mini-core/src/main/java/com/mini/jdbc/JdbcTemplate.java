@@ -4,7 +4,6 @@ import com.mini.callback.*;
 import com.mini.jdbc.holder.KeyHolderGeneratedKeys;
 import com.mini.jdbc.mapper.IMapper;
 import com.mini.jdbc.mapper.IMapperSingle;
-import com.mini.jdbc.util.JdbcUtil;
 import com.mini.jdbc.util.Paging;
 import com.mini.util.ObjectUtil;
 
@@ -199,7 +198,7 @@ public abstract class JdbcTemplate {
     public final int execute(String str, Object... params) {
         return this.execute((PreparedStatementCreator) connection -> {
             return connection.prepareStatement(str); //
-        }, statement -> JdbcUtil.full(statement, params).executeUpdate());
+        }, statement -> full(statement, params).executeUpdate());
 
     }
 
@@ -217,7 +216,8 @@ public abstract class JdbcTemplate {
             }
             return result;
         };
-        return execute(connection -> connection.prepareStatement(str, RETURN_GENERATED_KEYS), callback);
+        return execute(connection -> connection.prepareStatement(str, //
+                RETURN_GENERATED_KEYS), callback);
     }
 
     /**
@@ -250,7 +250,8 @@ public abstract class JdbcTemplate {
                 return callback.doResultSet(rs);
             }
         };
-        return execute(c -> c.prepareStatement(str, TYPE_FORWARD_ONLY, CONCUR_READ_ONLY), preparedStatementCallback);
+        return execute(c -> c.prepareStatement(str, TYPE_FORWARD_ONLY, //
+                CONCUR_READ_ONLY), preparedStatementCallback);
     }
 
     /**
@@ -270,6 +271,7 @@ public abstract class JdbcTemplate {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(String str, IMapper<T> m, Object... params) {
         return JdbcTemplate.this.query(str, res -> {
             List<T> result = new ArrayList<>();
@@ -289,6 +291,7 @@ public abstract class JdbcTemplate {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(SQLBuilder builder, IMapper<T> m) {
         return query(builder.toString(), m, builder.toArray());
     }
@@ -298,6 +301,7 @@ public abstract class JdbcTemplate {
      * @param str SQL
      * @return 查询总条数的SQL
      */
+    @Nonnull
     protected abstract String totals(String str);
 
     /**
@@ -307,6 +311,7 @@ public abstract class JdbcTemplate {
      * @param str   基础查询SQL
      * @return 分页查询SQL
      */
+    @Nonnull
     protected abstract String paging(int start, int limit, String str);
 
     /**
@@ -319,6 +324,7 @@ public abstract class JdbcTemplate {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(int start, int limit, String str, IMapper<T> m, Object... params) {
         return query(paging(start, limit, str), m, params);
     }
@@ -332,6 +338,7 @@ public abstract class JdbcTemplate {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(int start, int limit, SQLBuilder builder, IMapper<T> m) {
         return query(start, limit, builder.toString(), m, builder.toArray());
     }
@@ -345,6 +352,7 @@ public abstract class JdbcTemplate {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(int limit, String str, IMapper<T> m, Object... params) {
         return query(0, limit, str, m, params);
     }
@@ -357,6 +365,7 @@ public abstract class JdbcTemplate {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(int limit, SQLBuilder builder, IMapper<T> m) {
         return query(0, limit, builder, m);
     }
@@ -370,6 +379,7 @@ public abstract class JdbcTemplate {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(Paging paging, String str, IMapper<T> m, Object... params) {
         paging.setTotal(query(totals(str), rs -> rs.next() ? rs.getInt(1) : 0, params));
         return query(paging(paging.getSkip(), paging.getLimit(), str), m, params);
@@ -383,6 +393,7 @@ public abstract class JdbcTemplate {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nonnull
     public final <T> List<T> query(Paging paging, SQLBuilder builder, IMapper<T> m) {
         return query(paging, builder.toString(), m, builder.toArray());
     }
@@ -395,6 +406,7 @@ public abstract class JdbcTemplate {
      * @param <T>    解析器类型
      * @return 查询结果
      */
+    @Nullable
     public final <T> T queryOne(String str, IMapper<T> m, Object... params) {
         return query(paging(0, 1, str), rs -> rs.next() ? m.get(rs, rs.getRow()) : null, params);
     }
@@ -406,6 +418,7 @@ public abstract class JdbcTemplate {
      * @param <T>     解析器类型
      * @return 查询结果
      */
+    @Nullable
     public final <T> T queryOne(SQLBuilder builder, IMapper<T> m) {
         return queryOne(builder.toString(), m, builder.toArray());
     }
@@ -417,6 +430,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final <T> T queryForObject(String str, Class<T> type, Object... params) {
         return queryOne(str, new IMapperSingle<>(type), params);
     }
@@ -427,6 +441,7 @@ public abstract class JdbcTemplate {
      * @param type    值的类型
      * @return 查询结果
      */
+    @Nullable
     public final <T> T queryForObject(SQLBuilder builder, Class<T> type) {
         return queryOne(builder, new IMapperSingle<>(type));
     }
@@ -437,6 +452,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final String queryString(String str, Object... params) {
         return queryForObject(str, String.class, params);
     }
@@ -446,6 +462,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final String queryString(SQLBuilder builder) {
         return queryForObject(builder, String.class);
     }
@@ -456,6 +473,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Long queryLong(String str, Object... params) {
         return queryForObject(str, Long.class, params);
     }
@@ -465,6 +483,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Long queryLong(SQLBuilder builder) {
         return queryForObject(builder, Long.class);
     }
@@ -475,6 +494,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Integer queryInt(String str, Object... params) {
         return queryForObject(str, Integer.class, params);
     }
@@ -484,6 +504,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Integer queryInt(SQLBuilder builder) {
         return queryForObject(builder, Integer.class);
     }
@@ -494,6 +515,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Short queryShort(String str, Object... params) {
         return queryForObject(str, Short.class, params);
     }
@@ -503,6 +525,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Short queryShort(SQLBuilder builder) {
         return queryForObject(builder, Short.class);
     }
@@ -513,6 +536,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Byte queryByte(String str, Object... params) {
         return queryForObject(str, Byte.class, params);
     }
@@ -522,6 +546,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Byte queryByte(SQLBuilder builder) {
         return queryForObject(builder, Byte.class);
     }
@@ -532,6 +557,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Double queryDouble(String str, Object... params) {
         return queryForObject(str, Double.class, params);
     }
@@ -541,6 +567,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Double queryDouble(SQLBuilder builder) {
         return queryForObject(builder, Double.class);
     }
@@ -551,6 +578,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Float queryFloat(String str, Object... params) {
         return queryForObject(str, Float.class, params);
     }
@@ -560,6 +588,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Float queryFloat(SQLBuilder builder) {
         return queryForObject(builder, Float.class);
     }
@@ -570,6 +599,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Boolean queryBoolean(String str, Object... params) {
         return queryForObject(str, Boolean.class, params);
     }
@@ -579,6 +609,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Boolean queryBoolean(SQLBuilder builder) {
         return queryForObject(builder, Boolean.class);
     }
@@ -589,6 +620,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Timestamp queryTimestamp(String str, Object... params) {
         return queryForObject(str, Timestamp.class, params);
     }
@@ -598,6 +630,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Timestamp queryTimestamp(SQLBuilder builder) {
         return queryForObject(builder, Timestamp.class);
     }
@@ -608,6 +641,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Date queryDate(String str, Object... params) {
         return queryForObject(str, Date.class, params);
     }
@@ -617,6 +651,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Date queryDate(SQLBuilder builder) {
         return queryForObject(builder, Date.class);
     }
@@ -627,6 +662,7 @@ public abstract class JdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
+    @Nullable
     public final Time queryTime(String str, Object... params) {
         return queryForObject(str, Time.class, params);
     }
@@ -636,6 +672,7 @@ public abstract class JdbcTemplate {
      * @param builder SQLBuilder 对象
      * @return 查询结果
      */
+    @Nullable
     public final Time queryTime(SQLBuilder builder) {
         return queryForObject(builder, Time.class);
     }
