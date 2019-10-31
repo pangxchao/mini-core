@@ -8,7 +8,6 @@ import com.mini.jdbc.transaction.Transactional;
 import com.mini.jdbc.transaction.TransactionalInterceptor;
 import com.mini.jdbc.util.Paging;
 import com.mini.util.ClassUtil;
-import com.mini.util.MappingUri;
 import com.mini.util.StringUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
@@ -44,12 +43,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.inject.matcher.Matchers.annotatedWith;
 import static com.google.inject.matcher.Matchers.any;
+import static com.mini.util.FileUtil.getFileExt;
 import static com.mini.util.ObjectUtil.defIfNull;
 import static com.mini.util.StringUtil.def;
 import static com.mini.util.StringUtil.join;
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static javax.servlet.DispatcherType.*;
 
@@ -58,6 +61,8 @@ import static javax.servlet.DispatcherType.*;
  * @author xchao
  */
 public abstract class WebMvcConfigure implements Module {
+    // 定义URL路径与文件路径的分隔符
+    private static final String SEP = "/";
     @Inject
     private ServletContext servletContext;
     @Inject
@@ -159,7 +164,7 @@ public abstract class WebMvcConfigure implements Module {
                     public List<Class<? extends ActionInterceptor>> getInterceptors() {
                         return Optional.ofNullable(interceptors).orElseGet(() -> {
                             if (before == null) interceptors = new ArrayList<>();
-                            else interceptors = Arrays.asList(before.value());
+                            else interceptors = asList(before.value());
                             return interceptors;
                         });
                     }
@@ -187,11 +192,17 @@ public abstract class WebMvcConfigure implements Module {
                     }
                 };
 
-                // 获取方法上的 urls 列表
-                Arrays.stream(action.url().length > 0 ? action.url() : new String[]{method.getName()})
-                        .map(url -> join("/", "", controller.url(), def(url, method.getName())))
-                        .map(url -> MappingUri.slash_remove(url.replaceAll("(/)+", "/")))
-                        .forEach(url -> configure.addInvocationProxy(url, proxy));
+                // 处理 URL 的连接
+                Stream.concat(Stream.of(action.url()), Stream.of(method.getName())).map(url -> {
+                    url = Stream.of(controller.url(), url).map(v -> v.split(SEP)) //
+                            .flatMap(Stream::of).filter(v -> !v.isBlank())  //
+                            .collect(Collectors.joining(SEP));
+                    // 如果路径上没有配置后缀名，使用默认后缀
+                    if (StringUtil.isBlank(getFileExt(url))) {
+                        url = url + action.suffix();
+                    }
+                    return url;
+                }).distinct().forEach(url -> configure.addInvocationProxy(url, proxy));
             });
         });
     }

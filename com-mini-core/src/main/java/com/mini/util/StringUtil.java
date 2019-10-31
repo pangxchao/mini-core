@@ -130,6 +130,8 @@ public final class StringUtil {
         return result.toString();
     }
 
+
+
     /**
      * 返回字符串长度
      * @param self 当前字符串
@@ -202,7 +204,6 @@ public final class StringUtil {
      * @param str  比较的字符串
      * @return 都为Null时，返回False
      */
-    @SuppressWarnings("unused")
     public static boolean contentEquals(String self, CharSequence str) {
         return self != null && str != null && self.contentEquals(str);
     }
@@ -224,7 +225,6 @@ public final class StringUtil {
      * @param offset 偏移长度
      * @return 都为Null时，返回False
      */
-    @SuppressWarnings("unused")
     public static boolean startsWith(String self, String prefix, int offset) {
         return self != null && prefix != null && self.startsWith(prefix, offset);
     }
@@ -421,7 +421,6 @@ public final class StringUtil {
      * @param replacement 替换字符串
      * @return 替换后的字符串
      */
-    @SuppressWarnings("unused")
     public static String replaceFirst(String self, String regex, String replacement) {
         if (self == null || regex == null || replacement == null) return self;
         return self.replaceFirst(regex, replacement);
@@ -432,7 +431,6 @@ public final class StringUtil {
      * @param self 字符串内容
      * @return 转换结果
      */
-    @SuppressWarnings("unused")
     public static URL toURL(String self) {
         try {
             return new URL(self);
@@ -446,7 +444,6 @@ public final class StringUtil {
      * @param self 字符串内容
      * @return URI
      */
-    @SuppressWarnings("unused")
     public static URI toURI(String self) {
         try {
             return new URI(self);
@@ -473,7 +470,6 @@ public final class StringUtil {
      * @param self    字符串内容
      * @param charset 编码方式
      */
-    @SuppressWarnings("unused")
     public static String urlEncode(String self, Charset charset) {
         try {
             return URLEncoder.encode(self, charset);
@@ -500,7 +496,6 @@ public final class StringUtil {
      * @param self    字符串
      * @param charset 编码
      */
-    @SuppressWarnings("unused")
     public static String urlDecode(String self, Charset charset) {
         try {
             return URLDecoder.decode(self, charset);
@@ -547,7 +542,6 @@ public final class StringUtil {
      * @param self 字符串内容
      * @return 返回字符串都是小写字母
      */
-    @SuppressWarnings("unused")
     public static String toDBName(String self) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < self.length(); i++) {
@@ -565,7 +559,6 @@ public final class StringUtil {
      * @param self 标准手机号
      * @return 脱敏后的手机号
      */
-    @SuppressWarnings("unused")
     public static String phoneEncode(String self) {
         if (!matches(self, MOBILE)) return self;
         return self.substring(0, 3) + "****" //

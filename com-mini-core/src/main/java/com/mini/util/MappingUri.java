@@ -15,11 +15,6 @@ public final class MappingUri<V> implements Serializable, EventListener {
     private static final long serialVersionUID = 1875965841576567853L;
     private final Map<String, V> data = new ConcurrentHashMap<>();
 
-    public static String slash_remove(String k) {
-        if (!StringUtil.endsWith(k, "/")) return k;
-        return k.substring(0, k.length() - 1);
-    }
-
     public Set<String> keySet() {
         return data.keySet();
     }

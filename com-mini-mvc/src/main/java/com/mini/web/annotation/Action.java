@@ -34,6 +34,12 @@ public @interface Action {
     String path() default "";
 
     /**
+     * 默认访问路径的后缀
+     * @return 访问路径的后缀
+     */
+    String suffix() default ".htm";
+
+    /**
      * 该方法支持的请求类型
      * @return 请求类型数组
      */
