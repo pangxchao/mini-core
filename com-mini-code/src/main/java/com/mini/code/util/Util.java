@@ -43,6 +43,9 @@ public final class Util {
             if (this.nullable && typeClass == long.class) {
                 return "OLong";
             }
+            if (this.nullable && typeClass == int.class) {
+                return "Integer";
+            }
             return firstUpperCase(typeClass.getSimpleName());
         }
 

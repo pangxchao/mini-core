@@ -107,7 +107,7 @@ public final class JdbcUtil {
         return rs.wasNull() ? null : value;
     }
 
-    public static Integer Integer(ResultSet rs, String columnLabel) throws SQLException {
+    public static Integer getInteger(ResultSet rs, String columnLabel) throws SQLException {
         int value = rs.getInt(columnLabel);
         return rs.wasNull() ? null : value;
     }
