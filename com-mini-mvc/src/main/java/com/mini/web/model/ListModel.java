@@ -39,7 +39,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     /**
      * 添加数据
      * @param value 数据值
-     * @return {@Code #this}
+     * @return @this
      */
     public ListModel addData(Object value) {
         data.add(value);
@@ -49,7 +49,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
     /**
      * 添加数据
      * @param values 数据值
-     * @return {@Code #this}
+     * @return @this
      */
 
     public ListModel addDataAll(Collection<?> values) {
@@ -61,7 +61,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
      * 添加数据
      * @param index 数据索引
      * @param value 数据值
-     * @return {@Code #this}
+     * @return @this
      */
     public ListModel setData(int index, Object value) {
         data.set(index, value);
@@ -72,7 +72,7 @@ public final class ListModel extends IModel<ListModel> implements Serializable {
      * 添加数据
      * @param index  数据索引
      * @param values 数据值
-     * @return {@Code #this}
+     * @return @this
      */
 
     public ListModel setDataAll(int index, Collection<?> values) {

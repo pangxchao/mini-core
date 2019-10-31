@@ -40,7 +40,7 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
      * 添加数据
      * @param name  数据键名称
      * @param value 数据值
-     * @return {@Code #this}
+     * @return @this
      */
     public MapModel addData(String name, Object value) {
         data.put(name, value);
@@ -50,7 +50,7 @@ public final class MapModel extends IModel<MapModel> implements Serializable {
     /**
      * 添加所有数据
      * @param map Map数据
-     * @return {@Code #this}
+     * @return @this
      */
 
     public MapModel addDataAll(@Nonnull Map<? extends String, ?> map) {

@@ -10,7 +10,7 @@ import com.mini.web.annotation.Controller;
 import com.mini.web.model.MapModel;
 import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
-import com.mini.web.util.IStatus;
+import com.mini.web.util.ResponseCode;
 import com.squareup.javapoet.*;
 
 import javax.inject.Inject;
@@ -40,7 +40,7 @@ public class CodeController {
         // 生成类信息
         TypeSpec.Builder builder = TypeSpec.classBuilder(info.controllerName)
                 .addModifiers(PUBLIC)
-                .addSuperinterface(IStatus.class)
+                .addSuperinterface(ResponseCode.class)
                 .addAnnotation(Singleton.class)
                 .addAnnotation(AnnotationSpec.builder(Controller.class)
                         .addMember("path", "$S", "back/" + firstLowerCase(info.beanName))

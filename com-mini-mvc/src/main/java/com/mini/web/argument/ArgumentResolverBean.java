@@ -4,7 +4,7 @@ import com.mini.logger.Logger;
 import com.mini.web.config.Configure;
 import com.mini.web.config.Configure.UnregisteredException;
 import com.mini.web.interceptor.ActionInvocation;
-import com.mini.web.util.IStatus;
+import com.mini.web.util.ResponseCode;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -54,7 +54,7 @@ public abstract class ArgumentResolverBean implements ArgumentResolver {
     protected abstract Object value(@Nonnull Transform transform, @Nonnull String name, @Nonnull Class<?> type,
             @Nonnull ActionInvocation invocation) throws Exception;
 
-    protected interface Transform extends IStatus {
+    protected interface Transform extends ResponseCode {
         <T> T get(String name, Class<T> clazz);
 
         default String getString(String name) {

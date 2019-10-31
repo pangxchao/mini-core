@@ -106,7 +106,6 @@ public final class StringModel extends IModel<StringModel> implements Serializab
         return this;
     }
 
-    @SuppressWarnings("unused")
     public StringModel deleteCharAt(int index) {
         builder.deleteCharAt(index);
         return this;
