@@ -36,12 +36,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -279,25 +273,25 @@ public abstract class WebMvcConfigure implements Module {
         configure.addResolver(char[].class, ArgumentResolverArrayCharVal.class);
 
         // 文件类型
-        configure.addResolver(Part.class, ArgumentResolverPart.class);
         configure.addResolver(Part[].class, ArgumentResolverPartArray.class);
+        configure.addResolver(Part.class, ArgumentResolverPart.class);
 
         // 日期时间类型
+        configure.addResolver(java.time.LocalDateTime.class, ArgumentResolverDateTime.class);
+        configure.addResolver(java.time.LocalDate.class, ArgumentResolverDateTime.class);
+        configure.addResolver(java.time.LocalTime.class, ArgumentResolverDateTime.class);
+        configure.addResolver(java.sql.Timestamp.class, ArgumentResolverDateTime.class);
         configure.addResolver(java.util.Date.class, ArgumentResolverDateTime.class);
-        configure.addResolver(LocalDateTime.class, ArgumentResolverDateTime.class);
-        configure.addResolver(Timestamp.class, ArgumentResolverDateTime.class);
-        configure.addResolver(LocalDate.class, ArgumentResolverDate.class);
-        configure.addResolver(LocalTime.class, ArgumentResolverTime.class);
-        configure.addResolver(Date.class, ArgumentResolverDate.class);
-        configure.addResolver(Time.class, ArgumentResolverTime.class);
+        configure.addResolver(java.sql.Date.class, ArgumentResolverDateTime.class);
+        configure.addResolver(java.sql.Time.class, ArgumentResolverDateTime.class);
 
         // Web上下文相关类型
         configure.addResolver(ServletContext.class, ArgumentResolverServletContext.class);
         configure.addResolver(HttpServletResponse.class, ArgumentResolverResponse.class);
         configure.addResolver(HttpServletRequest.class, ArgumentResolverRequest.class);
         configure.addResolver(ServletResponse.class, ArgumentResolverResponse.class);
-        configure.addResolver(ServletRequest.class, ArgumentResolverRequest.class);
         configure.addResolver(HttpSession.class, ArgumentResolverHttpSession.class);
+        configure.addResolver(ServletRequest.class, ArgumentResolverRequest.class);
 
         // Model 类型
         configure.addResolver(StringModel.class, ArgumentResolverModel.class);
@@ -308,8 +302,8 @@ public abstract class WebMvcConfigure implements Module {
         configure.addResolver(IModel.class, ArgumentResolverModel.class);
 
         // 其它类型
-        configure.addResolver(Paging.class, ArgumentResolverPaging.class);
         configure.addResolver(StringBuilder.class, ArgumentResolverBody.class);
+        configure.addResolver(Paging.class, ArgumentResolverPaging.class);
     }
 
     // 配置默认视图实现类

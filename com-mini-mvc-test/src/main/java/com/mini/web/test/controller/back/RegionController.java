@@ -8,7 +8,6 @@ import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.dao.RegionDao;
 import com.mini.web.test.entity.Region;
-import com.mini.web.util.ResponseCode;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,7 +24,7 @@ import java.util.Map;
         path = "back/region",
         url = "back/region"
 )
-public class RegionController implements ResponseCode {
+public class RegionController {
     @Inject
     private RegionDao regionDao;
 

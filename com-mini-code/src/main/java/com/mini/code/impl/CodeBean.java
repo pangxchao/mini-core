@@ -22,7 +22,6 @@ import static com.mini.code.util.Util.*;
 import static com.mini.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.*;
 
-@SuppressWarnings("DuplicatedCode")
 public final class CodeBean {
     /**
      * 生成代码

@@ -16,7 +16,7 @@ import java.util.EventListener;
 
 import static com.mini.logger.LoggerFactory.getLogger;
 
-public final class RequestParameter implements ResponseCode, ISession, EventListener {
+public final class RequestParameter implements ISession, EventListener {
     private static final Logger logger = getLogger(Configure.class);
     private final MiniParameter param;
     private final String name;

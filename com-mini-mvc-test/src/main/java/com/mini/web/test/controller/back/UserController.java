@@ -9,7 +9,6 @@ import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.dao.UserDao;
 import com.mini.web.test.entity.User;
-import com.mini.web.util.ResponseCode;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,7 +26,7 @@ import java.util.Map;
         path = "back/user",
         url = "back/user"
 )
-public class UserController implements ResponseCode {
+public class UserController {
     @Inject
     private UserDao userDao;
 

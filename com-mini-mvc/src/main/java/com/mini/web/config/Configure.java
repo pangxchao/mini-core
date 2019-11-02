@@ -58,9 +58,9 @@ public final class Configure {
     private String location = "temp"; // 上传文件临时路径
 
     // 默认日期时间格式配置
-    private String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
-    private String dateFormat = "yyyy-MM-dd";
-    private String timeFormat = "HH:mm:ss";
+    private String dateTimeFormat = "yyyy-MM-dd HH[:mm[:ss]]";
+    private String dateFormat = "yyyy[-MM[-dd]]";
+    private String timeFormat = "HH[:mm[:ss]]";
 
     // 默认视图配置（视图路径前缀和后缀）
     private String ViewPrefix = "/WEB-INF/";

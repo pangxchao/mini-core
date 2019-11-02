@@ -21,6 +21,7 @@ public final class Util {
         private String columnName;
         private String fieldName;
         private boolean nullable;
+        private String typeName;
         private String remarks;
         private String keyName;
         private boolean auto;
@@ -45,6 +46,20 @@ public final class Util {
             }
             if (this.nullable && typeClass == int.class) {
                 return "Integer";
+            }
+            if (typeClass == java.util.Date.class) {
+                if ("DATE".equalsIgnoreCase(typeName)) {
+                    return "Date";
+                }
+                if ("TIME".equalsIgnoreCase(typeName)) {
+                    return "Time";
+                }
+                return "Timestamp";
+            }
+            if (typeClass == java.sql.Timestamp.class) {
+                if ("DATETIME".equalsIgnoreCase(typeName)) {
+                    return "Timestamp";
+                }
             }
             return firstUpperCase(typeClass.getSimpleName());
         }
@@ -119,10 +134,10 @@ public final class Util {
         put("FLOAT", float.class);
         put("DECIMAL", double.class);
 
-        put("DATE", Date.class);
-        put("TIME", Date.class);
-        put("DATETIME", Date.class);
-        put("TIMESTAMP", Date.class);
+        put("TIME", java.sql.Time.class);
+        put("DATE", java.util.Date.class);
+        put("DATETIME", java.util.Date.class);
+        put("TIMESTAMP", java.util.Date.class);
 
         put("BLOB", Blob.class);
     }};
@@ -180,8 +195,8 @@ public final class Util {
                     info.fieldName  = fieldName;
 
                     // 字段类型
-                    String typeName = rs.getString("TYPE_NAME");
-                    info.typeClass = getTypes(typeName);
+                    info.typeName  = rs.getString("TYPE_NAME");
+                    info.typeClass = getTypes(info.typeName);
 
                     // 是否为自增字段 YES/NO
                     String auto = rs.getString("IS_AUTOINCREMENT");
@@ -214,8 +229,8 @@ public final class Util {
                     info.fieldName  = fieldName;
 
                     // 字段类型
-                    String typeName = rs.getString("TYPE_NAME");
-                    info.typeClass = getTypes(typeName);
+                    info.typeName  = rs.getString("TYPE_NAME");
+                    info.typeClass = getTypes(info.typeName);
 
                     // 是否为自增字段 YES/NO
                     String auto = rs.getString("IS_AUTOINCREMENT");
