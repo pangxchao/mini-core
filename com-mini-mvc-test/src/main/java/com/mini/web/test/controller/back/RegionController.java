@@ -3,7 +3,7 @@ package com.mini.web.test.controller.back;
 import com.mini.jdbc.util.Paging;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
-import com.mini.web.model.MapModel;
+import com.mini.web.model.JsonModel;
 import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.dao.RegionDao;
@@ -44,10 +44,10 @@ public class RegionController {
      * @param paging 数据分页工具
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "pages.htm"
     )
-    public void pages(MapModel model, Paging paging) {
+    public void pages(JsonModel model,Paging paging) {
         List<Region> list = regionDao.queryAll(paging);
         model.addData("data", list.stream().map(region -> {
             Map<String, String> map = new HashMap<>();
@@ -73,10 +73,10 @@ public class RegionController {
      * @param regionId 上级地区ID
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "insert.htm"
     )
-    public void insert(MapModel model, int id, String name, String idUri, String nameUri,
+    public void insert(JsonModel model,int id, String name, String idUri, String nameUri,
             Integer regionId) {
         Region.Builder builder = Region.newBuilder();
         builder.setId(id);
@@ -97,10 +97,10 @@ public class RegionController {
      * @param regionId 上级地区ID
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "update.htm"
     )
-    public void update(MapModel model, int id, String name, String idUri, String nameUri,
+    public void update(JsonModel model,int id, String name, String idUri, String nameUri,
             Integer regionId) {
         Region.Builder builder = Region.newBuilder();
         builder.setId(id);
@@ -117,10 +117,10 @@ public class RegionController {
      * @param id    地区码/地区ID
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "delete.htm"
     )
-    public void delete(MapModel model, int id) {
+    public void delete(JsonModel model,int id) {
         regionDao.deleteById(id);
     }
 }

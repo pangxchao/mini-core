@@ -4,7 +4,7 @@ import com.mini.util.PKGenerator;
 import com.mini.util.StringUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
-import com.mini.web.model.MapModel;
+import com.mini.web.model.JsonModel;
 import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 
@@ -20,8 +20,8 @@ public class WebSocketController {
         model.addData("username", PKGenerator.uuid());
     }
 
-    @Action(value = ModelType.MAP, url = "sendMessage.htm")
-    public void sendMessage(MapModel model, String userName, String message) {
+    @Action(value = ModelType.JSON, url = "sendMessage.htm")
+    public void sendMessage(JsonModel model,String userName, String message) {
         String[] users = StringUtil.split(userName, ",");
         WebSocketMain.sendMessage(message, users);
     }

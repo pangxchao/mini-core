@@ -8,7 +8,7 @@ import com.mini.util.PKGenerator;
 import com.mini.validate.ValidateUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
-import com.mini.web.model.MapModel;
+import com.mini.web.model.JsonModel;
 import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.entity.User;
@@ -61,8 +61,8 @@ public class DemoController {
      * @param endTime   开始时间
      * @param request   HttpServletRequest
      */
-    @Action(value = ModelType.MAP, url = "pages.htm")
-    public void pages(MapModel model, Paging paging, String search, int sortType, int phone, int email, int province, int city,
+    @Action(value = ModelType.JSON, url = "pages.htm")
+    public void pages(JsonModel model,Paging paging, String search, int sortType, int phone, int email, int province, int city,
             int district, LocalDate startTime, LocalDate endTime, HttpServletRequest request) {
         System.out.println("===================back========================");
         System.out.println(JSON.toJSONString(request.getParameterMap()));
@@ -107,8 +107,8 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
-    public void insert(MapModel model, User user) throws Exception {
+    @Action(value = ModelType.JSON, url = "insert.htm")
+    public void insert(JsonModel model,User user) throws Exception {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPassword(), 600, "用户密码不能为空");
@@ -131,8 +131,8 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
-    public void update(MapModel model, User user) {
+    @Action(value = ModelType.JSON, url = "update.htm")
+    public void update(JsonModel model,User user) {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
@@ -151,8 +151,8 @@ public class DemoController {
      * @param model  数据模型渲染器
      * @param idList 要删除的数据ID List
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
-    public void delete(MapModel model, long[] idList) {
+    @Action(value = ModelType.JSON, url = "delete.htm")
+    public void delete(JsonModel model,long[] idList) {
         ValidateUtil.is(idList != null && idList.length > 0, 600, "未选中数据");
         userService.delete(idList);
     }

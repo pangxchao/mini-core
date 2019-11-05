@@ -4,8 +4,6 @@ import com.mini.code.impl.CodeBean;
 import com.mini.code.impl.CodeDao;
 import com.mini.code.impl.CodeDaoBase;
 import com.mini.code.impl.Dictionaries;
-import com.mini.code.impl.web.CodeController;
-import com.mini.code.impl.web.CodeControllerPage;
 import com.mini.jdbc.JdbcTemplate;
 import com.mini.jdbc.JdbcTemplateMysql;
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -72,10 +70,6 @@ public class ConfigureDefault implements Configure {
             // 生成 DAO  与Dao Impl代码
             CodeDao.generator(configure, bean, false);
             generator(configure, bean, false);
-
-            // 生成控制器与页面相关代码
-            CodeController.generator(configure, bean, false);
-            CodeControllerPage.generator(configure, bean, false);
         }
         // 生成数据库文档
         Dictionaries.run(configure);

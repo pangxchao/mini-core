@@ -18,7 +18,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 @Named
 @Singleton
-public final class ArgumentResolverDateTime extends ArgumentResolverBase {
+public final class ArgumentResolverDate extends ArgumentResolverBase {
     private String dateTimeFormat = "yyyy-MM-dd HH[:mm[:ss]]";
     private String dateFormat = "yyyy[-MM[-dd]]";
     private String timeFormat = "HH[:mm[:ss]]";

@@ -4,7 +4,7 @@ import com.mini.jdbc.util.Paging;
 import com.mini.util.DateUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
-import com.mini.web.model.MapModel;
+import com.mini.web.model.JsonModel;
 import com.mini.web.model.PageModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.dao.UserDao;
@@ -46,10 +46,10 @@ public class UserController {
      * @param paging 数据分页工具
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "pages.htm"
     )
-    public void pages(MapModel model, Paging paging) {
+    public void pages(JsonModel model,Paging paging) {
         List<User> list = userDao.queryAll(paging);
         model.addData("data", list.stream().map(user -> {
             Map<String, String> map = new HashMap<>();
@@ -87,10 +87,10 @@ public class UserController {
      * @param createTime 用户注册时间
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "insert.htm"
     )
-    public void insert(MapModel model, long id, String name, String password, String phone,
+    public void insert(JsonModel model,long id, String name, String password, String phone,
             int phoneAuth, String fullName, String email, int emailAuth, String headUrl, Integer regionId,
             Date createTime) {
         User.Builder builder = User.newBuilder();
@@ -124,10 +124,10 @@ public class UserController {
      * @param createTime 用户注册时间
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "update.htm"
     )
-    public void update(MapModel model, long id, String name, String password, String phone,
+    public void update(JsonModel model,long id, String name, String password, String phone,
             int phoneAuth, String fullName, String email, int emailAuth, String headUrl, Integer regionId,
             Date createTime) {
         User.Builder builder = User.newBuilder();
@@ -151,10 +151,10 @@ public class UserController {
      * @param id    用户ID
      */
     @Action(
-            value = ModelType.MAP,
+            value = ModelType.JSON,
             url = "delete.htm"
     )
-    public void delete(MapModel model, long id) {
+    public void delete(JsonModel model,long id) {
         userDao.deleteById(id);
     }
 }

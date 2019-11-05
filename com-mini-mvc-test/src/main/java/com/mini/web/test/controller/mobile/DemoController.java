@@ -6,7 +6,7 @@ import com.mini.util.PKGenerator;
 import com.mini.validate.ValidateUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
-import com.mini.web.model.MapModel;
+import com.mini.web.model.JsonModel;
 import com.mini.web.model.StreamModel;
 import com.mini.web.model.factory.ModelType;
 import com.mini.web.test.entity.User;
@@ -37,8 +37,8 @@ public class DemoController {
      * @param model  数据模型渲染器
      * @param paging 数据分页工具
      */
-    @Action(value = ModelType.MAP, url = "list.htm")
-    public void list(MapModel model, Paging paging) {
+    @Action(value = ModelType.JSON, url = "list.htm")
+    public void list(JsonModel model,Paging paging) {
         model.addData("data", userService.queryAll(paging));
         model.addData("paging", paging);
     }
@@ -48,8 +48,8 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  实体信息
      */
-    @Action(value = ModelType.MAP, url = "insert.htm")
-    public void insert(MapModel model, User user) throws Exception {
+    @Action(value = ModelType.JSON, url = "insert.htm")
+    public void insert(JsonModel model,User user) throws Exception {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPassword(), 600, "用户密码不能为空");
@@ -72,8 +72,8 @@ public class DemoController {
      * @param model 数据模型渲染器
      * @param user  用户信息
      */
-    @Action(value = ModelType.MAP, url = "update.htm")
-    public void update(MapModel model, User user) {
+    @Action(value = ModelType.JSON, url = "update.htm")
+    public void update(JsonModel model,User user) {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
@@ -92,8 +92,8 @@ public class DemoController {
      * @param model  数据模型渲染器
      * @param idList 要删除的数据ID List
      */
-    @Action(value = ModelType.MAP, url = "delete.htm")
-    public void delete(MapModel model, long[] idList) {
+    @Action(value = ModelType.JSON, url = "delete.htm")
+    public void delete(JsonModel model,long[] idList) {
         ValidateUtil.is(idList != null && idList.length > 0, 600, "未选中数据");
         userService.delete(idList);
     }
@@ -105,8 +105,8 @@ public class DemoController {
      * @param mark  加密串
      * @param time  参数生成时间
      */
-    @Action(value = ModelType.MAP, url = "upload.htm")
-    public void upload(MapModel model, Part file, String mark, long time) throws IOException {
+    @Action(value = ModelType.JSON, url = "upload.htm")
+    public void upload(JsonModel model,Part file, String mark, long time) throws IOException {
         ValidateUtil.isNotNull(file, 600, "上传文件不能为空");
         ValidateUtil.isNotBlank(mark, 600, "加密串不能为空");
 
