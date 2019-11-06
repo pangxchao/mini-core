@@ -1,19 +1,17 @@
 package com.mini.code;
 
-import com.mini.code.impl.CodeBean;
-import com.mini.code.impl.CodeDao;
-import com.mini.code.impl.CodeDaoBase;
-import com.mini.code.impl.Dictionaries;
+import com.mini.code.impl.*;
 import com.mini.jdbc.JdbcTemplate;
 import com.mini.jdbc.JdbcTemplateMysql;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.sql.SQLException;
+import java.util.EventListener;
 
 import static com.mini.code.impl.CodeDaoImpl.generator;
 import static java.lang.String.format;
 
-public class ConfigureDefault implements Configure {
+public class ConfigureDefault extends Configure implements EventListener {
     String PATH = "D:/workspace-git/mini-core/com-mini-mvc-test";
 
     @Override
@@ -29,11 +27,6 @@ public class ConfigureDefault implements Configure {
     @Override
     public String getPackageName() {
         return "com.mini.web.test";
-    }
-
-    @Override
-    public String getWebRootPath() {
-        return format("%s/src/main/webapp/WEB-INF", PATH);
     }
 
     @Override
@@ -54,7 +47,7 @@ public class ConfigureDefault implements Configure {
 
     @Override
     public BeanItem[] getDatabaseBeans() {
-        return new com.mini.code.Configure.BeanItem[]{
+        return new BeanItem[]{
                 new BeanItem("Region", "common_region", "region_"),
                 new BeanItem("User", "user_info", "user_"),
         };
@@ -63,15 +56,18 @@ public class ConfigureDefault implements Configure {
     public static void main(String[] args) throws Exception {
         Configure configure = new ConfigureDefault();
         for (BeanItem bean : configure.getDatabaseBeans()) {
+            ClassInfo info = new ClassInfo(configure, bean);
             // 生成 Bean Mapper Base 代码生成
-            CodeBean.generator(configure, bean, true);
-            CodeDaoBase.generator(configure, bean, true);
+            CodeBean.generator(configure, info, bean, true);
+            CodeDaoBase.generator(configure, info, bean, true);
 
             // 生成 DAO  与Dao Impl代码
-            CodeDao.generator(configure, bean, false);
-            generator(configure, bean, false);
+            CodeDao.generator(configure, info, bean, false);
+            generator(configure, info, bean, false);
         }
         // 生成数据库文档
-        Dictionaries.run(configure);
+        Creations.generator(configure);
+        Dictionaries.generator(configure);
+
     }
 }

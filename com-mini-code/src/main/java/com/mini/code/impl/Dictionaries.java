@@ -23,7 +23,7 @@ import static com.mini.util.StringUtil.eq;
  */
 public class Dictionaries {
 
-    public static void run(Configure configure) {
+    public static void generator(Configure configure) {
         File file = new File(configure.getDocumentPath());
         if (!file.exists() && file.mkdirs()) {
             System.out.println("创建文件夹成功");

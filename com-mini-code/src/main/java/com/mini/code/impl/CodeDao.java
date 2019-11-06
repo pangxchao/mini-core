@@ -2,69 +2,52 @@ package com.mini.code.impl;
 
 import com.google.inject.ImplementedBy;
 import com.mini.code.Configure;
+import com.mini.code.Configure.BeanItem;
 import com.mini.code.Configure.ClassInfo;
-import com.mini.code.util.Util;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
-import java.util.List;
 
-import static com.mini.code.util.Util.*;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 @SuppressWarnings("DuplicatedCode")
 public final class CodeDao {
     /**
      * 生成代码
-     * @param configure   数据库与实体配置信息
-     * @param info        所有类的信息
-     * @param tableName   数据库表名
-     * @param prefix      字段名前缀
-     * @param fieldList   所有字段信息
-     * @param PKFieldList 主键字段信息
-     * @param FKFieldList 外键字段信息
+     * @param configure 数据库与实体配置信息
+     * @param info      所有类的信息
+     * @param bean      数据库实体信息
+     * @param cover     true-文件存在时覆盖，false-文件存在时不覆盖
      */
+    public static void generator(Configure configure, ClassInfo info, BeanItem bean, boolean cover) throws Exception {
+        if (!cover && configure.exists(info.daoPackage, info.daoName)) {
+            return;
+        }
 
-    protected static void run(Configure configure, ClassInfo info, String tableName, String prefix, List<Util.FieldInfo> fieldList,
-            List<Util.FieldInfo> PKFieldList, List<Util.FieldInfo> FKFieldList) throws Exception {
-        // 生成类信息
-        TypeSpec.Builder builder = TypeSpec.interfaceBuilder(info.daoName)
+        JavaFile.builder(info.daoPackage, TypeSpec
+                // 接口名称
+                .interfaceBuilder(info.daoName)
+                // public 接口
                 .addModifiers(PUBLIC)
+                // 继承 DaoBase 接口
                 .addSuperinterface(info.daoBaseClass)
+                // 类注释文档
+                .addJavadoc("$L.java \n", info.daoName)
+                .addJavadoc("@author xchao \n")
+
+                // 生成 ImplementedBy 默认实现指定注解
                 .addAnnotation(AnnotationSpec.builder(ImplementedBy.class)
                         .addMember("value", "$T.class", info.daoImplClass)
                         .build())
-                .addJavadoc("$L.java \n", info.daoName)
-                .addJavadoc("@author xchao \n");
 
-        // 生成文件信息
-        JavaFile javaFile = JavaFile.builder(info.daoPackage, builder.build()).build();
-        javaFile.writeTo(new File(configure.getClassPath()));
+                // 生成类
+                .build())
+                // 生成文件信息，并将文件信息转出到本地
+                .build().writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
         System.out.println("Code Dao : " + info.beanName + "\r\n");
-    }
-
-    /**
-     * 生成java代码
-     * @param configure 数据库与实体配置信息
-     * @param bean      数据库表与实体关联配置
-     * @param isCover   是否覆盖已存在的文件
-     */
-    public static void generator(Configure configure, Configure.BeanItem bean, boolean isCover) throws Exception {
-        List<Util.FieldInfo> FKFileList = getImportedKeys(configure.getJdbcTemplate(), //
-                configure.getDatabaseName(), bean.tableName, bean.prefix);
-        List<Util.FieldInfo> PKFieldList = getPrimaryKey(configure.getJdbcTemplate(), //
-                configure.getDatabaseName(), bean.tableName, bean.prefix);  //
-        List<Util.FieldInfo> fieldList = getColumns(configure.getJdbcTemplate(), //
-                configure.getDatabaseName(), bean.tableName, bean.prefix); //
-        ClassInfo info = new ClassInfo(configure, bean.className);
-
-        // 不存在或者覆盖时生成
-        if (isCover || !Util.exists(configure, info.daoPackage, info.daoName)) {
-            run(configure, info, bean.tableName, bean.prefix, fieldList, PKFieldList, FKFileList);
-        }
     }
 }
