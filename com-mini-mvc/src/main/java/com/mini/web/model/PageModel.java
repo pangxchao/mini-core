@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * Page Model 类实现
@@ -69,7 +68,7 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
 
     @Override
     protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
-        ValidateUtil.isNotBlank(viewPath, SC_INTERNAL_SERVER_ERROR, "View path can not be null");
+        ValidateUtil.isNotBlank(viewPath, INTERNAL_SERVER_ERROR, "View path can not be null");
         // 生成页面
         data.put("request", request);
         data.put("response", response);

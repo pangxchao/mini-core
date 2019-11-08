@@ -7,6 +7,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.sql.SQLException;
 import java.util.EventListener;
+import java.util.List;
 
 import static com.mini.code.impl.CodeDaoImpl.generator;
 import static java.lang.String.format;
@@ -46,11 +47,31 @@ public class ConfigureDefault extends Configure implements EventListener {
     }
 
     @Override
-    public BeanItem[] getDatabaseBeans() {
-        return new BeanItem[]{
-                new BeanItem("Region", "common_region", "region_"),
-                new BeanItem("User", "user_info", "user_"),
-        };
+    public List<BeanItem> getDatabaseBeans() {
+        return Configure.BeansBuilder.newBuilder()
+                // 地区表
+                .addBeans(BeanItem.newBuilder()
+                        // 包名
+                        .setPackageName("")
+                        // 类名
+                        .setClassName("Region")
+                        // 数据库表名
+                        .setTableName("common_region")
+                        // 表字段前缀
+                        .setPrefix("region_")
+                        .build())
+                // 用户信息表
+                .addBeans(BeanItem.newBuilder()
+                        // 包名
+                        .setPackageName("")
+                        // 类名
+                        .setClassName("User")
+                        // 数据库表名
+                        .setTableName("user_info")
+                        // 表字段前缀
+                        .setPrefix("user_")
+                        .build())
+                .buid();
     }
 
     public static void main(String[] args) throws Exception {

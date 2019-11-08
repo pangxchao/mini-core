@@ -30,19 +30,19 @@ public final class CodeDaoImpl {
      * @param cover     true-文件存在时覆盖，false-文件存在时不覆盖
      */
     public static void generator(Configure configure, ClassInfo info, BeanItem bean, boolean cover) throws Exception {
-        if (!cover && configure.exists(info.daoImplPackage, info.daoImplName)) {
+        if (!cover && configure.exists(info.getDaoImplPackage(), info.getDaoImplName())) {
             return;
         }
 
-        JavaFile.builder(info.daoImplPackage, TypeSpecBuilder
+        JavaFile.builder(info.getDaoImplPackage(), TypeSpecBuilder
                 // 类名称
-                .classBuilder(info.daoImplName)
+                .classBuilder(info.getDaoImplName())
                 // public 类
                 .addModifiers(PUBLIC)
                 // 实现 Dao 接口
-                .addSuperinterface(info.daoClass)
+                .addSuperinterface(info.getDaoClass())
                 // 添加类注释文档
-                .addJavadoc("$L.java \n", info.daoImplName)
+                .addJavadoc("$L.java \n", info.getDaoImplName())
                 .addJavadoc("@author xchao \n")
 
                 // 生成 Singleton 单例注解
@@ -50,7 +50,7 @@ public final class CodeDaoImpl {
 
                 //  生成 Named 名称限制注解
                 .addAnnotation(AnnotationSpec.builder(Named.class)
-                        .addMember("value", "$S", firstLowerCase(info.daoName))
+                        .addMember("value", "$S", firstLowerCase(info.getDaoName()))
                         .build())
 
                 // 生成JdbcTemplate属性,并添加依赖注入注解
@@ -81,6 +81,6 @@ public final class CodeDaoImpl {
                 .build().writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("Code Dao Impl : " + info.beanName + "\r\n");
+        System.out.println("Code Dao Impl : " + info.getBeanName() + "\r\n");
     }
 }

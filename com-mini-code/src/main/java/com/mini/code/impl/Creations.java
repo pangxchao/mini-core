@@ -19,8 +19,7 @@ public final class Creations {
         if (!file.exists() && file.mkdirs()) {
             System.out.println("创建文件夹成功");
         }
-        String fileName = StringUtil.replace(configure.getPackageName(), '.', '-');
-        try (OutputStreamWriter writer = new FileWriter(new File(file, fileName + "-create.sql"))) {
+        try (OutputStreamWriter writer = new FileWriter(new File(file, "create-table.sql"))) {
             writer.write(format("CREATE DATABASE IF NOT EXISTS %s ", configure.getDatabaseName()));
             writer.write("DEFAULT CHARACTER SET utf8mb4; \n");
             writer.write(format("USE %s; \n", configure.getDatabaseName()));
@@ -31,7 +30,7 @@ public final class Creations {
                     return rs.next() ? rs.getString(2) : ""; //
                 });
                 writer.write(StringUtil.replace(content, "`", ""));
-                writer.write("\n");
+                writer.write("; \n");
                 writer.write("\n");
             }
         }

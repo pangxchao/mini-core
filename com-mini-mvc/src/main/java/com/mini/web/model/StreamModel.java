@@ -18,7 +18,6 @@ import java.util.List;
 import static com.mini.util.ObjectUtil.require;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static javax.servlet.http.HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE;
 
 /**
  * Stream Model类实现
@@ -104,7 +103,7 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
             List<Range> rangeList = RangeParse.parseRange(rangeText);
             if (rangeList == null || rangeList.size() <= 0) {
                 response.addHeader("Content-Range", "bytes */" + contentLength);
-                response.sendError(SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                response.sendError(REQUESTED_RANGE_NOT_SATISFIABLE);
                 return;
             }
 
@@ -116,7 +115,7 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
 
                 // 如果Range对象不合法，返回错误信息
                 response.addHeader("Content-Range", "bytes */" + contentLength);
-                response.sendError(SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                response.sendError(REQUESTED_RANGE_NOT_SATISFIABLE);
                 return;
             }
 

@@ -22,24 +22,24 @@ public final class CodeDao {
      * @param cover     true-文件存在时覆盖，false-文件存在时不覆盖
      */
     public static void generator(Configure configure, ClassInfo info, BeanItem bean, boolean cover) throws Exception {
-        if (!cover && configure.exists(info.daoPackage, info.daoName)) {
+        if (!cover && configure.exists(info.getDaoPackage(), info.getDaoName())) {
             return;
         }
 
-        JavaFile.builder(info.daoPackage, TypeSpec
+        JavaFile.builder(info.getDaoPackage(), TypeSpec
                 // 接口名称
-                .interfaceBuilder(info.daoName)
+                .interfaceBuilder(info.getDaoName())
                 // public 接口
                 .addModifiers(PUBLIC)
                 // 继承 DaoBase 接口
-                .addSuperinterface(info.daoBaseClass)
+                .addSuperinterface(info.getBaseDaoClass())
                 // 类注释文档
-                .addJavadoc("$L.java \n", info.daoName)
+                .addJavadoc("$L.java \n", info.getDaoName())
                 .addJavadoc("@author xchao \n")
 
                 // 生成 ImplementedBy 默认实现指定注解
                 .addAnnotation(AnnotationSpec.builder(ImplementedBy.class)
-                        .addMember("value", "$T.class", info.daoImplClass)
+                        .addMember("value", "$T.class", info.getDaoImplClass())
                         .build())
 
                 // 生成类
@@ -48,6 +48,6 @@ public final class CodeDao {
                 .build().writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("Code Dao : " + info.beanName + "\r\n");
+        System.out.println("Code Dao : " + info.getBeanName() + "\r\n");
     }
 }

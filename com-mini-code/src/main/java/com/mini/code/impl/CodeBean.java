@@ -30,19 +30,19 @@ public final class CodeBean {
      * @param cover     true-文件存在时覆盖，false-文件存在时不覆盖
      */
     public static void generator(Configure configure, ClassInfo info, BeanItem bean, boolean cover) throws Exception {
-        if (!cover && configure.exists(info.beanPackage, info.beanName)) {
+        if (!cover && configure.exists(info.getBeanPackage(), info.getBeanName())) {
             return;
         }
 
-        JavaFile.builder(info.beanPackage, TypeSpecBuilder
+        JavaFile.builder(info.getBeanPackage(), TypeSpecBuilder
                 // 类名称
-                .classBuilder(info.beanClass)
+                .classBuilder(info.getBeanClass())
                 // public 类
                 .addModifiers(PUBLIC)
                 // 实现 Serializable 接口
                 .addSuperinterface(Serializable.class)
                 // 添加类注释文档
-                .addJavadoc("$L.java \n", info.beanName)
+                .addJavadoc("$L.java \n", info.getBeanName())
                 .addJavadoc("@author xchao \n")
 
                 // serialVersionUID 属性，IDEA 编辑器一般不需要该属性
@@ -60,7 +60,7 @@ public final class CodeBean {
                         .build())
 
                 // 生成字段常量
-                .forAdd(info.fieldList, (builder, fieldInfo) -> {
+                .forAdd(info.getFieldList(), (builder, fieldInfo) -> {
                     String db_name = fieldInfo.getFieldName().toUpperCase();
                     builder.addField(FieldSpec.builder(String.class, db_name)
                             .addModifiers(PUBLIC, STATIC, FINAL)
@@ -75,13 +75,13 @@ public final class CodeBean {
                         .build())
 
                 // 生成属性信息
-                .forAdd(info.fieldList, (builder, fieldInfo) -> {
+                .forAdd(info.getFieldList(), (builder, fieldInfo) -> {
                     String name = toJavaName(fieldInfo.getFieldName(), false);
                     builder.addField(fieldInfo.getTypeClass(), name, PRIVATE);
                 })
 
                 // 生成所有 Getter Setter 方法
-                .forAdd(info.fieldList, (builder, fieldInfo) -> {
+                .forAdd(info.getFieldList(), (builder, fieldInfo) -> {
                     Class<?> typeClass = fieldInfo.getTypeClass();
                     String name = toJavaName(fieldInfo.getFieldName(), false);
 
@@ -106,8 +106,8 @@ public final class CodeBean {
                 // 生成私有 Builder 构造方法
                 .addMethod(MethodSpecBuilder.constructorBuilder()
                         .addModifiers(PRIVATE)
-                        .addParameter(info.builderClass, "builder")
-                        .forAdd(info.fieldList, (method, fieldInfo) -> {
+                        .addParameter(info.getBuilderClass(), "builder")
+                        .forAdd(info.getFieldList(), (method, fieldInfo) -> {
                             String name = toJavaName(fieldInfo.getFieldName(), false);
                             method.addStatement("set$L(builder.$L)", firstUpperCase(name), name);
                         }).build())
@@ -115,17 +115,17 @@ public final class CodeBean {
                 // 生成静态无参数 newBuilder 方法
                 .addMethod(MethodSpecBuilder.methodBuilder("newBuilder")
                         .addModifiers(PUBLIC, STATIC)
-                        .returns(info.builderClass)
-                        .addStatement("return new $T()", info.builderClass)
+                        .returns(info.getBuilderClass())
+                        .addStatement("return new $T()", info.getBuilderClass())
                         .build())
 
                 // 生成静态 copy newBuilder 方法
                 .addMethod(MethodSpecBuilder.methodBuilder("newBuilder")
                         .addModifiers(PUBLIC, STATIC)
-                        .returns(info.builderClass)
-                        .addParameter(info.beanClass, "copy")
-                        .addStatement("$T builder = new $T()", info.builderClass, info.builderClass)
-                        .forAdd(info.fieldList, (method, fieldInfo) -> {
+                        .returns(info.getBuilderClass())
+                        .addParameter(info.getBeanClass(), "copy")
+                        .addStatement("$T builder = new $T()", info.getBuilderClass(), info.getBuilderClass())
+                        .forAdd(info.getFieldList(), (method, fieldInfo) -> {
                             String name = toJavaName(fieldInfo.getFieldName(), false);
                             method.addStatement("builder.$L = copy.get$L()", name, firstUpperCase(name));
                         })
@@ -135,12 +135,12 @@ public final class CodeBean {
                 // 生成静态 Mapper mapper 方法
                 .addMethod(MethodSpecBuilder.methodBuilder("mapper")
                         .addModifiers(PUBLIC, STATIC)
-                        .returns(info.beanClass)
+                        .returns(info.getBeanClass())
                         .addParameter(ResultSet.class, "rs")
                         .addParameter(int.class, "number")
                         .addException(SQLException.class)
-                        .addStatement("$T builder = $T.newBuilder()", info.builderClass, info.beanClass)
-                        .forAdd(info.fieldList, (method, fieldInfo) -> {
+                        .addStatement("$T builder = $T.newBuilder()", info.getBuilderClass(), info.getBeanClass())
+                        .forAdd(info.getFieldList(), (method, fieldInfo) -> {
                             String type_name = fieldInfo.getMapperGetName();
                             String db_name = fieldInfo.getFieldName().toUpperCase();
                             String name = toJavaName(fieldInfo.getFieldName(), false);
@@ -149,10 +149,10 @@ public final class CodeBean {
                         .build())
 
                 // 生成静态 Builder 类对象
-                .addType(TypeSpecBuilder.classBuilder(info.builderClass)
+                .addType(TypeSpecBuilder.classBuilder(info.getBuilderClass())
                         .addModifiers(PUBLIC, STATIC, FINAL)
                         // 生成所有字段的属性
-                        .forAdd(info.fieldList, (builder, fieldInfo) -> {
+                        .forAdd(info.getFieldList(), (builder, fieldInfo) -> {
                             String name = toJavaName(fieldInfo.getFieldName(), false);
                             builder.addField(fieldInfo.getTypeClass(), name, PRIVATE);
                         })
@@ -161,11 +161,11 @@ public final class CodeBean {
                                 .addModifiers(PRIVATE)
                                 .build())
                         // 为每个属性生成一个 Setter 方法
-                        .forAdd(info.fieldList, (builder, fieldInfo) -> {
+                        .forAdd(info.getFieldList(), (builder, fieldInfo) -> {
                             String name = toJavaName(fieldInfo.getFieldName(), false);
                             builder.addMethod(MethodSpecBuilder.methodBuilder("set" + firstUpperCase(name))
                                     .addModifiers(PUBLIC, FINAL)
-                                    .returns(info.builderClass)
+                                    .returns(info.getBuilderClass())
                                     .addParameter(fieldInfo.getTypeClass(), name)
                                     .addStatement("this.$L = $L", name, name)
                                     .addStatement("return this")
@@ -175,20 +175,20 @@ public final class CodeBean {
                         // 生成 builder 方法
                         .addMethod(MethodSpecBuilder.methodBuilder("build")
                                 .addModifiers(PUBLIC, FINAL)
-                                .returns(info.beanClass)
+                                .returns(info.getBeanClass())
                                 .addAnnotation(Nonnull.class)
-                                .addStatement("return new $T(this)", info.beanClass)
+                                .addStatement("return new $T(this)", info.getBeanClass())
                                 .build())
                         .build())
 
                 // 生成静态的 SQLBuilder 类对象
-                .addType(TypeSpecBuilder.classBuilder(info.sqlClass)
+                .addType(TypeSpecBuilder.classBuilder(info.getSQLClass())
                         .addModifiers(PUBLIC, STATIC)
                         .superclass(SQLBuilder.class)
                         // 生成默认 PROTECTED 无参构造方法
                         .addMethod(MethodSpecBuilder.constructorBuilder()
                                 .addModifiers(PROTECTED)
-                                .forAdd(info.fieldList, (method, fieldInfo) -> {
+                                .forAdd(info.getFieldList(), (method, fieldInfo) -> {
                                     String db_name = fieldInfo.getFieldName().toUpperCase();
                                     method.addStatement("select($L)", db_name);
                                 })
@@ -202,6 +202,6 @@ public final class CodeBean {
                 .build().writeTo(new File(configure.getClassPath()));
 
         System.out.println("====================================");
-        System.out.println("Code Bean : " + info.beanName + "\r\n");
+        System.out.println("Code Bean : " + info.getBeanName() + "\r\n");
     }
 }

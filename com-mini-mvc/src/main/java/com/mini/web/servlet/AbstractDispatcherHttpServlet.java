@@ -11,6 +11,7 @@ import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.interceptor.ActionInvocationProxy;
 import com.mini.web.model.IModel;
 import com.mini.web.util.RequestParameter;
+import com.mini.web.util.ResponseCode;
 import com.mini.web.util.WebUtil;
 
 import javax.annotation.Nonnull;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -37,18 +37,13 @@ import java.util.stream.Collectors;
 import static com.mini.logger.LoggerFactory.getLogger;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 /**
  * 默认的Servlet
  * @author xchao
  */
-public abstract class AbstractDispatcherHttpServlet extends HttpServlet implements Serializable {
+public abstract class AbstractDispatcherHttpServlet extends HttpServlet implements ResponseCode {
     private static final Logger LOGGER = getLogger(MiniServletInitializer.class);
-    private static final long serialVersionUID = -4503404425770992595L;
-    private static final int ERROR = SC_INTERNAL_SERVER_ERROR;
-    private static final int NOT_FOUND = SC_NOT_FOUND;
 
     @Inject
     private Configure configure;
@@ -77,6 +72,11 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     }
 
     @Override
+    protected void doHead(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        this.doService(Action.Method.HEAD, request, response);
+    }
+
+    @Override
     protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         this.doService(Action.Method.GET, request, response);
     }
@@ -88,12 +88,17 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        this.doService(Action.Method.POST, request, response);
+        this.doService(Action.Method.PUT, request, response);
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        this.doService(Action.Method.POST, request, response);
+        this.doService(Action.Method.DELETE, request, response);
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        this.doService(Action.Method.OPTIONS, request, response);
     }
 
     /**
@@ -105,7 +110,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     private void doService(Action.Method method, HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 获取计验证请求地址
         final String uri = WebUtil.getRequestPath(request);
-        if (require(configure, response, ERROR, "Server Error! " + uri, v -> {
+        if (require(configure, response, INTERNAL_SERVER_ERROR, "Server Error! " + uri, v -> {
             return !StringUtil.isBlank(uri); //
         })) return;
 
@@ -117,7 +122,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
         // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
         final IModel<?> model = proxy.getModel(configure.getView(), proxy.getViewPath());
-        if (require(model, response, ERROR, "Server Error:" + uri, Objects::nonNull)) {
+        if (require(model, response, INTERNAL_SERVER_ERROR, "Server Error:" + uri, Objects::nonNull)) {
             return;
         }
 
@@ -243,8 +248,8 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             model.setStatus(error);
             model.setMessage(msg);
         } catch (Throwable exception) {
+            model.setStatus(INTERNAL_SERVER_ERROR);
             LOGGER.error(exception);
-            model.setStatus(ERROR);
         }
 
         try { // 返回数据

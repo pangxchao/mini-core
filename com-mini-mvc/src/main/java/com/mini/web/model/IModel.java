@@ -1,6 +1,7 @@
 package com.mini.web.model;
 
 import com.mini.util.StringUtil;
+import com.mini.web.util.ResponseCode;
 import com.mini.web.util.WebUtil;
 
 import javax.annotation.Nonnull;
@@ -11,17 +12,16 @@ import java.io.Writer;
 import java.util.Date;
 
 import static com.mini.util.StringUtil.*;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
 
 /**
  * 数据模型渲染器模板
  * @author xchao
  */
-public abstract class IModel<T extends IModel> implements Serializable {
+public abstract class IModel<T extends IModel> implements Serializable, ResponseCode {
     private static final long serialVersionUID = -8709093093109721059L;
-    private int status = HttpServletResponse.SC_OK;
     private String contentType, viewPath, message;
     private long lastModified = -1;
+    private int status = OK;
     private String eTag;
 
     public IModel() {
@@ -125,7 +125,7 @@ public abstract class IModel<T extends IModel> implements Serializable {
 
         // 处理缓存情况
         if (this.useModifiedOrNoneMatch(request, response)) {
-            response.sendError(SC_NOT_MODIFIED);
+            response.sendError(NOT_MODIFIED);
             return;
         }
         // 处理具体数据
