@@ -1,13 +1,14 @@
 package com.mini.web.model;
 
-import com.alibaba.fastjson.JSON;
-
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.*;
+
+import static com.alibaba.fastjson.JSON.toJSON;
+import static java.util.Optional.ofNullable;
 
 /**
  * JSON类型的数据实现
@@ -135,7 +136,9 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
     @Override
     protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
         try (PrintWriter writer = response.getWriter()) {
-            writer.write(JSON.toJSONString(data));
+            ofNullable(toJSON(data)).ifPresent(o -> {
+                writer.write(o.toString()); //
+            });
             writer.flush();
         }
     }
