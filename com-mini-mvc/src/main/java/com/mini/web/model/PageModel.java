@@ -15,8 +15,7 @@ import java.util.Map;
  * Page Model 类实现
  * @author xchao
  */
-public final class PageModel extends IModel<PageModel> implements Serializable {
-    private static final long serialVersionUID = -1731063292578685253L;
+public class PageModel extends IModel<PageModel> implements Serializable {
     private final Map<String, Object> data = new HashMap<>();
     private static final String TYPE = "text/html";
     private final IView view;
@@ -35,7 +34,7 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
      * 获取所有数据
      * @return 所有数据
      */
-    public Map<String, Object> getData() {
+    public final Map<String, Object> getData() {
         return data;
     }
 
@@ -45,7 +44,7 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
      * @param value 数据值
      * @return @this
      */
-    public PageModel addData(String name, Object value) {
+    public final PageModel addData(String name, Object value) {
         data.put(name, value);
         return model();
     }
@@ -55,8 +54,7 @@ public final class PageModel extends IModel<PageModel> implements Serializable {
      * @param map Map数据
      * @return @this
      */
-
-    public PageModel addDataAll(@Nonnull Map<? extends String, ?> map) {
+    public final PageModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         data.putAll(map);
         return model();
     }

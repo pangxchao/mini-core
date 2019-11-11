@@ -23,7 +23,7 @@ import static java.lang.String.format;
  * Stream Model类实现
  * @author xchao
  */
-public final class StreamModel extends IModel<StreamModel> implements Serializable {
+public class StreamModel extends IModel<StreamModel> implements Serializable {
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BOUNDARY";
     private static final long serialVersionUID = -1731063292578685253L;
     private static final String TYPE = "application/octet-stream";
@@ -46,31 +46,31 @@ public final class StreamModel extends IModel<StreamModel> implements Serializab
     }
 
 
-    public StreamModel setFileName(String fileName) {
+    public final StreamModel setFileName(String fileName) {
         this.fileName = fileName;
         return model();
     }
 
 
-    public StreamModel setContentLength(long contentLength) {
+    public final StreamModel setContentLength(long contentLength) {
         this.contentLength = contentLength;
         return model();
     }
 
 
-    public StreamModel setInputStream(InputStream inputStream) {
+    public final StreamModel setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
         return model();
     }
 
 
-    public StreamModel setWriteCallback(WriteCallback writeCallback) {
+    public final StreamModel setWriteCallback(WriteCallback writeCallback) {
         this.writeCallback = writeCallback;
         return model();
     }
 
 
-    public StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
+    public final StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
         this.acceptRangesSupport = acceptRangesSupport;
         return model();
     }

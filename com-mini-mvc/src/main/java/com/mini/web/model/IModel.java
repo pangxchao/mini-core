@@ -89,7 +89,6 @@ public abstract class IModel<T extends IModel> implements Serializable, Response
     }
 
     // 设置Response头部ETag信息
-
     public final T setETag(@Nonnull String eTag) {
         this.eTag = eTag;
         return model();

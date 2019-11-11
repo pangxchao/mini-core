@@ -14,8 +14,7 @@ import static java.util.Optional.ofNullable;
  * JSON类型的数据实现
  * @author xchao
  */
-public final class JsonModel extends IModel<JsonModel> implements Serializable {
-    private static final long serialVersionUID = 5568298711896089960L;
+public class JsonModel extends IModel<JsonModel> implements Serializable {
     private final Map<String, Object> map = new HashMap<>();
     private final List<Object> list = new ArrayList<>();
     private static final String TYPE = "text/plain";
@@ -34,7 +33,7 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * 获取所有的数据-有效的数据
      * @return 所有数据
      */
-    public Object getData() {
+    public final Object getData() {
         return this.data;
     }
 
@@ -42,7 +41,7 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * 获取所有的数据-List结构的数据
      * @return 所有数据
      */
-    public List<Object> getListData() {
+    public final List<Object> getListData() {
         return this.list;
     }
 
@@ -50,16 +49,16 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * 获取所有数据-Map结构的数据
      * @return 所有数据
      */
-    public Map<String, Object> getMapData() {
+    public final Map<String, Object> getMapData() {
         return map;
     }
 
     /**
      * 设置数据-自定义结构的数据
      * @param data 自定义数据
-     * @return @this
+     * @return {this}
      */
-    public JsonModel setData(Object data) {
+    public final JsonModel setData(Object data) {
         this.data = data;
         return model();
     }
@@ -68,9 +67,9 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * 添加数据-Map类型的数据
      * @param name  数据键名称
      * @param value 数据值
-     * @return @this
+     * @return {this}
      */
-    public JsonModel addData(String name, Object value) {
+    public final JsonModel addData(String name, Object value) {
         this.map.put(name, value);
         this.data = this.map;
         return model();
@@ -79,9 +78,9 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
     /**
      * 添加所有数据-Map结构数据
      * @param map Map数据
-     * @return @this
+     * @return {this}
      */
-    public JsonModel addDataAll(@Nonnull Map<? extends String, ?> map) {
+    public final JsonModel addDataAll(@Nonnull Map<? extends String, ?> map) {
         this.map.putAll(map);
         data = this.map;
         return model();
@@ -92,7 +91,7 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * @param value 数据值
      * @return @this
      */
-    public JsonModel addData(Object value) {
+    public final JsonModel addData(Object value) {
         this.list.add(value);
         this.data = list;
         return model();
@@ -101,9 +100,9 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
     /**
      * 添加数据-List结构数据
      * @param values 数据值
-     * @return @this
+     * @return {this}
      */
-    public JsonModel addDataAll(Collection<?> values) {
+    public final JsonModel addDataAll(Collection<?> values) {
         this.list.addAll(values);
         this.data = this.list;
         return model();
@@ -113,9 +112,9 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * 添加数据-List结构数据
      * @param index 数据索引
      * @param value 数据值
-     * @return @this
+     * @return {this}
      */
-    public JsonModel setData(int index, Object value) {
+    public final JsonModel setData(int index, Object value) {
         this.list.set(index, value);
         this.data = this.list;
         return model();
@@ -125,9 +124,9 @@ public final class JsonModel extends IModel<JsonModel> implements Serializable {
      * 添加数据-List结构数据
      * @param index  数据索引
      * @param values 数据值
-     * @return @this
+     * @return {this}
      */
-    public JsonModel setDataAll(int index, Collection<?> values) {
+    public final JsonModel setDataAll(int index, Collection<?> values) {
         this.list.addAll(index, values);
         this.data = this.list;
         return model();
