@@ -68,9 +68,14 @@ public abstract class WebMvcConfigure implements Module {
     @Override
     public synchronized final void configure(Binder binder) {
         WebMvcConfigure.this.onStartupBinding(binder);
-        // 数据库事务处理
-        if (getAnnotation(EnableTransaction.class) != null) return;
+        // 是否开启了数据库的注解配置
+        if (getAnnotation(EnableTransaction.class) == null) {
+            return;
+        }
+        // 创建拦截器对象
         MethodInterceptor interceptor = new TransactionalInterceptor();
+        // 注入对象和拦截器
+        binder.bind(MethodInterceptor.class).toInstance(interceptor);
         binder.bindInterceptor(any(), annotatedWith(Transactional.class), interceptor);
     }
 

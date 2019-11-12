@@ -6,7 +6,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class TransactionalInterceptor implements MethodInterceptor {
@@ -23,7 +24,7 @@ public final class TransactionalInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        Objects.requireNonNull(transactionManager, "TransactionManager can not be null");
+        requireNonNull(transactionManager, "TransactionManager can not be null");
         return transactionManager.openTransaction(invocation::proceed);
     }
 }
