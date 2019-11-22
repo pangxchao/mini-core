@@ -12,7 +12,6 @@ import java.io.File;
 
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-@SuppressWarnings("DuplicatedCode")
 public final class CodeDao {
     /**
      * 生成代码

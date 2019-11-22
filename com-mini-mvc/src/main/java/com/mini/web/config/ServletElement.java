@@ -3,26 +3,28 @@ package com.mini.web.config;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class ServletElement {
+public final class ServletElement implements EventListener, Serializable {
     private final Set<String> urlPatterns = new HashSet<>();
-    private Class<? extends HttpServlet> servlet;
     private boolean multipartEnabled = false;
     private boolean asyncSupported = true;
     private int fileSizeThreshold = 4096;
     private long maxRequestSize = -1L;
     private String location = "temp";
     private long maxFileSize = -1L;
+    private HttpServlet servlet;
 
     public ServletElement addUrlPatterns(String... urlPatterns) {
         Collections.addAll(this.urlPatterns, urlPatterns);
         return this;
     }
 
-    public ServletElement setServlet(Class<? extends HttpServlet> servlet) {
+    public ServletElement setServlet(HttpServlet servlet) {
         this.servlet = servlet;
         return this;
     }
@@ -58,7 +60,6 @@ public final class ServletElement {
         return this;
     }
 
-
     public ServletElement clearUrlPatterns() {
         urlPatterns.clear();
         return this;
@@ -68,7 +69,7 @@ public final class ServletElement {
         return urlPatterns.toArray(new String[0]);
     }
 
-    public Class<? extends HttpServlet> getServlet() {
+    public HttpServlet getServlet() {
         return servlet;
     }
 

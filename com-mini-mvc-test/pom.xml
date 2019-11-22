@@ -16,6 +16,7 @@
     <properties>
         <java.version>11</java.version>
         <maven.test.skip>true</maven.test.skip>
+        <spring.version>5.1.8.RELEASE</spring.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>

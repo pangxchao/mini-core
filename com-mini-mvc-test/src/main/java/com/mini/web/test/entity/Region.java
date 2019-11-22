@@ -1,10 +1,9 @@
 package com.mini.web.test.entity;
 
-import com.mini.jdbc.SQLBuilder;
-import com.mini.jdbc.util.JdbcUtil;
+import com.mini.core.jdbc.builder.SQLBuilder;
+import com.mini.core.jdbc.util.JdbcUtil;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -97,7 +96,6 @@ public class Region implements Serializable {
         this.nameUri = nameUri;
     }
 
-    @Nullable
     public Integer getRegionId() {
         return regionId;
     }
@@ -126,7 +124,7 @@ public class Region implements Serializable {
         builder.name     = JdbcUtil.getString(rs, NAME);
         builder.idUri    = JdbcUtil.getString(rs, ID_URI);
         builder.nameUri  = JdbcUtil.getString(rs, NAME_URI);
-        builder.regionId = JdbcUtil.getInt(rs, REGION_ID);
+        builder.regionId = JdbcUtil.getInteger(rs, REGION_ID);
         return builder.build();
     }
 

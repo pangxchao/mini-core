@@ -1,18 +1,19 @@
 package com.mini.web.servlet;
 
 import com.google.inject.Injector;
-import com.mini.logger.Logger;
-import com.mini.util.StringUtil;
-import com.mini.validate.ValidateException;
+import com.mini.core.logger.Logger;
+import com.mini.core.util.StringUtil;
+import com.mini.core.util.matcher.PathMatcher;
+import com.mini.core.util.matcher.PathMatcherAnt;
+import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.config.Configure;
+import com.mini.web.handler.ExceptionHandler;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocation;
-import com.mini.web.interceptor.ActionInvocationProxy;
+import com.mini.web.interceptor.ActionProxy;
 import com.mini.web.model.IModel;
-import com.mini.web.util.RequestParameter;
 import com.mini.web.util.ResponseCode;
-import com.mini.web.util.WebUtil;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -26,17 +27,14 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.Stream;
 
-import static com.mini.logger.LoggerFactory.getLogger;
-import static java.util.Arrays.stream;
+import static com.mini.core.logger.LoggerFactory.getLogger;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Stream.of;
+import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 /**
  * 默认的Servlet
@@ -44,11 +42,8 @@ import static java.util.Optional.ofNullable;
  */
 public abstract class AbstractDispatcherHttpServlet extends HttpServlet implements ResponseCode {
     private static final Logger LOGGER = getLogger(MiniServletInitializer.class);
-
-    @Inject
+    private static final PathMatcher matcher = new PathMatcherAnt();
     private Configure configure;
-
-    // @Inject
     private Injector injector;
 
     public final Configure getConfigure() {
@@ -57,6 +52,11 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 
     public final Injector getInjector() {
         return injector;
+    }
+
+    @Inject
+    public final void setConfigure(Configure configure) {
+        this.configure = configure;
     }
 
     @Inject
@@ -108,148 +108,145 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
      * @param response HttpServletResponse 对象
      */
     private void doService(Action.Method method, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 获取计验证请求地址
-        final String uri = WebUtil.getRequestPath(request);
-        if (require(configure, response, INTERNAL_SERVER_ERROR, "Server Error! " + uri, v -> {
-            return !StringUtil.isBlank(uri); //
-        })) return;
-
-        // 获取并验证 Action 调用对象，如果该对象为空时，返回 404 错误
-        final ActionInvocationProxy proxy = this.getInvocationProxy(uri, method, request);
-        if (require(proxy, response, NOT_FOUND, "Not Found Page:" + uri, Objects::nonNull)) {
+        // 获取请求路径-URI
+        String uri = StringUtil.strip(getActionProxyUri(request).strip(), "/"), path;
+        // 找出当前 URI 对应的 ActionProxy 对象
+        Map<Action.Method, ActionProxy> proxyMap = configure.getActionProxy(uri);
+        if (java.util.Objects.isNull(proxyMap)) {
+            LOGGER.info("Not Found %s" + uri);
+            response.sendError(SC_NOT_FOUND);
             return;
         }
-
-        // 获取数据模型实例并验证，如果该实例为空，返回 500 错误
-        final IModel<?> model = proxy.getModel(configure.getView(), proxy.getViewPath());
-        if (require(model, response, INTERNAL_SERVER_ERROR, "Server Error:" + uri, Objects::nonNull)) {
+        // 根据请求方法获取具体映射,不支持时返回405错误
+        final ActionProxy proxy = proxyMap.get(method);
+        if (java.util.Objects.isNull(proxy)) {
+            response.sendError(SC_METHOD_NOT_ALLOWED);
             return;
         }
+        // 根据请求方法获取具体映射,不支持时返回405错误
+        if (of(proxy.getSupportMethod()).noneMatch(m -> m == method)) {
+            response.sendError(SC_METHOD_NOT_ALLOWED);
+            return;
+        }
+        // 获取 Ant 类型的URL中的参数信息
+        Map<String, String> uriParam = new HashMap<>();
+        if (matcher.isPattern((path = proxy.getViewPath()))) {
+            uriParam.putAll(matcher.extractVariables(path, uri));
+        }
+        // 获取数据模型实例并验证是否为空
+        final IModel<?> model = proxy.getModel(configure.getView());
+        try {
+            // 获取拦截器列表的迭代器对象
+            Iterator<ActionInterceptor> iterator = proxy.getInterceptors().iterator();
+            // 获取控制类的实例对象
+            Object instance = injector.getInstance(proxy.getClazz());
+            // 创建 ActionInvocation 对象
+            final ActionInvocation action = new ActionInvocation() {
 
-        // 创建 ActionInvocation 对象
-        final ActionInvocation action = new ActionInvocation() {
-            private List<ActionInterceptor> interceptors;
-            private Iterator<ActionInterceptor> iterator;
-            private Object instance;
-
-            @Nonnull
-            @Override
-            public synchronized final Method getMethod() {
-                return proxy.getMethod();
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final Class<?> getClazz() {
-                return proxy.getClazz();
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final Object getInstance() {
-                return Optional.ofNullable(instance).orElseGet(() -> {
-                    instance = injector.getInstance(getClazz());
-                    return instance;
-                });
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final List<ActionInterceptor> getInterceptors() {
-                return Optional.ofNullable(interceptors).orElseGet(() -> {
-                    interceptors = proxy.getInterceptors().stream().map(c -> {
-                        return injector.getInstance(c); //
-                    }).collect(Collectors.toList());
-                    return interceptors;
-                });
-            }
-
-            @Nonnull
-            private synchronized Iterator<ActionInterceptor> getIterator() {
-                return ofNullable(iterator).orElseGet(() -> {
-                    iterator = getInterceptors().iterator();
-                    return iterator;
-                });
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final String getUrl() {
-                return uri;
-            }
-
-            @Override
-            public synchronized final String getViewPath() {
-                return proxy.getViewPath();
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final IModel<?> getModel() {
-                return model;
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final HttpServletRequest getRequest() {
-                return request;
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final HttpServletResponse getResponse() {
-                return response;
-            }
-
-            @Override
-            public synchronized final HttpSession getSession() {
-                return request.getSession();
-            }
-
-            @Override
-            public synchronized final ServletContext getServletContext() {
-                return request.getServletContext();
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final RequestParameter[] getParameters() {
-                return proxy.getParameters();
-            }
-
-            @Nonnull
-            @Override
-            public synchronized final Object[] getParameterValues() {
-                return stream(getParameters()).map(p -> p.getValue(//
-                        configure, this)).toArray();
-            }
-
-            @Override
-            public synchronized final Object invoke() throws Throwable {
-                try {
-                    Iterator<ActionInterceptor> iterator;
-                    if ((iterator = getIterator()).hasNext()) {
-                        return iterator.next().invoke(this);
-                    }
-                    Object object = getInstance();
-                    Object[] values = getParameterValues();
-                    return getMethod().invoke(object, values);
-                } catch (InvocationTargetException ex) {
-                    throw ex.getTargetException();
+                @Nonnull
+                @Override
+                public final Method getMethod() {
+                    return proxy.getMethod();
                 }
-            }
-        };
 
-        try { // 调用目标方法
+                @Nonnull
+                @Override
+                public final Class<?> getClazz() {
+                    return proxy.getClazz();
+                }
+
+                @Nonnull
+                @Override
+                public final Object getInstance() {
+                    return instance;
+                }
+
+                @Nonnull
+                @Override
+                public final List<ActionInterceptor> getInterceptors() {
+                    return proxy.getInterceptors();
+                }
+
+                @Override
+                public final String getViewPath() {
+                    return proxy.getViewPath();
+                }
+
+                @Nonnull
+                @Override
+                public final IModel<?> getModel() {
+                    return model;
+                }
+
+                @Nonnull
+                @Override
+                public final HttpServletRequest getRequest() {
+                    return request;
+                }
+
+                @Nonnull
+                @Override
+                public final HttpServletResponse getResponse() {
+                    return response;
+                }
+
+                @Override
+                public final HttpSession getSession() {
+                    return request.getSession();
+                }
+
+                @Override
+                public final ServletContext getServletContext() {
+                    return request.getServletContext();
+                }
+
+                @Nonnull
+                @Override
+                public final Map<String, String> getUriParameters() {
+                    return uriParam;
+                }
+
+                @Nonnull
+                @Override
+                public MiniParameter[] getParameters() {
+                    return proxy.getParameters();
+                }
+
+                @Nonnull
+                @Override
+                public synchronized final Object[] getParameterValues() {
+                    return Stream.of(proxy.getParameterHandlers()).map(param -> {
+                        return param.getValue(this); //
+                    }).toArray(Object[]::new);
+                }
+
+                @Override
+                public synchronized final Object invoke() throws Throwable {
+                    try {
+                        if (iterator.hasNext()) iterator.next().invoke(this);
+                        return getMethod().invoke(instance, getParameterValues());
+                    } catch (InvocationTargetException ex) {
+                        throw ex.getTargetException();
+                    }
+                }
+            };
+
+            // 调用目标方法
             action.invoke();
-        } catch (ValidateException exception) {
-            String msg = exception.getMessage();
-            int error = exception.getStatus();
-            model.setStatus(error);
-            model.setMessage(msg);
         } catch (Throwable exception) {
-            model.setStatus(INTERNAL_SERVER_ERROR);
-            LOGGER.error(exception);
+            Throwable e = exception, el = null;
+            for (ExceptionHandler<?> handler : configure.getExceptionHandlerList()) {
+                e = getCauseByThrowable(e, handler.getExceptionClass());
+                ofNullable(e).ifPresent(ex -> handler.handler( //
+                        model, ex, request, response));
+                el = exception;
+            }
+            // 没有找到指定的异常处理
+            if (Objects.isNull(el)) {
+                model.setStatus(INTERNAL_SERVER_ERROR);
+                model.setMessage("Service Error!");
+                LOGGER.error(exception);
+            }
         }
 
         try { // 返回数据
@@ -259,68 +256,17 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         }
     }
 
-    /**
-     * 获取实际的 InvocationProxy 对象的Uri
-     * @param requestPath 请求路径
-     * @param request     HttpServletRequest 对象
-     * @return InvocationProxy Uri
-     */
-    protected abstract String getInvocationProxyUri(@Nonnull String requestPath, HttpServletRequest request);
-
-    /**
-     * 是否开启后缀匹配模式
-     * @param suffixPattern 配置文件中的该值
-     * @return true-是
-     */
-    protected boolean useSuffixPatternMatch(boolean suffixPattern) {
-        return suffixPattern;
+    private <T> T getCauseByThrowable(Throwable exception, Class<T> exType) {
+        if (exception != null && exType.isAssignableFrom(exception.getClass())) {
+            return getCauseByThrowable(exception.getCause(), exType);
+        }
+        return null;
     }
 
     /**
-     * 是否自动后缀路径模式匹配
-     * @param trailingSlash 配置文件中的该值
-     * @return true-是
+     * 获取实际的 ActionProxy 对象的 Uri
+     * @param request HttpServletRequest 对象
+     * @return ActionProxy Uri
      */
-    protected boolean useTrailingSlashMatch(boolean trailingSlash) {
-        return trailingSlash;
-    }
-
-    /**
-     * 获取路径在匹配过程的参数回调
-     * @param request 配置文件中的该值
-     * @return BiConsumer 对象
-     */
-    protected BiConsumer<String, String> getBiConsumer(HttpServletRequest request) {
-        return request::setAttribute;
-    }
-
-    /**
-     * 获取 ActionInvocationProxy 对象
-     * @param requestPath 请求路径
-     * @param method      Action.Method
-     * @param request     HttpServletRequest
-     * @return ActionInvocationProxy 对象
-     */
-    private ActionInvocationProxy getInvocationProxy(String requestPath, Action.Method method, HttpServletRequest request) {
-        return getConfigure().getInvocationProxy(getInvocationProxyUri(requestPath, request), method,
-                useSuffixPatternMatch(configure.isSuffixPattern()), useTrailingSlashMatch(configure.isTrailingSlash()),
-                this.getBiConsumer(request));
-    }
-
-    /**
-     * 验证表达式，并返回错误信息
-     * @param instance 验证对象
-     * @param response HttpServletResponse
-     * @param code     错误码
-     * @param message  错误消息
-     * @param function 验证回调
-     * @return true-验证未通过
-     */
-    private <T> boolean require(T instance, HttpServletResponse response, int code, String message, Predicate<T> function)
-            throws IOException {
-        if (function.test(instance)) return false;
-        response.sendError(code, message);
-        LOGGER.error(message);
-        return true;
-    }
+    protected abstract String getActionProxyUri(HttpServletRequest request);
 }

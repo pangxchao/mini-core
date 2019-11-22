@@ -1,12 +1,13 @@
 package com.mini.web.filter;
 
-import com.mini.util.TypeUtil;
+import com.mini.core.util.StringUtil;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ import java.io.IOException;
  * @author xchao
  */
 @Singleton
+@WebServlet
 public final class CacheControlFilter implements Filter {
 
     private String cacheControl = "No-Cache";
@@ -22,22 +24,31 @@ public final class CacheControlFilter implements Filter {
     private String cacheExpires = "0";
 
     @Inject
-    public void setCacheControl(@Named("Cache-Control") @Nullable String cacheControl) {
+    public void setCacheControl(
+            @Named("Cache-Control")
+            @Nullable String cacheControl) {
         this.cacheControl = cacheControl;
     }
 
     @Inject
-    public void setCachePragma(@Named("Cache-Pragma") @Nullable String cachePragma) {
+    public void setCachePragma(
+            @Named("Cache-Pragma")
+            @Nullable String cachePragma) {
         this.cachePragma = cachePragma;
     }
 
     @Inject
-    public void setCacheExpires(@Named("Cache-Expires") @Nullable String cacheExpires) {
+    public void setCacheExpires(
+            @Named("Cache-Expires")
+            @Nullable String cacheExpires) {
         this.cacheExpires = cacheExpires;
     }
 
     private long getCacheExpires() {
-        long c = TypeUtil.castToLongVal(cacheExpires);
+        long c = 0;
+        if (StringUtil.isNotBlank(cacheExpires)) {
+            c = Long.parseLong(cacheExpires);
+        }
         return System.currentTimeMillis() + c;
     }
 

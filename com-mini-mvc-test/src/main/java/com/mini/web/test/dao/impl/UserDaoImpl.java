@@ -1,6 +1,7 @@
 package com.mini.web.test.dao.impl;
 
-import com.mini.jdbc.JdbcTemplate;
+import com.mini.core.jdbc.AbstractDao;
+import com.mini.core.jdbc.JdbcTemplate;
 import com.mini.web.test.dao.UserDao;
 
 import javax.inject.Inject;
@@ -13,7 +14,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 @Named("userDao")
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl extends AbstractDao implements UserDao {
     private JdbcTemplate jdbcTemplate;
 
     @Inject

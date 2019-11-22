@@ -7,16 +7,15 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import com.mini.inject.annotation.PropertySource;
-import com.mini.inject.annotation.PropertySources;
-import com.mini.logger.Logger;
-import com.mini.util.MiniProperties;
-import com.mini.util.ObjectUtil;
+import com.mini.core.inject.annotation.PropertySource;
+import com.mini.core.inject.annotation.PropertySources;
+import com.mini.core.logger.Logger;
+import com.mini.core.util.Assert;
+import com.mini.core.util.MiniProperties;
 import com.mini.web.config.Configure;
 import com.mini.web.config.WebMvcConfigure;
 
 import javax.inject.Singleton;
-import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContainerInitializer;
@@ -26,8 +25,9 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.mini.logger.LoggerFactory.getLogger;
-import static com.mini.util.MiniProperties.createProperties;
+import static com.mini.core.logger.LoggerFactory.getLogger;
+import static com.mini.core.util.MiniProperties.createProperties;
+import static java.util.EnumSet.copyOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
@@ -40,7 +40,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
     private static final String PRO_NAME = "mini-application.properties";
 
     // 默认父容器的Module
-    public final static class ConfigModule implements Module {
+    public final static class ConfigModule implements Module, EventListener {
         private final List<WebMvcConfigure> configures = new ArrayList<>();
         private final ServletContext servletContext;
 
@@ -69,7 +69,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
             });
         }
 
-        private synchronized void properties(MiniProperties properties, WebMvcConfigure configure) {
+        private void properties(MiniProperties properties, WebMvcConfigure configure) {
             PropertySources sources = configure.getAnnotation(PropertySources.class);
             PropertySource source = configure.getAnnotation(PropertySource.class);
             properties.putAll(createProperties(sources));
@@ -82,7 +82,7 @@ public final class MiniServletInitializer implements ServletContainerInitializer
         try {
             // 获取所有配置信息
             List<WebMvcConfigure> configs = getWebMvcConfigureList(initializer);
-            ObjectUtil.require(!configs.isEmpty(), "WebMvcConfigure can not be empty.");
+            Assert.isTrue(!configs.isEmpty(), "WebMvcConfigure can not be empty.");
 
             // 创建Module对象和依赖注入的容器
             ConfigModule configureModule = new ConfigModule(context, configs);
@@ -97,9 +97,9 @@ public final class MiniServletInitializer implements ServletContainerInitializer
                     .forEach(WebMvcConfigure::onStartupRegister);
 
             // 注册 Listener、Servlet、Filter
-            registerListener(injector, config, context);
-            registerServlet(injector, config, context);
-            registerFilter(injector, config, context);
+            registerListener(config, context);
+            registerServlet(config, context);
+            registerFilter(config, context);
         } catch (Exception | Error e) {
             LOGGER.error("Initializer Error!", e);
         }
@@ -119,11 +119,10 @@ public final class MiniServletInitializer implements ServletContainerInitializer
     }
 
     // 注册Servlet
-    private void registerServlet(Injector injector, Configure configure, ServletContext context) {
+    private void registerServlet(Configure configure, ServletContext context) {
         configure.getServlets().forEach(element -> {
-            String servletName = element.getServlet().getName();
-            var servlet = injector.getInstance(element.getServlet());
-            var register = context.addServlet(servletName, servlet);
+            var register = context.addServlet(element.getServlet().getClass() //
+                    .getName(), element.getServlet());
             register.setAsyncSupported(element.isAsyncSupported());
             register.addMapping(element.getUrlPatterns());
             // 文件上传相关配置
@@ -133,18 +132,17 @@ public final class MiniServletInitializer implements ServletContainerInitializer
     }
 
     // 注册监听器
-    private void registerListener(Injector injector, Configure configure, ServletContext context) {
-        configure.getListeners().forEach(e -> context.addListener(injector.getInstance(e)));
+    private void registerListener(Configure configure, ServletContext context) {
+        configure.getListeners().forEach(context::addListener);
     }
 
     // 注册过虑器
-    private void registerFilter(Injector injector, Configure configure, ServletContext context) {
+    private void registerFilter(Configure configure, ServletContext context) {
         configure.getFilters().forEach(element -> {
-            String filterName = element.getFilter().getName();
-            var filter = injector.getInstance(element.getFilter());
-            Dynamic register = context.addFilter(filterName, filter);
-            EnumSet<DispatcherType> enumSet = EnumSet.copyOf(element.getDispatcherTypes());
-            register.addMappingForUrlPatterns(enumSet, element.isMatchAfter(), element.getUrlPatterns());
+            Dynamic register = context.addFilter(element.getFilter().getClass() //
+                    .getName(), element.getFilter());
+            register.addMappingForUrlPatterns(copyOf(element.getDispatcherTypes()),
+                    element.isMatchAfter(), element.getUrlPatterns());
         });
     }
 }

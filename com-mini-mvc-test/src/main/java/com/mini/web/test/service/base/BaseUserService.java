@@ -1,6 +1,6 @@
 package com.mini.web.test.service.base;
 
-import com.mini.jdbc.util.Paging;
+import com.mini.core.jdbc.model.Paging;
 import com.mini.web.test.dao.UserDao;
 import com.mini.web.test.entity.User;
 

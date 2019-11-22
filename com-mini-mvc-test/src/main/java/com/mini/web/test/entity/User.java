@@ -1,7 +1,7 @@
 package com.mini.web.test.entity;
 
-import com.mini.jdbc.SQLBuilder;
-import com.mini.jdbc.util.JdbcUtil;
+import com.mini.core.jdbc.builder.SQLBuilder;
+import com.mini.core.jdbc.util.JdbcUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -189,7 +189,6 @@ public class User implements Serializable {
         this.headUrl = headUrl;
     }
 
-    @Nullable
     public Integer getRegionId() {
         return regionId;
     }
@@ -237,8 +236,8 @@ public class User implements Serializable {
         builder.email      = JdbcUtil.getString(rs, EMAIL);
         builder.emailAuth  = JdbcUtil.getInt(rs, EMAIL_AUTH);
         builder.headUrl    = JdbcUtil.getString(rs, HEAD_URL);
-        builder.regionId   = JdbcUtil.getInt(rs, REGION_ID);
-        builder.createTime = JdbcUtil.getDate(rs, CREATE_TIME);
+        builder.regionId   = JdbcUtil.getInteger(rs, REGION_ID);
+        builder.createTime = JdbcUtil.getTimestamp(rs, CREATE_TIME);
         return builder.build();
     }
 

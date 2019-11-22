@@ -1,7 +1,7 @@
 package com.mini.code.impl;
 
 import com.mini.code.Configure;
-import com.mini.util.StringUtil;
+import com.mini.core.util.StringUtil;
 
 import java.io.File;
 import java.io.FileWriter;

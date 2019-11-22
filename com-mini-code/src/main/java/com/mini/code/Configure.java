@@ -1,9 +1,9 @@
 package com.mini.code;
 
 import com.mini.code.util.Util;
-import com.mini.jdbc.JdbcTemplate;
-import com.mini.util.StringUtil;
+import com.mini.core.jdbc.JdbcTemplate;
 import com.squareup.javapoet.ClassName;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -66,7 +66,7 @@ public abstract class Configure implements EventListener {
      */
     public final synchronized boolean exists(String packageName, String name) {
         Path outputDirectory = new File(this.getClassPath()).toPath();
-        for (String component : StringUtil.split(packageName, "\\.")) {
+        for (String component : StringUtils.split(packageName, "\\.")) {
             outputDirectory = outputDirectory.resolve(component);
         }
         outputDirectory = outputDirectory.resolve(name + ".java");
@@ -190,7 +190,7 @@ public abstract class Configure implements EventListener {
             StringBuilder packageName = new StringBuilder();
             packageName.append(configure.getPackageName());
             this.packageName = configure.getPackageName();
-            if (!StringUtil.isBlank(bean.packageName)) {
+            if (!StringUtils.isBlank(bean.packageName)) {
                 if (!bean.packageName.startsWith(".")) {
                     packageName.append(".");
                 }

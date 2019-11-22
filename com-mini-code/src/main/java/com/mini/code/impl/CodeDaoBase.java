@@ -4,9 +4,9 @@ import com.mini.code.Configure;
 import com.mini.code.Configure.BeanItem;
 import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.MethodSpecBuilder;
-import com.mini.jdbc.BasicsDao;
-import com.mini.jdbc.SQLBuilder;
-import com.mini.jdbc.util.Paging;
+import com.mini.core.jdbc.JdbcInterface;
+import com.mini.core.jdbc.builder.SQLBuilder;
+import com.mini.core.jdbc.model.Paging;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -15,12 +15,11 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.File;
 import java.util.List;
 
-import static com.mini.util.StringUtil.firstLowerCase;
-import static com.mini.util.StringUtil.toJavaName;
+import static com.mini.core.util.StringUtil.firstLowerCase;
+import static com.mini.core.util.StringUtil.toJavaName;
 import static javax.lang.model.element.Modifier.DEFAULT;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-@SuppressWarnings("DuplicatedCode")
 public final class CodeDaoBase {
     /**
      * 生成代码
@@ -40,7 +39,7 @@ public final class CodeDaoBase {
                 // public 接口
                 .addModifiers(PUBLIC)
                 // 继承 BasicsDao 接口
-                .addSuperinterface(BasicsDao.class)
+                .addSuperinterface(JdbcInterface.class)
                 // 生成类注释文档
                 .addJavadoc("$L.java \n", info.getBaseDaoName())
                 .addJavadoc("@author xchao \n")
@@ -64,7 +63,7 @@ public final class CodeDaoBase {
                         //  方法体实现
                         .addCode("return execute(new $T() {{ \n", SQLBuilder.class)
                         // 方法体， insert inot 语句
-                        .addStatement("\tinsert_into($T.TABLE)", info.getBeanClass())
+                        .addStatement("\tinsertInto($T.TABLE)", info.getBeanClass())
                         // 为每个字段添加一个键值对 修改语句
                         .forAdd(info.getFieldList(), (method, fieldInfo) -> {
                             // 自动增长字段不处理
@@ -100,7 +99,7 @@ public final class CodeDaoBase {
                         //  方法体实现
                         .addCode("return execute(new $T() {{ \n", SQLBuilder.class)
                         // 方法体 replace info 语句
-                        .addStatement("\treplace_into($T.TABLE)", info.getBeanClass())
+                        .addStatement("\treplaceInto($T.TABLE)", info.getBeanClass())
                         // 为每个字段添加一个键值修改语句
                         .forAdd(info.getFieldList(), (method, fieldInfo) -> {
                             // 自动增长字段不处理
@@ -247,7 +246,7 @@ public final class CodeDaoBase {
                         // 添加返回信息注释
                         .addJavadoc("@return 实体信息 \n")
                         // 方法体
-                        .addCode("return queryOne(new $T() {{ \n", info.getSQLClass())
+                        .addCode("return queryObject(new $T() {{ \n", info.getSQLClass())
                         // 为每个主键字段添加下令条件限制查询方法体
                         .forAdd(info.getPKFieldList(), (method, fieldInfo) -> {
                             String db_name = fieldInfo.getFieldName().toUpperCase();
@@ -274,7 +273,7 @@ public final class CodeDaoBase {
                         // 方法返回类型注释
                         .addJavadoc("@return 实体信息列表 \n") //
                         // 方法体
-                        .addCode("return query(new $T() {{ \n", info.getSQLClass()) //
+                        .addCode("return queryList(new $T() {{ \n", info.getSQLClass()) //
                         // 方法体
                         .addCode("// \t   \n") //
                         // 方法体
@@ -299,7 +298,7 @@ public final class CodeDaoBase {
                         // 方法返回类型注释
                         .addJavadoc("@return 实体信息列表 \n")
                         // 方法体
-                        .addCode("return query(paging, new $T() {{ \n", info.getSQLClass())
+                        .addCode("return queryList(paging, new $T() {{ \n", info.getSQLClass())
                         // 方法体
                         .addCode("// \n") //
                         // 方法体

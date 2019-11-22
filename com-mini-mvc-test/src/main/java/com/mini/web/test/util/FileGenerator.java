@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import static com.mini.util.FileUtil.createFile;
+import static com.mini.core.util.FileUtil.createFile;
 
 /**
  * 文件管理上下文，处理附件图片等

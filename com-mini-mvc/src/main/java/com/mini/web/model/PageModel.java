@@ -1,6 +1,6 @@
 package com.mini.web.model;
 
-import com.mini.validate.ValidateUtil;
+import com.mini.core.validate.ValidateUtil;
 import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;

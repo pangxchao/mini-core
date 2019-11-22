@@ -1,8 +1,7 @@
 package com.mini.web.test.controller.socket;
 
-import com.mini.logger.Logger;
-import com.mini.util.ObjectUtil;
-import com.mini.web.util.ISession;
+import com.mini.core.logger.Logger;
+import com.mini.core.util.Assert;
 
 import javax.websocket.*;
 import javax.websocket.RemoteEndpoint.Async;
@@ -13,11 +12,11 @@ import java.util.EventListener;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.mini.logger.LoggerFactory.getLogger;
+import static com.mini.core.logger.LoggerFactory.getLogger;
 import static java.util.Optional.ofNullable;
 
 @ServerEndpoint("/socket/{username}")
-public final class WebSocketMain implements Serializable, ISession, EventListener {
+public final class WebSocketMain implements Serializable, EventListener {
     private static final Map<String, Session> clients = new ConcurrentHashMap<>();
     private static final Logger logger = getLogger(WebSocketMain.class);
     private static final long serialVersionUID = 5617290669921632800L;
@@ -25,7 +24,7 @@ public final class WebSocketMain implements Serializable, ISession, EventListene
     @OnOpen
     public final void onOpen(Session session, @PathParam("username") String username) {
         System.out.println("---已连接, userName: " + username);
-        ObjectUtil.require(!clients.containsKey(username));
+        Assert.isTrue(!clients.containsKey(username));
         clients.put(username, session);
     }
 

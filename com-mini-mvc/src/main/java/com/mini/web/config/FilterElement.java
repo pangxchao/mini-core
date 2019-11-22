@@ -2,13 +2,14 @@ package com.mini.web.config;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import java.io.Serializable;
 import java.util.*;
 
-public final class FilterElement {
+public final class FilterElement implements EventListener, Serializable {
     private final List<DispatcherType> dispatcherTypes = new ArrayList<>();
     private final Set<String> urlPatterns = new HashSet<>();
-    private Class<? extends Filter> filter;
     private boolean matchAfter = true;
+    private Filter filter;
 
     public FilterElement addDispatcherTypes(DispatcherType... dispatcherTypes) {
         Collections.addAll(this.dispatcherTypes, dispatcherTypes);
@@ -20,7 +21,7 @@ public final class FilterElement {
         return this;
     }
 
-    public FilterElement setFilter(Class<? extends Filter> filter) {
+    public FilterElement setFilter(Filter filter) {
         this.filter = filter;
         return this;
     }
@@ -44,7 +45,7 @@ public final class FilterElement {
         return urlPatterns.toArray(new String[0]);
     }
 
-    public Class<? extends Filter> getFilter() {
+    public Filter getFilter() {
         return filter;
     }
 

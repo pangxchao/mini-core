@@ -1,9 +1,10 @@
 package com.mini.web.model;
 
-import com.mini.http.RangeParse;
-import com.mini.http.RangeParse.Range;
-import com.mini.util.ObjectUtil;
-import com.mini.util.StringUtil;
+import com.mini.core.http.RangeParse;
+import com.mini.core.http.RangeParse.Range;
+import com.mini.core.util.Assert;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletOutputStream;
@@ -15,7 +16,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 
-import static com.mini.util.ObjectUtil.require;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 
@@ -79,7 +79,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
     @Override
     protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
         try (ServletOutputStream output = response.getOutputStream()) {
-            if (!StringUtil.isBlank(StreamModel.this.fileName)) {
+            if (!StringUtils.isBlank(StreamModel.this.fileName)) {
                 response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
             }
 
@@ -94,7 +94,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
             response.setHeader("Accept-Ranges", "bytes");
 
             // 如果请求数据范围不存在，则客户端不需要断点续传，直接返回
-            if (rangeText == null || StringUtil.isBlank(rangeText)) {
+            if (rangeText == null || StringUtils.isBlank(rangeText)) {
                 this.copy(output, 0, contentLength - 1);
                 return;
             }
@@ -166,12 +166,12 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 
     @Nonnull
     private synchronized WriteCallback getWriteCallback() {
-        return ObjectUtil.defIfNull(writeCallback, new WriteCallback() {
+        return ObjectUtils.defaultIfNull(writeCallback, new WriteCallback() {
             public void copy(OutputStream out, long start, long end) throws IOException {
                 if (StreamModel.this.inputStream == null) return;
                 try (InputStream source = StreamModel.this.inputStream) {
                     long sendLength = end - start + 1, skip = source.skip(start);
-                    require(skip >= start, format("Skip fail. [%d, %d]", skip, start));
+                    Assert.isTrue(skip >= start, "Skip fail. [%d, %d]", skip, start);
                     if (end >= 0) transferTo(out, source, sendLength);
                     else source.transferTo(out);
                 }

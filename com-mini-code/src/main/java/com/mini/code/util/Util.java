@@ -1,14 +1,14 @@
 package com.mini.code.util;
 
-import com.mini.callback.DatabaseMetaDataCallback;
-import com.mini.jdbc.JdbcTemplate;
+import com.mini.core.jdbc.JdbcTemplate;
+import com.mini.core.jdbc.JdbcTemplate.DatabaseMetaDataCallback;
 
 import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.util.*;
 
-import static com.mini.util.StringUtil.firstUpperCase;
+import static com.mini.core.util.StringUtil.firstUpperCase;
 
 public final class Util {
     public static class FieldInfo implements Serializable {
@@ -85,10 +85,7 @@ public final class Util {
             if (typeClass == double.class) {
                 return false;
             }
-            if (typeClass == char.class) {
-                return false;
-            }
-            return true;
+            return typeClass != char.class;
         }
 
         public boolean isNonUnique() {
@@ -201,7 +198,9 @@ public final class Util {
      * @return 创建表语句
      */
     public static String getCreateTable(JdbcTemplate jdbcTemplate, String tableName) {
-        return jdbcTemplate.query("SHOW CREATE TABLE " + tableName, rs -> rs.next() ? rs.getString(2) : "");
+        return jdbcTemplate.query("SHOW CREATE TABLE " + tableName, rs -> {
+            return rs.next() ? rs.getString(2) : ""; //
+        });
     }
 
     /**
@@ -245,7 +244,8 @@ public final class Util {
         });
     }
 
-    private static FieldInfo getColumn(JdbcTemplate jdbcTemplate, String databaseName, String tableName, String columnName, String prefix) {
+    private static FieldInfo getColumn(JdbcTemplate jdbcTemplate, String databaseName, String tableName, //
+            String columnName, String prefix) {
         return jdbcTemplate.execute((DatabaseMetaDataCallback<FieldInfo>) metaData -> {
             try (ResultSet rs = metaData.getColumns(databaseName, null, tableName, columnName)) {
                 if (rs != null && rs.next()) {

@@ -1,6 +1,6 @@
 package com.mini.web.test.controller.mobile;
 
-import com.mini.util.PKGenerator;
+import com.mini.core.util.PKGenerator;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.JsonModel;

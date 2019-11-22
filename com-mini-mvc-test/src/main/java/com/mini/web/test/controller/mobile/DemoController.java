@@ -1,9 +1,9 @@
 package com.mini.web.test.controller.mobile;
 
-import com.mini.jdbc.util.Paging;
-import com.mini.security.digest.MD5;
-import com.mini.util.PKGenerator;
-import com.mini.validate.ValidateUtil;
+import com.mini.core.jdbc.model.Paging;
+import com.mini.core.security.digest.MD5;
+import com.mini.core.util.PKGenerator;
+import com.mini.core.validate.ValidateUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.JsonModel;
@@ -19,7 +19,7 @@ import javax.servlet.http.Part;
 import java.io.*;
 import java.util.Date;
 
-import static com.mini.validate.ValidateUtil.sendError;
+import static com.mini.core.validate.ValidateUtil.sendError;
 
 /**
  * 该组接口是Back/Demo 与 Front/Demo 的功能扩展接口和文件下载的一些示例演示
@@ -38,7 +38,7 @@ public class DemoController {
      * @param paging 数据分页工具
      */
     @Action(value = ModelType.JSON, url = "list.htm")
-    public void list(JsonModel model,Paging paging) {
+    public void list(JsonModel model, Paging paging) {
         model.addData("data", userService.queryAll(paging));
         model.addData("paging", paging);
     }
@@ -49,7 +49,7 @@ public class DemoController {
      * @param user  实体信息
      */
     @Action(value = ModelType.JSON, url = "insert.htm")
-    public void insert(JsonModel model,User user) throws Exception {
+    public void insert(JsonModel model, User user) throws Exception {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPassword(), 600, "用户密码不能为空");
@@ -73,7 +73,7 @@ public class DemoController {
      * @param user  用户信息
      */
     @Action(value = ModelType.JSON, url = "update.htm")
-    public void update(JsonModel model,User user) {
+    public void update(JsonModel model, User user) {
         ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
         ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
         ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
@@ -93,7 +93,7 @@ public class DemoController {
      * @param idList 要删除的数据ID List
      */
     @Action(value = ModelType.JSON, url = "delete.htm")
-    public void delete(JsonModel model,long[] idList) {
+    public void delete(JsonModel model, long[] idList) {
         ValidateUtil.is(idList != null && idList.length > 0, 600, "未选中数据");
         userService.delete(idList);
     }
@@ -106,7 +106,7 @@ public class DemoController {
      * @param time  参数生成时间
      */
     @Action(value = ModelType.JSON, url = "upload.htm")
-    public void upload(JsonModel model,Part file, String mark, long time) throws IOException {
+    public void upload(JsonModel model, Part file, String mark, long time) throws IOException {
         ValidateUtil.isNotNull(file, 600, "上传文件不能为空");
         ValidateUtil.isNotBlank(mark, 600, "加密串不能为空");
 

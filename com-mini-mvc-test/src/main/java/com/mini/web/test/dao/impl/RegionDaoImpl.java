@@ -1,6 +1,7 @@
 package com.mini.web.test.dao.impl;
 
-import com.mini.jdbc.JdbcTemplate;
+import com.mini.core.jdbc.AbstractDao;
+import com.mini.core.jdbc.JdbcTemplate;
 import com.mini.web.test.dao.RegionDao;
 
 import javax.inject.Inject;
@@ -13,21 +14,18 @@ import javax.inject.Singleton;
  */
 @Singleton
 @Named("regionDao")
-public class RegionDaoImpl implements RegionDao {
+public class RegionDaoImpl extends AbstractDao implements RegionDao {
+    @Inject
     private JdbcTemplate jdbcTemplate;
 
-    @Inject
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
-    public JdbcTemplate writeTemplate() {
+    protected JdbcTemplate writeTemplate() {
         return jdbcTemplate;
     }
 
     @Override
-    public JdbcTemplate readTemplate() {
+    protected JdbcTemplate readTemplate() {
         return jdbcTemplate;
     }
 }

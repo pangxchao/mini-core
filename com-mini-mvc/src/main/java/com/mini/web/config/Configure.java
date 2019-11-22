@@ -1,14 +1,11 @@
 package com.mini.web.config;
 
 import com.google.inject.Injector;
-import com.mini.logger.Logger;
-import com.mini.logger.LoggerFactory;
-import com.mini.util.MappingUri;
 import com.mini.web.annotation.Action;
 import com.mini.web.argument.ArgumentResolver;
+import com.mini.web.handler.ExceptionHandler;
 import com.mini.web.interceptor.ActionInterceptor;
-import com.mini.web.interceptor.ActionInvocationProxy;
-import com.mini.web.view.FreemarkerView;
+import com.mini.web.interceptor.ActionProxy;
 import com.mini.web.view.IView;
 
 import javax.annotation.Nonnull;
@@ -18,36 +15,29 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServlet;
-import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
-import static com.mini.util.ObjectUtil.defIfNull;
-import static com.mini.util.StringUtil.split;
-import static com.mini.util.TypeUtil.*;
-import static java.lang.String.format;
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.split;
 
 @Singleton
 public final class Configure {
-    private final Map<Class<?>, Class<? extends ArgumentResolver>> argumentResolvers = new ConcurrentHashMap<>();
-    private final Map<Class<? extends HttpServlet>, ServletElement> servlets = new ConcurrentHashMap<>();
-    private final Map<Class<? extends Filter>, FilterElement> filters = new ConcurrentHashMap<>();
-    private final Map<Action.Method, WebMappingUri> invocation = new ConcurrentHashMap<>();
-    private final Map<Class<?>, ArgumentResolver> resolverMap = new ConcurrentHashMap<>();
-    private final HashSet<Class<? extends EventListener>> listeners = new HashSet<>();
-    private static final Logger logger = LoggerFactory.getLogger(Configure.class);
-    private Class<? extends IView> viewClass = FreemarkerView.class;
+    private final List<ActionInterceptor> globalInterceptors = new ArrayList<>();
+    private final Map<HttpServlet, ServletElement> servlets = new HashMap<>();
+    private final Set<ArgumentResolver> argumentResolvers = new HashSet<>();
+    private final List<ExceptionHandler<?>> handlerList = new ArrayList<>();
+    private final Map<Filter, FilterElement> filters = new HashMap<>();
+    private final Set<EventListener> listeners = new HashSet<>();
+    private final MappingMap mappingMap = new MappingMap();
     private IView view;
 
     // 基础配置
     private String encodingCharset = "UTF-8"; // 编码
     private String asyncSupported = "true"; // 是否支持异步返回
-    private String suffixPattern = "true"; // 是否开启后缀匹配模式
-    private String trailingSlash = "true"; // 是否自动后缀路径模式匹配
     private String urlPatterns = "*.htm"; // 拦截路径
 
     // 默认文件上传配置（大小限制、缓冲区大小配置，路径配置）
@@ -89,28 +79,6 @@ public final class Configure {
             @Named("mini.http.async.supported")
             @Nullable String asyncSupported) {
         this.asyncSupported = asyncSupported;
-    }
-
-    /**
-     * 是否开启后缀匹配模式
-     * @param suffixPattern "true"-是
-     */
-    @Inject
-    public void setUseSuffixPatternMatch(
-            @Named("mini.http.servlet.suffix-pattern")
-            @Nullable String suffixPattern) {
-        this.suffixPattern = suffixPattern;
-    }
-
-    /**
-     * 是否自动后缀路径模式匹配
-     * @param trailingSlash "true"-是
-     */
-    @Inject
-    public void setUseTrailingSlashMatch(
-            @Named("mini.http.servlet.trailing-slash")
-            @Nullable String trailingSlash) {
-        this.trailingSlash = trailingSlash;
     }
 
     /**
@@ -243,13 +211,11 @@ public final class Configure {
         this.injector = injector;
     }
 
-
     /**
      * 获取配置文件编码
      * @return 配置文件编码
      */
-
-    public synchronized final String getEncodingCharset() {
+    public final String getEncodingCharset() {
         return encodingCharset;
     }
 
@@ -257,31 +223,18 @@ public final class Configure {
      * 获取异步支持
      * @return true-支持异步
      */
-    public synchronized final boolean isAsyncSupported() {
-        return castToBoolVal(asyncSupported);
-    }
-
-    /**
-     * 是否开启后缀匹配模式
-     * @return true-是
-     */
-    public synchronized final boolean isSuffixPattern() {
-        return castToBoolVal(suffixPattern);
-    }
-
-    /**
-     * 是否自动后缀路径模式匹配
-     * @return true-是
-     */
-    public synchronized final boolean isTrailingSlash() {
-        return castToBoolVal(trailingSlash);
+    public final boolean isAsyncSupported() {
+        if (asyncSupported == null) {
+            return false;
+        }
+        return parseBoolean(asyncSupported);
     }
 
     /**
      * 获取默认 Servlet 访问路径
      * @return Servlet 访问路径
      */
-    public synchronized final String[] getUrlPatterns() {
+    public final String[] getUrlPatterns() {
         return split(urlPatterns, "[,]");
     }
 
@@ -289,39 +242,51 @@ public final class Configure {
      * 获取是否开启上传文件功能
      * @return true-开启
      */
-    public synchronized final boolean isMultipartEnabled() {
-        return castToBoolVal(multipartEnabled);
+    public final boolean isMultipartEnabled() {
+        if (multipartEnabled == null) {
+            return false;
+        }
+        return parseBoolean(multipartEnabled);
     }
 
     /**
      * 获取文件上传缓冲区大小
      * @return 文件上传缓冲区大小
      */
-    public synchronized final int getFileSizeThreshold() {
-        return castToIntVal(fileSizeThreshold);
+    public final int getFileSizeThreshold() {
+        if (fileSizeThreshold == null) {
+            return 0;
+        }
+        return parseInt(fileSizeThreshold);
     }
 
     /**
      * 同时上传文件的总大小
      * @return 同时上传文件的总大小
      */
-    public synchronized final long getMaxRequestSize() {
-        return castToLongVal(maxRequestSize);
+    public final long getMaxRequestSize() {
+        if (maxRequestSize == null) {
+            return 0;
+        }
+        return Long.parseLong(maxRequestSize);
     }
 
     /**
      * 单个文件大小限制
      * @return 单个文件大小限制
      */
-    public synchronized final long getMaxFileSize() {
-        return castToLongVal(maxFileSize);
+    public final long getMaxFileSize() {
+        if (maxFileSize == null) {
+            return 0;
+        }
+        return Long.parseLong(maxFileSize);
     }
 
     /**
      * 上传文件临时目录
      * @return 上传文件临时目录
      */
-    public synchronized final String getLocation() {
+    public final String getLocation() {
         return location;
     }
 
@@ -329,7 +294,7 @@ public final class Configure {
      * 默认日期时间格式
      * @return 默认日期时间格式
      */
-    public synchronized final String getDateTimeFormat() {
+    public final String getDateTimeFormat() {
         return dateTimeFormat;
     }
 
@@ -337,7 +302,7 @@ public final class Configure {
      * 默认日期格式
      * @return 默认日期格式
      */
-    public synchronized final String getDateFormat() {
+    public final String getDateFormat() {
         return dateFormat;
     }
 
@@ -346,7 +311,7 @@ public final class Configure {
      * @return 默认时间格式
      */
 
-    public synchronized final String getTimeFormat() {
+    public final String getTimeFormat() {
         return timeFormat;
     }
 
@@ -355,7 +320,7 @@ public final class Configure {
      * @return 视图路径前缀
      */
 
-    public synchronized final String getViewPrefix() {
+    public final String getViewPrefix() {
         return ViewPrefix;
     }
 
@@ -364,50 +329,36 @@ public final class Configure {
      * @return 视图路径后缀
      */
 
-    public synchronized final String getViewSuffix() {
+    public final String getViewSuffix() {
         return viewSuffix;
     }
 
     /**
      * 添加一个Action代理对象
-     * @param url   访问Action的URL
+     * @param uri   访问Action的URL
      * @param proxy 代理对象实例
      * @return 当前对象
      */
-    public synchronized final Configure addInvocationProxy(String url, @Nonnull ActionInvocationProxy proxy) {
-        logger.debug(format("Register Action[%s %s]", Arrays.toString(proxy.getSupportMethod()), url));
-        Arrays.stream(proxy.getSupportMethod()).forEach(method -> { //
-            invocation.computeIfAbsent(method, key -> { //
-                return new WebMappingUri();
-            }).put(url, proxy);
-        });
+    public final Configure addActionProxy(String uri, @Nonnull ActionProxy proxy) {
+        mappingMap.put(uri, proxy);
         return this;
     }
 
     /**
      * 根据URI获取一个Action代理对象
-     * @param uri              访问Action的URI
-     * @param method           请求的方法
-     * @param useSuffixPattern 是否开启后缀匹配模式
-     * @param useTrailingSlash 是否自动后缀路径模式匹配
-     * @param func             回调方法
+     * @param uri 访问Action的URI
      * @return Action代理对象
      */
-    public synchronized final ActionInvocationProxy getInvocationProxy(String uri, Action.Method method, //
-            boolean useSuffixPattern, boolean useTrailingSlash, BiConsumer<String, String> func) { //
-        return requireNonNull(invocation.putIfAbsent(method, new WebMappingUri())) //
-                .get(uri, useSuffixPattern, useTrailingSlash, func);
+    public final Map<Action.Method, ActionProxy> getActionProxy(String uri) {
+        return mappingMap.get(uri);
     }
 
     /**
      * 获取所有的Action代理对象
      * @return 所有的Action代理对象
      */
-
-    public synchronized final Set<ActionInvocationProxy> getInvocationProxyAll() {
-        return invocation.values().stream().flatMap(v -> {
-            return v.values().stream(); //
-        }).collect(Collectors.toSet());
+    public final Set<ActionProxy> getAllActionProxy() {
+        return mappingMap.getActionProxySet();
     }
 
 
@@ -417,8 +368,8 @@ public final class Configure {
      * @return 当前对象
      */
 
-    public synchronized final Configure addListener(Class<? extends EventListener> listener) {
-        listeners.add(listener);
+    public final Configure addListener(Class<? extends EventListener> listener) {
+        listeners.add(injector.getInstance(listener));
         return this;
     }
 
@@ -426,36 +377,38 @@ public final class Configure {
      * 获取所有监听器
      * @return 监听器
      */
-    public synchronized final Set<Class<? extends EventListener>> getListeners() {
+    public final Set<EventListener> getListeners() {
         return listeners;
     }
 
     /**
      * 添加一个Servlet
-     * @param servlet Servlet
-     * @return Servlet对象
+     * @param clazz Servlet Class 对象
+     * @return ServletElement 对象
      */
-    public synchronized final ServletElement addServlet(Class<? extends HttpServlet> servlet) {
+    public final ServletElement addServlet(Class<? extends HttpServlet> clazz) {
+        HttpServlet servlet = injector.getInstance(clazz);
         ServletElement ele = new ServletElement().setServlet(servlet);
-        return defIfNull(servlets.putIfAbsent(servlet, ele), ele);
+        return defaultIfNull(servlets.putIfAbsent(servlet, ele), ele);
     }
 
     /**
      * 获取所有Servlet
      * @return Servlet
      */
-    public synchronized final Collection<ServletElement> getServlets() {
+    public final Collection<ServletElement> getServlets() {
         return servlets.values();
     }
 
     /**
      * 添加一个过虑器
-     * @param filter 过虑器
+     * @param clazz 过虑器
      * @return 过虑器对象
      */
-    public synchronized final FilterElement addFilter(Class<? extends Filter> filter) {
+    public final FilterElement addFilter(Class<? extends Filter> clazz) {
+        Filter filter = injector.getInstance(clazz);
         FilterElement ele = new FilterElement().setFilter(filter);
-        return defIfNull(filters.putIfAbsent(filter, ele), ele);
+        return defaultIfNull(filters.putIfAbsent(filter, ele), ele);
     }
 
     /**
@@ -464,8 +417,8 @@ public final class Configure {
      * @return 当前对象
      */
 
-    public synchronized final Configure removeFilter(Class<? extends Filter> filter) {
-        filters.remove(filter);
+    public final Configure removeFilter(Class<? extends Filter> filter) {
+        filters.remove(injector.getInstance(filter));
         return this;
     }
 
@@ -473,55 +426,85 @@ public final class Configure {
      * 获取所有过虑器
      * @return 过虑器
      */
-    public synchronized final Collection<FilterElement> getFilters() {
+    public final Collection<FilterElement> getFilters() {
         return filters.values();
     }
 
     /**
      * 添加一个参数解析器
-     * @param clazz    参数类型
-     * @param resolver 解析器类
+     * @param clazz 解析器类
      * @return 当前对象
      */
 
-    public synchronized final Configure addResolver(Class<?> clazz, Class<? extends ArgumentResolver> resolver) {
-        argumentResolvers.putIfAbsent(clazz, resolver);
+    public final Configure addArgumentResolvers(Class<? extends ArgumentResolver> clazz) {
+        argumentResolvers.add(injector.getInstance(clazz));
         return this;
     }
 
     /**
-     * 根据参数类型获取解析器实例
-     * @param type 参数类型
-     * @return 参数解析器实例
+     * 获取所有的参数解析器类
+     * @return 所有的参数解析器类
+     */
+    public final Set<ArgumentResolver> getArgumentResolvers() {
+        return argumentResolvers;
+    }
+
+    /**
+     * 注册一个全局的拦截器
+     * @param clazz 拦截器类对象
+     * @return {@code this}
+     */
+    public final Configure registerGlobalInterceptors(Class<? extends ActionInterceptor> clazz) {
+        globalInterceptors.add(injector.getInstance(clazz));
+        return this;
+    }
+
+    /**
+     * 获取全局拦截器对象
+     * @return 全局拦截器对象
      */
     @Nonnull
-    public synchronized final ArgumentResolver getResolver(Class<?> type) throws UnregisteredException {
-        return Configure.this.resolverMap.computeIfAbsent(type, resolverMapKey -> {
-            Class<? extends ArgumentResolver> clazz = argumentResolvers.get(type);
-            return ofNullable(clazz).map(c -> injector.getInstance(c)).orElseThrow(() -> { //
-                return new UnregisteredException("Unregistered parameter types: " + type);
-            });
-        });
+    public final List<ActionInterceptor> getGlobalInterceptors() {
+        return globalInterceptors;
     }
 
     /**
      * 根据拦截器实现类获取拦截器实例
      * @return 拦截器实例
      */
-
     @Nonnull
-    public synchronized final ActionInterceptor getInterceptor(Class<? extends ActionInterceptor> interceptor) {
+    public final ActionInterceptor getInterceptor(Class<? extends ActionInterceptor> interceptor) {
         requireNonNull(injector, "Injector can not be null");
         return requireNonNull(injector.getInstance(interceptor));
     }
 
     /**
+     * 注册一个异常处理器
+     * @param handler 处理器
+     * @return @this
+     */
+    public final Configure registerExceptionHandler(Class<? extends ExceptionHandler> handler) {
+        handlerList.add(Objects.requireNonNull(injector.getInstance(handler)));
+        return this;
+    }
+
+    /**
+     * 获取所有的异常处理器
+     * @return 异常处理器列表
+     */
+    @Nonnull
+    public final List<ExceptionHandler<?>> getExceptionHandlerList() {
+        handlerList.sort(comparingInt(ExceptionHandler::handlerOnExecute));
+        return this.handlerList;
+    }
+
+    /**
      * 设置视图实现类
      * @param viewClass 视图实现类
-     * @return 当前对象
+     * @return @this
      */
-    public synchronized final Configure setViewClass(Class<? extends IView> viewClass) {
-        this.viewClass = viewClass;
+    public final Configure setViewClass(Class<? extends IView> viewClass) {
+        this.view = injector.getInstance(viewClass);
         return this;
     }
 
@@ -529,58 +512,7 @@ public final class Configure {
      * 获取视图实现类实例
      * @return 视图实现类实例
      */
-    public synchronized final IView getView() {
-        requireNonNull(injector, "Injector can not be null");
-        return ofNullable(view).orElseGet(() -> {
-            view = injector.getInstance(viewClass);
-            return view;
-        });
-    }
-
-    public static class UnregisteredException extends RuntimeException {
-        private static final long serialVersionUID = -2227012160825551352L;
-
-        private UnregisteredException(String message) {
-            super(message);
-        }
-    }
-
-    private static final class WebMappingUri implements Serializable {
-        private static final long serialVersionUID = 6411134887844922562L;
-        private final MappingUri<ActionInvocationProxy> m = new MappingUri<>();
-
-        public synchronized final void put(String uri, ActionInvocationProxy proxy) {
-            ActionInvocationProxy actionProxy = m.putIfAbsent(uri, proxy);
-            if (actionProxy == null || actionProxy.equals(proxy)) return;
-            String m = format("The url '%s' already exists \n%s \n%s ", //
-                    uri, actionProxy.getMethod(), proxy.getMethod());
-            throw new RuntimeException(m);
-        }
-
-
-        /**
-         * 获取路径匹配值
-         * @param uri           路径
-         * @param suffixPattern 开启后缀匹配模式
-         * @param trailingSlash 自动后缀路径模式匹配
-         * @param func          回调
-         * @return Action代理对象
-         */
-        public synchronized final ActionInvocationProxy get(String uri, boolean suffixPattern, //
-                boolean trailingSlash, BiConsumer<String, String> func) {
-            return m.get(uri, suffixPattern, trailingSlash, func);
-        }
-
-        /**
-         * 获取所有Action代理对象
-         * @return Action代理对象
-         */
-        public synchronized final MappingUri<ActionInvocationProxy> getAll() {
-            return m;
-        }
-
-        public Collection<ActionInvocationProxy> values() {
-            return m.values();
-        }
+    public final IView getView() {
+        return this.view;
     }
 }

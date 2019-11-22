@@ -5,8 +5,8 @@ import com.mini.code.Configure.BeanItem;
 import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.TypeSpecBuilder;
-import com.mini.jdbc.SQLBuilder;
-import com.mini.jdbc.util.JdbcUtil;
+import com.mini.core.jdbc.builder.SQLBuilder;
+import com.mini.core.jdbc.util.JdbcUtil;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.mini.util.StringUtil.*;
+import static com.mini.core.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.*;
 
 public final class CodeBean {
@@ -65,7 +65,7 @@ public final class CodeBean {
                     builder.addField(FieldSpec.builder(String.class, db_name)
                             .addModifiers(PUBLIC, STATIC, FINAL)
                             .initializer("$S ", fieldInfo.getColumnName())
-                            .addJavadoc("$L \n", def(fieldInfo.getRemarks(), fieldInfo.getColumnName()))
+                            .addJavadoc("$L \n", defaultIfEmpty(fieldInfo.getRemarks(), fieldInfo.getColumnName()))
                             .build());
                 })
 

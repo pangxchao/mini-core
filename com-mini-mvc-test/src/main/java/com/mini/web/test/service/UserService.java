@@ -1,7 +1,7 @@
 package com.mini.web.test.service;
 
 import com.google.inject.ImplementedBy;
-import com.mini.jdbc.util.Paging;
+import com.mini.core.jdbc.model.Paging;
 import com.mini.web.test.entity.extend.UserExt;
 import com.mini.web.test.service.base.BaseUserService;
 import com.mini.web.test.service.impl.UserServiceImpl;

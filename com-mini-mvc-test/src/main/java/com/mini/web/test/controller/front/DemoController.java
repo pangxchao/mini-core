@@ -1,9 +1,8 @@
 package com.mini.web.test.controller.front;
 
 import com.alibaba.fastjson.JSON;
-import com.mini.jdbc.util.Paging;
-import com.mini.util.StringUtil;
-import com.mini.validate.ValidateUtil;
+import com.mini.core.jdbc.model.Paging;
+import com.mini.core.validate.ValidateUtil;
 import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Controller;
 import com.mini.web.model.PageModel;
@@ -11,6 +10,7 @@ import com.mini.web.test.entity.Region;
 import com.mini.web.test.entity.User;
 import com.mini.web.test.service.RegionService;
 import com.mini.web.test.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -107,7 +107,7 @@ public class DemoController {
         if (region == null) return;
 
         String idUri = region.getIdUri();
-        if (StringUtil.isBlank(idUri)) {
+        if (StringUtils.isBlank(idUri)) {
             return;
         }
 
@@ -140,7 +140,7 @@ public class DemoController {
         if (region == null) return;
 
         String idUri = region.getIdUri();
-        if (StringUtil.isBlank(idUri)) {
+        if (StringUtils.isBlank(idUri)) {
             return;
         }
 

@@ -1,9 +1,9 @@
 package com.mini.web.test.entity.extend;
 
-import com.mini.jdbc.SQLBuilder;
-import com.mini.util.StringUtil;
+import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.web.test.entity.Region;
 import com.mini.web.test.entity.User;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -22,7 +22,7 @@ public class UserExt extends User implements Serializable {
     private String regionNameUri;
 
     public String getFullHeadUrl() {
-        if (StringUtil.isBlank(getHeadUrl())) {
+        if (StringUtils.isBlank(getHeadUrl())) {
             return "";
         }
         return getPublicFullUrl(getHeadUrl());

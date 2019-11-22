@@ -5,7 +5,8 @@ import com.mini.code.Configure.BeanItem;
 import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.TypeSpecBuilder;
-import com.mini.jdbc.JdbcTemplate;
+import com.mini.core.jdbc.AbstractDao;
+import com.mini.core.jdbc.JdbcTemplate;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -15,7 +16,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 
-import static com.mini.util.StringUtil.firstLowerCase;
+import static com.mini.core.util.StringUtil.firstLowerCase;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -39,6 +40,8 @@ public final class CodeDaoImpl {
                 .classBuilder(info.getDaoImplName())
                 // public 类
                 .addModifiers(PUBLIC)
+                // 继承基础 Dao 实现
+                .superclass(AbstractDao.class)
                 // 实现 Dao 接口
                 .addSuperinterface(info.getDaoClass())
                 // 添加类注释文档

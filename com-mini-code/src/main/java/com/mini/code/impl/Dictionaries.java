@@ -1,7 +1,8 @@
 package com.mini.code.impl;
 
-import com.mini.callback.DatabaseMetaDataCallback;
 import com.mini.code.Configure;
+import com.mini.core.jdbc.JdbcTemplate.DatabaseMetaDataCallback;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -14,8 +15,6 @@ import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.mini.util.StringUtil.eq;
 
 /**
  * DictionariesExcel.java
@@ -75,7 +74,7 @@ public class Dictionaries {
                 HSSFRow row;
                 HSSFCell cell;
                 String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "主键", "非空", "自增", "默认值", "说明"};
-                List<String> tables = configure.getJdbcTemplate().query("show tables", (rs, number) -> rs.getString(1));
+                List<String> tables = configure.getJdbcTemplate().queryList("show tables", (rs, number) -> rs.getString(1));
                 for (int i = 0, rowNum = 0; i < tables.size(); i++) {
                     String tableName = tables.get(i);
                     // 合并单元格
@@ -148,17 +147,19 @@ public class Dictionaries {
                             // 是否为主键
                             cell = row.createCell(4);
                             cell.setCellStyle(style);
-                            cell.setCellValue(pkFieldList.stream().anyMatch(text -> eq(text, name)) ? "是" : "");
+                            cell.setCellValue(pkFieldList.stream().anyMatch(text -> {
+                                return StringUtils.equals(text, name); //
+                            }) ? "是" : "");
 
                             // 字段是否为非空字段
                             cell = row.createCell(5);
                             cell.setCellStyle(style);
-                            cell.setCellValue(eq("NO", isNull) ? "是" : "");
+                            cell.setCellValue("NO".equals(isNull) ? "是" : "");
 
                             // 字段是否为自增字段
                             cell = row.createCell(6);
                             cell.setCellStyle(style);
-                            cell.setCellValue(eq("YES", isAuto) ? "是" : "");
+                            cell.setCellValue("YES".equals(isAuto) ? "是" : "");
 
                             // 字段默认值
                             cell = row.createCell(7);

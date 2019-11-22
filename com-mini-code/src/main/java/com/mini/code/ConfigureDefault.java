@@ -1,8 +1,8 @@
 package com.mini.code;
 
 import com.mini.code.impl.*;
-import com.mini.jdbc.JdbcTemplate;
-import com.mini.jdbc.JdbcTemplateMysql;
+import com.mini.core.jdbc.JdbcTemplate;
+import com.mini.core.jdbc.JdbcTemplateMysql;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.sql.SQLException;

@@ -1,8 +1,9 @@
 package com.mini.web.argument;
 
+import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.interceptor.ActionInvocation;
+import com.mini.web.model.IModel;
 
-import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -10,7 +11,12 @@ import javax.inject.Singleton;
 @Singleton
 public final class ArgumentResolverModel implements ArgumentResolver {
     @Override
-    public Object value(@Nonnull String name, @Nonnull Class<?> type, @Nonnull ActionInvocation invocation) {
+    public boolean supportParameter(MiniParameter parameter) {
+        return IModel.class.isAssignableFrom(parameter.getType());
+    }
+
+    @Override
+    public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
         return invocation.getModel();
     }
 }
