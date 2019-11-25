@@ -16,7 +16,6 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -33,6 +32,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(Long[].class, (Function<String[], Long[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .map(Long::parseLong)
                         .toArray(Long[]::new));
 
@@ -40,6 +40,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(long[].class, (Function<String[], long[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .mapToLong(Long::parseLong)
                         .toArray());
 
@@ -47,6 +48,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(Integer[].class, (Function<String[], Integer[]>) values ->//
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .map(Integer::parseInt)
                         .toArray(Integer[]::new));
 
@@ -54,6 +56,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(int[].class, (Function<String[], int[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .mapToInt(Integer::parseInt)
                         .toArray());
 
@@ -68,6 +71,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(Byte[].class, (Function<String[], Byte[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .map(Byte::parseByte)
                         .toArray(Byte[]::new));
 
@@ -75,6 +79,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(Double.class, (Function<String[], Double[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .map(Double::parseDouble)
                         .toArray(Double[]::new));
 
@@ -82,12 +87,14 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(double[].class, (Function<String[], double[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .mapToDouble(Double::parseDouble)
                         .toArray());
         // Float[].class 处理
         put(Float[].class, (Function<String[], Float[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .map(Float::parseFloat)
                         .toArray(Float[]::new));
 
@@ -95,59 +102,68 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
         put(Boolean[].class, (Function<String[], Boolean[]>) values -> //
                 Stream.ofNullable(values)
                         .flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
                         .map(Boolean::parseBoolean)
                         .toArray(Boolean[]::new));
 
         // java.util.Date.class 处理
-        put(java.util.Date.class, (Function<String[], java.util.Date[]>) value -> //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        LocalDateTime date = LocalDateTime.parse(text, format);
-                        return java.sql.Timestamp.valueOf(date);
-                    } catch (DateTimeParseException ignored) {}
+        put(java.util.Date.class, (Function<String[], java.util.Date[]>) values -> //
+                Stream.ofNullable(values).flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
+                        .map(text -> {
+                            try {
+                                DateTimeFormatter format = ofPattern(dateTimeFormat);
+                                LocalDateTime date = LocalDateTime.parse(text, format);
+                                return java.sql.Timestamp.valueOf(date);
+                            } catch (DateTimeParseException ignored) {}
 
-                    try {
-                        DateTimeFormatter format = ofPattern(dateFormat);
-                        LocalDate date = LocalDate.parse(text, format);
-                        return java.sql.Date.valueOf(date);
-                    } catch (DateTimeParseException ignored) {}
-                    return null;
-                }).toArray(java.util.Date[]::new));
+                            try {
+                                DateTimeFormatter format = ofPattern(dateFormat);
+                                LocalDate date = LocalDate.parse(text, format);
+                                return java.sql.Date.valueOf(date);
+                            } catch (DateTimeParseException ignored) {}
+                            return null;
+                        }).toArray(java.util.Date[]::new));
 
         // java.time.LocalDateTime 类型的参数
-        put(java.time.LocalDateTime.class, (Function<String[], java.time.LocalDateTime[]>) value -> //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalDateTime.parse(text, format);
-                    } catch (DateTimeParseException ignored) {}
-                    return null;
-                }).toArray(LocalDateTime[]::new));
+        put(java.time.LocalDateTime.class, (Function<String[], java.time.LocalDateTime[]>) values -> //
+                Stream.ofNullable(values).flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
+                        .map(text -> {
+                            try {
+                                DateTimeFormatter format = ofPattern(dateTimeFormat);
+                                return LocalDateTime.parse(text, format);
+                            } catch (DateTimeParseException ignored) {}
+                            return null;
+                        }).toArray(LocalDateTime[]::new));
 
         // java.time.LocalDate 类型的参数
-        put(java.time.LocalDate.class, (Function<String[], java.time.LocalDate[]>) value -> //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalDate.parse(text, format);
-                    } catch (DateTimeParseException ignored) {}
-                    return null;
-                }).toArray(LocalDate[]::new));
+        put(java.time.LocalDate.class, (Function<String[], java.time.LocalDate[]>) values -> //
+                Stream.ofNullable(values).flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
+                        .map(text -> {
+                            try {
+                                DateTimeFormatter format = ofPattern(dateTimeFormat);
+                                return LocalDate.parse(text, format);
+                            } catch (DateTimeParseException ignored) {}
+                            return null;
+                        }).toArray(LocalDate[]::new));
 
         // java.time.LocalTime 类型的参数
-        put(java.time.LocalTime.class, (Function<String[], java.time.LocalTime[]>) value -> //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalTime.parse(text, format);
-                    } catch (DateTimeParseException ignored) {}
-                    return null;
-                }).toArray(LocalTime[]::new));
+        put(java.time.LocalTime.class, (Function<String[], java.time.LocalTime[]>) values -> //
+                Stream.ofNullable(values).flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
+                        .map(text -> {
+                            try {
+                                DateTimeFormatter format = ofPattern(dateTimeFormat);
+                                return LocalTime.parse(text, format);
+                            } catch (DateTimeParseException ignored) {}
+                            return null;
+                        }).toArray(LocalTime[]::new));
 
         // java.sql.Timestamp 类型的参数
-        put(java.sql.Timestamp.class, (Function<String[], java.sql.Timestamp[]>) value -> //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
+        put(java.sql.Timestamp.class, (Function<String[], java.sql.Timestamp[]>) values -> //
+                Stream.ofNullable(values).flatMap(Stream::of).map(text -> {
                     try {
                         DateTimeFormatter format = ofPattern(dateTimeFormat);
                         LocalDateTime date = LocalDateTime.parse(text, format);
@@ -157,26 +173,30 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
                 }).toArray(java.sql.Timestamp[]::new));
 
         // java.sql.Date 类型的参数
-        put(java.sql.Date.class, (Function<String[], java.sql.Date[]>) value ->  //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateFormat);
-                        LocalDate date = LocalDate.parse(text, format);
-                        return java.sql.Date.valueOf(date);
-                    } catch (DateTimeParseException ignored) {}
-                    return null;
-                }).toArray(java.sql.Date[]::new));
+        put(java.sql.Date.class, (Function<String[], java.sql.Date[]>) values ->  //
+                Stream.ofNullable(values).flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
+                        .map(text -> {
+                            try {
+                                DateTimeFormatter format = ofPattern(dateFormat);
+                                LocalDate date = LocalDate.parse(text, format);
+                                return java.sql.Date.valueOf(date);
+                            } catch (DateTimeParseException ignored) {}
+                            return null;
+                        }).toArray(java.sql.Date[]::new));
 
         // java.sql.Time 类型的参数
-        put(java.sql.Time.class, (Function<String[], java.sql.Time[]>) value -> //
-                Stream.ofNullable(value).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(timeFormat);
-                        LocalTime time = LocalTime.parse(text, format);
-                        return java.sql.Time.valueOf(time);
-                    } catch (DateTimeParseException ignored) {}
-                    return null;
-                }).toArray(java.sql.Time[]::new));
+        put(java.sql.Time.class, (Function<String[], java.sql.Time[]>) values -> //
+                Stream.ofNullable(values).flatMap(Stream::of)
+                        .filter(value -> !value.isBlank())
+                        .map(text -> {
+                            try {
+                                DateTimeFormatter format = ofPattern(timeFormat);
+                                LocalTime time = LocalTime.parse(text, format);
+                                return java.sql.Time.valueOf(time);
+                            } catch (DateTimeParseException ignored) {}
+                            return null;
+                        }).toArray(java.sql.Time[]::new));
     }};
 
     private String dateTimeFormat = "yyyy-MM-dd HH[:mm[:ss]]";

@@ -111,7 +111,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         // 找出当前 URI 对应的 ActionProxy 对象
         Map<Action.Method, ActionProxy> proxyMap = configure.getActionProxy(uri);
         if (java.util.Objects.isNull(proxyMap)) {
-            LOGGER.info("Not Found %s" + uri);
+            LOGGER.info("Not Found: " + uri);
             response.sendError(SC_NOT_FOUND);
             return;
         }

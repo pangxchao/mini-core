@@ -10,6 +10,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 @Named
 @Singleton
@@ -39,13 +42,17 @@ public class ArgumentResolverPagingDefault extends ArgumentResolverPaging {
 
     @Override
     protected int getPageValue(ActionInvocation invocation) {
-        String page = getParamValue("page", invocation);
-        return NumberUtils.toInt(page);
+        return ofNullable(getParamValue("page", invocation))
+                .filter(v -> !v.isBlank())
+                .map(NumberUtils::toInt)
+                .orElse(0);
     }
 
     @Override
     protected int getLimitValue(ActionInvocation invocation) {
-        String limit = getParamValue("limit", invocation);
-        return NumberUtils.toInt(limit);
+        return ofNullable(getParamValue("limit", invocation))
+                .filter(v -> !v.isBlank())
+                .map(NumberUtils::toInt)
+                .orElse(0);
     }
 }
