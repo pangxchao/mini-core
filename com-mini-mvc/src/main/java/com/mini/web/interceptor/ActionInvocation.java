@@ -2,7 +2,7 @@ package com.mini.web.interceptor;
 
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.model.IModel;
-import com.mini.web.util.LoginSession;
+import com.mini.web.util.WebSession;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import static com.mini.web.util.LoginSession.SESSION_KEY;
+import static com.mini.web.util.WebSession.SESSION_KEY;
 
 public interface ActionInvocation {
 
@@ -120,7 +120,7 @@ public interface ActionInvocation {
      * @param clazz 实现类型
      * @return 登录 Session
      */
-    default <T extends LoginSession> T getLoginSession(Class<T> clazz) {
+    default <T extends WebSession> T getLoginSession(Class<T> clazz) {
         return clazz.cast(getSession().getAttribute(SESSION_KEY));
     }
 
@@ -128,7 +128,7 @@ public interface ActionInvocation {
      * 设置登录Session
      * @param session 登录Session
      */
-    default <T extends LoginSession> void setLoginSession(T session) {
+    default <T extends WebSession> void setLoginSession(T session) {
         getSession().setAttribute(SESSION_KEY, session);
     }
 }
