@@ -120,7 +120,7 @@ public interface ActionInvocation {
      * @param clazz 实现类型
      * @return 登录 Session
      */
-    default <T extends WebSession> T getLoginSession(Class<T> clazz) {
+    default <T extends WebSession> T getWebSession(Class<T> clazz) {
         return clazz.cast(getSession().getAttribute(SESSION_KEY));
     }
 
@@ -128,7 +128,7 @@ public interface ActionInvocation {
      * 设置登录Session
      * @param session 登录Session
      */
-    default <T extends WebSession> void setLoginSession(T session) {
+    default <T extends WebSession> void setWebSession(T session) {
         getSession().setAttribute(SESSION_KEY, session);
     }
 }
