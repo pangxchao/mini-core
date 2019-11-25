@@ -29,7 +29,7 @@ public final class Configure {
     private final List<ActionInterceptor> globalInterceptors = new ArrayList<>();
     private final Map<HttpServlet, ServletElement> servlets = new HashMap<>();
     private final Set<ArgumentResolver> argumentResolvers = new HashSet<>();
-    private final List<ExceptionHandler<?>> handlerList = new ArrayList<>();
+    private final List<ExceptionHandler> handlerList = new ArrayList<>();
     private final Map<Filter, FilterElement> filters = new HashMap<>();
     private final Set<EventListener> listeners = new HashSet<>();
     private final MappingMap mappingMap = new MappingMap();
@@ -485,6 +485,7 @@ public final class Configure {
      */
     public final Configure registerExceptionHandler(Class<? extends ExceptionHandler> handler) {
         handlerList.add(Objects.requireNonNull(injector.getInstance(handler)));
+        handlerList.sort(comparingInt(ExceptionHandler::handlerOnExecute));
         return this;
     }
 
@@ -493,8 +494,7 @@ public final class Configure {
      * @return 异常处理器列表
      */
     @Nonnull
-    public final List<ExceptionHandler<?>> getExceptionHandlerList() {
-        handlerList.sort(comparingInt(ExceptionHandler::handlerOnExecute));
+    public final List<ExceptionHandler> getExceptionHandlerList() {
         return this.handlerList;
     }
 

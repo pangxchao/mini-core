@@ -14,7 +14,9 @@ import com.mini.web.annotation.Action;
 import com.mini.web.annotation.Before;
 import com.mini.web.annotation.Clear;
 import com.mini.web.annotation.Controller;
-import com.mini.web.argument.*;
+import com.mini.web.argument.ArgumentResolverContext;
+import com.mini.web.argument.ArgumentResolverModel;
+import com.mini.web.argument.ArgumentResolverSession;
 import com.mini.web.argument.defaults.*;
 import com.mini.web.argument.paging.ArgumentResolverPagingDefault;
 import com.mini.web.argument.paging.ArgumentResolverPagingRequestParam;
@@ -353,15 +355,10 @@ public abstract class WebMvcConfigure implements Module {
 
     // 配置默认参数解析器
     private void registerArgumentResolver(Configure configure) {
-        // Servlet 容器支持相关参数
-        configure.addArgumentResolvers(ArgumentResolverServletContext.class);
-        configure.addArgumentResolvers(ArgumentResolverHttpResponse.class);
-        configure.addArgumentResolvers(ArgumentResolverHttpSession.class);
-        configure.addArgumentResolvers(ArgumentResolverHttpRequest.class);
-
-        // 数据模型渲染、登录Session相关参数
+        // Servlet容器、数据模型渲染、登录Session相关参数
+        configure.addArgumentResolvers(ArgumentResolverContext.class);
         configure.addArgumentResolvers(ArgumentResolverModel.class);
-        configure.addArgumentResolvers(ArgumentResolverLoginSession.class);
+        configure.addArgumentResolvers(ArgumentResolverSession.class);
 
         // 默认方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
         configure.addArgumentResolvers(ArgumentResolverBasicDefault.class);

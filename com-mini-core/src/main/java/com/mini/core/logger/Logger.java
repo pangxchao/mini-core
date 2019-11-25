@@ -1,18 +1,27 @@
 package com.mini.core.logger;
 
+import javax.annotation.Nonnull;
+
 public interface Logger {
 
     /**
-     * 获取输出日志级别
+     * 设置日志级别
+     * @param level 日志级别
+     */
+    void setLevel(@Nonnull Level level);
+
+    /**
+     * 获取日志级别
      * @return 日志级别
      */
-    Level getLevel();
+    @Nonnull
+    public Level getLevel();
 
     /**
      * 是否可以输出错误日志
      * @return true - 是
      */
-    boolean isVerboseEnabled();
+    boolean isTraceEnabled();
 
     /**
      * 是否可以输出错误日志
@@ -39,23 +48,29 @@ public interface Logger {
     boolean isErrorEnabled();
 
     /**
+     * 是否可以输出严重错误的日志
+     * @return true - 是
+     */
+    boolean isFatalEnabled();
+
+    /**
      * 输出详细信息日志
      * @param message 日志内容
      */
-    void verbose(Object message);
+    void trace(Object message);
 
     /**
      * 输出详细信息日志
      * @param throwable 异常信息
      */
-    void verbose(Throwable throwable);
+    void trace(Throwable throwable);
 
     /**
      * 输出详细信息日志
      * @param message   日志内容
      * @param throwable 异常信息
      */
-    void verbose(Object message, Throwable throwable);
+    void trace(Object message, Throwable throwable);
 
     /**
      * 输出调试日志
@@ -132,4 +147,23 @@ public interface Logger {
      * @param throwable 异常信息
      */
     void error(Object message, Throwable throwable);
+
+    /**
+     * 输出严重错误日志
+     * @param message 日志内容
+     */
+    void fatal(Object message);
+
+    /**
+     * 输出严重错误日志
+     * @param throwable 异常信息
+     */
+    void fatal(Throwable throwable);
+
+    /**
+     * 输出严重错误日志
+     * @param message   日志内容
+     * @param throwable 异常信息
+     */
+    void fatal(Object message, Throwable throwable);
 }

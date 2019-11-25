@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import static com.mini.core.logger.LoggerFactory.getLogger;
 
 @Singleton
-public final class ExceptionHandlerDefault implements ExceptionHandler<Throwable> {
+public final class ExceptionHandlerDefault implements ExceptionHandler {
     private static final Logger LOGGER = getLogger(ExceptionHandlerDefault.class);
 
     @Override
@@ -20,8 +20,8 @@ public final class ExceptionHandlerDefault implements ExceptionHandler<Throwable
     }
 
     @Override
-    public Class<Throwable> getExceptionClass() {
-        return Throwable.class;
+    public boolean supportException(Throwable exception) {
+        return true;
     }
 
     @Override

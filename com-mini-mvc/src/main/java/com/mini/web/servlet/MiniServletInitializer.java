@@ -31,7 +31,6 @@ import static java.util.EnumSet.copyOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
-
 @Singleton
 @HandlesTypes(WebMvcConfigure.class)
 @AutoService(ServletContainerInitializer.class)

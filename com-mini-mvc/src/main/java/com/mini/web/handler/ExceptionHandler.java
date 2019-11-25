@@ -9,10 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 全局异常处理器
  * <P>该处理器在Action和拦截器执行之后，Model提交方法之前</P>
- * @param <T> 异常类型
  * @author xchao
  */
-public interface ExceptionHandler<T extends Throwable> extends ResponseCode {
+public interface ExceptionHandler extends ResponseCode {
     /**
      * 该值所有处理器中不能重复
      * <P>配置该值时，不能小于"0"</P>
@@ -22,10 +21,11 @@ public interface ExceptionHandler<T extends Throwable> extends ResponseCode {
     int handlerOnExecute();
 
     /**
-     * 获取异常的超类类型
-     * @return 异常超类类型
+     * 根据异常信息判断该处理器是否支持处理该异常
+     * @param throwable 异常信息
+     * @return true-支持
      */
-    Class<T> getExceptionClass();
+    boolean supportException(Throwable throwable);
 
     /**
      * 全局异常处理方法

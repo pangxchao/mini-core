@@ -8,7 +8,6 @@ import com.mini.core.util.matcher.PathMatcherAnt;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
 import com.mini.web.config.Configure;
-import com.mini.web.handler.ExceptionHandler;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocation;
 import com.mini.web.interceptor.ActionProxy;
@@ -31,7 +30,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static com.mini.core.logger.LoggerFactory.getLogger;
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.of;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
@@ -223,8 +221,11 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
                 @Override
                 public synchronized final Object invoke() throws Throwable {
                     try {
-                        if (iterator.hasNext()) iterator.next().invoke(this);
-                        return getMethod().invoke(instance, getParameterValues());
+                        if (iterator.hasNext()) {
+                            return iterator.next().invoke(this);
+                        }
+                        Object[] values = getParameterValues();
+                        return getMethod().invoke(instance, values);
                     } catch (InvocationTargetException ex) {
                         throw ex.getTargetException();
                     }
@@ -234,18 +235,16 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             // 调用目标方法
             action.invoke();
         } catch (Throwable exception) {
-            Throwable e = exception, el = null;
-            for (ExceptionHandler<?> handler : configure.getExceptionHandlerList()) {
-                e = getCauseByThrowable(e, handler.getExceptionClass());
-                ofNullable(e).ifPresent(ex -> handler.handler( //
-                        model, ex, request, response));
-                el = exception;
-            }
-            // 没有找到指定的异常处理
-            if (Objects.isNull(el)) {
-                model.setStatus(INTERNAL_SERVER_ERROR);
-                model.setMessage("Service Error!");
-                LOGGER.error(exception);
+            //  默认错误码和错误信息
+            model.setStatus(INTERNAL_SERVER_ERROR);
+            model.setMessage("Service Error!");
+            handler_each:
+            for (var handler : configure.getExceptionHandlerList()) {
+                for (var e = exception; e != null; e = e.getCause()) {
+                    if (!handler.supportException(e)) continue;
+                    handler.handler(model, e, request, response);
+                    break handler_each;
+                }
             }
         }
 
@@ -254,13 +253,6 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         } catch (Exception | Error exception) {
             LOGGER.error(exception);
         }
-    }
-
-    private <T> T getCauseByThrowable(Throwable exception, Class<T> exType) {
-        if (exception != null && exType.isAssignableFrom(exception.getClass())) {
-            return getCauseByThrowable(exception.getCause(), exType);
-        }
-        return null;
     }
 
     /**

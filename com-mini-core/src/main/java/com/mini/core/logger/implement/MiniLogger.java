@@ -3,76 +3,83 @@ package com.mini.core.logger.implement;
 import com.mini.core.logger.Level;
 import com.mini.core.logger.Logger;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import javax.annotation.Nonnull;
 import java.util.Date;
+import java.util.EventListener;
 
+import static com.mini.core.logger.Level.*;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.time.DateFormatUtils.format;
 
 /**
  * 自定义日志实现
  * @author XChao
  */
-public final class MiniLogger implements Logger {
-    private static final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
+public final class MiniLogger implements Logger, EventListener {
     private Level level;
 
-    public MiniLogger(Level level) {
+    public MiniLogger(@Nonnull Level level) {
         this.level = level;
     }
 
-    public MiniLogger setLevel(Level level) {
+    @Override
+    public final void setLevel(@Nonnull Level level) {
         this.level = level;
-        return this;
+    }
+
+    @Nonnull
+    @Override
+    public final Level getLevel() {
+        return level;
+    }
+
+    private boolean isLevelEnabled(Level lev) {
+        return level.value() <= lev.value();
     }
 
     @Override
-    public Level getLevel() {
-        if (level != null) {
-            return level;
-        }
-        return Level.DEBUG;
-    }
-
-    @Override
-    public boolean isVerboseEnabled() {
-        return this.getLevel().getValue() >= Level.VERBOSE.getValue();
+    public boolean isTraceEnabled() {
+        return isLevelEnabled(TRACE);
     }
 
     @Override
     public boolean isDebugEnabled() {
-        return this.getLevel().getValue() >= Level.DEBUG.getValue();
+        return isLevelEnabled(DEBUG);
     }
 
     @Override
     public boolean isInfoEnabled() {
-        return this.getLevel().getValue() >= Level.INFO.getValue();
+        return isLevelEnabled(INFO);
     }
 
     @Override
     public boolean isWarnEnabled() {
-        return this.getLevel().getValue() >= Level.WARN.getValue();
+        return isLevelEnabled(WARN);
     }
 
     @Override
     public boolean isErrorEnabled() {
-        return this.getLevel().getValue() >= Level.ERROR.getValue();
+        return isLevelEnabled(ERROR);
     }
 
     @Override
-    public void verbose(Object message) {
-        this.verbose(message, null);
+    public boolean isFatalEnabled() {
+        return isLevelEnabled(ERROR);
     }
 
     @Override
-    public void verbose(Throwable throwable) {
-        this.verbose(null, throwable);
+    public void trace(Object message) {
+        this.trace(message, null);
     }
 
     @Override
-    public void verbose(Object message, Throwable throwable) {
-        log(Level.VERBOSE, message, throwable);
+    public void trace(Throwable throwable) {
+        this.trace(null, throwable);
+    }
+
+    @Override
+    public void trace(Object message, Throwable throwable) {
+        log(TRACE, message, throwable);
     }
 
     @Override
@@ -87,7 +94,7 @@ public final class MiniLogger implements Logger {
 
     @Override
     public void debug(Object message, Throwable throwable) {
-        log(Level.DEBUG, message, throwable);
+        log(DEBUG, message, throwable);
     }
 
     @Override
@@ -102,7 +109,7 @@ public final class MiniLogger implements Logger {
 
     @Override
     public void info(Object message, Throwable throwable) {
-        log(Level.INFO, message, throwable);
+        log(INFO, message, throwable);
     }
 
     @Override
@@ -117,7 +124,7 @@ public final class MiniLogger implements Logger {
 
     @Override
     public void warn(Object message, Throwable throwable) {
-        log(Level.WARN, message, throwable);
+        log(WARN, message, throwable);
     }
 
     @Override
@@ -132,35 +139,50 @@ public final class MiniLogger implements Logger {
 
     @Override
     public void error(Object message, Throwable throwable) {
-        log(Level.ERROR, message, throwable);
+        log(ERROR, message, throwable);
+    }
+
+    @Override
+    public void fatal(Object message) {
+        this.fatal(message, null);
+    }
+
+    @Override
+    public void fatal(Throwable throwable) {
+        this.fatal(null, throwable);
+    }
+
+    @Override
+    public void fatal(Object message, Throwable throwable) {
+        log(FATAL, message, throwable);
     }
 
     private void log(Level level, Object message, Throwable e) {
-        if (level.getValue() >= getLevel().getValue()) {
-            StringBuilder builder = new StringBuilder();
-            // 日志时间和日志级别
-            builder.append(format.format(new Date()));
-            builder.append(" ").append(level.name()).append(" ");
+        if (!isLevelEnabled(level)) return;
+        // 生成日志信息
+        StringBuilder builder = new StringBuilder();
+        // 日志时间和日志级别
+        String FORMAT_STR = "yyyy-MM-dd HH:mm:ss.SSS";
+        builder.append(format(new Date(), FORMAT_STR));
+        builder.append(" ").append(level.name()).append(" ");
 
-            // 日志堆栈位置
-            for (StackTraceElement element : new Throwable().getStackTrace()) {
-                if (!element.getClassName().equals(MiniLogger.class.getName())) {
-                    builder.append("[");
-                    builder.append(element.getClassName());
-                    builder.append(".");
-                    builder.append(element.getMethodName());
-                    builder.append(" line:");
-                    builder.append(element.getLineNumber());
-                    builder.append("]");
-                    break;
-                }
+        // 日志堆栈位置
+        for (StackTraceElement element : new Throwable().getStackTrace()) {
+            if (!element.getClassName().equals(MiniLogger.class.getName())) {
+                builder.append("[");
+                builder.append(element.getClassName());
+                builder.append(".");
+                builder.append(element.getMethodName());
+                builder.append(" line:");
+                builder.append(element.getLineNumber());
+                builder.append("]");
+                break;
             }
-            // 消息内容
-            message = defaultIfNull(message, "");
-            builder.append(" ").append(message);
-            System.out.println(builder.toString());
-            if (e != null) e.printStackTrace(System.out);
         }
+        // 消息内容
+        message = defaultIfNull(message, "");
+        builder.append(" ").append(message);
+        System.out.println(builder.toString());
+        if (e != null) e.printStackTrace(System.out);
     }
-
 }

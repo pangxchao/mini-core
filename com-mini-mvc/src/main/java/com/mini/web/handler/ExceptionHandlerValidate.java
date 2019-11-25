@@ -8,15 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Singleton
-public final class ExceptionHandlerValidate implements ExceptionHandler<ValidateException> {
+public final class ExceptionHandlerValidate implements ExceptionHandler {
     @Override
     public int handlerOnExecute() {
         return 0;
     }
 
     @Override
-    public Class<ValidateException> getExceptionClass() {
-        return ValidateException.class;
+    public boolean supportException(Throwable throwable) {
+        return throwable instanceof ValidateException;
     }
 
     @Override

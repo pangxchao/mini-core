@@ -5,23 +5,14 @@ package com.mini.core.logger;
  * @author xchao
  */
 public enum Level {
-    VERBOSE(1), DEBUG(2), INFO(3), WARN(4), ERROR(5);
-
+    ALL(0), TRACE(1), DEBUG(2), INFO(3), WARN(4), ERROR(5), FATAL(6), OFF(7);
     private int value;
 
     Level(int value) {
         this.value = value;
     }
 
-    public int getValue() {
-        return this.value;
-    }
-
-    public static Level valueOf(int value) {
-        if (value == 1) return VERBOSE;
-        if (value == 2) return DEBUG;
-        if (value == 3) return INFO;
-        if (value == 4) return WARN;
-        return ERROR;
+    public int value() {
+        return value;
     }
 }
