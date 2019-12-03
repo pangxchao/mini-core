@@ -3,8 +3,6 @@ package com.mini.web.argument.defaults;
 import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.argument.ArgumentResolver;
-import com.mini.web.argument.annotation.RequestParam;
-import com.mini.web.argument.annotation.RequestUri;
 import com.mini.web.interceptor.ActionInvocation;
 
 import javax.inject.Named;
@@ -26,7 +24,7 @@ public final class ArgumentResolverMapDefault implements ArgumentResolver {
                 return false;
             }
         }
-        if(Map.class != parameter.getType()) {
+        if (Map.class != parameter.getType()) {
             return false;
         }
         Type type = parameter.getParameterizedType();

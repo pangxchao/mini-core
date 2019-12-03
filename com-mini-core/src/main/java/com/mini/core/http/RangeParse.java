@@ -47,7 +47,6 @@ public final class RangeParse {
         this.reader = reader;
     }
 
-    @SuppressWarnings("DuplicatedCode")
     private boolean skipConstant(String constant) throws IOException {
         int length = constant.length();
         this.reader.mark(length);
@@ -70,7 +69,6 @@ public final class RangeParse {
     }
 
     @Nonnull
-    @SuppressWarnings({"DuplicatedCode"})
     private String readNumber() throws IOException {
         StringBuilder result = new StringBuilder();
         this.reader.mark(1);
@@ -84,7 +82,6 @@ public final class RangeParse {
         return result.toString();
     }
 
-    @SuppressWarnings("DuplicatedCode")
     private void skipBlankCharacter() throws IOException {
         this.reader.mark(1);
         int c = reader.read(); // 32, 9, 10, 13
@@ -96,7 +93,6 @@ public final class RangeParse {
     }
 
     // 解析Range数据
-    @SuppressWarnings("DuplicatedCode")
     public static List<Range> parseRange(@Nonnull String rangeText) throws IOException {
         // 读取器
         StringReader reader = new StringReader(rangeText);

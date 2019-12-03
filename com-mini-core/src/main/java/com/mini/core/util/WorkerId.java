@@ -6,7 +6,6 @@ import java.util.EventListener;
 import static java.lang.System.currentTimeMillis;
 import static org.apache.commons.lang3.Validate.isTrue;
 
-@SuppressWarnings("WeakerAccess")
 public final class WorkerId implements Serializable, EventListener {
     private static final long serialVersionUID = 27599062740655580L;
     // 2016-01-01 08:00:00+8:00, 2016-01-01 00:00:00+0:00
@@ -22,13 +21,11 @@ public final class WorkerId implements Serializable, EventListener {
     // 集群编号
     private long workerId;
 
-    @SuppressWarnings("WeakerAccess")
     public WorkerId(long workerId) {
         isTrue(workerId <= MAX_WORK);
         this.workerId = workerId;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public final synchronized long nextId() {
         long now = System.currentTimeMillis();
         while (sequence > MAX_SEQUENCE) {
@@ -48,7 +45,6 @@ public final class WorkerId implements Serializable, EventListener {
      * @param id 主键
      * @return 时间戳
      */
-    @SuppressWarnings("WeakerAccess")
     public static long millis(long id) {
         return (id >> 22) + BASE_TIME;
     }

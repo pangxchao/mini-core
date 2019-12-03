@@ -16,7 +16,7 @@ import static org.apache.commons.lang3.StringUtils.*;
  * 数据模型渲染器模板
  * @author xchao
  */
-public abstract class IModel<T extends IModel> implements Serializable, ResponseCode {
+public abstract class IModel<T extends IModel<T>> implements Serializable, ResponseCode {
     private static final long serialVersionUID = -8709093093109721059L;
     private static final String URL_REGEX = "http(s)?://([\\s\\S])+";
     private String contentType, viewPath, message;

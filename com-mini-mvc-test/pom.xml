@@ -72,7 +72,7 @@
             <version>4.0.6</version>
         </dependency>
 
-        <!-- servlet api -->
+        <!-- Servlet api -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

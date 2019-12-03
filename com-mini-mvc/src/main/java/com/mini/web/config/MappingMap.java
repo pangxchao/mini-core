@@ -25,6 +25,7 @@ public final class MappingMap implements Serializable, EventListener {
     Map<String, Map<Method, ActionProxy>> mapping = new ConcurrentHashMap<>();
     private static final Logger logger = getLogger(Configure.class);
     private final PathMatcher matcher = new PathMatcherAnt();
+    private static final long serialVersionUID = 1L;
 
     public final Map<Method, ActionProxy> get(@Nonnull String requestUri) {
         String uri = StringUtil.strip(requestUri.strip(), "/");
@@ -48,9 +49,8 @@ public final class MappingMap implements Serializable, EventListener {
             // 获取两个对象的交集，如果交集不为空，则表示有冲突，打印异常信息
             for (Action.Method method : proxy.getSupportMethod()) {
                 if (map.get(method) != null) {
-                    logger.error(format("The url '%s' already exists \n%s \n%s ", //
-                            key, map.values(), proxy.getMethod()));
-                    return;
+                    throw new RuntimeException(format("The url '%s' already exists \n%s \n%s ", //
+                            key, map.get(method).getMethod(), proxy.getMethod()));
                 }
                 map.put(method, proxy);
             }

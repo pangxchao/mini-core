@@ -10,7 +10,7 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import static javax.crypto.Mac.getInstance;
 
-public abstract class BaseMac extends SecurityBase {
+public abstract class BaseMac extends SecurityBase<BaseMac> {
     private final String algorithm;
     private final Mac mac;
 

@@ -6,16 +6,13 @@ public final class ValidateUtil {
     // *: 0 次或者多次, +: 一次或者多次, ?: 0次或者1次, {n}:刚刚n次, {n,m}: n到m次
     // \d: [0-9], \D: [^0-9], \w:[a-zA-Z_0-9], \W:[^a-zA-Z_0-9], \s: [\t\n\r\f], \S: [^\t\n\r\f]
     public static final String PHONE = "((010|02[0-9]|0[3-9]{2,3})[-])?[0-9]{6,8}";
-    @SuppressWarnings("WeakerAccess")
     public static final String ID_CARD = "\\d{15}(\\d{2}[A-Za-z0-9])?";
     public static final String EMAIL = "\\S+[@]\\S+[.]\\S+";
-    @SuppressWarnings("WeakerAccess")
     public static final String CHINESE = "[\u4E00-\u9FA5]+";
 
     public static final String REQUIRE = "[a-z_][a-z0-9_]*";
     public static final String MOBILE = "1\\d{10}";
     public static final String NUMBER = "\\d+";
-    @SuppressWarnings("WeakerAccess")
     public static final String LETTER = "\\w+";
 
     /**
@@ -52,7 +49,6 @@ public final class ValidateUtil {
      * @param error   错误码
      * @param message 错误消息
      */
-    @SuppressWarnings("WeakerAccess")
     public static void isRegex(String string, String regex, int error, String message) {
         is(string != null && string.matches(regex), error, message);
     }

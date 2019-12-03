@@ -3,8 +3,6 @@ package com.mini.web.argument.defaults;
 import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.argument.ArgumentResolverBasic;
-import com.mini.web.argument.annotation.RequestParam;
-import com.mini.web.argument.annotation.RequestUri;
 import com.mini.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;

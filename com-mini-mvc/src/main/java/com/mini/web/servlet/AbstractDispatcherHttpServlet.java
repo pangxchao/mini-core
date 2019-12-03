@@ -41,6 +41,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 public abstract class AbstractDispatcherHttpServlet extends HttpServlet implements ResponseCode {
     private static final Logger LOGGER = getLogger(MiniServletInitializer.class);
     private static final PathMatcher matcher = new PathMatcherAnt();
+    private static final long serialVersionUID = 1L;
     private Configure configure;
     private Injector injector;
 

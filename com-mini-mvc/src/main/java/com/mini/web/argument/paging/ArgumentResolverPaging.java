@@ -5,9 +5,6 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.argument.ArgumentResolver;
 import com.mini.web.interceptor.ActionInvocation;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 public abstract class ArgumentResolverPaging implements ArgumentResolver {
 
     @Override

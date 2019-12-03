@@ -17,6 +17,7 @@ import static java.util.Optional.ofNullable;
 public class JsonModel extends IModel<JsonModel> implements Serializable {
     private final Map<String, Object> map = new HashMap<>();
     private final List<Object> list = new ArrayList<>();
+    private static final long serialVersionUID = 1L;
     private static final String TYPE = "text/plain";
     private Object data = map;
 

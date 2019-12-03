@@ -9,18 +9,14 @@ import static java.util.Calendar.MILLISECOND;
 
 public class DateUtil extends DateUtils {
     // 一秒的时间戳
-    @SuppressWarnings("WeakerAccess")
     public static final long SECOND = 1000;
     // 一分钟的时间戳
-    @SuppressWarnings("WeakerAccess")
     public static final long MINUTE = SECOND * 60;
     // 一小时的时间戳
-    @SuppressWarnings("WeakerAccess")
     public static final long HOUR = MINUTE * 60;
     // 一天的时间戳
     public static final long DAY = HOUR * 24;
     // 一周的时间戳
-    @SuppressWarnings("unused")
     public static final long WEEK = DAY * 7;
 
     /**
@@ -114,7 +110,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 日历
      */
-    @SuppressWarnings("WeakerAccess")
     public static Calendar createCalendar(long date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date);
@@ -126,7 +121,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfDay(Calendar date) {
         date.set(Calendar.HOUR_OF_DAY, date.getActualMinimum(Calendar.HOUR_OF_DAY));
         date.set(Calendar.MINUTE, date.getActualMinimum(Calendar.MINUTE));
@@ -140,7 +134,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfDay(Date date) {
         return getStartOfDay(createCalendar(date));
     }
@@ -150,7 +143,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfDay(long date) {
         return getStartOfDay(createCalendar(date));
     }
@@ -160,7 +152,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("DuplicatedCode")
     public static Date getEndOfDay(Calendar date) {
         date.set(Calendar.HOUR_OF_DAY, date.getActualMaximum(Calendar.HOUR_OF_DAY));
         date.set(Calendar.MINUTE, date.getActualMaximum(Calendar.MINUTE));
@@ -224,7 +215,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfDay(Calendar date, int offset) {
         date.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH) + offset);
         date.set(Calendar.HOUR_OF_DAY, date.getActualMinimum(Calendar.HOUR_OF_DAY));
@@ -240,7 +230,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfDay(Date date, int offset) {
         return getStartOfDay(createCalendar(date), offset);
     }
@@ -251,7 +240,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfDay(long date, int offset) {
         return getStartOfDay(createCalendar(date), offset);
     }
@@ -262,7 +250,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("DuplicatedCode")
     public static Date getEndOfDay(Calendar date, int offset) {
         date.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH) + offset);
         date.set(Calendar.HOUR_OF_DAY, date.getActualMaximum(Calendar.HOUR_OF_DAY));
@@ -297,7 +284,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfWeek(Calendar date) {
         date.set(Calendar.DAY_OF_WEEK, date.getActualMinimum(Calendar.DAY_OF_WEEK));
         date.set(Calendar.HOUR_OF_DAY, date.getActualMinimum(Calendar.HOUR_OF_DAY));
@@ -312,7 +298,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfWeek(Date date) {
         return getStartOfWeek(createCalendar(date));
     }
@@ -322,7 +307,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("WeakerAccess")
     public static Date getStartOfWeek(long date) {
         return getStartOfWeek(createCalendar(date));
     }
@@ -332,7 +316,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getEndOfWeek(Calendar date) {
         date.set(Calendar.DAY_OF_WEEK, date.getActualMaximum(Calendar.DAY_OF_WEEK));
         date.set(Calendar.HOUR_OF_DAY, date.getActualMaximum(Calendar.HOUR_OF_DAY));
@@ -347,7 +330,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfWeek(Date date) {
         return getEndOfWeek(createCalendar(date));
     }
@@ -357,7 +339,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("WeakerAccess")
     public static Date getEndOfWeek(long date) {
         return getEndOfWeek(createCalendar(date));
     }
@@ -368,7 +349,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("WeakerAccess")
     public static Date getDateOfWeek(Calendar date, int offset) {
         date.set(Calendar.WEEK_OF_YEAR, date.get(Calendar.WEEK_OF_YEAR) + offset);
         return date.getTime();
@@ -380,7 +360,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getDateOfWeek(Date date, int offset) {
         return getDateOfWeek(createCalendar(date), offset);
     }
@@ -391,7 +370,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getDateOfWeek(long date, int offset) {
         return getDateOfWeek(createCalendar(date), offset);
     }
@@ -402,7 +380,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfWeek(Calendar date, int offset) {
         date.set(Calendar.WEEK_OF_YEAR, date.get(Calendar.WEEK_OF_YEAR) + offset);
         date.set(Calendar.DAY_OF_WEEK, date.getActualMinimum(Calendar.DAY_OF_WEEK));
@@ -419,7 +396,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfWeek(Date date, int offset) {
         return getStartOfWeek(createCalendar(date), offset);
     }
@@ -430,7 +406,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfWeek(long date, int offset) {
         return getStartOfWeek(createCalendar(date), offset);
     }
@@ -441,7 +416,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getEndOfWeek(Calendar date, int offset) {
         date.set(Calendar.WEEK_OF_YEAR, date.get(Calendar.WEEK_OF_YEAR) + offset);
         date.set(Calendar.DAY_OF_WEEK, date.getActualMaximum(Calendar.DAY_OF_WEEK));
@@ -458,7 +432,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfWeek(Date date, int offset) {
         return getEndOfWeek(createCalendar(date), offset);
     }
@@ -469,7 +442,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfWeek(long date, int offset) {
         return getEndOfWeek(createCalendar(date), offset);
     }
@@ -479,7 +451,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfMonth(Calendar date) {
         date.set(Calendar.DAY_OF_MONTH, date.getActualMinimum(Calendar.DAY_OF_MONTH));
         date.set(Calendar.HOUR_OF_DAY, date.getActualMinimum(Calendar.HOUR_OF_DAY));
@@ -494,7 +465,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfMonth(Date date) {
         return getStartOfMonth(createCalendar(date));
     }
@@ -504,7 +474,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfMonth(long date) {
         return getStartOfMonth(createCalendar(date));
     }
@@ -514,7 +483,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getEndOfMonth(Calendar date) {
         date.set(Calendar.DAY_OF_MONTH, date.getActualMaximum(Calendar.DAY_OF_MONTH));
         date.set(Calendar.HOUR_OF_DAY, date.getActualMaximum(Calendar.HOUR_OF_DAY));
@@ -529,7 +497,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfMonth(Date date) {
         return getEndOfMonth(createCalendar(date));
     }
@@ -539,7 +506,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfMonth(long date) {
         return getEndOfMonth(createCalendar(date));
     }
@@ -581,7 +547,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfMonth(Calendar date, int offset) {
         date.set(Calendar.MONTH, date.get(Calendar.MONTH) + offset);
         date.set(Calendar.DAY_OF_MONTH, date.getActualMinimum(Calendar.DAY_OF_MONTH));
@@ -598,7 +563,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfMonth(Date date, int offset) {
         return getStartOfMonth(createCalendar(date), offset);
     }
@@ -609,7 +573,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfMonth(long date, int offset) {
         return getStartOfMonth(createCalendar(date), offset);
     }
@@ -620,7 +583,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getEndOfMonth(Calendar date, int offset) {
         date.set(Calendar.MONTH, date.get(Calendar.MONTH) + offset);
         date.set(Calendar.DAY_OF_MONTH, date.getActualMaximum(Calendar.DAY_OF_MONTH));
@@ -637,7 +599,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfMonth(Date date, int offset) {
         return getEndOfMonth(createCalendar(date), offset);
     }
@@ -648,7 +609,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfMonth(long date, int offset) {
         return getEndOfMonth(createCalendar(date), offset);
     }
@@ -658,7 +618,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfYear(Calendar date) {
         date.set(Calendar.MONTH, date.getActualMinimum(Calendar.MONTH));
         date.set(Calendar.DAY_OF_MONTH, date.getActualMinimum(Calendar.DAY_OF_MONTH));
@@ -674,7 +633,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfYear(Date date) {
         return getStartOfYear(createCalendar(date));
     }
@@ -684,7 +642,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfYear(long date) {
         return getStartOfYear(createCalendar(date));
     }
@@ -694,7 +651,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getEndOfYear(Calendar date) {
         date.set(Calendar.MONTH, date.getActualMaximum(Calendar.MONTH));
         date.set(Calendar.DAY_OF_MONTH, date.getActualMaximum(Calendar.DAY_OF_MONTH));
@@ -710,7 +666,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfYear(Date date) {
         return getEndOfYear(createCalendar(date));
     }
@@ -720,7 +675,6 @@ public class DateUtil extends DateUtils {
      * @param date 指定日期
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfYear(long date) {
         return getEndOfYear(createCalendar(date));
     }
@@ -731,7 +685,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("WeakerAccess")
     public static Date getDateOfYear(Calendar date, int offset) {
         date.set(Calendar.YEAR, date.get(Calendar.YEAR) + offset);
         return date.getTime();
@@ -743,7 +696,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getDateOfYear(Date date, int offset) {
         return getDateOfYear(createCalendar(date), offset);
     }
@@ -754,7 +706,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getDateOfYear(long date, int offset) {
         return getDateOfYear(createCalendar(date), offset);
     }
@@ -765,7 +716,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getStartOfYear(Calendar date, int offset) {
         date.set(Calendar.YEAR, date.get(Calendar.YEAR) + offset);
         date.set(Calendar.MONTH, date.getActualMinimum(Calendar.MONTH));
@@ -783,7 +733,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfYear(Date date, int offset) {
         return getStartOfYear(createCalendar(date), offset);
     }
@@ -794,7 +743,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getStartOfYear(long date, int offset) {
         return getStartOfYear(createCalendar(date), offset);
     }
@@ -805,7 +753,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings({"WeakerAccess", "DuplicatedCode"})
     public static Date getEndOfYear(Calendar date, int offset) {
         date.set(Calendar.YEAR, date.get(Calendar.YEAR) + offset);
         date.set(Calendar.MONTH, date.getActualMaximum(Calendar.MONTH));
@@ -823,7 +770,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfYear(Date date, int offset) {
         return getEndOfYear(createCalendar(date), offset);
     }
@@ -834,7 +780,6 @@ public class DateUtil extends DateUtils {
      * @param offset 偏移量
      * @return 计算结果
      */
-    @SuppressWarnings("unused")
     public static Date getEndOfYear(long date, int offset) {
         return getEndOfYear(createCalendar(date), offset);
     }

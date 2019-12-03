@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public final class FilterElement implements EventListener, Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<DispatcherType> dispatcherTypes = new ArrayList<>();
     private final Set<String> urlPatterns = new HashSet<>();
     private boolean matchAfter = true;

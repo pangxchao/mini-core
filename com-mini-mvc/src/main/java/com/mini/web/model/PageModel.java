@@ -17,6 +17,7 @@ import java.util.Map;
  */
 public class PageModel extends IModel<PageModel> implements Serializable {
     private final Map<String, Object> data = new HashMap<>();
+    private static final long serialVersionUID = 1L;
     private static final String TYPE = "text/html";
     private final IView view;
 

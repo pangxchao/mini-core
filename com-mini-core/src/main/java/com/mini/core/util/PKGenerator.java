@@ -22,7 +22,6 @@ public final class PKGenerator {
         PKGenerator.workId = workId;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public static synchronized long nextId() {
         if (PKGenerator.workerId == null) {
             workerId = new WorkerId(workId);
@@ -62,7 +61,6 @@ public final class PKGenerator {
      * @param bound 最大限制
      * @return 随机数
      */
-    @SuppressWarnings("WeakerAccess")
     public static int nextInt(int bound) {
         return RANDOM.nextInt(bound);
     }
@@ -71,7 +69,6 @@ public final class PKGenerator {
      * 获取一个随机字符
      * @return 随机数
      */
-    @SuppressWarnings("WeakerAccess")
     public static char nextNum() {
         return DIGITS[nextInt(10)];
     }
@@ -80,7 +77,6 @@ public final class PKGenerator {
      * 获取一个随机字符
      * @return 随机字符
      */
-    @SuppressWarnings("WeakerAccess")
     public static char nextChar() {
         int length = DIGITS.length;
         return DIGITS[nextInt(length)];

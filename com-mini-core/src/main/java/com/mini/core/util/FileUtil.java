@@ -17,7 +17,6 @@ public final class FileUtil {
      * @param file 文件对象
      * @return 文件对象
      */
-    @SuppressWarnings("unused")
     public static File distinct(File file) {
         return distinct(file, true);
     }
@@ -27,7 +26,6 @@ public final class FileUtil {
      * @param filePath 文件路径
      * @return 文件对象
      */
-    @SuppressWarnings("unused")
     public static File distinct(String filePath) {
         return distinct(filePath, true);
 
@@ -49,7 +47,6 @@ public final class FileUtil {
      * @param isDistinct true-去重
      * @return 文件对象
      */
-    @SuppressWarnings("WeakerAccess")
     public static File distinct(String path, boolean isDistinct) {
         File file = new File(path), p = file.getParentFile();
         String nameWithoutExt = getNameWithoutExt(path);
@@ -68,8 +65,8 @@ public final class FileUtil {
      * @param file 文件对象
      * @return 文件名称(不包括扩展名)
      */
-    @SuppressWarnings("WeakerAccess")
     public static String getNameWithoutExt(File file) {
+        //noinspection UnstableApiUsage
         return getNameWithoutExtension(file.getName());
     }
 
@@ -78,8 +75,8 @@ public final class FileUtil {
      * @param file 文件路径
      * @return 文件名称(不包括扩展名)
      */
-    @SuppressWarnings("WeakerAccess")
     public static String getNameWithoutExt(String file) {
+        //noinspection UnstableApiUsage
         return getNameWithoutExtension(file);
     }
 
@@ -88,7 +85,6 @@ public final class FileUtil {
      * @param file 文件路径
      * @return 文件名称(不包括扩展名)
      */
-    @SuppressWarnings("unused")
     public static String getNameWithoutExt(Path file) {
         return getNameWithoutExt(file.toFile());
     }
@@ -184,7 +180,6 @@ public final class FileUtil {
      * @param fileLength 文件大小
      * @return 格式化结果
      */
-    @SuppressWarnings("unused")
     public static String getShowFileSize(long fileLength) {
         double length;
         if ((length = fileLength) < 1024) {

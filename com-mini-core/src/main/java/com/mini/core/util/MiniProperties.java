@@ -34,7 +34,6 @@ public class MiniProperties extends Properties {
      * @param inStream 输入流
      * @return {# this}
      */
-    @SuppressWarnings("WeakerAccess")
     public synchronized MiniProperties miniLoad(InputStream inStream) {
         try {
             super.load(inStream);
@@ -50,7 +49,6 @@ public class MiniProperties extends Properties {
      * @param value 属性值
      * @return {# this}
      */
-    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public synchronized MiniProperties setPropertyIfAbsent(String key, String value) {
         this.putIfAbsent(key, value);
         return this;

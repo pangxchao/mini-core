@@ -5,6 +5,7 @@ import java.io.Serializable;
 import static java.lang.Math.min;
 
 public class Size implements Serializable {
+    private static final long serialVersionUID = 1L;
     public double width, height;
 
     public Size(double width, double height) {
@@ -44,7 +45,6 @@ public class Size implements Serializable {
      * @param width 最大宽度
      * @return 返回尺寸
      */
-    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public Size resizeByWidth(double width) {
         return set(width, width * height / this.width);
     }
@@ -54,7 +54,6 @@ public class Size implements Serializable {
      * @param height 最大高度
      * @return 返回尺寸
      */
-    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public Size resizeByHeight(double height) {
         return set(height * width / this.height, height);
     }

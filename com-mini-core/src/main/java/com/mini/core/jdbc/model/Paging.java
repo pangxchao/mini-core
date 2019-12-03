@@ -5,6 +5,7 @@ import java.io.Serializable;
 import static java.lang.Math.max;
 
 public final class Paging implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int page, limit, total;
 
     public Paging() {

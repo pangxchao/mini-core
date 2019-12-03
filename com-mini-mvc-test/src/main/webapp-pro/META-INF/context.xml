@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Context>
 <Context reloadable="true" sessionCookiePath="/">
     <Resource name="mini_test" auth="Container" type="javax.sql.DataSource" maxTotal="5" maxIdle="2" maxWaitMillis="10000" username="root"
               password="Qwe123456!" driverClassName="com.mysql.jdbc.Driver" testWhileIdle="true" validationQuery="select 1"

@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Singleton
-@SuppressWarnings("unused")
 public class JspView implements IView, Serializable {
     private static final long serialVersionUID = -1L;
 
@@ -21,9 +20,9 @@ public class JspView implements IView, Serializable {
     @Named("mini.mvc.view.suffix")
     private String suffix;
 
-
     @Override
-    public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         String view = prefix + viewPath + suffix;
         data.forEach(request::setAttribute);
         forward(view, request, response);

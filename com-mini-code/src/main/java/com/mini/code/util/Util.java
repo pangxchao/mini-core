@@ -12,6 +12,7 @@ import static com.mini.core.util.StringUtil.firstUpperCase;
 
 public final class Util {
     public static class FieldInfo implements Serializable {
+        private static final long serialVersionUID = 1L;
         private Class<?> typeClass;
         private boolean nonUnique;
         private String columnName;
@@ -122,6 +123,7 @@ public final class Util {
     }
 
     public static class KeyIndexInfo implements Serializable, EventListener {
+        private static final long serialVersionUID = 1L;
         private final List<FieldInfo> children = new ArrayList<>();
         private boolean nonUnique;
         private String keyName;
@@ -139,32 +141,36 @@ public final class Util {
         }
     }
 
-    private static final Map<String, Class<?>> TYPES = new HashMap<>() {{
-        put("MEDIUMTEXT", String.class);
-        put("VARCHAR", String.class);
-        put("CHAR", String.class);
-        put("BINARY", String.class);
-        put("TEXT", String.class);
+    private static final Map<String, Class<?>> TYPES = new HashMap<>() {
+        private static final long serialVersionUID = 1L;
 
-        put("BIGINT", long.class);
-        put("INT", int.class);
-        put("SMALLINT", int.class);
-        put("TINYINT", int.class);
+        {
+            put("MEDIUMTEXT", String.class);
+            put("VARCHAR", String.class);
+            put("CHAR", String.class);
+            put("BINARY", String.class);
+            put("TEXT", String.class);
 
-        put("BOOL", boolean.class);
-        put("BOOLEAN", boolean.class);
+            put("BIGINT", long.class);
+            put("INT", int.class);
+            put("SMALLINT", int.class);
+            put("TINYINT", int.class);
 
-        put("DOUBLE", double.class);
-        put("FLOAT", float.class);
-        put("DECIMAL", double.class);
+            put("BOOL", boolean.class);
+            put("BOOLEAN", boolean.class);
 
-        put("TIME", java.sql.Time.class);
-        put("DATE", java.util.Date.class);
-        put("DATETIME", java.util.Date.class);
-        put("TIMESTAMP", java.util.Date.class);
+            put("DOUBLE", double.class);
+            put("FLOAT", float.class);
+            put("DECIMAL", double.class);
 
-        put("BLOB", Blob.class);
-    }};
+            put("TIME", java.sql.Time.class);
+            put("DATE", java.util.Date.class);
+            put("DATETIME", java.util.Date.class);
+            put("TIMESTAMP", java.util.Date.class);
+
+            put("BLOB", Blob.class);
+        }
+    };
 
     /**
      * Gets the value of REGEX.
@@ -228,7 +234,6 @@ public final class Util {
                     String auto = rs.getString("IS_AUTOINCREMENT");
                     info.auto = "YES".equalsIgnoreCase(auto);
 
-
                     // 字段是否可以为 Null
                     String nullable = rs.getString("IS_NULLABLE");
                     info.nullable = "YES".equalsIgnoreCase(nullable);
@@ -262,7 +267,6 @@ public final class Util {
                     // 是否为自增字段 YES/NO
                     String auto = rs.getString("IS_AUTOINCREMENT");
                     info.auto = "YES".equalsIgnoreCase(auto);
-
 
                     // 字段是否可以为 Null
                     String nullable = rs.getString("IS_NULLABLE");

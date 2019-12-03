@@ -45,7 +45,7 @@ public final class Configure {
     private String fileSizeThreshold = "4096";  // 上传文件缓冲区大小
     private String maxRequestSize = "-1";  // 上传文件总大小限制
     private String maxFileSize = "-1";  // 上传文件单个文件大小限制
-    private String location = "temp"; // 上传文件临时路径
+    private String location = "/temp"; // 上传文件临时路径
 
     // 默认日期时间格式配置
     private String dateTimeFormat = "yyyy-MM-dd HH[:mm[:ss]]";

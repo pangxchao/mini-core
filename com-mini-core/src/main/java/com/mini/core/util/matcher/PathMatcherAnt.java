@@ -48,7 +48,8 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 
     /**
      * Set the path separator to use for pattern parsing.
-     * <p>Default is "/", as in Ant.
+     * <p>
+     * Default is "/", as in Ant.
      */
     public void setPathSeparator(@Nullable String pathSeparator) {
         this.pathSeparator             = (pathSeparator != null ? pathSeparator : DEFAULT_PATH_SEPARATOR);
@@ -57,7 +58,8 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 
     /**
      * Specify whether to perform pattern matching in a case-sensitive fashion.
-     * <p>Default is {@code true}. Switch this to {@code false} for case-insensitive matching.
+     * <p>
+     * Default is {@code true}. Switch this to {@code false} for case-insensitive matching.
      * @since 4.2
      */
     public void setCaseSensitive(boolean caseSensitive) {
@@ -67,9 +69,10 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
     /**
      * Specify whether to cache parsed pattern metadata for patterns passed into this matcher's {@link #match} method. A value of {@code
      * true} activates an unlimited pattern cache; a value of {@code false} turns the pattern cache off completely.
-     * <p>Default is for the cache to be on, but with the variant to automatically
-     * turn it off when encountering too many patterns to cache at runtime (the threshold is 65536), assuming that arbitrary permutations of
-     * patterns are coming in, with little chance for encountering a recurring pattern.
+     * <p>
+     * Default is for the cache to be on, but with the variant to automatically turn it off when encountering too many patterns to cache at
+     * runtime (the threshold is 65536), assuming that arbitrary permutations of patterns are coming in, with little chance for encountering
+     * a recurring pattern.
      * @see #getStringMatcher(String)
      * @since 4.0.1
      */
@@ -82,7 +85,6 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
         this.tokenizedPatternCache.clear();
         this.stringMatcherCache.clear();
     }
-
 
     @Override
     public boolean isPattern(@Nullable String path) {
@@ -300,8 +302,9 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 
     /**
      * Tokenize the given path pattern into parts, based on this matcher's settings.
-     * <p>Performs caching based on {@link #setCachePatterns}, delegating to
-     * {@link #tokenizePath(String)} for the actual tokenization algorithm.
+     * <p>
+     * Performs caching based on {@link #setCachePatterns}, delegating to {@link #tokenizePath(String)} for the actual tokenization
+     * algorithm.
      * @param pattern the pattern to tokenize
      * @return the tokenized pattern parts
      */
@@ -343,20 +346,20 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
      * @return {@code true} if the string matches against the pattern, or {@code false} otherwise
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean matchStrings(String pattern, String str,
-            @Nullable Map<String, String> uriTemplateVariables) {
-
+    private boolean matchStrings(String pattern, String str, @Nullable Map<String, String> uriTemplateVariables) {
         return getStringMatcher(pattern).matchStrings(str, uriTemplateVariables);
     }
 
     /**
      * Build or retrieve an {@link AntPathStringMatcher} for the given pattern.
-     * <p>The default implementation checks this AntPathMatcher's internal cache
-     * (see {@link #setCachePatterns}), creating a new AntPathStringMatcher instance if no cached copy is found.
-     * <p>When encountering too many patterns to cache at runtime (the threshold is 65536),
-     * it turns the default cache off, assuming that arbitrary permutations of patterns are coming in, with little chance for encountering a
-     * recurring pattern.
-     * <p>This method may be overridden to implement a custom cache strategy.
+     * <p>
+     * The default implementation checks this AntPathMatcher's internal cache (see {@link #setCachePatterns}), creating a new
+     * AntPathStringMatcher instance if no cached copy is found.
+     * <p>
+     * When encountering too many patterns to cache at runtime (the threshold is 65536), it turns the default cache off, assuming that
+     * arbitrary permutations of patterns are coming in, with little chance for encountering a recurring pattern.
+     * <p>
+     * This method may be overridden to implement a custom cache strategy.
      * @param pattern the pattern to match against (never {@code null})
      * @return a corresponding AntPathStringMatcher (never {@code null})
      * @see #setCachePatterns
@@ -384,16 +387,22 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
     }
 
     /**
-     * Given a pattern and a full path, determine the pattern-mapped part. <p>For example: <ul>
+     * Given a pattern and a full path, determine the pattern-mapped part.
+     * <p>
+     * For example:
+     * <ul>
      * <li>'{@code /docs/cvs/commit.html}' and '{@code /docs/cvs/commit.html} -> ''</li>
      * <li>'{@code /docs/*}' and '{@code /docs/cvs/commit} -> '{@code cvs/commit}'</li>
      * <li>'{@code /docs/cvs/*.html}' and '{@code /docs/cvs/commit.html} -> '{@code commit.html}'</li>
      * <li>'{@code /docs/**}' and '{@code /docs/cvs/commit} -> '{@code cvs/commit}'</li>
-     * <li>'{@code /docs/**\/*.html}' and '{@code /docs/cvs/commit.html} -> '{@code cvs/commit.html}'</li>
+     * <li>'{@code /docs/**\/*.html}' and '{@code /docs/cvs/commit.html} ->
+     * '{@code cvs/commit.html}'</li>
      * <li>'{@code /*.html}' and '{@code /docs/cvs/commit.html} -> '{@code docs/cvs/commit.html}'</li>
      * <li>'{@code *.html}' and '{@code /docs/cvs/commit.html} -> '{@code /docs/cvs/commit.html}'</li>
-     * <li>'{@code *}' and '{@code /docs/cvs/commit.html} -> '{@code /docs/cvs/commit.html}'</li> </ul>
-     * <p>Assumes that {@link #match} returns {@code true} for '{@code pattern}' and '{@code path}', but
+     * <li>'{@code *}' and '{@code /docs/cvs/commit.html} -> '{@code /docs/cvs/commit.html}'</li>
+     * </ul>
+     * <p>
+     * Assumes that {@link #match} returns {@code true} for '{@code pattern}' and '{@code path}', but
      * does <strong>not</strong> enforce this.
      */
     @Override
@@ -431,25 +440,82 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 
     /**
      * Combine two patterns into a new pattern.
-     * <p>This implementation simply concatenates the two patterns, unless
-     * the first pattern contains a file extension match (e.g., {@code *.html}). In that case, the second pattern will be merged into the
-     * first. Otherwise, an {@code IllegalArgumentException} will be thrown.
+     * <p>
+     * This implementation simply concatenates the two patterns, unless the first pattern contains a file extension match (e.g., {@code
+     * *.html}). In that case, the second pattern will be merged into the first. Otherwise, an {@code IllegalArgumentException} will be
+     * thrown.
      * <h3>Examples</h3>
      * <table border="1">
-     * <tr><th>Pattern 1</th><th>Pattern 2</th><th>Result</th></tr>
-     * <tr><td>{@code null}</td><td>{@code null}</td><td>&nbsp;</td></tr>
-     * <tr><td>/hotels</td><td>{@code null}</td><td>/hotels</td></tr>
-     * <tr><td>{@code null}</td><td>/hotels</td><td>/hotels</td></tr>
-     * <tr><td>/hotels</td><td>/bookings</td><td>/hotels/bookings</td></tr>
-     * <tr><td>/hotels</td><td>bookings</td><td>/hotels/bookings</td></tr>
-     * <tr><td>/hotels/*</td><td>/bookings</td><td>/hotels/bookings</td></tr>
-     * <tr><td>/hotels/&#42;&#42;</td><td>/bookings</td><td>/hotels/&#42;&#42;/bookings</td></tr>
-     * <tr><td>/hotels</td><td>{hotel}</td><td>/hotels/{hotel}</td></tr>
-     * <tr><td>/hotels/*</td><td>{hotel}</td><td>/hotels/{hotel}</td></tr>
-     * <tr><td>/hotels/&#42;&#42;</td><td>{hotel}</td><td>/hotels/&#42;&#42;/{hotel}</td></tr>
-     * <tr><td>/*.html</td><td>/hotels.html</td><td>/hotels.html</td></tr>
-     * <tr><td>/*.html</td><td>/hotels</td><td>/hotels.html</td></tr>
-     * <tr><td>/*.html</td><td>/*.txt</td><td>{@code IllegalArgumentException}</td></tr>
+     * <tr>
+     * <th>Pattern 1</th>
+     * <th>Pattern 2</th>
+     * <th>Result</th>
+     * </tr>
+     * <tr>
+     * <td>{@code null}</td>
+     * <td>{@code null}</td>
+     * <td>&nbsp;</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels</td>
+     * <td>{@code null}</td>
+     * <td>/hotels</td>
+     * </tr>
+     * <tr>
+     * <td>{@code null}</td>
+     * <td>/hotels</td>
+     * <td>/hotels</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels</td>
+     * <td>/bookings</td>
+     * <td>/hotels/bookings</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels</td>
+     * <td>bookings</td>
+     * <td>/hotels/bookings</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels/*</td>
+     * <td>/bookings</td>
+     * <td>/hotels/bookings</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels/&#42;&#42;</td>
+     * <td>/bookings</td>
+     * <td>/hotels/&#42;&#42;/bookings</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels</td>
+     * <td>{hotel}</td>
+     * <td>/hotels/{hotel}</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels/*</td>
+     * <td>{hotel}</td>
+     * <td>/hotels/{hotel}</td>
+     * </tr>
+     * <tr>
+     * <td>/hotels/&#42;&#42;</td>
+     * <td>{hotel}</td>
+     * <td>/hotels/&#42;&#42;/{hotel}</td>
+     * </tr>
+     * <tr>
+     * <td>/*.html</td>
+     * <td>/hotels.html</td>
+     * <td>/hotels.html</td>
+     * </tr>
+     * <tr>
+     * <td>/*.html</td>
+     * <td>/hotels</td>
+     * <td>/hotels.html</td>
+     * </tr>
+     * <tr>
+     * <td>/*.html</td>
+     * <td>/*.txt</td>
+     * <td>{@code IllegalArgumentException}</td>
+     * </tr>
      * </table>
      * @param pattern1 the first pattern
      * @param pattern2 the second pattern
@@ -521,16 +587,18 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 
     /**
      * Given a full path, returns a {@link Comparator} suitable for sorting patterns in order of explicitness.
-     * <p>This{@code Comparator} will {@linkplain java.util.List#sort(Comparator) sort}
-     * a list so that more specific patterns (without uri templates or wild cards) come before generic patterns. So given a list with the
-     * following patterns:
+     * <p>
+     * This{@code Comparator} will {@linkplain java.util.List#sort(Comparator) sort} a list so that more specific patterns (without uri
+     * templates or wild cards) come before generic patterns. So given a list with the following patterns:
      * <ol>
      * <li>{@code /hotels/new}</li>
-     * <li>{@code /hotels/{hotel}}</li> <li>{@code /hotels/*}</li>
+     * <li>{@code /hotels/{hotel}}</li>
+     * <li>{@code /hotels/*}</li>
      * </ol>
      * the returned comparator will sort this list so that the order will be as indicated.
-     * <p>The full path given as parameter is used to test for exact matches. So when the given path
-     * is {@code /hotels/2}, the pattern {@code /hotels/2} will be sorted before {@code /hotels/1}.
+     * <p>
+     * The full path given as parameter is used to test for exact matches. So when the given path is
+     * {@code /hotels/2}, the pattern {@code /hotels/2} will be sorted before {@code /hotels/1}.
      * @param path the full path to use for comparison
      * @return a comparator capable of sorting patterns in order of explicitness
      */
@@ -539,11 +607,12 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
         return new AntPatternComparator(path);
     }
 
-
     /**
      * Tests whether or not a string matches against a pattern via a {@link Pattern}.
-     * <p>The pattern may contain special characters: '*' means zero or more characters; '?' means one and
-     * only one character; '{' and '}' indicate a URI template pattern. For example <tt>/users/{user}</tt>.
+     * <p>
+     * The pattern may contain special characters: '*' means zero or more characters; '?' means one and only one character; '{' and '}'
+     * indicate a URI template pattern. For example
+     * <tt>/users/{user}</tt>.
      */
     protected static class AntPathStringMatcher {
 
@@ -588,8 +657,8 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
                 end = matcher.end();
             }
             patternBuilder.append(quote(pattern, end, pattern.length()));
-            this.pattern = (caseSensitive ? Pattern.compile(patternBuilder.toString()) :
-                    Pattern.compile(patternBuilder.toString(), Pattern.CASE_INSENSITIVE));
+            this.pattern = (caseSensitive ? Pattern.compile(patternBuilder.toString())
+                    : Pattern.compile(patternBuilder.toString(), Pattern.CASE_INSENSITIVE));
         }
 
         private String quote(String s, int start, int end) {
@@ -609,10 +678,10 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
                 if (uriTemplateVariables != null) {
                     // SPR-8455
                     if (this.variableNames.size() != matcher.groupCount()) {
-                        throw new IllegalArgumentException("The number of capturing groups in the pattern segment " +
-                                this.pattern + " does not match the number of URI template variables it defines, " +
-                                "which can occur if capturing groups are used in a URI template regex. " +
-                                "Use non-capturing groups instead.");
+                        throw new IllegalArgumentException("The number of capturing groups in the pattern segment " + this.pattern
+                                + " does not match the number of URI template variables it defines, "
+                                + "which can occur if capturing groups are used in a URI template regex. "
+                                + "Use non-capturing groups instead.");
                     }
                     for (int i = 1; i <= matcher.groupCount(); i++) {
                         String name = this.variableNames.get(i - 1);
@@ -627,10 +696,10 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
         }
     }
 
-
     /**
      * The default {@link Comparator} implementation returned by {@link #getPatternComparator(String)}.
-     * <p>In order, the most "generic" pattern is determined by the following:
+     * <p>
+     * In order, the most "generic" pattern is determined by the following:
      * <ul>
      * <li>if it's null or a capture all pattern (i.e. it is equal to "/**")</li>
      * <li>if the other pattern is an actual match</li>
@@ -706,7 +775,6 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 
             return 0;
         }
-
 
         /**
          * Value class that holds information about the pattern, e.g. number of occurrences of "*", "**", and "{" pattern elements.
@@ -794,14 +862,12 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
              */
             public int getLength() {
                 if (this.length == null) {
-                    this.length = (this.pattern != null ?
-                            VARIABLE_PATTERN.matcher(this.pattern).replaceAll("#").length() : 0);
+                    this.length = (this.pattern != null ? VARIABLE_PATTERN.matcher(this.pattern).replaceAll("#").length() : 0);
                 }
                 return this.length;
             }
         }
     }
-
 
     /**
      * A simple cache for patterns that depend on the configured path separator.

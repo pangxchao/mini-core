@@ -10,15 +10,13 @@ import static java.security.MessageDigest.getInstance;
  * DigestUtil.java
  * @author xchao
  */
-public abstract class BaseDigest extends SecurityBase {
+public abstract class BaseDigest extends SecurityBase<BaseDigest> {
     private final MessageDigest digest;
 
-    @SuppressWarnings("WeakerAccess")
     protected BaseDigest(MessageDigest digest) {
         this.digest = digest;
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected BaseDigest(String algorithm) throws Exception {
         this(getInstance(algorithm));
     }

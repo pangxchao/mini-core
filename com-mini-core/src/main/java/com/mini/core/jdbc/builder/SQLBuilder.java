@@ -128,7 +128,6 @@ public class SQLBuilder {
         return this;
     }
 
-    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public final SQLBuilder or() {
         if (last != null) {
             last.addOR();
@@ -147,7 +146,6 @@ public class SQLBuilder {
         return this;
     }
 
-    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public final SQLBuilder orderBy(String format, Object... args) {
         orderBy.addValues(format(format, args));
         return this;

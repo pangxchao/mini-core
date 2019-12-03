@@ -19,7 +19,6 @@ public class ClassUtil extends ClassUtils {
      * @return 参数名称名称
      */
     @Nonnull
-    @SuppressWarnings("WeakerAccess")
     public static String[] getParameterNamesByAsm(Method method) {
         ParameterNameDiscoverer d = new ParameterNameDiscovererAsm();
         return d.getParameterNames(method);
@@ -31,7 +30,6 @@ public class ClassUtil extends ClassUtils {
      * @return 参数名称名称
      */
     @Nonnull
-    @SuppressWarnings("WeakerAccess")
     public static String[] getParameterNamesByAsm(Constructor<?> constructor) {
         ParameterNameDiscoverer d = new ParameterNameDiscovererAsm();
         return d.getParameterNames(constructor);
@@ -43,7 +41,6 @@ public class ClassUtil extends ClassUtils {
      * @return 普通方法参数列表
      */
     @Nonnull
-    @SuppressWarnings("DuplicatedCode")
     public static MiniParameter[] getParameterByAsm(Method method) {
         if (method == null) {
             return new MiniParameter[0];
@@ -64,7 +61,6 @@ public class ClassUtil extends ClassUtils {
      * @return 构造方法参数列表
      */
     @Nonnull
-    @SuppressWarnings("DuplicatedCode")
     public static MiniParameter[] getParameterByAsm(Constructor<?> constructor) {
         if (constructor == null) {
             return new MiniParameter[0];
@@ -88,7 +84,6 @@ public class ClassUtil extends ClassUtils {
      * @param packageName 指定包名
      * @param annotation  指定注解
      */
-    @SuppressWarnings("WeakerAccess")
     public static void scanner(Set<Class<?>> set, String packageName, Class<? extends Annotation> annotation) {
         Collections.addAll(set, new ClassScannerJar().scanner(packageName, annotation).toArray(new Class<?>[0]));
         Collections.addAll(set, new ClassScannerPath().scanner(packageName, annotation).toArray(new Class<?>[0]));

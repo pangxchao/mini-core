@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <#--noinspection FtlReferencesInspection-->
     <base href="${request.contextPath}/"/>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>后台管理实体信息-首页</title>
+    <#--noinspection HtmlUnknownTarget-->
     <link type="text/css" rel="stylesheet" href="resource/layui/css/layui.css"/>
+    <#--noinspection HtmlUnknownTarget-->
     <link type="text/css" rel="stylesheet" href="resource/mini/css/mini.css">
+    <#--noinspection HtmlUnknownTarget-->
     <script type="text/javascript" src="resource/layui/layui.js"></script>
+    <#--noinspection HtmlUnknownTarget-->
     <script type="text/javascript" src="resource/mini/mini.js"></script>
     <style type="text/css">
         .layui-form-label {
@@ -36,10 +41,12 @@
             <div class="layui-inline">
                 <label class="layui-form-label mini-form-label">创建时间</label>
                 <div class="layui-input-inline">
+                    <#--noinspection HtmlFormInputWithoutLabel-->
                     <input type="text" name="startTime" class="layui-input" id="startTime" readonly/>
                 </div>
                 <label class="layui-form-mid">-</label>
                 <div class="layui-input-inline ">
+                    <#--noinspection HtmlFormInputWithoutLabel-->
                     <input type="text" name="endTime" class="layui-input" id="endTime" readonly/>
                 </div>
             </div>
@@ -47,16 +54,19 @@
         <div class="layui-form-item">
             <label class="layui-form-label mini-form-label">所属地区</label>
             <div class="layui-input-inline">
+                <#--noinspection HtmlUnknownAttribute,HtmlFormInputWithoutLabel-->
                 <select name="province" id="province" url="mobile/region/list.htm?id=" child="city" placeholder="请选择省">
                     <option value="">请选择省</option>
                 </select>
             </div>
             <div class="layui-input-inline">
+                <#--noinspection HtmlUnknownAttribute,HtmlFormInputWithoutLabel-->
                 <select name="city" id="city" url="mobile/region/list.htm?id=" child="district" placeholder="请选择市">
                     <option value="">请选择市</option>
                 </select>
             </div>
             <div class="layui-input-inline">
+                <#--noinspection HtmlUnknownAttribute,HtmlFormInputWithoutLabel-->
                 <select name="district" id="district" url="mobile/region/list.htm?id=" placeholder="请选择县/区">
                     <option value="">请选择县/区</option>
                 </select>
@@ -67,13 +77,16 @@
         <div class="layui-form-item">
             <label class="layui-form-label mini-form-label">用户类型</label>
             <div class="layui-input-block">
+                <#--noinspection HtmlUnknownAttribute-->
                 <input type="checkbox" name="phone" value="1" title="手机已认证" lay-filter="phone"/>
+                <#--noinspection HtmlUnknownAttribute-->
                 <input type="checkbox" name="email" value="1" title="邮箱已认证" lay-filter="email"/>
             </div>
         </div>
 
         <div class="layui-form-item">
             <div class="layui-input-block mini-input-block">
+                <#--noinspection HtmlUnknownAttribute-->
                 <button class="layui-btn layui-btn-sm" lay-submit lay-filter="searchForm">搜索</button>
                 <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">清空/重置</button>
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" id="myBtn">自定义</button>
@@ -114,7 +127,9 @@
         });
 
         // 添加方法
+        <#--noinspection ES6ConvertVarToLetConst-->
         var isUpload, headUrl, uploadUI;
+        <#--noinspection ES6ConvertVarToLetConst-->
         var insertFunction = function () {
             layui.wind.template('#insertTemplate', {
                 area: ['800px', '800px'],
@@ -183,9 +198,11 @@
         };
 
         // 修改方法
+        <#--noinspection ES6ConvertVarToLetConst-->
         var updateFunction = function (info) {
-            <#--noinspection JSUnresolvedVariable-->
+            <#--noinspection JSUnresolvedVariable,ES6ConvertVarToLetConst-->
             var uris = info.regionIdUri.split(".");
+            <#--noinspection ES6ConvertVarToLetConst-->
             var data = $.extend({}, info, {
                 regionId: uris[2],
                 province: uris[0],
@@ -259,6 +276,7 @@
             });
         };
 
+        <#--noinspection ES6ConvertVarToLetConst-->
         var deleteFunction = function (idList) {
             if (!idList || idList.length <= 0) {
                 layer.alert("未选中数据");
@@ -283,6 +301,7 @@
         };
 
         // form 提交事件(处理数据的搜索)
+        <#--noinspection ES6ConvertVarToLetConst-->
         var initValue = {
             city: "",
             district: "",
@@ -294,6 +313,7 @@
             email: ''
         };
         layui.form.on("submit(searchForm)", function (data) {
+            <#--noinspection ES6ConvertVarToLetConst-->
             var d = $.extend({}, initValue, data.field);
             console.log(d);
             layui.table.reload('test', {
@@ -319,7 +339,9 @@
         // 监听头部工具栏点击事件
         layui.table.on('toolbar(test)', function (obj) {
             // 获取选中的行
+            <#--noinspection ES6ConvertVarToLetConst-->
             var checkStatus = layui.table.checkStatus(obj.config.id);
+            <#--noinspection ES6ConvertVarToLetConst-->
             var data = checkStatus.data;
             console.log(data);
             // 添加按钮
@@ -328,6 +350,7 @@
             }
             // 删除按钮
             else if (obj.event === 'delete') {
+                <#--noinspection ES6ConvertVarToLetConst-->
                 var idList = [], i;
                 for (i = 0; i < data.length; i++) {
                     idList[i] = data[i].id;
@@ -349,6 +372,7 @@
             }
             // 删除按钮点击事件
             else if (obj.event === 'del') {
+                <#--noinspection ES6ConvertVarToLetConst-->
                 var idList = [obj.data.id];
                 deleteFunction(idList);
             }
