@@ -53,6 +53,14 @@ public final class Configures implements EventListener, Serializable {
         return charsetEncoding;
     }
 
+    /**
+     * 设置字符集编码
+     * @param charsetEncoding 字符集编码
+     */
+    public void setCharsetEncoding(String charsetEncoding) {
+        this.charsetEncoding = charsetEncoding;
+    }
+
     @Inject
     @Named("AsyncSupported")
     private boolean asyncSupported;
@@ -63,6 +71,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public boolean isAsyncSupported() {
         return asyncSupported;
+    }
+
+    /**
+     * 是否支持异步处理
+     * @param asyncSupported true-是
+     */
+    public void setAsyncSupported(boolean asyncSupported) {
+        this.asyncSupported = asyncSupported;
     }
 
     @Inject
@@ -77,6 +93,14 @@ public final class Configures implements EventListener, Serializable {
         return defaultMapping;
     }
 
+    /**
+     * 设置默认请求拦截
+     * @param defaultMapping 请求拦截
+     */
+    public void setDefaultMapping(String defaultMapping) {
+        this.defaultMapping = defaultMapping;
+    }
+
     @Inject
     @Named("MultipartEnabled")
     private boolean multipartEnabled;
@@ -87,6 +111,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public boolean isMultipartEnabled() {
         return multipartEnabled;
+    }
+
+    /**
+     * 是否支持文件上传
+     * @param multipartEnabled true-是
+     */
+    public void setMultipartEnabled(boolean multipartEnabled) {
+        this.multipartEnabled = multipartEnabled;
     }
 
     @Inject
@@ -101,6 +133,14 @@ public final class Configures implements EventListener, Serializable {
         return fileSizeThreshold;
     }
 
+    /**
+     * 上传文件缓冲区大小
+     * @param fileSizeThreshold 0-直接写入文件
+     */
+    public void setFileSizeThreshold(int fileSizeThreshold) {
+        this.fileSizeThreshold = fileSizeThreshold;
+    }
+
     @Inject
     @Named("MaxRequestSize")
     private long maxRequestSize;
@@ -111,6 +151,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public long getMaxRequestSize() {
         return maxRequestSize;
+    }
+
+    /**
+     * 上传文件总大小限制
+     * @param maxRequestSize -1 不限制
+     */
+    public void setMaxRequestSize(int maxRequestSize) {
+        this.maxRequestSize = maxRequestSize;
     }
 
     @Inject
@@ -125,6 +173,14 @@ public final class Configures implements EventListener, Serializable {
         return maxFileSize;
     }
 
+    /**
+     * 上传文件单个文件大小限制
+     * @param maxFileSize -1 不限制
+     */
+    public void setMaxFileSize(long maxFileSize) {
+        this.maxFileSize = maxFileSize;
+    }
+
     @Inject
     @Named("LocationPath")
     private String locationPath;
@@ -135,6 +191,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public String getLocationPath() {
         return locationPath;
+    }
+
+    /**
+     * 上传文件临时路径
+     * @param locationPath 上传文件临时路径
+     */
+    public void setLocationPath(String locationPath) {
+        this.locationPath = locationPath;
     }
 
     @Inject
@@ -149,6 +213,14 @@ public final class Configures implements EventListener, Serializable {
         return dateTimeFormat;
     }
 
+    /**
+     * 日期时间格式
+     * @param dateTimeFormat 日期时间格式
+     */
+    public void setDateTimeFormat(String dateTimeFormat) {
+        this.dateTimeFormat = dateTimeFormat;
+    }
+
     @Inject
     @Named("DateFormat")
     private String dateFormat;
@@ -159,6 +231,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    /**
+     * 日期格式
+     * @param dateFormat 日期格式
+     */
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
     }
 
     @Inject
@@ -173,6 +253,14 @@ public final class Configures implements EventListener, Serializable {
         return timeFormat;
     }
 
+    /**
+     * 时间格式
+     * @param timeFormat 时间格式
+     */
+    public void setTimeFormat(String timeFormat) {
+        this.timeFormat = timeFormat;
+    }
+
     @Inject
     @Named("ViewPrefix")
     private String ViewPrefix;
@@ -183,6 +271,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public String getViewPrefix() {
         return ViewPrefix;
+    }
+
+    /**
+     * 视图前缀
+     * @param viewPrefix 视图前缀
+     */
+    public void setViewPrefix(String viewPrefix) {
+        ViewPrefix = viewPrefix;
     }
 
     @Inject
@@ -197,6 +293,14 @@ public final class Configures implements EventListener, Serializable {
         return viewSuffix;
     }
 
+    /**
+     * 视图后缀
+     * @param viewSuffix 视图后缀
+     */
+    public void setViewSuffix(String viewSuffix) {
+        this.viewSuffix = viewSuffix;
+    }
+
     @Inject
     @Named("AccessControlAllowMethods")
     private String accessControlAllowMethods;
@@ -207,6 +311,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public String getAccessControlAllowMethods() {
         return accessControlAllowMethods;
+    }
+
+    /**
+     * 跨域请求方法配置
+     * @param accessControlAllowMethods 跨域请求方法配置
+     */
+    public void setAccessControlAllowMethods(String accessControlAllowMethods) {
+        this.accessControlAllowMethods = accessControlAllowMethods;
     }
 
     @Inject
@@ -222,6 +334,14 @@ public final class Configures implements EventListener, Serializable {
         return accessControlAllowHeaders;
     }
 
+    /**
+     * 跨域请求头设置
+     * @param accessControlAllowHeaders 跨域请求头设置
+     */
+    public void setAccessControlAllowHeaders(String accessControlAllowHeaders) {
+        this.accessControlAllowHeaders = accessControlAllowHeaders;
+    }
+
     @Inject
     @Named("AccessControlAllowOrigin")
     private String accessControlAllowOrigin;
@@ -232,6 +352,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public String getAccessControlAllowOrigin() {
         return accessControlAllowOrigin;
+    }
+
+    /**
+     * 跨域请求域名设置
+     * @param accessControlAllowOrigin 跨域请求域名设置
+     */
+    public void setAccessControlAllowOrigin(String accessControlAllowOrigin) {
+        this.accessControlAllowOrigin = accessControlAllowOrigin;
     }
 
     @Inject
@@ -246,6 +374,14 @@ public final class Configures implements EventListener, Serializable {
         return accessControlMaxAge;
     }
 
+    /**
+     * 跨域超时时间设置
+     * @param accessControlMaxAge 跨域超时时间设置
+     */
+    public void setAccessControlMaxAge(int accessControlMaxAge) {
+        this.accessControlMaxAge = accessControlMaxAge;
+    }
+
     @Inject
     @Named("CacheControl")
     private String cacheControl;
@@ -258,16 +394,32 @@ public final class Configures implements EventListener, Serializable {
         return cacheControl;
     }
 
+    /**
+     * 缓存控制器
+     * @param cacheControl 缓存控制器
+     */
+    public void setCacheControl(String cacheControl) {
+        this.cacheControl = cacheControl;
+    }
+
     @Inject
     @Named("CachePragma")
     private String cachePragma;
 
     /**
-     * 获取缓标注
+     * 获取缓存标注
      * @return 默认为“No-Cache”
      */
     public String getCachePragma() {
         return cachePragma;
+    }
+
+    /**
+     * 缓存标注
+     * @param cachePragma 缓存标注
+     */
+    public void setCachePragma(String cachePragma) {
+        this.cachePragma = cachePragma;
     }
 
     @Inject
@@ -280,6 +432,14 @@ public final class Configures implements EventListener, Serializable {
      */
     public int getCacheExpires() {
         return cacheExpires;
+    }
+
+    /**
+     * 缓存过期时间
+     * @param cacheExpires 缓存过期时间
+     */
+    public void setCacheExpires(int cacheExpires) {
+        this.cacheExpires = cacheExpires;
     }
 
     // 请求映射容器

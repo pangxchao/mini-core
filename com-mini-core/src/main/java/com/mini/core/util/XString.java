@@ -1,727 +1,77 @@
 package com.mini.core.util;
 
-public final class XString extends XAbstract<String> {
+public final class XString extends XAbstract<String, XString> {
     private XString(String value) {
         super(value);
     }
 
+    @Override
+    protected final XString getThis() {
+        return this;
+    }
+
     public final boolean isEmpty() {
-        if (isNull()) return true;
-        return value.isEmpty();
+        if (isNull()) return false;
+        return get().isEmpty();
     }
 
     public final boolean isNotEmpty() {
-        return !this.isEmpty();
+        return !isEmpty();
     }
 
     public final boolean isBlank() {
-        if (isNull()) return true;
-        return value.isBlank();
+        if (isNull()) return false;
+        return get().isBlank();
     }
 
     public final boolean isNotBlank() {
-        return !this.isBlank();
+        return !isBlank();
     }
 
     public final XString trim() {
-        if (this.isNotEmpty()) {
-            value = value.trim();
-        }
-        return this;
+        return map(String::trim);
     }
 
     public final XString strip() {
-        if (this.isNotEmpty()) {
-            value = value.strip();
-        }
+        return map(String::strip);
+    }
+
+    public final XString stripStart() {
+        return map(String::stripLeading);
+    }
+
+    public final XString stripEnd() {
+        return map(String::stripTrailing);
+    }
+
+    public final XString stripStart(String strip) {
+        return map(v -> {
+            while (v.startsWith(strip)) {
+                v = v.substring(strip.length());
+            }
+            return v;
+        });
+    }
+
+    public final XString stripEnd(String strip) {
+        return map(v -> {
+            while (v.endsWith(strip)) {
+                v = v.substring(0, v.length() - strip.length() - 1);
+            }
+            return v;
+        });
+    }
+
+    public final XString strip(String strip) {
+        stripStart(strip);
+        stripEnd(strip);
         return this;
     }
 
+    public final boolean equalsIgnoreCase(String str) {
+        return isNotNull() && get().equalsIgnoreCase(str);
+    }
 
-    //
-    //public static String strip(String str, final String stripChars) {
-    //    if (isEmpty(str)) {
-    //        return str;
-    //    }
-    //    str = stripStart(str, stripChars);
-    //    return stripEnd(str, stripChars);
-    //}
-    //
-    //public static String stripStart(final String str, final String stripChars) {
-    //    int strLen;
-    //    if (str == null || (strLen = str.length()) == 0) {
-    //        return str;
-    //    }
-    //    int start = 0;
-    //    if (stripChars == null) {
-    //        while (start != strLen && Character.isWhitespace(str.charAt(start))) {
-    //            start++;
-    //        }
-    //    } else if (stripChars.isEmpty()) {
-    //        return str;
-    //    } else {
-    //        while (start != strLen && stripChars.indexOf(str.charAt(start)) != INDEX_NOT_FOUND) {
-    //            start++;
-    //        }
-    //    }
-    //    return str.substring(start);
-    //}
-    //
-    ///**
-    // * <p>Strips any of a set of characters from the end of a String.</p>
-    // * <p>A {@code null} input String returns {@code null}.
-    // * An empty string ("") input returns the empty string.</p>
-    // * <p>If the stripChars String is {@code null}, whitespace is
-    // * stripped as defined by {@link Character#isWhitespace(char)}.</p>
-    // * <pre>
-    // * StringUtils.stripEnd(null, *)          = null
-    // * StringUtils.stripEnd("", *)            = ""
-    // * StringUtils.stripEnd("abc", "")        = "abc"
-    // * StringUtils.stripEnd("abc", null)      = "abc"
-    // * StringUtils.stripEnd("  abc", null)    = "  abc"
-    // * StringUtils.stripEnd("abc  ", null)    = "abc"
-    // * StringUtils.stripEnd(" abc ", null)    = " abc"
-    // * StringUtils.stripEnd("  abcyx", "xyz") = "  abc"
-    // * StringUtils.stripEnd("120.00", ".0")   = "12"
-    // * </pre>
-    // * @param str        the String to remove characters from, may be null
-    // * @param stripChars the set of characters to remove, null treated as whitespace
-    // * @return the stripped String, {@code null} if null String input
-    // */
-    //public static String stripEnd(final String str, final String stripChars) {
-    //    int end;
-    //    if (str == null || (end = str.length()) == 0) {
-    //        return str;
-    //    }
-    //
-    //    if (stripChars == null) {
-    //        while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
-    //            end--;
-    //        }
-    //    } else if (stripChars.isEmpty()) {
-    //        return str;
-    //    } else {
-    //        while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
-    //            end--;
-    //        }
-    //    }
-    //    return str.substring(0, end);
-    //}
-    //
-    //// StripAll
-    ////-----------------------------------------------------------------------
-    //
-    ///**
-    // * <p>Strips whitespace from the start and end of every String in an array.
-    // * Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
-    // * <p>A new array is returned each time, except for length zero.
-    // * A {@code null} array will return {@code null}. An empty array will return itself. A {@code null} array entry will be ignored.</p>
-    // * <pre>
-    // * StringUtils.stripAll(null)             = null
-    // * StringUtils.stripAll([])               = []
-    // * StringUtils.stripAll(["abc", "  abc"]) = ["abc", "abc"]
-    // * StringUtils.stripAll(["abc  ", null])  = ["abc", null]
-    // * </pre>
-    // * @param strs the array to remove whitespace from, may be null
-    // * @return the stripped Strings, {@code null} if null array input
-    // */
-    //public static String[] stripAll(final String... strs) {
-    //    return stripAll(strs, null);
-    //}
-    //
-    ///**
-    // * <p>Strips any of a set of characters from the start and end of every
-    // * String in an array.</p>
-    // * <p>Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
-    // * <p>A new array is returned each time, except for length zero.
-    // * A {@code null} array will return {@code null}. An empty array will return itself. A {@code null} array entry will be ignored. A
-    // * {@code null} stripChars will strip whitespace as defined by {@link Character#isWhitespace(char)}.</p>
-    // * <pre>
-    // * StringUtils.stripAll(null, *)                = null
-    // * StringUtils.stripAll([], *)                  = []
-    // * StringUtils.stripAll(["abc", "  abc"], null) = ["abc", "abc"]
-    // * StringUtils.stripAll(["abc  ", null], null)  = ["abc", null]
-    // * StringUtils.stripAll(["abc  ", null], "yz")  = ["abc  ", null]
-    // * StringUtils.stripAll(["yabcz", null], "yz")  = ["abc", null]
-    // * </pre>
-    // * @param strs       the array to remove characters from, may be null
-    // * @param stripChars the characters to remove, null treated as whitespace
-    // * @return the stripped Strings, {@code null} if null array input
-    // */
-    //public static String[] stripAll(final String[] strs, final String stripChars) {
-    //    int strsLen;
-    //    if (strs == null || (strsLen = strs.length) == 0) {
-    //        return strs;
-    //    }
-    //    final String[] newArr = new String[strsLen];
-    //    for (int i = 0; i < strsLen; i++) {
-    //        newArr[i] = strip(strs[i], stripChars);
-    //    }
-    //    return newArr;
-    //}
-    //
-    ///**
-    // * <p>Removes diacritics (~= accents) from a string. The case will not be altered.</p>
-    // * <p>For instance, '&agrave;' will be replaced by 'a'.</p>
-    // * <p>Note that ligatures will be left as is.</p>
-    // * <pre>
-    // * StringUtils.stripAccents(null)                = null
-    // * StringUtils.stripAccents("")                  = ""
-    // * StringUtils.stripAccents("control")           = "control"
-    // * StringUtils.stripAccents("&eacute;clair")     = "eclair"
-    // * </pre>
-    // * @param input String to be stripped
-    // * @return input text with diacritics removed
-    // * @since 3.0
-    // */
-    //// See also Lucene's ASCIIFoldingFilter (Lucene 2.9) that replaces accented characters by their unaccented equivalent (and
-    //// uncommitted bug fix: https://issues.apache.org/jira/browse/LUCENE-1343?focusedCommentId=12858907&page=com.atlassian.jira.plugin
-    //// .system.issuetabpanels%3Acomment-tabpanel#action_12858907).
-    //public static String stripAccents(final String input) {
-    //    if (input == null) {
-    //        return null;
-    //    }
-    //    final Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+"); //$NON-NLS-1$
-    //    final StringBuilder decomposed = new StringBuilder(Normalizer.normalize(input, Normalizer.Form.NFD));
-    //    convertRemainingAccentCharacters(decomposed);
-    //    // Note that this doesn't correctly remove ligatures...
-    //    return pattern.matcher(decomposed).replaceAll(EMPTY);
-    //}
-    //
-    //private static void convertRemainingAccentCharacters(final StringBuilder decomposed) {
-    //    for (int i = 0; i < decomposed.length(); i++) {
-    //        if (decomposed.charAt(i) == '\u0141') {
-    //            decomposed.deleteCharAt(i);
-    //            decomposed.insert(i, 'L');
-    //        } else if (decomposed.charAt(i) == '\u0142') {
-    //            decomposed.deleteCharAt(i);
-    //            decomposed.insert(i, 'l');
-    //        }
-    //    }
-    //}
-    //
-    //// Equals
-    ////-----------------------------------------------------------------------
-    //
-    ///**
-    // * <p>Compares two CharSequences, returning {@code true} if they represent
-    // * equal sequences of characters.</p>
-    // * <p>{@code null}s are handled without exceptions. Two {@code null}
-    // * references are considered to be equal. The comparison is <strong>case sensitive</strong>.</p>
-    // * <pre>
-    // * StringUtils.equals(null, null)   = true
-    // * StringUtils.equals(null, "abc")  = false
-    // * StringUtils.equals("abc", null)  = false
-    // * StringUtils.equals("abc", "abc") = true
-    // * StringUtils.equals("abc", "ABC") = false
-    // * </pre>
-    // * @param cs1 the first CharSequence, may be {@code null}
-    // * @param cs2 the second CharSequence, may be {@code null}
-    // * @return {@code true} if the CharSequences are equal (case-sensitive), or both {@code null}
-    // * @see Object#equals(Object)
-    // * @see #equalsIgnoreCase(CharSequence, CharSequence)
-    // * @since 3.0 Changed signature from equals(String, String) to equals(CharSequence, CharSequence)
-    // */
-    //public static boolean equals(final CharSequence cs1, final CharSequence cs2) {
-    //    if (cs1 == cs2) {
-    //        return true;
-    //    }
-    //    if (cs1 == null || cs2 == null) {
-    //        return false;
-    //    }
-    //    if (cs1.length() != cs2.length()) {
-    //        return false;
-    //    }
-    //    if (cs1 instanceof String && cs2 instanceof String) {
-    //        return cs1.equals(cs2);
-    //    }
-    //    // Step-wise comparison
-    //    final int length = cs1.length();
-    //    for (int i = 0; i < length; i++) {
-    //        if (cs1.charAt(i) != cs2.charAt(i)) {
-    //            return false;
-    //        }
-    //    }
-    //    return true;
-    //}
-    //
-    ///**
-    // * <p>Compares two CharSequences, returning {@code true} if they represent
-    // * equal sequences of characters, ignoring case.</p>
-    // * <p>{@code null}s are handled without exceptions. Two {@code null}
-    // * references are considered equal. The comparison is <strong>case insensitive</strong>.</p>
-    // * <pre>
-    // * StringUtils.equalsIgnoreCase(null, null)   = true
-    // * StringUtils.equalsIgnoreCase(null, "abc")  = false
-    // * StringUtils.equalsIgnoreCase("abc", null)  = false
-    // * StringUtils.equalsIgnoreCase("abc", "abc") = true
-    // * StringUtils.equalsIgnoreCase("abc", "ABC") = true
-    // * </pre>
-    // * @param cs1 the first CharSequence, may be {@code null}
-    // * @param cs2 the second CharSequence, may be {@code null}
-    // * @return {@code true} if the CharSequences are equal (case-insensitive), or both {@code null}
-    // * @see #equals(CharSequence, CharSequence)
-    // * @since 3.0 Changed signature from equalsIgnoreCase(String, String) to equalsIgnoreCase(CharSequence, CharSequence)
-    // */
-    //public static boolean equalsIgnoreCase(final CharSequence cs1, final CharSequence cs2) {
-    //    if (cs1 == cs2) {
-    //        return true;
-    //    }
-    //    if (cs1 == null || cs2 == null) {
-    //        return false;
-    //    }
-    //    if (cs1.length() != cs2.length()) {
-    //        return false;
-    //    }
-    //    return CharSequenceUtils.regionMatches(cs1, true, 0, cs2, 0, cs1.length());
-    //}
-    //
-    //// Compare
-    ////-----------------------------------------------------------------------
-    //
-    ///**
-    // * <p>Compare two Strings lexicographically, as per {@link String#compareTo(String)}, returning :</p>
-    // * <ul>
-    // *  <li>{@code int = 0}, if {@code str1} is equal to {@code str2} (or both {@code null})</li>
-    // *  <li>{@code int < 0}, if {@code str1} is less than {@code str2}</li>
-    // *  <li>{@code int > 0}, if {@code str1} is greater than {@code str2}</li>
-    // * </ul>
-    // * <p>This is a {@code null} safe version of :</p>
-    // * <blockquote><pre>str1.compareTo(str2)</pre></blockquote>
-    // * <p>{@code null} value is considered less than non-{@code null} value.
-    // * Two {@code null} references are considered equal.</p>
-    // * <pre>
-    // * StringUtils.compare(null, null)   = 0
-    // * StringUtils.compare(null , "a")   &lt; 0
-    // * StringUtils.compare("a", null)    &gt; 0
-    // * StringUtils.compare("abc", "abc") = 0
-    // * StringUtils.compare("a", "b")     &lt; 0
-    // * StringUtils.compare("b", "a")     &gt; 0
-    // * StringUtils.compare("a", "B")     &gt; 0
-    // * StringUtils.compare("ab", "abc")  &lt; 0
-    // * </pre>
-    // * @param str1 the String to compare from
-    // * @param str2 the String to compare to
-    // * @return &lt; 0, 0, &gt; 0, if {@code str1} is respectively less, equal or greater than {@code str2}
-    // * @see #compare(String, String, boolean)
-    // * @see String#compareTo(String)
-    // * @since 3.5
-    // */
-    //public static int compare(final String str1, final String str2) {
-    //    return compare(str1, str2, true);
-    //}
-    //
-    ///**
-    // * <p>Compare two Strings lexicographically, as per {@link String#compareTo(String)}, returning :</p>
-    // * <ul>
-    // *  <li>{@code int = 0}, if {@code str1} is equal to {@code str2} (or both {@code null})</li>
-    // *  <li>{@code int < 0}, if {@code str1} is less than {@code str2}</li>
-    // *  <li>{@code int > 0}, if {@code str1} is greater than {@code str2}</li>
-    // * </ul>
-    // * <p>This is a {@code null} safe version of :</p>
-    // * <blockquote><pre>str1.compareTo(str2)</pre></blockquote>
-    // * <p>{@code null} inputs are handled according to the {@code nullIsLess} parameter.
-    // * Two {@code null} references are considered equal.</p>
-    // * <pre>
-    // * StringUtils.compare(null, null, *)     = 0
-    // * StringUtils.compare(null , "a", true)  &lt; 0
-    // * StringUtils.compare(null , "a", false) &gt; 0
-    // * StringUtils.compare("a", null, true)   &gt; 0
-    // * StringUtils.compare("a", null, false)  &lt; 0
-    // * StringUtils.compare("abc", "abc", *)   = 0
-    // * StringUtils.compare("a", "b", *)       &lt; 0
-    // * StringUtils.compare("b", "a", *)       &gt; 0
-    // * StringUtils.compare("a", "B", *)       &gt; 0
-    // * StringUtils.compare("ab", "abc", *)    &lt; 0
-    // * </pre>
-    // * @param str1       the String to compare from
-    // * @param str2       the String to compare to
-    // * @param nullIsLess whether consider {@code null} value less than non-{@code null} value
-    // * @return &lt; 0, 0, &gt; 0, if {@code str1} is respectively less, equal ou greater than {@code str2}
-    // * @see String#compareTo(String)
-    // * @since 3.5
-    // */
-    //public static int compare(final String str1, final String str2, final boolean nullIsLess) {
-    //    if (str1 == str2) {
-    //        return 0;
-    //    }
-    //    if (str1 == null) {
-    //        return nullIsLess ? -1 : 1;
-    //    }
-    //    if (str2 == null) {
-    //        return nullIsLess ? 1 : -1;
-    //    }
-    //    return str1.compareTo(str2);
-    //}
-    //
-    ///**
-    // * <p>Compare two Strings lexicographically, ignoring case differences,
-    // * as per {@link String#compareToIgnoreCase(String)}, returning :</p>
-    // * <ul>
-    // *  <li>{@code int = 0}, if {@code str1} is equal to {@code str2} (or both {@code null})</li>
-    // *  <li>{@code int < 0}, if {@code str1} is less than {@code str2}</li>
-    // *  <li>{@code int > 0}, if {@code str1} is greater than {@code str2}</li>
-    // * </ul>
-    // * <p>This is a {@code null} safe version of :</p>
-    // * <blockquote><pre>str1.compareToIgnoreCase(str2)</pre></blockquote>
-    // * <p>{@code null} value is considered less than non-{@code null} value.
-    // * Two {@code null} references are considered equal.
-    // * Comparison is case insensitive.</p>
-    // * <pre>
-    // * StringUtils.compareIgnoreCase(null, null)   = 0
-    // * StringUtils.compareIgnoreCase(null , "a")   &lt; 0
-    // * StringUtils.compareIgnoreCase("a", null)    &gt; 0
-    // * StringUtils.compareIgnoreCase("abc", "abc") = 0
-    // * StringUtils.compareIgnoreCase("abc", "ABC") = 0
-    // * StringUtils.compareIgnoreCase("a", "b")     &lt; 0
-    // * StringUtils.compareIgnoreCase("b", "a")     &gt; 0
-    // * StringUtils.compareIgnoreCase("a", "B")     &lt; 0
-    // * StringUtils.compareIgnoreCase("A", "b")     &lt; 0
-    // * StringUtils.compareIgnoreCase("ab", "ABC")  &lt; 0
-    // * </pre>
-    // * @param str1 the String to compare from
-    // * @param str2 the String to compare to
-    // * @return &lt; 0, 0, &gt; 0, if {@code str1} is respectively less, equal ou greater than {@code str2}, ignoring case differences.
-    // * @see #compareIgnoreCase(String, String, boolean)
-    // * @see String#compareToIgnoreCase(String)
-    // * @since 3.5
-    // */
-    //public static int compareIgnoreCase(final String str1, final String str2) {
-    //    return compareIgnoreCase(str1, str2, true);
-    //}
-    //
-    ///**
-    // * <p>Compare two Strings lexicographically, ignoring case differences,
-    // * as per {@link String#compareToIgnoreCase(String)}, returning :</p>
-    // * <ul>
-    // *  <li>{@code int = 0}, if {@code str1} is equal to {@code str2} (or both {@code null})</li>
-    // *  <li>{@code int < 0}, if {@code str1} is less than {@code str2}</li>
-    // *  <li>{@code int > 0}, if {@code str1} is greater than {@code str2}</li>
-    // * </ul>
-    // * <p>This is a {@code null} safe version of :</p>
-    // * <blockquote><pre>str1.compareToIgnoreCase(str2)</pre></blockquote>
-    // * <p>{@code null} inputs are handled according to the {@code nullIsLess} parameter.
-    // * Two {@code null} references are considered equal.
-    // * Comparison is case insensitive.</p>
-    // * <pre>
-    // * StringUtils.compareIgnoreCase(null, null, *)     = 0
-    // * StringUtils.compareIgnoreCase(null , "a", true)  &lt; 0
-    // * StringUtils.compareIgnoreCase(null , "a", false) &gt; 0
-    // * StringUtils.compareIgnoreCase("a", null, true)   &gt; 0
-    // * StringUtils.compareIgnoreCase("a", null, false)  &lt; 0
-    // * StringUtils.compareIgnoreCase("abc", "abc", *)   = 0
-    // * StringUtils.compareIgnoreCase("abc", "ABC", *)   = 0
-    // * StringUtils.compareIgnoreCase("a", "b", *)       &lt; 0
-    // * StringUtils.compareIgnoreCase("b", "a", *)       &gt; 0
-    // * StringUtils.compareIgnoreCase("a", "B", *)       &lt; 0
-    // * StringUtils.compareIgnoreCase("A", "b", *)       &lt; 0
-    // * StringUtils.compareIgnoreCase("ab", "abc", *)    &lt; 0
-    // * </pre>
-    // * @param str1       the String to compare from
-    // * @param str2       the String to compare to
-    // * @param nullIsLess whether consider {@code null} value less than non-{@code null} value
-    // * @return &lt; 0, 0, &gt; 0, if {@code str1} is respectively less, equal ou greater than {@code str2}, ignoring case differences.
-    // * @see String#compareToIgnoreCase(String)
-    // * @since 3.5
-    // */
-    //public static int compareIgnoreCase(final String str1, final String str2, final boolean nullIsLess) {
-    //    if (str1 == str2) {
-    //        return 0;
-    //    }
-    //    if (str1 == null) {
-    //        return nullIsLess ? -1 : 1;
-    //    }
-    //    if (str2 == null) {
-    //        return nullIsLess ? 1 : -1;
-    //    }
-    //    return str1.compareToIgnoreCase(str2);
-    //}
-    //
-    ///**
-    // * <p>Compares given <code>string</code> to a CharSequences vararg of <code>searchStrings</code>,
-    // * returning {@code true} if the <code>string</code> is equal to any of the <code>searchStrings</code>.</p>
-    // * <pre>
-    // * StringUtils.equalsAny(null, (CharSequence[]) null) = false
-    // * StringUtils.equalsAny(null, null, null)    = true
-    // * StringUtils.equalsAny(null, "abc", "def")  = false
-    // * StringUtils.equalsAny("abc", null, "def")  = false
-    // * StringUtils.equalsAny("abc", "abc", "def") = true
-    // * StringUtils.equalsAny("abc", "ABC", "DEF") = false
-    // * </pre>
-    // * @param string        to compare, may be {@code null}.
-    // * @param searchStrings a vararg of strings, may be {@code null}.
-    // * @return {@code true} if the string is equal (case-sensitive) to any other element of <code>searchStrings</code>; {@code false} if
-    // * <code>searchStrings</code> is null or contains no matches.
-    // * @since 3.5
-    // */
-    //public static boolean equalsAny(final CharSequence string, final CharSequence... searchStrings) {
-    //    if (ArrayUtils.isNotEmpty(searchStrings)) {
-    //        for (final CharSequence next : searchStrings) {
-    //            if (equals(string, next)) {
-    //                return true;
-    //            }
-    //        }
-    //    }
-    //    return false;
-    //}
-    //
-    //
-    ///**
-    // * <p>Compares given <code>string</code> to a CharSequences vararg of <code>searchStrings</code>,
-    // * returning {@code true} if the <code>string</code> is equal to any of the <code>searchStrings</code>, ignoring case.</p>
-    // * <pre>
-    // * StringUtils.equalsAnyIgnoreCase(null, (CharSequence[]) null) = false
-    // * StringUtils.equalsAnyIgnoreCase(null, null, null)    = true
-    // * StringUtils.equalsAnyIgnoreCase(null, "abc", "def")  = false
-    // * StringUtils.equalsAnyIgnoreCase("abc", null, "def")  = false
-    // * StringUtils.equalsAnyIgnoreCase("abc", "abc", "def") = true
-    // * StringUtils.equalsAnyIgnoreCase("abc", "ABC", "DEF") = true
-    // * </pre>
-    // * @param string        to compare, may be {@code null}.
-    // * @param searchStrings a vararg of strings, may be {@code null}.
-    // * @return {@code true} if the string is equal (case-insensitive) to any other element of <code>searchStrings</code>; {@code false} if
-    // * <code>searchStrings</code> is null or contains no matches.
-    // * @since 3.5
-    // */
-    //public static boolean equalsAnyIgnoreCase(final CharSequence string, final CharSequence... searchStrings) {
-    //    if (ArrayUtils.isNotEmpty(searchStrings)) {
-    //        for (final CharSequence next : searchStrings) {
-    //            if (equalsIgnoreCase(string, next)) {
-    //                return true;
-    //            }
-    //        }
-    //    }
-    //    return false;
-    //}
-    //
-    //// IndexOf
-    ////-----------------------------------------------------------------------
-    //
-    ///**
-    // * Returns the index within <code>seq</code> of the first occurrence of the specified character. If a character with value
-    // * <code>searchChar</code> occurs in the character sequence represented by
-    // * <code>seq</code> <code>CharSequence</code> object, then the index (in Unicode
-    // * code units) of the first such occurrence is returned. For values of <code>searchChar</code> in the range from 0 to 0xFFFF
-    // * (inclusive), this is the smallest value <i>k</i> such that:
-    // * <blockquote><pre>
-    // * this.charAt(<i>k</i>) == searchChar
-    // * </pre></blockquote>
-    // * is true. For other values of <code>searchChar</code>, it is the smallest value <i>k</i> such that:
-    // * <blockquote><pre>
-    // * this.codePointAt(<i>k</i>) == searchChar
-    // * </pre></blockquote>
-    // * is true. In either case, if no such character occurs in <code>seq</code>, then {@code INDEX_NOT_FOUND (-1)} is returned.
-    // * <p>Furthermore, a {@code null} or empty ("") CharSequence will
-    // * return {@code INDEX_NOT_FOUND (-1)}.</p>
-    // * <pre>
-    // * StringUtils.indexOf(null, *)         = -1
-    // * StringUtils.indexOf("", *)           = -1
-    // * StringUtils.indexOf("aabaabaa", 'a') = 0
-    // * StringUtils.indexOf("aabaabaa", 'b') = 2
-    // * </pre>
-    // * @param seq        the CharSequence to check, may be null
-    // * @param searchChar the character to find
-    // * @return the first index of the search character, -1 if no match or {@code null} string input
-    // * @since 2.0
-    // * @since 3.0 Changed signature from indexOf(String, int) to indexOf(CharSequence, int)
-    // * @since 3.6 Updated {@link CharSequenceUtils} call to behave more like <code>String</code>
-    // */
-    //public static int indexOf(final CharSequence seq, final int searchChar) {
-    //    if (isEmpty(seq)) {
-    //        return INDEX_NOT_FOUND;
-    //    }
-    //    return CharSequenceUtils.indexOf(seq, searchChar, 0);
-    //}
-    //
-    ///**
-    // * Returns the index within <code>seq</code> of the first occurrence of the specified character, starting the search at the specified
-    // * index.
-    // * <p>
-    // * If a character with value <code>searchChar</code> occurs in the character sequence represented by the <code>seq</code>
-    // * <code>CharSequence</code> object at an index no smaller than <code>startPos</code>, then the index of the first such occurrence is
-    // * returned. For values of <code>searchChar</code> in the range from 0 to 0xFFFF (inclusive), this is the smallest value <i>k</i> such
-    // * that:
-    // * <blockquote><pre>
-    // * (this.charAt(<i>k</i>) == searchChar) &amp;&amp; (<i>k</i> &gt;= startPos)
-    // * </pre></blockquote>
-    // * is true. For other values of <code>searchChar</code>, it is the smallest value <i>k</i> such that:
-    // * <blockquote><pre>
-    // * (this.codePointAt(<i>k</i>) == searchChar) &amp;&amp; (<i>k</i> &gt;= startPos)
-    // * </pre></blockquote>
-    // * is true. In either case, if no such character occurs in <code>seq</code> at or after position <code>startPos</code>, then
-    // * <code>-1</code> is returned.
-    // * <p>
-    // * There is no restriction on the value of <code>startPos</code>. If it is negative, it has the same effect as if it were zero: this
-    // * entire string may be searched. If it is greater than the length of this string, it has the same effect as if it were equal to the
-    // * length of this string: {@code (INDEX_NOT_FOUND) -1} is returned. Furthermore, a {@code null} or empty ("") CharSequence will return
-    // * {@code (INDEX_NOT_FOUND) -1}.
-    // * <p>All indices are specified in <code>char</code> values
-    // * (Unicode code units).
-    // * <pre>
-    // * StringUtils.indexOf(null, *, *)          = -1
-    // * StringUtils.indexOf("", *, *)            = -1
-    // * StringUtils.indexOf("aabaabaa", 'b', 0)  = 2
-    // * StringUtils.indexOf("aabaabaa", 'b', 3)  = 5
-    // * StringUtils.indexOf("aabaabaa", 'b', 9)  = -1
-    // * StringUtils.indexOf("aabaabaa", 'b', -1) = 2
-    // * </pre>
-    // * @param seq        the CharSequence to check, may be null
-    // * @param searchChar the character to find
-    // * @param startPos   the start position, negative treated as zero
-    // * @return the first index of the search character (always &ge; startPos), -1 if no match or {@code null} string input
-    // * @since 2.0
-    // * @since 3.0 Changed signature from indexOf(String, int, int) to indexOf(CharSequence, int, int)
-    // * @since 3.6 Updated {@link CharSequenceUtils} call to behave more like <code>String</code>
-    // */
-    //public static int indexOf(final CharSequence seq, final int searchChar, final int startPos) {
-    //    if (isEmpty(seq)) {
-    //        return INDEX_NOT_FOUND;
-    //    }
-    //    return CharSequenceUtils.indexOf(seq, searchChar, startPos);
-    //}
-    //
-    ///**
-    // * <p>Finds the first index within a CharSequence, handling {@code null}.
-    // * This method uses {@link String#indexOf(String, int)} if possible.</p>
-    // * <p>A {@code null} CharSequence will return {@code -1}.</p>
-    // * <pre>
-    // * StringUtils.indexOf(null, *)          = -1
-    // * StringUtils.indexOf(*, null)          = -1
-    // * StringUtils.indexOf("", "")           = 0
-    // * StringUtils.indexOf("", *)            = -1 (except when * = "")
-    // * StringUtils.indexOf("aabaabaa", "a")  = 0
-    // * StringUtils.indexOf("aabaabaa", "b")  = 2
-    // * StringUtils.indexOf("aabaabaa", "ab") = 1
-    // * StringUtils.indexOf("aabaabaa", "")   = 0
-    // * </pre>
-    // * @param seq       the CharSequence to check, may be null
-    // * @param searchSeq the CharSequence to find, may be null
-    // * @return the first index of the search CharSequence, -1 if no match or {@code null} string input
-    // * @since 2.0
-    // * @since 3.0 Changed signature from indexOf(String, String) to indexOf(CharSequence, CharSequence)
-    // */
-    //public static int indexOf(final CharSequence seq, final CharSequence searchSeq) {
-    //    if (seq == null || searchSeq == null) {
-    //        return INDEX_NOT_FOUND;
-    //    }
-    //    return CharSequenceUtils.indexOf(seq, searchSeq, 0);
-    //}
-    //
-    ///**
-    // * <p>Finds the first index within a CharSequence, handling {@code null}.
-    // * This method uses {@link String#indexOf(String, int)} if possible.</p>
-    // * <p>A {@code null} CharSequence will return {@code -1}.
-    // * A negative start position is treated as zero. An empty ("") search CharSequence always matches. A start position greater than the
-    // * string length only matches an empty search CharSequence.</p>
-    // * <pre>
-    // * StringUtils.indexOf(null, *, *)          = -1
-    // * StringUtils.indexOf(*, null, *)          = -1
-    // * StringUtils.indexOf("", "", 0)           = 0
-    // * StringUtils.indexOf("", *, 0)            = -1 (except when * = "")
-    // * StringUtils.indexOf("aabaabaa", "a", 0)  = 0
-    // * StringUtils.indexOf("aabaabaa", "b", 0)  = 2
-    // * StringUtils.indexOf("aabaabaa", "ab", 0) = 1
-    // * StringUtils.indexOf("aabaabaa", "b", 3)  = 5
-    // * StringUtils.indexOf("aabaabaa", "b", 9)  = -1
-    // * StringUtils.indexOf("aabaabaa", "b", -1) = 2
-    // * StringUtils.indexOf("aabaabaa", "", 2)   = 2
-    // * StringUtils.indexOf("abc", "", 9)        = 3
-    // * </pre>
-    // * @param seq       the CharSequence to check, may be null
-    // * @param searchSeq the CharSequence to find, may be null
-    // * @param startPos  the start position, negative treated as zero
-    // * @return the first index of the search CharSequence (always &ge; startPos), -1 if no match or {@code null} string input
-    // * @since 2.0
-    // * @since 3.0 Changed signature from indexOf(String, String, int) to indexOf(CharSequence, CharSequence, int)
-    // */
-    //public static int indexOf(final CharSequence seq, final CharSequence searchSeq, final int startPos) {
-    //    if (seq == null || searchSeq == null) {
-    //        return INDEX_NOT_FOUND;
-    //    }
-    //    return CharSequenceUtils.indexOf(seq, searchSeq, startPos);
-    //}
-    //
-    ///**
-    // * <p>Finds the n-th index within a CharSequence, handling {@code null}.
-    // * This method uses {@link String#indexOf(String)} if possible.</p>
-    // * <p><b>Note:</b> The code starts looking for a match at the start of the target,
-    // * incrementing the starting index by one after each successful match (unless {@code searchStr} is an empty string in which case the
-    // * position is never incremented and {@code 0} is returned immediately). This means that matches may overlap.</p>
-    // * <p>A {@code null} CharSequence will return {@code -1}.</p>
-    // * <pre>
-    // * StringUtils.ordinalIndexOf(null, *, *)          = -1
-    // * StringUtils.ordinalIndexOf(*, null, *)          = -1
-    // * StringUtils.ordinalIndexOf("", "", *)           = 0
-    // * StringUtils.ordinalIndexOf("aabaabaa", "a", 1)  = 0
-    // * StringUtils.ordinalIndexOf("aabaabaa", "a", 2)  = 1
-    // * StringUtils.ordinalIndexOf("aabaabaa", "b", 1)  = 2
-    // * StringUtils.ordinalIndexOf("aabaabaa", "b", 2)  = 5
-    // * StringUtils.ordinalIndexOf("aabaabaa", "ab", 1) = 1
-    // * StringUtils.ordinalIndexOf("aabaabaa", "ab", 2) = 4
-    // * StringUtils.ordinalIndexOf("aabaabaa", "", 1)   = 0
-    // * StringUtils.ordinalIndexOf("aabaabaa", "", 2)   = 0
-    // * </pre>
-    // * <p>Matches may overlap:</p>
-    // * <pre>
-    // * StringUtils.ordinalIndexOf("ababab", "aba", 1)   = 0
-    // * StringUtils.ordinalIndexOf("ababab", "aba", 2)   = 2
-    // * StringUtils.ordinalIndexOf("ababab", "aba", 3)   = -1
-    // * StringUtils.ordinalIndexOf("abababab", "abab", 1) = 0
-    // * StringUtils.ordinalIndexOf("abababab", "abab", 2) = 2
-    // * StringUtils.ordinalIndexOf("abababab", "abab", 3) = 4
-    // * StringUtils.ordinalIndexOf("abababab", "abab", 4) = -1
-    // * </pre>
-    // * <p>Note that 'head(CharSequence str, int n)' may be implemented as: </p>
-    // * <pre>
-    // *   str.substring(0, lastOrdinalIndexOf(str, "\n", n))
-    // * </pre>
-    // * @param str       the CharSequence to check, may be null
-    // * @param searchStr the CharSequence to find, may be null
-    // * @param ordinal   the n-th {@code searchStr} to find
-    // * @return the n-th index of the search CharSequence, {@code -1} ({@code INDEX_NOT_FOUND}) if no match or {@code null} string input
-    // * @since 2.1
-    // * @since 3.0 Changed signature from ordinalIndexOf(String, String, int) to ordinalIndexOf(CharSequence, CharSequence, int)
-    // */
-    //public static int ordinalIndexOf(final CharSequence str, final CharSequence searchStr, final int ordinal) {
-    //    return ordinalIndexOf(str, searchStr, ordinal, false);
-    //}
-    //
-    ///**
-    // * <p>Finds the n-th index within a String, handling {@code null}.
-    // * This method uses {@link String#indexOf(String)} if possible.</p>
-    // * <p>Note that matches may overlap<p>
-    // * <p>A {@code null} CharSequence will return {@code -1}.</p>
-    // * @param str       the CharSequence to check, may be null
-    // * @param searchStr the CharSequence to find, may be null
-    // * @param ordinal   the n-th {@code searchStr} to find, overlapping matches are allowed.
-    // * @param lastIndex true if lastOrdinalIndexOf() otherwise false if ordinalIndexOf()
-    // * @return the n-th index of the search CharSequence, {@code -1} ({@code INDEX_NOT_FOUND}) if no match or {@code null} string input
-    // */
-    //// Shared code between ordinalIndexOf(String, String, int) and lastOrdinalIndexOf(String, String, int)
-    //private static int ordinalIndexOf(final CharSequence str, final CharSequence searchStr, final int ordinal, final boolean lastIndex) {
-    //    if (str == null || searchStr == null || ordinal <= 0) {
-    //        return INDEX_NOT_FOUND;
-    //    }
-    //    if (searchStr.length() == 0) {
-    //        return lastIndex ? str.length() : 0;
-    //    }
-    //    int found = 0;
-    //    // set the initial index beyond the end of the string
-    //    // this is to allow for the initial index decrement/increment
-    //    int index = lastIndex ? str.length() : INDEX_NOT_FOUND;
-    //    do {
-    //        if (lastIndex) {
-    //            index = CharSequenceUtils.lastIndexOf(str, searchStr, index - 1); // step backwards thru string
-    //        } else {
-    //            index = CharSequenceUtils.indexOf(str, searchStr, index + 1); // step forwards through string
-    //        }
-    //        if (index < 0) {
-    //            return index;
-    //        }
-    //        found++;
-    //    } while (found < ordinal);
-    //    return index;
-    //}
     //
     ///**
     // * <p>Case in-sensitive find of the first index within a CharSequence.</p>

@@ -61,7 +61,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("CharsetEncoding")
-    public String getCharsetEncoding() {
+    public final String getCharsetEncoding() {
         return UTF_8.name();
     }
 
@@ -72,7 +72,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("AsyncSupported")
-    public boolean isAsyncSupported() {
+    public final boolean isAsyncSupported() {
         return true;
     }
 
@@ -83,7 +83,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("DefaultMapping")
-    public String getDefaultMapping() {
+    public final String getDefaultMapping() {
         return "*.htm";
     }
 
@@ -94,7 +94,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("MultipartEnabled")
-    public boolean getMultipartEnabled() {
+    public final boolean isMultipartEnabled() {
         return true;
     }
 
@@ -105,7 +105,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("FileSizeThreshold")
-    public int getFileSizeThreshold() {
+    public final int getFileSizeThreshold() {
         return 0;
     }
 
@@ -116,7 +116,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("MaxRequestSize")
-    public long getMaxRequestSize() {
+    public final long getMaxRequestSize() {
         return -1;
     }
 
@@ -127,7 +127,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("MaxFileSize")
-    public long getMaxFileSize() {
+    public final long getMaxFileSize() {
         return -1;
     }
 
@@ -138,7 +138,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("LocationPath")
-    public synchronized String getLocationPath() {
+    public final synchronized String getLocationPath() {
         return Optional.of(TEMP_KEY)
                 .map(System::getProperty)
                 .map(File::new)
@@ -154,7 +154,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("DateTimeFormat")
-    public String getDateTimeFormat() {
+    public final String getDateTimeFormat() {
         return "yyyy-MM-dd HH[:mm[:ss]]";
     }
 
@@ -165,7 +165,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("DateFormat")
-    public String getDateFormat() {
+    public final String getDateFormat() {
         return "yyyy[-MM[-dd]]";
     }
 
@@ -176,7 +176,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("TimeFormat")
-    public String getTimeFormat() {
+    public final String getTimeFormat() {
         return "HH[:mm[:ss]]";
     }
 
@@ -187,7 +187,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("ViewPrefix")
-    public String getViewPrefix() {
+    public final String getViewPrefix() {
         return "/WEB-INF/";
     }
 
@@ -198,7 +198,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("ViewSuffix")
-    public String getViewSuffix() {
+    public final String getViewSuffix() {
         return ".ftl";
     }
 
@@ -209,7 +209,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("AccessControlAllowMethods")
-    public String getAccessControlAllowMethods() {
+    public final String getAccessControlAllowMethods() {
         return "POST, GET, PUT, OPTIONS, DELETE, TRACE, HEAD";
     }
 
@@ -221,7 +221,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("AccessControlAllowHeaders")
-    public String getAccessControlAllowHeaders() {
+    public final String getAccessControlAllowHeaders() {
         return "x-requested-with, Content-Type";
     }
 
@@ -232,7 +232,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("AccessControlAllowOrigin")
-    public String getAccessControlAllowOrigin() {
+    public final String getAccessControlAllowOrigin() {
         return "*";
     }
 
@@ -243,7 +243,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("AccessControlAllowOrigin")
-    public int getAccessControlMaxAge() {
+    public final int getAccessControlMaxAge() {
         return 3600;
     }
 
@@ -254,18 +254,18 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("CacheControl")
-    public String getCacheControl() {
+    public final String getCacheControl() {
         return "No-Cache";
     }
 
     /**
-     * 获取缓标注
+     * 获取缓存标注
      * @return 默认为“No-Cache”
      */
     @Provides
     @Singleton
     @Named("CachePragma")
-    public String getCachePragma() {
+    public final String getCachePragma() {
         return "No-Cache";
     }
 
@@ -276,7 +276,7 @@ public abstract class WebApplicationInitializer extends MiniModule implements Mo
     @Provides
     @Singleton
     @Named("CacheExpires")
-    public int getCacheExpires() {
+    public final int getCacheExpires() {
         return 0;
     }
 }

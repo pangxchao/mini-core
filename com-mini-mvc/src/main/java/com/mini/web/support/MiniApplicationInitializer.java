@@ -1,11 +1,10 @@
 package com.mini.web.support;
 
 import com.google.auto.service.AutoService;
+import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.Module;
-import com.google.inject.name.Names;
+import com.mini.core.inject.MiniModule;
 import com.mini.core.inject.annotation.ComponentScan;
 import com.mini.core.util.Assert;
 import com.mini.core.util.ClassUtil;
@@ -80,21 +79,22 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
         List<WebApplicationInitializer> configs = getWebMvcConfigureList(initializer);
         Assert.isTrue(!configs.isEmpty(), "WebMvcConfigure can not be empty.");
         // 初始化绑定
-        Injector injector = Guice.createInjector(Stream.concat(of((Module) binder -> {
-            // 绑定初始化参数
-            context.getInitParameterNames().asIterator().forEachRemaining(name -> { //
-                binder.bind(Key.get(String.class, Names.named(name)))  //
-                        .toInstance(context.getInitParameter(name));
-            });
-            // 绑定 ServletContext 对象
-            binder.bind(ServletContext.class).toInstance(context);
-            // 绑定配置信息
-            for (WebApplicationInitializer config : configs) {
-                binder.requestInjection(config);
-                binder.install(config);
+        Injector injector = Guice.createInjector(Stream.concat(of(new MiniModule() {
+            protected synchronized void onStartup(Binder binder) throws Error {
+                // 绑定初始化
+                binder.bind(ServletContext.class).toInstance(context);
+                Enumeration<String> names = context.getInitParameterNames();
+                names.asIterator().forEachRemaining(name -> { //
+                    String value = context.getInitParameter(name);
+                    bind(binder, name, value);
+                });
+                // 绑定配置信息
+                for (WebApplicationInitializer config : configs) {
+                    binder.requestInjection(config);
+                    binder.install(config);
+                }
             }
         }), configs.stream()).collect(Collectors.toList()));
-
 
         // 获取配置信息
         Configures configures = injector.getInstance(Configures.class);
@@ -103,8 +103,8 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
         // 系统配置注册
         this.onStartupRegisterSystemDefault(configures);
         for (WebApplicationInitializer config : configs) {
-            registerActionProxy(injector, configures, config);
             config.onStartupRegister(context, configures);
+            registerActionProxy(injector, configures, config);
         }
 
         // 绑定 Servlet、Filter、listener

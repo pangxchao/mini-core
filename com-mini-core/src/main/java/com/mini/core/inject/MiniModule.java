@@ -11,6 +11,8 @@ import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.Properties;
 
+import static com.google.inject.Key.get;
+import static com.google.inject.name.Names.named;
 import static com.mini.core.util.MiniProperties.createProperties;
 
 public abstract class MiniModule implements Module {
@@ -27,6 +29,96 @@ public abstract class MiniModule implements Module {
     }
 
     protected abstract void onStartup(Binder binder);
+
+    /**
+     * 绑定字符串
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, String value) {
+        binder.bind(get(String.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Long值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Long value) {
+        binder.bind(get(Long.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定 Integer 值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Integer value) {
+        binder.bind(get(Integer.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Short值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Short value) {
+        binder.bind(get(Short.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Byte值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Byte value) {
+        binder.bind(get(Byte.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Double值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Double value) {
+        binder.bind(get(Double.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Float值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Float value) {
+        binder.bind(get(Float.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Boolean值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Boolean value) {
+        binder.bind(get(Boolean.class, named(name))).toInstance(value);
+    }
+
+    /**
+     * 绑定Character值
+     * @param binder 绑定器
+     * @param name   绑定名称
+     * @param value  绑定值
+     */
+    public final void bind(Binder binder, String name, Character value) {
+        binder.bind(get(Character.class, named(name))).toInstance(value);
+    }
 
     // 获取当前类指定注解信息
     public final <T extends Annotation> T getAnnotation(Class<T> clazz) {
