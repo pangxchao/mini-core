@@ -4,7 +4,7 @@ import com.mini.web.model.IModel;
 import com.mini.web.model.JsonModel;
 import com.mini.web.model.PageModel;
 import com.mini.web.model.StreamModel;
-import com.mini.web.view.IView;
+import com.mini.web.view.PageViewResolver;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -14,7 +14,7 @@ public enum ModelType implements ModelFactory {
     PAGE {
         @Nonnull
         @Override
-        public PageModel getModel(IView view, String viewPath) {
+        public PageModel getModel(PageViewResolver view, String viewPath) {
             PageModel model = new PageModel(view);
             model.setViewPath(viewPath);
             return model;
@@ -23,7 +23,7 @@ public enum ModelType implements ModelFactory {
     JSON {
         @Nonnull
         @Override
-        public JsonModel getModel(IView view, String viewPath) {
+        public JsonModel getModel(PageViewResolver view, String viewPath) {
             JsonModel model = new JsonModel();
             model.setViewPath(viewPath);
             return model;
@@ -32,7 +32,7 @@ public enum ModelType implements ModelFactory {
     STREAM {
         @Nonnull
         @Override
-        public StreamModel getModel(IView view, String viewPath) {
+        public StreamModel getModel(PageViewResolver view, String viewPath) {
             StreamModel model = new StreamModel();
             model.setViewPath(viewPath);
             return model;
@@ -41,7 +41,7 @@ public enum ModelType implements ModelFactory {
     EXT {
         @Nonnull
         @Override
-        public IModel<?> getModel(IView view, String viewPath) {
+        public IModel<?> getModel(PageViewResolver view, String viewPath) {
             String message = "ModelFactory can not be null";
             Objects.requireNonNull(factory, message);
             return factory.getModel(view, viewPath);

@@ -16,7 +16,7 @@ import static com.mini.core.util.MiniProperties.createProperties;
 public abstract class MiniModule implements Module {
 
     @Override
-    public final void configure(Binder binder) {
+    public synchronized final void configure(Binder binder) {
         PropertySources sources = this.getPropertySources();
         Properties properties = createProperties(sources);
         PropertySource source = this.getPropertySource();
@@ -58,5 +58,4 @@ public abstract class MiniModule implements Module {
     public final PropertySource getPropertySource() {
         return getAnnotation(PropertySource.class);
     }
-
 }

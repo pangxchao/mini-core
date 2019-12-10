@@ -9,10 +9,8 @@ import com.mini.core.jdbc.JdbcTemplateMysql;
 import com.mini.core.jdbc.transaction.EnableTransaction;
 import com.mini.core.jdbc.transaction.TransactionalManager;
 import com.mini.core.jdbc.transaction.TransactionalManagerJdbc;
-import com.mini.web.config.Configure;
-import com.mini.web.config.ServletElement;
-import com.mini.web.config.WebMvcConfigure;
-import com.mini.web.servlet.DispatcherHttpServlet;
+import com.mini.web.support.WebApplicationInitializer;
+import com.mini.web.support.config.Configures;
 import com.mini.web.test.R;
 
 import javax.inject.Named;
@@ -38,7 +36,7 @@ import static java.util.Collections.singletonList;
 @EnableTransaction
 @ComponentScan("com.mini.web.test")
 @PropertySource("application.properties")
-public class MiniWebMvcConfigurer extends WebMvcConfigure {
+public class MiniWebMvcConfigurer extends WebApplicationInitializer {
 
     @Override
     protected synchronized void onStartupBinding(Binder binder) {
@@ -48,14 +46,12 @@ public class MiniWebMvcConfigurer extends WebMvcConfigure {
     }
 
     @Override
-    protected void onStartupRegister(ServletContext servletContext, Configure configure) {
-        // 默认的Servlet相关设置可以在这里进行
-        configure.addServlet(DispatcherHttpServlet.class);
-
+    public void onStartupRegister(ServletContext servletContext, Configures configure) {
         // 自定义Servlet相关设置可以在这里进行
-        ServletElement el = configure.addServlet(MiniWebMvcServlet.class);
-        el.addUrlPatterns("/front/user/group.htm");
-        el.setMultipartEnabled(false);
+        configure.addServlet(MiniWebMvcServlet.class, registration -> {
+            registration.addUrlPatterns("/front/user/group.htm");
+            registration.setMultipartEnabled(false);
+        });
     }
 
     /**

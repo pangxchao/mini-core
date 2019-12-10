@@ -1,11 +1,11 @@
 package com.mini.web.model.factory;
 
 import com.mini.web.model.IModel;
-import com.mini.web.view.IView;
+import com.mini.web.view.PageViewResolver;
 
 import javax.annotation.Nonnull;
 
 public interface ModelFactory {
     @Nonnull
-    IModel<?> getModel(IView view, String viewPath);
+    IModel<?> getModel(PageViewResolver view, String viewPath);
 }

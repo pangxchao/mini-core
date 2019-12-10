@@ -4,6 +4,7 @@ import com.mini.core.util.Assert;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.interceptor.ActionInvocation;
 
+import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -15,25 +16,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+@Singleton
 public class ArgumentResolverContext implements ArgumentResolver {
-    private final Map<Class<?>, Function<ActionInvocation, ?>> map = new HashMap<>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-            // ServletContext.class 处理
-            put(ServletContext.class, ActionInvocation::getServletContext);
-            // HttpServletResponse.class 处理
-            put(HttpServletResponse.class, ActionInvocation::getResponse);
-            // ServletResponse.class 处理
-            put(ServletResponse.class, ActionInvocation::getResponse);
-            // HttpServletRequest.class 处理
-            put(HttpServletRequest.class, ActionInvocation::getRequest);
-            // ServletRequest.class 处理
-            put(ServletRequest.class, ActionInvocation::getRequest);
-            // HttpSession.class 处理
-            put(HttpSession.class, ActionInvocation::getSession);
-        }
-    };
+    private final Map<Class<?>, Function<ActionInvocation, ?>> map = new HashMap<>() {{
+        // ServletContext.class 处理
+        put(ServletContext.class, ActionInvocation::getServletContext);
+        // HttpServletResponse.class 处理
+        put(HttpServletResponse.class, ActionInvocation::getResponse);
+        // ServletResponse.class 处理
+        put(ServletResponse.class, ActionInvocation::getResponse);
+        // HttpServletRequest.class 处理
+        put(HttpServletRequest.class, ActionInvocation::getRequest);
+        // ServletRequest.class 处理
+        put(ServletRequest.class, ActionInvocation::getRequest);
+        // HttpSession.class 处理
+        put(HttpSession.class, ActionInvocation::getSession);
+    }};
 
     @Override
     public boolean supportParameter(MiniParameter parameter) {

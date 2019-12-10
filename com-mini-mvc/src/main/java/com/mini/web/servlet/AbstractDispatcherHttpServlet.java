@@ -7,12 +7,13 @@ import com.mini.core.util.matcher.PathMatcher;
 import com.mini.core.util.matcher.PathMatcherAnt;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.web.annotation.Action;
-import com.mini.web.config.Configure;
 import com.mini.web.interceptor.ActionInterceptor;
 import com.mini.web.interceptor.ActionInvocation;
-import com.mini.web.interceptor.ActionProxy;
 import com.mini.web.model.IModel;
+import com.mini.web.support.ActionSupportProxy;
+import com.mini.web.support.config.Configures;
 import com.mini.web.util.ResponseCode;
+import com.mini.web.view.PageViewResolver;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -39,13 +40,13 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
  * @author xchao
  */
 public abstract class AbstractDispatcherHttpServlet extends HttpServlet implements ResponseCode {
-    private static final Logger LOGGER = getLogger(MiniServletInitializer.class);
+    private static final Logger LOGGER = getLogger(AbstractDispatcherHttpServlet.class);
     private static final PathMatcher matcher = new PathMatcherAnt();
     private static final long serialVersionUID = 1L;
-    private Configure configure;
+    private Configures configure;
     private Injector injector;
 
-    public final Configure getConfigure() {
+    public final Configures getConfigure() {
         return configure;
     }
 
@@ -54,7 +55,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
     }
 
     @Inject
-    public final void setConfigure(Configure configure) {
+    public final void setConfigure(Configures configure) {
         this.configure = configure;
     }
 
@@ -110,14 +111,14 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
         // 获取请求路径-URI
         String uri = StringUtil.strip(getActionProxyUri(request).strip(), "/"), path;
         // 找出当前 URI 对应的 ActionProxy 对象
-        Map<Action.Method, ActionProxy> proxyMap = configure.getActionProxy(uri);
+        Map<Action.Method, ActionSupportProxy> proxyMap = configure.getActionProxy(uri);
         if (java.util.Objects.isNull(proxyMap)) {
             LOGGER.info("Not Found: " + uri);
             response.sendError(SC_NOT_FOUND);
             return;
         }
         // 根据请求方法获取具体映射,不支持时返回405错误
-        final ActionProxy proxy = proxyMap.get(method);
+        final ActionSupportProxy proxy = proxyMap.get(method);
         if (java.util.Objects.isNull(proxy)) {
             response.sendError(SC_METHOD_NOT_ALLOWED);
             return;
@@ -133,7 +134,8 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             uriParam.putAll(matcher.extractVariables(path, uri));
         }
         // 获取数据模型实例并验证是否为空
-        final IModel<?> model = proxy.getModel(configure.getView());
+        PageViewResolver resolver = configure.getPageViewResolver();
+        final IModel<?> model = proxy.getModel(resolver);
         try {
             // 获取拦截器列表的迭代器对象
             Iterator<ActionInterceptor> iterator = proxy.getInterceptors().iterator();
@@ -240,7 +242,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
             model.setStatus(INTERNAL_SERVER_ERROR);
             model.setMessage("Service Error!");
             handler_each:
-            for (var handler : configure.getExceptionHandlerList()) {
+            for (var handler : configure.getExceptionHandlers()) {
                 for (var e = exception; e != null; e = e.getCause()) {
                     if (!handler.supportException(e)) continue;
                     handler.handler(model, e, request, response);

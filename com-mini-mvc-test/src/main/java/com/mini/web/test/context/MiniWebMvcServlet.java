@@ -13,6 +13,6 @@ public final class MiniWebMvcServlet extends AbstractDispatcherHttpServlet {
 
     @Override
     protected String getActionProxyUri(HttpServletRequest request) {
-        return "/front/user/group.htm";
+        return "/front/{userId}/group.htm";
     }
 }

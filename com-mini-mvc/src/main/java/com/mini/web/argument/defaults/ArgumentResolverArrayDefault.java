@@ -6,7 +6,9 @@ import com.mini.web.argument.ArgumentResolverArray;
 import com.mini.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 
+@Singleton
 public final class ArgumentResolverArrayDefault extends ArgumentResolverArray {
 
     @Override

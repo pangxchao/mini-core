@@ -1,7 +1,7 @@
 package com.mini.web.model;
 
 import com.mini.core.validate.ValidateUtil;
-import com.mini.web.view.IView;
+import com.mini.web.view.PageViewResolver;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +19,9 @@ public class PageModel extends IModel<PageModel> implements Serializable {
     private final Map<String, Object> data = new HashMap<>();
     private static final long serialVersionUID = 1L;
     private static final String TYPE = "text/html";
-    private final IView view;
+    private final PageViewResolver view;
 
-    public PageModel(IView view) {
+    public PageModel(PageViewResolver view) {
         setContentType(TYPE);
         this.view = view;
     }

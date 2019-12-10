@@ -94,6 +94,7 @@ public final class FileUtil {
      * @param file 文件对象
      * @return 文件扩展名
      */
+    @SuppressWarnings("UnstableApiUsage")
     public static String getFileExt(File file) {
         return getFileExtension(file.getName());
     }
@@ -103,6 +104,7 @@ public final class FileUtil {
      * @param file 文件路径
      * @return 文件扩展名
      */
+    @SuppressWarnings("UnstableApiUsage")
     public static String getFileExt(String file) {
         return getFileExtension(file);
     }

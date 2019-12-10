@@ -7,7 +7,9 @@ import com.mini.web.argument.annotation.RequestParam;
 import com.mini.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 
+@Singleton
 public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArray {
 
     @Override
