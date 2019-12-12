@@ -87,7 +87,7 @@ public final class Configures implements EventListener, Serializable {
 
     /**
      * 获取默认请求拦截
-     * @return 默认为“.htm”
+     * @return 默认为“*.htm”
      */
     public String getDefaultMapping() {
         return defaultMapping;
@@ -644,7 +644,7 @@ public final class Configures implements EventListener, Serializable {
      * @return 全局拦截器对象
      */
     @Nonnull
-    public final List<ActionInterceptor> getGlobalInterceptors() {
+    public final List<ActionInterceptor> getInterceptors() {
         return interceptors;
     }
 

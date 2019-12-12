@@ -72,6 +72,8 @@ public final class XString extends XAbstract<String, XString> {
         return isNotNull() && get().equalsIgnoreCase(str);
     }
 
+
+
     //
     ///**
     // * <p>Case in-sensitive find of the first index within a CharSequence.</p>

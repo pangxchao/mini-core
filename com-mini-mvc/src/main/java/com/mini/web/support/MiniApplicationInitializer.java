@@ -270,7 +270,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
                                         return interceptors;
                                     }
                                     // 添加全局拦截器到拦截器实例列表
-                                    interceptors.addAll(0, configure.getGlobalInterceptors());
+                                    interceptors.addAll(0, configure.getInterceptors());
                                     return interceptors;
                                 }
                             });
