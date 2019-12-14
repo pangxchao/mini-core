@@ -1,0 +1,53 @@
+<!--suppress JSUnresolvedLibraryURL, HtmlUnknownTag, CheckEmptyScriptTag -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <base href="/vue-test/"/>
+    <meta charset="UTF-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <title>vue Wap 测试</title>
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.2/lib/index.css"/>
+    <!-- 引入JS文件 -->
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vant@2.2/lib/vant.min.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+<body>
+<div id="app">
+    <van-panel title="标题" desc="描述信息" status="状态">
+        <div>
+            <van-cell-group>
+                <van-switch-cell v-model="checked" title="标题"/>
+            </van-cell-group>
+        </div>
+        <div slot="footer">
+            <van-button size="small" @click="showPopup">按钮</van-button>
+            <van-button size="small" type="danger">按钮</van-button>
+        </div>
+    </van-panel>
+
+    <van-popup v-model="show" closeable position="bottom" :style="{ height: '20%' }"/>
+</div>
+<!--suppress JSUnusedGlobalSymbols -->
+<script type="text/javascript">
+	let vue = new Vue({
+		el: "#app",
+		data: {
+			checked: true,
+			show: false
+		},
+		methods: {
+			showPopup: function () {
+				this.show = true;
+			}
+		}
+	});
+	console.log(vue)
+</script>
+</body>
+</html>
