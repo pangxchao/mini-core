@@ -13,12 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 @Singleton
 public class ArgumentResolverContext implements ArgumentResolver {
-    private final Map<Class<?>, Function<ActionInvocation, ?>> map = new HashMap<>() {{
+    private final Map<Class<?>, Function<ActionInvocation, Object>> map = new HashMap<>() {{
         // ServletContext.class 处理
         put(ServletContext.class, ActionInvocation::getServletContext);
         // HttpServletResponse.class 处理
@@ -43,8 +42,6 @@ public class ArgumentResolverContext implements ArgumentResolver {
         Function<ActionInvocation, ?> function = map.get(parameter.getType());
         Assert.notNull(function, "Unsupported parameter type.");
         // 获取参数名称和参值，并处理
-        return Optional.of(function).map(func -> {
-            return func.apply(invocation); //
-        }).orElse(null);
+        return function.apply(invocation);
     }
 }

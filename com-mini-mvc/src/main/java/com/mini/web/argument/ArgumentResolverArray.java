@@ -14,184 +14,223 @@ import java.time.format.DateTimeParseException;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 public abstract class ArgumentResolverArray implements ArgumentResolver, EventListener {
-    private final Map<Class<?>, Function<String[], ?>> map = new HashMap<>() {{
+    private final Map<Class<?>, Function<String[], Object>> map = new HashMap<>() {{
         // String[].class 处理
-        put(String[].class, (Function<String[], String[]>) values -> {
+        put(String[].class, values -> {
             return values; //
         });
 
         // Long[].class 处理
-        put(Long[].class, (Function<String[], Long[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .map(Long::parseLong)
-                        .toArray(Long[]::new));
+        put(Long[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .map(Long::parseLong)
+            .toArray(Long[]::new));
 
         // long[].class 处理
-        put(long[].class, (Function<String[], long[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .mapToLong(Long::parseLong)
-                        .toArray());
+        put(long[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .mapToLong(Long::parseLong)
+            .toArray());
 
         // Integer[].class 处理
-        put(Integer[].class, (Function<String[], Integer[]>) values ->//
-                Stream.ofNullable(values).flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .map(Integer::parseInt)
-                        .toArray(Integer[]::new));
+        put(Integer[].class, values -> Stream.ofNullable(values).flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .map(Integer::parseInt)
+            .toArray(Integer[]::new));
 
         // int[].class 处理
-        put(int[].class, (Function<String[], int[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .mapToInt(Integer::parseInt)
-                        .toArray());
+        put(int[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .mapToInt(Integer::parseInt)
+            .toArray());
 
         // Short[].class 处理
-        put(Short[].class, (Function<String[], Short[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .map(Short::parseShort)
-                        .toArray(Short[]::new));
+        put(Short[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .map(Short::parseShort)
+            .toArray(Short[]::new));
+
+        // short[].class 处理
+        put(short[].class, values -> {
+            Short[] arrays = Stream.ofNullable(values)
+                .flatMap(Stream::of)
+                .map(Short::parseShort)
+                .toArray(Short[]::new);
+            short[] copy = new short[arrays.length];
+            System.arraycopy(arrays, 0, copy, 0, arrays.length);
+            return copy;
+        });
 
         // Byte.class 处理
-        put(Byte[].class, (Function<String[], Byte[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .map(Byte::parseByte)
-                        .toArray(Byte[]::new));
+        put(Byte[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .map(Byte::parseByte)
+            .toArray(Byte[]::new));
+
+        // byte[].class 处理
+        put(byte[].class, values -> {
+            Byte[] arrays = Stream.ofNullable(values)
+                .flatMap(Stream::of)
+                .map(Byte::parseByte)
+                .toArray(Byte[]::new);
+            byte[] copy = new byte[arrays.length];
+            System.arraycopy(arrays, 0, copy, 0, arrays.length);
+            return copy;
+        });
 
         // Double.class 处理
-        put(Double.class, (Function<String[], Double[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .map(Double::parseDouble)
-                        .toArray(Double[]::new));
+        put(Double.class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .map(Double::parseDouble)
+            .toArray(Double[]::new));
 
         // double[].class 处理
-        put(double[].class, (Function<String[], double[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .mapToDouble(Double::parseDouble)
-                        .toArray());
+        put(double[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .mapToDouble(Double::parseDouble)
+            .toArray());
 
         // Float[].class 处理
-        put(Float[].class, (Function<String[], Float[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .map(Float::parseFloat)
-                        .toArray(Float[]::new));
+        put(Float[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .map(Float::parseFloat)
+            .toArray(Float[]::new));
+
+        // float[].class 处理
+        put(float[].class, values -> {
+            Float[] arrays = Stream.ofNullable(values)
+                .flatMap(Stream::of)
+                .map(Float::parseFloat)
+                .toArray(Float[]::new);
+            float[] copy = new float[arrays.length];
+            System.arraycopy(arrays, 0, copy, 0, arrays.length);
+            return copy;
+        });
 
         // Boolean[].class 处理
-        put(Boolean[].class, (Function<String[], Boolean[]>) values -> //
-                Stream.ofNullable(values)
-                        .flatMap(Stream::of)
-                        .filter(value -> !value.isBlank())
-                        .map(Boolean::parseBoolean)
-                        .toArray(Boolean[]::new));
+        put(Boolean[].class, values -> Stream.ofNullable(values)
+            .flatMap(Stream::of)
+            .filter(value -> !value.isBlank())
+            .map(Boolean::parseBoolean)
+            .toArray(Boolean[]::new));
+
+        // boolean[].class 处理
+        put(boolean[].class, values -> {
+            Boolean[] arrays = Stream.ofNullable(values)
+                .flatMap(Stream::of)
+                .map(Boolean::parseBoolean)
+                .toArray(Boolean[]::new);
+            boolean[] copy = new boolean[arrays.length];
+            System.arraycopy(arrays, 0, copy, 0, arrays.length);
+            return copy;
+        });
 
         // java.util.Date.class 处理
-        put(java.util.Date.class, (Function<String[], java.util.Date[]>) values -> //
-                Stream.ofNullable(values).flatMap(Stream::of).filter(value -> !value.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        LocalDateTime date = LocalDateTime.parse(text, format);
-                        return java.sql.Timestamp.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
+        put(java.util.Date.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).filter(value -> !value.isBlank())  //
+            .map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    LocalDateTime date = LocalDateTime.parse(text, format);
+                    return java.sql.Timestamp.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
 
-                    try {
-                        DateTimeFormatter format = ofPattern(dateFormat);
-                        LocalDate date = LocalDate.parse(text, format);
-                        return java.sql.Date.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(java.util.Date[]::new));
+                try {
+                    DateTimeFormatter format = ofPattern(dateFormat);
+                    LocalDate date = LocalDate.parse(text, format);
+                    return java.sql.Date.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(java.util.Date[]::new));
 
         // java.time.LocalDateTime 类型的参数
-        put(java.time.LocalDateTime.class, (Function<String[], java.time.LocalDateTime[]>) values -> //
-                Stream.ofNullable(values).flatMap(Stream::of).filter(value -> !value.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalDateTime.parse(text, format);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(LocalDateTime[]::new));
+        put(java.time.LocalDateTime.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).filter(value -> !value.isBlank())  //
+            .map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    return LocalDateTime.parse(text, format);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(LocalDateTime[]::new));
 
         // java.time.LocalDate 类型的参数
-        put(java.time.LocalDate.class, (Function<String[], java.time.LocalDate[]>) values -> //
-                Stream.ofNullable(values).flatMap(Stream::of).filter(value -> !value.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalDate.parse(text, format);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(LocalDate[]::new));
+        put(java.time.LocalDate.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).filter(value -> !value.isBlank()) //
+            .map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    return LocalDate.parse(text, format);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(LocalDate[]::new));
 
         // java.time.LocalTime 类型的参数
-        put(java.time.LocalTime.class, (Function<String[], java.time.LocalTime[]>) values -> //
-                Stream.ofNullable(values).flatMap(Stream::of).filter(value -> !value.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalTime.parse(text, format);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(LocalTime[]::new));
+        put(java.time.LocalTime.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).filter(value -> !value.isBlank()) //
+            .map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    return LocalTime.parse(text, format);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(LocalTime[]::new));
 
         // java.sql.Timestamp 类型的参数
-        put(java.sql.Timestamp.class, (Function<String[], java.sql.Timestamp[]>) values -> //
-                Stream.ofNullable(values).flatMap(Stream::of).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        LocalDateTime date = LocalDateTime.parse(text, format);
-                        return java.sql.Timestamp.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(java.sql.Timestamp[]::new));
+        put(java.sql.Timestamp.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    LocalDateTime date = LocalDateTime.parse(text, format);
+                    return java.sql.Timestamp.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(java.sql.Timestamp[]::new));
 
         // java.sql.Date 类型的参数
-        put(java.sql.Date.class, (Function<String[], java.sql.Date[]>) values ->  //
-                Stream.ofNullable(values).flatMap(Stream::of).filter(value -> !value.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateFormat);
-                        LocalDate date = LocalDate.parse(text, format);
-                        return java.sql.Date.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(java.sql.Date[]::new));
+        put(java.sql.Date.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).filter(value -> !value.isBlank()) //
+            .map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateFormat);
+                    LocalDate date = LocalDate.parse(text, format);
+                    return java.sql.Date.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(java.sql.Date[]::new));
 
         // java.sql.Time 类型的参数
-        put(java.sql.Time.class, (Function<String[], java.sql.Time[]>) values -> //
-                Stream.ofNullable(values).flatMap(Stream::of).filter(value -> !value.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(timeFormat);
-                        LocalTime time = LocalTime.parse(text, format);
-                        return java.sql.Time.valueOf(time);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).toArray(java.sql.Time[]::new));
+        put(java.sql.Time.class, values -> Stream.ofNullable(values) //
+            .flatMap(Stream::of).filter(value -> !value.isBlank()) //
+            .map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(timeFormat);
+                    LocalTime time = LocalTime.parse(text, format);
+                    return java.sql.Time.valueOf(time);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).toArray(java.sql.Time[]::new));
     }};
 
     @Inject
@@ -218,9 +257,7 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
 
         // 获取参数名称和参值，并处理
         String[] value = getValue(getParameterName(parameter), invocation);
-        return Optional.of(function).map(func -> {
-            return func.apply(value); //
-        }).orElse(null);
+        return function.apply(value);
     }
 
     /**

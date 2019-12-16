@@ -21,194 +21,180 @@ import java.util.function.Function;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 public abstract class ArgumentResolverBasic implements ArgumentResolver, EventListener {
-    private final Map<Class<?>, Function<String, ?>> map = new HashMap<>() {{
+    private final Map<Class<?>, Function<String, Object>> map = new HashMap<>() {{
         // String.class 处理
-        put(String.class, Function.identity());
+        put(String.class, value -> value);
 
         // Long.class 处理
-        put(Long.class, (Function<String, Long>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Long::parseLong)
-                        .orElse(null));
+        put(Long.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Long::parseLong)
+            .orElse(null));
 
         // long.class 处理
-        put(long.class, (Function<String, Long>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Long::parseLong)
-                        .orElse(0L));
+        put(long.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Long::parseLong)
+            .orElse(0L));
 
         // Integer.class 处理
-        put(Integer.class, (Function<String, Integer>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Integer::parseInt)
-                        .orElse(null));
+        put(Integer.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Integer::parseInt)
+            .orElse(null));
 
         // int.class 处理
-        put(int.class, (Function<String, Integer>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Integer::parseInt)
-                        .orElse(0));
+        put(int.class, value -> (int)Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Integer::parseInt)
+            .orElse(0));
 
         // Short.class 处理
-        put(Short.class, (Function<String, Short>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Short::parseShort)
-                        .orElse(null));
+        put(Short.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Short::parseShort)
+            .orElse(null));
 
         // Short.class 处理
-        put(short.class, (Function<String, Short>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Short::parseShort)
-                        .orElse((short) 0));
+        put(short.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Short::parseShort)
+            .orElse((short) 0));
 
         // Byte.class 处理
-        put(Byte.class, (Function<String, Byte>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Byte::parseByte)
-                        .orElse(null));
+        put(Byte.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Byte::parseByte)
+            .orElse(null));
 
         // byte.class 处理
-        put(byte.class, (Function<String, Byte>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Byte::parseByte)
-                        .orElse((byte) 0));
+        put(byte.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Byte::parseByte)
+            .orElse((byte) 0));
 
         // Double.class 处理
-        put(Double.class, (Function<String, Double>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Double::parseDouble)
-                        .orElse(null));
+        put(Double.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Double::parseDouble)
+            .orElse(null));
 
         // double.class 处理
-        put(double.class, (Function<String, Double>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Double::parseDouble)
-                        .orElse(0D));
+        put(double.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Double::parseDouble)
+            .orElse(0D));
 
         // Float.class 处理
-        put(Float.class, (Function<String, Float>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Float::parseFloat)
-                        .orElse(null));
+        put(Float.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Float::parseFloat)
+            .orElse(null));
 
         // float.class 处理
-        put(float.class, (Function<String, Float>) value -> //
-                Optional.ofNullable(value)
-                        .map(Float::parseFloat)
-                        .orElse(0F));
+        put(float.class, value -> Optional.ofNullable(value)
+            .map(Float::parseFloat)
+            .orElse(0F));
 
         // Boolean.class 处理
-        put(Boolean.class, (Function<String, Boolean>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Boolean::parseBoolean)
-                        .orElse(null));
+        put(Boolean.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Boolean::parseBoolean)
+            .orElse(null));
 
         // boolean.class 处理
-        put(boolean.class, (Function<String, Boolean>) value -> //
-                Optional.ofNullable(value)
-                        .filter(v -> !v.isBlank())
-                        .map(Boolean::parseBoolean)
-                        .orElse(false));
+        put(boolean.class, value -> Optional.ofNullable(value)
+            .filter(v -> !v.isBlank())
+            .map(Boolean::parseBoolean)
+            .orElse(false));
 
         // java.util.Date.class 处理
-        put(java.util.Date.class, (Function<String, java.util.Date>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        LocalDateTime date = LocalDateTime.parse(text, format);
-                        return java.sql.Timestamp.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
+        put(java.util.Date.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    LocalDateTime date = LocalDateTime.parse(text, format);
+                    return java.sql.Timestamp.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
 
-                    try {
-                        DateTimeFormatter format = ofPattern(dateFormat);
-                        LocalDate date = LocalDate.parse(text, format);
-                        return java.sql.Date.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+                try {
+                    DateTimeFormatter format = ofPattern(dateFormat);
+                    LocalDate date = LocalDate.parse(text, format);
+                    return java.sql.Date.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
 
         // java.time.LocalDateTime 类型的参数
-        put(java.time.LocalDateTime.class, (Function<String, java.time.LocalDateTime>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalDateTime.parse(text, format);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+        put(java.time.LocalDateTime.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    return LocalDateTime.parse(text, format);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
 
         // java.time.LocalDate 类型的参数
-        put(java.time.LocalDate.class, (Function<String, java.time.LocalDate>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalDate.parse(text, format);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+        put(java.time.LocalDate.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    return LocalDate.parse(text, format);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
 
         // java.time.LocalTime 类型的参数
-        put(java.time.LocalTime.class, (Function<String, java.time.LocalTime>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        return LocalTime.parse(text, format);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+        put(java.time.LocalTime.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    return LocalTime.parse(text, format);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
 
         // java.sql.Timestamp 类型的参数
-        put(java.sql.Timestamp.class, (Function<String, java.sql.Timestamp>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateTimeFormat);
-                        LocalDateTime date = LocalDateTime.parse(text, format);
-                        return java.sql.Timestamp.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+        put(java.sql.Timestamp.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateTimeFormat);
+                    LocalDateTime date = LocalDateTime.parse(text, format);
+                    return java.sql.Timestamp.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
 
         // java.sql.Date 类型的参数
-        put(java.sql.Date.class, (Function<String, java.sql.Date>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(dateFormat);
-                        LocalDate date = LocalDate.parse(text, format);
-                        return java.sql.Date.valueOf(date);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+        put(java.sql.Date.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(dateFormat);
+                    LocalDate date = LocalDate.parse(text, format);
+                    return java.sql.Date.valueOf(date);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
 
         // java.sql.Time 类型的参数
-        put(java.sql.Time.class, (Function<String, java.sql.Time>) value -> //
-                Optional.ofNullable(value).filter(v -> !v.isBlank()).map(text -> {
-                    try {
-                        DateTimeFormatter format = ofPattern(timeFormat);
-                        LocalTime time = LocalTime.parse(text, format);
-                        return java.sql.Time.valueOf(time);
-                    } catch (DateTimeParseException ignored) {
-                    }
-                    return null;
-                }).orElse(null));
+        put(java.sql.Time.class, value -> Optional.ofNullable(value) //
+            .filter(v -> !v.isBlank()).map(text -> {
+                try {
+                    DateTimeFormatter format = ofPattern(timeFormat);
+                    LocalTime time = LocalTime.parse(text, format);
+                    return java.sql.Time.valueOf(time);
+                } catch (DateTimeParseException ignored) {
+                }
+                return null;
+            }).orElse(null));
     }};
 
     @Inject
@@ -235,9 +221,7 @@ public abstract class ArgumentResolverBasic implements ArgumentResolver, EventLi
 
         // 获取参数名称和参值，并处理
         String value = getValue(getParameterName(parameter), invocation);
-        return Optional.of(function).map(func -> {
-            return func.apply(value); //
-        }).orElse(null);
+        return function.apply(value);
     }
 
     /**
