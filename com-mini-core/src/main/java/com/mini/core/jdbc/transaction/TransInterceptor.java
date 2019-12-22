@@ -10,21 +10,21 @@ import javax.inject.Singleton;
 import static java.util.Objects.requireNonNull;
 
 @Singleton
-public final class TransactionalInterceptor implements MethodInterceptor {
-    private TransactionalManager transactionManager;
+public final class TransInterceptor implements MethodInterceptor {
+    private TransManager transactionManager;
 
     /**
      * The value of transactionManager
      * @param transactionManager The value of transactionManager
      */
     @Inject
-    public void setTransactionManager(@Nullable TransactionalManager transactionManager) {
+    public void setTransactionManager(@Nullable TransManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         requireNonNull(transactionManager, "TransactionManager can not be null");
-        return transactionManager.openTransaction(invocation::proceed);
+        return transactionManager.open(invocation::proceed);
     }
 }

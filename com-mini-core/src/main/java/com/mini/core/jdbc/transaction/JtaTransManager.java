@@ -11,17 +11,17 @@ import javax.transaction.UserTransaction;
  * @author xchao
  */
 @Singleton
-public final class TransactionalManagerJTA implements TransactionalManager {
+public final class JtaTransManager implements TransManager {
     private static final TransactionThreadLocal COUNT = new TransactionThreadLocal();
     private final Provider<UserTransaction> provider;
 
     @Inject
-    public TransactionalManagerJTA(@Nonnull Provider<UserTransaction> provider) {
+    public JtaTransManager(@Nonnull Provider<UserTransaction> provider) {
         this.provider = provider;
     }
 
     @Override
-    public <T> T openTransaction(TransactionalManagerCallback<T> callback) throws Throwable {
+    public <T> T open(TransManagerCallback<T> callback) throws Throwable {
         boolean commit = false;
         try {
             // 第一次开启事务

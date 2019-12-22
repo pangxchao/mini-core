@@ -1,7 +1,7 @@
 package com.mini.code.impl;
 
 import com.mini.code.Configure;
-import com.mini.core.jdbc.JdbcTemplate.DatabaseMetaDataCallback;
+import com.mini.core.jdbc.JdbcAccessor.DatabaseMetaDataCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;

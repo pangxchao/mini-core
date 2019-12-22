@@ -15,7 +15,7 @@ import java.util.List;
 import static com.squareup.javapoet.ClassName.get;
 
 public abstract class Configure implements EventListener {
-    String SERVER_NAME = "192.168.1.200";
+    String SERVER_NAME = "127.0.0.1";
     String PASSWORD = "Qwe123456!";
 
     public boolean generatorSerialVersionUID() {

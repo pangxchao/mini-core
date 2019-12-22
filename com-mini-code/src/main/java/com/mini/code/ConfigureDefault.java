@@ -2,7 +2,7 @@ package com.mini.code;
 
 import com.mini.code.impl.*;
 import com.mini.core.jdbc.JdbcTemplate;
-import com.mini.core.jdbc.JdbcTemplateMysql;
+import com.mini.core.jdbc.MysqlJdbcTemplate;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.sql.SQLException;
@@ -43,7 +43,7 @@ public class ConfigureDefault extends Configure implements EventListener {
         dataSource.setPassword(PASSWORD);
         dataSource.setUseSSL(false);
         dataSource.setUser("root");
-        return new JdbcTemplateMysql(dataSource);
+        return new MysqlJdbcTemplate(dataSource);
     }
 
     @Override

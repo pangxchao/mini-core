@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface IMapper<T> {
+public interface Mapper<T> {
     /**
      * 结果集映射器
      * @param rs     结果集

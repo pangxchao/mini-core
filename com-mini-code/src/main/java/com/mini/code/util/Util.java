@@ -1,7 +1,7 @@
 package com.mini.code.util;
 
 import com.mini.core.jdbc.JdbcTemplate;
-import com.mini.core.jdbc.JdbcTemplate.DatabaseMetaDataCallback;
+import com.mini.core.jdbc.JdbcAccessor.DatabaseMetaDataCallback;
 
 import java.io.Serializable;
 import java.sql.Blob;

@@ -5,10 +5,10 @@ import com.google.inject.Provides;
 import com.mini.core.inject.annotation.ComponentScan;
 import com.mini.core.inject.annotation.PropertySource;
 import com.mini.core.jdbc.JdbcTemplate;
-import com.mini.core.jdbc.JdbcTemplateMysql;
-import com.mini.core.jdbc.transaction.EnableTransaction;
-import com.mini.core.jdbc.transaction.TransactionalManager;
-import com.mini.core.jdbc.transaction.TransactionalManagerJdbc;
+import com.mini.core.jdbc.MysqlJdbcTemplate;
+import com.mini.core.jdbc.transaction.JdbcTransManager;
+import com.mini.core.jdbc.transaction.TransManager;
+import com.mini.core.jdbc.transaction.TransactionEnable;
 import com.mini.web.support.WebApplicationInitializer;
 import com.mini.web.support.config.Configures;
 import com.mini.web.test.R;
@@ -33,7 +33,7 @@ import static java.util.Collections.singletonList;
  * @author xchao
  */
 @Singleton
-@EnableTransaction
+@TransactionEnable
 @ComponentScan("com.mini.web.test")
 @PropertySource("application.properties")
 public class MiniWebMvcConfigurer extends WebApplicationInitializer {
@@ -74,7 +74,7 @@ public class MiniWebMvcConfigurer extends WebApplicationInitializer {
     @Provides
     @Singleton
     public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplateMysql(dataSource);
+        return new MysqlJdbcTemplate(dataSource);
     }
 
     /**
@@ -84,8 +84,8 @@ public class MiniWebMvcConfigurer extends WebApplicationInitializer {
      */
     @Provides
     @Singleton
-    public TransactionalManager getTransactionalManager(JdbcTemplate jdbcTemplate) {
-        return new TransactionalManagerJdbc(singletonList(jdbcTemplate));
+    public TransManager getTransactionalManager(JdbcTemplate jdbcTemplate) {
+        return new JdbcTransManager(singletonList(jdbcTemplate));
     }
 
     ///**
