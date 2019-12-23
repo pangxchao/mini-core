@@ -39,6 +39,7 @@ public class ConfigureDefault extends Configure implements EventListener {
     public JdbcTemplate getJdbcTemplate() throws SQLException {
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setDatabaseName(getDatabaseName());
+        dataSource.setServerTimezone("GMT+8");
         dataSource.setServerName(SERVER_NAME);
         dataSource.setPassword(PASSWORD);
         dataSource.setUseSSL(false);

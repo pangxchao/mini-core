@@ -1,5 +1,7 @@
 package com.mini.web.test.entity.extend;
 
+import com.mini.core.jdbc.annotation.Column;
+import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.web.test.entity.Region;
 import com.mini.web.test.entity.User;
@@ -16,11 +18,19 @@ import static com.mini.web.test.util.FileGenerator.getPublicFullUrl;
  * User.java
  * @author xchao
  */
+@Table("user_info")
 public class UserExt extends User implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    @Column(Region.NAME)
     private String regionName;
+
+    @Column(Region.ID_URI)
     private String regionIdUri;
+
+    @Column(Region.NAME_URI)
     private String regionNameUri;
+
 
     public String getFullHeadUrl() {
         if (StringUtils.isBlank(getHeadUrl())) { return ""; }

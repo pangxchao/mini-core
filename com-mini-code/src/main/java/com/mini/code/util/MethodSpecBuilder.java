@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public final class MethodSpecBuilder {
+public final class MethodSpecBuilder extends AbstractBuilder<MethodSpecBuilder> {
     private final Builder builder;
 
     private MethodSpecBuilder(Builder builder) {
@@ -225,16 +225,10 @@ public final class MethodSpecBuilder {
         return this;
     }
 
-    public MethodSpecBuilder ifAdd(boolean bool, Consumer<MethodSpecBuilder> consumer) {
-        if (bool) consumer.accept(this);
+    @Override
+    protected MethodSpecBuilder getThis() {
         return this;
     }
-
-    public <T> MethodSpecBuilder forAdd(Collection<T> collection, BiConsumer<MethodSpecBuilder, T> consumer) {
-        collection.forEach(val -> consumer.accept(this, val));
-        return this;
-    }
-
 
     public final MethodSpec build() {
         return builder.build();
