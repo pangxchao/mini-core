@@ -14,15 +14,15 @@ import javax.inject.Singleton;
 @Singleton
 @Named("regionService")
 public class RegionServiceImpl implements RegionService {
-    private RegionDao regionDao;
+	private RegionDao regionDao;
 
-    @Inject
-    public void setRegionDao(RegionDao regionDao) {
-        this.regionDao = regionDao;
-    }
+	@Inject
+	public void setRegionDao(RegionDao regionDao) {
+		this.regionDao = regionDao;
+	}
 
-    @Override
-    public RegionDao getRegionDao() {
-        return regionDao;
-    }
+	@Override
+	public RegionDao getRegionDao() {
+		return regionDao;
+	}
 }

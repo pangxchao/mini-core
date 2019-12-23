@@ -17,21 +17,21 @@ import javax.servlet.http.HttpServletRequest;
 @Controller(path = "worker", url = "worker")
 public final class WorkerController {
 
-    /**
-     * 获取长整型类型的主键
-     * @param model 数据模型渲染器
-     */
-    @Action(value = ModelType.JSON, url = "id.htm")
-    public void id(JsonModel model, HttpServletRequest request) {
-        model.setData("" + PKGenerator.id());
-    }
+	/**
+	 * 获取长整型类型的主键
+	 * @param model 数据模型渲染器
+	 */
+	@Action(value = ModelType.JSON, url = "id.htm")
+	public void id(JsonModel model, HttpServletRequest request) {
+		model.setData("" + PKGenerator.id());
+	}
 
-    /**
-     * 获取长整型类型的主键
-     * @param model 数据模型渲染器
-     */
-    @Action(value = ModelType.JSON, url = "uuid.htm")
-    public void uuid(JsonModel model, HttpServletRequest request) {
-        model.setData(PKGenerator.uuid());
-    }
+	/**
+	 * 获取长整型类型的主键
+	 * @param model 数据模型渲染器
+	 */
+	@Action(value = ModelType.JSON, url = "uuid.htm")
+	public void uuid(JsonModel model, HttpServletRequest request) {
+		model.setData(PKGenerator.uuid());
+	}
 }

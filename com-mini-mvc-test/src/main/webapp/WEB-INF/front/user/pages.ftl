@@ -1,5 +1,9 @@
-<input type="hidden" id="content-page-value" value="${paging.page?c}"/>
-<input type="hidden" id="content-total-value" value="${paging.total?c}"/>
+<input type="hidden"
+		id="content-page-value"
+		value="${paging.page?c}" />
+<input type="hidden"
+		id="content-total-value"
+		value="${paging.total?c}" />
 
 <#--<#list list as item>-->
 <#--    ${item} <br/>-->

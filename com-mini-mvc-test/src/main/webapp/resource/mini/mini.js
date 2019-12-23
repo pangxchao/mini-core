@@ -1,10 +1,10 @@
 layui.config({base: 'resource/mini/models/'}).extend({
-    cascade: 'cascade', // 表单拉下级联扩展
-    ajax: 'ajax',  // 扩展Ajax
-    page: 'page',  // 扩展分页
-    wind: 'wind' // 弹出层扩展
+	cascade: 'cascade', // 表单拉下级联扩展
+	ajax: 'ajax',  // 扩展Ajax
+	page: 'page',  // 扩展分页
+	wind: 'wind' // 弹出层扩展
 }).use(['jquery', 'ajax'], function () {
-    window.$ = layui.$;
+	window.$ = layui.$;
 });
 
 /**
@@ -33,72 +33,72 @@ layui.config({base: 'resource/mini/models/'}).extend({
  * @return 格式化结果
  */
 Date.prototype.format = function (format) {
-    var nFormat = function (value, length) {
-        var val = String(value);
-        var i = val.length;
-        for (; i < length; i++) {
-            val = '0' + val;
-        }
-        return val;
-    };
+	var nFormat = function (value, length) {
+		var val = String(value);
+		var i = val.length;
+		for (; i < length; i++) {
+			val = '0' + val;
+		}
+		return val;
+	};
 
-    var e = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-    var se = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-    var _this = this, result = String(format);
+	var e = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+	var se = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+	var _this = this, result = String(format);
 
-    // 处理年
-    result = result.replace(/(y+)/g, function (year) {
-        var v = _this.getFullYear(), l = year.length;
-        return year.length > 2 ? nFormat(v, l) //
-            : nFormat(v, l).substr(2)
-    });
+	// 处理年
+	result = result.replace(/(y+)/g, function (year) {
+		var v = _this.getFullYear(), l = year.length;
+		return year.length > 2 ? nFormat(v, l) //
+			: nFormat(v, l).substr(2)
+	});
 
-    // 处理月份
-    result = result.replace(/(M+)/g, function (month) {
-        return month.length === 1 ? _this.getMonth() + 1//
-            : nFormat(_this.getMonth() + 1, 2);
-    });
+	// 处理月份
+	result = result.replace(/(M+)/g, function (month) {
+		return month.length === 1 ? _this.getMonth() + 1//
+			: nFormat(_this.getMonth() + 1, 2);
+	});
 
-    // 处理日期
-    result = result.replace(/(d+)/g, function (date) {
-        return date.length === 1 ? _this.getDate() //
-            : nFormat(_this.getDate(), 2);
-    });
+	// 处理日期
+	result = result.replace(/(d+)/g, function (date) {
+		return date.length === 1 ? _this.getDate() //
+			: nFormat(_this.getDate(), 2);
+	});
 
-    // 24小时制小时
-    result = result.replace(/(H+)/g, function (hours) {
-        return hours.length === 1 ? _this.getHours() //
-            : nFormat(_this.getHours(), 2);
-    });
+	// 24小时制小时
+	result = result.replace(/(H+)/g, function (hours) {
+		return hours.length === 1 ? _this.getHours() //
+			: nFormat(_this.getHours(), 2);
+	});
 
-    // 12小时制小时
-    result = result.replace(/(h+)/g, function (hours) {
-        var val = _this.getHours() % 12 || 12;//
-        return hours.length === 1 ? val  //
-            : nFormat(val, 2);
-    });
+	// 12小时制小时
+	result = result.replace(/(h+)/g, function (hours) {
+		var val = _this.getHours() % 12 || 12;//
+		return hours.length === 1 ? val  //
+			: nFormat(val, 2);
+	});
 
-    // 处理分钟
-    result = result.replace(/(m+)/g, function (minutes) {
-        return minutes.length === 1 ? _this.getMinutes() //
-            : nFormat(_this.getMinutes(), 2);
-    });
+	// 处理分钟
+	result = result.replace(/(m+)/g, function (minutes) {
+		return minutes.length === 1 ? _this.getMinutes() //
+			: nFormat(_this.getMinutes(), 2);
+	});
 
-    // 处理秒
-    result = result.replace(/(s+)/g, function (seconds) {
-        return seconds.length === 1 ? _this.getSeconds() //
-            : nFormat(_this.getSeconds(), 2);
-    });
+	// 处理秒
+	result = result.replace(/(s+)/g, function (seconds) {
+		return seconds.length === 1 ? _this.getSeconds() //
+			: nFormat(_this.getSeconds(), 2);
+	});
 
-    // 处理毫秒
-    result = result.replace(/(S+)/g, function () {
-        return nFormat(_this.getMilliseconds(), 3);
-    });
+	// 处理毫秒
+	result = result.replace(/(S+)/g, function () {
+		return nFormat(_this.getMilliseconds(), 3);
+	});
 
-    // 处理英文星期
-    result = result.replace(/(E+)/g, function (week) {
-        return week.length === 1 ? se[_this.getDay()] //
-            : e[_this.getDay()];
-    });
-    return result;
+	// 处理英文星期
+	result = result.replace(/(E+)/g, function (week) {
+		return week.length === 1 ? se[_this.getDay()] //
+			: e[_this.getDay()];
+	});
+	return result;
 };

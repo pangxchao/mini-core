@@ -1,64 +1,64 @@
 .layui-elem-quote {
-    margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
 .mini-form .layui-input-block {
-    min-height: 30px;
-    display: block;
-    height: 30px;
+	min-height: 30px;
+	display: block;
+	height: 30px;
 }
 
 .mini-form .layui-form-label {
-    padding: 6px 15px 6px 0;
+	padding: 6px 15px 6px 0;
 }
 
 .mini-form .layui-input, .layui-select, .layui-textarea {
-    height: 30px;
+	height: 30px;
 }
 
 .mini-form .layui-form-pane .layui-form-label {
-    padding: 4px 15px 4px 0;
-    height: 30px;
+	padding: 4px 15px 4px 0;
+	height: 30px;
 }
 
 .mini-form .layui-form-item .layui-form-checkbox {
-    margin-top: 0;
+	margin-top: 0;
 }
 
 .mini-form .layui-form-radio {
-    margin: 1px 10px 0 0;
+	margin: 1px 10px 0 0;
 }
 
 .mini-form .layui-form-mid {
-    padding: 5px 0 !important;
+	padding: 5px 0 !important;
 }
 
 .mini-fluid {
-    padding: 0;
+	padding: 0;
 }
 
 /* 下面是自定义扩展，不影响原来的效果 */
 .mini-full {
-    height: 100%;
-    width: 100%;
+	height: 100%;
+	width: 100%;
 }
 
 .mini-main {
-    box-sizing: border-box;
-    padding: 15px;
-    width: 100%;
+	box-sizing: border-box;
+	padding: 15px;
+	width: 100%;
 }
 
 .mini-form-label {
-    text-align: left;
+	text-align: left;
 }
 
 .mini-input-block {
-    margin-left: 95px;
+	margin-left: 95px;
 }
 
 .clear, .mini-clear {
-    overflow: hidden;
-    clear: both;
-    height: 0;
+	overflow: hidden;
+	clear: both;
+	height: 0;
 }

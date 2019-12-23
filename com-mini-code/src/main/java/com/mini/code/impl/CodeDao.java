@@ -7,22 +7,13 @@ import com.mini.code.Configure.ClassInfo;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
 
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-@Getter
-@Setter
-@Builder
 public final class CodeDao {
-    private String a;
-
-
-    /**
+	/**
 	 * 生成代码
 	 * @param configure 数据库与实体配置信息
 	 * @param info      所有类的信息

@@ -38,63 +38,63 @@ import static java.util.Collections.singletonList;
 @PropertySource("application.properties")
 public class MiniWebMvcConfigurer extends WebApplicationInitializer {
 
-    @Override
-    protected synchronized void onStartupBinding(Binder binder) {
-        binder.requestStaticInjection(R.class);
-        // 这里可以绑定依赖注入相关的东西
-        // 绑定时无法使用依赖注入相关实例
-    }
+	@Override
+	protected synchronized void onStartupBinding(Binder binder) {
+		binder.requestStaticInjection(R.class);
+		// 这里可以绑定依赖注入相关的东西
+		// 绑定时无法使用依赖注入相关实例
+	}
 
-    @Override
-    public void onStartupRegister(ServletContext servletContext, Configures configure) {
-        // 自定义Servlet相关设置可以在这里进行
-        configure.addServlet(MiniWebMvcServlet.class, registration -> {
-            registration.addUrlPatterns("/front/user/group.htm");
-            registration.setMultipartEnabled(false);
-        });
-    }
+	@Override
+	public void onStartupRegister(ServletContext servletContext, Configures configure) {
+		// 自定义Servlet相关设置可以在这里进行
+		configure.addServlet(MiniWebMvcServlet.class, registration -> {
+			registration.addUrlPatterns("/front/user/group.htm");
+			registration.setMultipartEnabled(false);
+		});
+	}
 
-    /**
-     * 依赖注入数据源配置
-     * @param jndiName jndi名称
-     * @return 数据源
-     */
-    @Provides
-    @Singleton
-    public DataSource getDataSource(@Named("mini.datasource.jndi-name") String jndiName) throws NamingException {
-        InitialContext context = new InitialContext();
-        return (DataSource) context.lookup(jndiName);
-    }
+	/**
+	 * 依赖注入数据源配置
+	 * @param jndiName jndi名称
+	 * @return 数据源
+	 */
+	@Provides
+	@Singleton
+	public DataSource getDataSource(@Named("mini.datasource.jndi-name") String jndiName) throws NamingException {
+		InitialContext context = new InitialContext();
+		return (DataSource) context.lookup(jndiName);
+	}
 
-    /**
-     * 依赖注入JdbcTemplate对象配置
-     * @param dataSource 数据源
-     * @return JdbcTemplate对象
-     */
-    @Provides
-    @Singleton
-    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
-        return new MysqlJdbcTemplate(dataSource);
-    }
+	/**
+	 * 依赖注入JdbcTemplate对象配置
+	 * @param dataSource 数据源
+	 * @return JdbcTemplate对象
+	 */
+	@Provides
+	@Singleton
+	public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
+		return new MysqlJdbcTemplate(dataSource);
+	}
 
-    /**
-     * 依赖注入声明式事务管理器配置
-     * @param jdbcTemplate JdbcTemplate对象
-     * @return 声明式事务管理器配置
-     */
-    @Provides
-    @Singleton
-    public TransManager getTransactionalManager(JdbcTemplate jdbcTemplate) {
-        return new JdbcTransManager(singletonList(jdbcTemplate));
-    }
+	/**
+	 * 依赖注入声明式事务管理器配置
+	 * @param jdbcTemplate JdbcTemplate对象
+	 * @return 声明式事务管理器配置
+	 */
+	@Provides
+	@Singleton
+	public TransManager getTransactionalManager(JdbcTemplate jdbcTemplate) {
+		return new JdbcTransManager(singletonList(jdbcTemplate));
+	}
 
-    ///**
-    // * 依赖注入JTA事务UserTransaction获取器配置
-    // * @return JTA事务UserTransaction获取器
-    // */
-    //@Provides
-    //@Singleton
-    //public Provider<UserTransaction> getUserTransactionProvider() {
-    //    return com.atomikos.icatch.jta.UserTransactionImp::new;
-    //}
+	///**
+	// * 依赖注入JTA事务UserTransaction获取器配置
+	// * @return JTA事务UserTransaction获取器
+	// */
+	//@Provides
+	//@Singleton
+	//public Provider<UserTransaction> getUserTransactionProvider() {
+	//    return com.atomikos.icatch.jta.UserTransactionImp::new;
+	//}
 }

@@ -5,9 +5,9 @@ import com.mini.core.jdbc.annotation.Id;
 import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.core.jdbc.util.JdbcUtil;
+import lombok.Data;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +17,7 @@ import java.util.Date;
  * User.java
  * @author xchao
  */
+@Data
 @Table("user_info")
 public class User implements Serializable {
 	/**
@@ -128,97 +129,6 @@ public class User implements Serializable {
 		setHeadUrl(builder.headUrl);
 		setRegionId(builder.regionId);
 		setCreateTime(builder.createTime);
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public int getPhoneAuth() {
-		return phoneAuth;
-	}
-
-	public void setPhoneAuth(int phoneAuth) {
-		this.phoneAuth = phoneAuth;
-	}
-
-	@Nullable
-	public String getFullName() {
-		return fullName;
-	}
-
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-
-	@Nullable
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public int getEmailAuth() {
-		return emailAuth;
-	}
-
-	public void setEmailAuth(int emailAuth) {
-		this.emailAuth = emailAuth;
-	}
-
-	@Nullable
-	public String getHeadUrl() {
-		return headUrl;
-	}
-
-	public void setHeadUrl(String headUrl) {
-		this.headUrl = headUrl;
-	}
-
-	public Integer getRegionId() {
-		return regionId;
-	}
-
-	public void setRegionId(Integer regionId) {
-		this.regionId = regionId;
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
 	}
 
 	public static Builder newBuilder() {

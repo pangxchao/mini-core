@@ -23,57 +23,57 @@ import static com.mini.web.test.entity.User.*;
 @ImplementedBy(UserDaoImpl.class)
 public interface UserDao extends UserBaseDao {
 
-    default List<UserExt> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
-            LocalDate startTime, LocalDate endTime) {
-        return queryList(paging, new UserExtendBuilder() {{
-            // 搜索关键字条件
-            if (!StringUtils.isBlank(search)) {
-                where("(%s LIKE ? OR %s LIKE ? OR %s LIKE ?)", NAME, FULL_NAME, PHONE);
-                params(search + "%", search + "%", search + "%");
-            }
+	default List<UserExt> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
+		LocalDate startTime, LocalDate endTime) {
+		return queryList(paging, new UserExtendBuilder() {{
+			// 搜索关键字条件
+			if (!StringUtils.isBlank(search)) {
+				where("(%s LIKE ? OR %s LIKE ? OR %s LIKE ?)", NAME, FULL_NAME, PHONE);
+				params(search + "%", search + "%", search + "%");
+			}
 
-            // 手机号已认证
-            if (phoneAuto == 1) {
-                where("%s = ?", PHONE_AUTH);
-                params(phoneAuto);
-            }
+			// 手机号已认证
+			if (phoneAuto == 1) {
+				where("%s = ?", PHONE_AUTH);
+				params(phoneAuto);
+			}
 
-            // 油箱已认证
-            if (emailAuto == 1) {
-                where("%s = ?", EMAIL_AUTH);
-                params(emailAuto);
-            }
+			// 油箱已认证
+			if (emailAuto == 1) {
+				where("%s = ?", EMAIL_AUTH);
+				params(emailAuto);
+			}
 
-            // 地区条件
-            if (!StringUtils.isBlank(regionIdUri)) {
-                where("%s LIKE ?", Region.ID_URI);
-                params(regionIdUri + "%");
-            }
+			// 地区条件
+			if (!StringUtils.isBlank(regionIdUri)) {
+				where("%s LIKE ?", Region.ID_URI);
+				params(regionIdUri + "%");
+			}
 
-            // 开始时间
-            if (startTime != null) {
-                where("%s >= ? ", CREATE_TIME);
-                params(DateFormatUtil.formatDate(startTime));
-            }
+			// 开始时间
+			if (startTime != null) {
+				where("%s >= ? ", CREATE_TIME);
+				params(DateFormatUtil.formatDate(startTime));
+			}
 
-            // 结束时间
-            if (endTime != null) {
-                where("%s < ? ", CREATE_TIME);
-                params(DateFormatUtil.formatDate(endTime.plusDays(1)));
-            }
-            // 排序
-            orderBy("%s %s", CREATE_TIME, (sortType == 1 ? "DESC" : "ASC"));
-        }}, UserExt::mapper);
-    }
+			// 结束时间
+			if (endTime != null) {
+				where("%s < ? ", CREATE_TIME);
+				params(DateFormatUtil.formatDate(endTime.plusDays(1)));
+			}
+			// 排序
+			orderBy("%s %s", CREATE_TIME, (sortType == 1 ? "DESC" : "ASC"));
+		}}, UserExt::mapper);
+	}
 
-    default int delete(long[] idList) {
-        return execute(new SQLBuilder() {{
-            delete().from(TABLE);
-            for (long id : idList) {
-                or();
-                where("%s = ?", ID);
-                params(id);
-            }
-        }});
-    }
+	default int delete(long[] idList) {
+		return execute(new SQLBuilder() {{
+			delete().from(TABLE);
+			for (long id : idList) {
+				or();
+				where("%s = ?", ID);
+				params(id);
+			}
+		}});
+	}
 }

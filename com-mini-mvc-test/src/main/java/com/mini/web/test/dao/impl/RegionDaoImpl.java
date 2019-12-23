@@ -15,17 +15,17 @@ import javax.inject.Singleton;
 @Singleton
 @Named("regionDao")
 public class RegionDaoImpl extends AbstractDao implements RegionDao {
-    @Inject
-    private JdbcTemplate jdbcTemplate;
+	@Inject
+	private JdbcTemplate jdbcTemplate;
 
 
-    @Override
-    protected JdbcTemplate writeTemplate() {
-        return jdbcTemplate;
-    }
+	@Override
+	protected JdbcTemplate writeTemplate() {
+		return jdbcTemplate;
+	}
 
-    @Override
-    protected JdbcTemplate readTemplate() {
-        return jdbcTemplate;
-    }
+	@Override
+	protected JdbcTemplate readTemplate() {
+		return jdbcTemplate;
+	}
 }

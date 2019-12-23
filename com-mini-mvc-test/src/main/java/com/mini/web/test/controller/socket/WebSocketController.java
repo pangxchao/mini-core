@@ -15,14 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 @Controller(path = "web_socket", url = "web_socket")
 public class WebSocketController {
 
-    @Action(url = "index.htm")
-    public void index(PageModel model, HttpServletRequest request) {
-        model.addData("username", PKGenerator.uuid());
-    }
+	@Action(url = "index.htm")
+	public void index(PageModel model, HttpServletRequest request) {
+		model.addData("username", PKGenerator.uuid());
+	}
 
-    @Action(value = ModelType.JSON, url = "sendMessage.htm")
-    public void sendMessage(JsonModel model, String userName, String message) {
-        String[] users = StringUtils.split(userName, ",");
-        WebSocketMain.sendMessage(message, users);
-    }
+	@Action(value = ModelType.JSON, url = "sendMessage.htm")
+	public void sendMessage(JsonModel model, String userName, String message) {
+		String[] users = StringUtils.split(userName, ",");
+		WebSocketMain.sendMessage(message, users);
+	}
 }

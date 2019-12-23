@@ -14,15 +14,15 @@ import javax.inject.Singleton;
 @Singleton
 @Named("userService")
 public class UserServiceImpl implements UserService {
-    private UserDao userDao;
+	private UserDao userDao;
 
-    @Inject
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
+	@Inject
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
 
-    @Override
-    public UserDao getUserDao() {
-        return userDao;
-    }
+	@Override
+	public UserDao getUserDao() {
+		return userDao;
+	}
 }

@@ -7,18 +7,15 @@ import com.mini.code.util.FieldSpecBuilder;
 import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.TypeSpecBuilder;
 import com.mini.core.jdbc.annotation.Column;
-import com.mini.core.jdbc.annotation.Comment;
 import com.mini.core.jdbc.annotation.Id;
 import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.core.jdbc.util.JdbcUtil;
-import com.mini.core.util.StringUtil;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -49,10 +46,8 @@ public final class CodeBean {
 			.addModifiers(PUBLIC)
 			// 实现 Serializable 接口
 			.addSuperinterface(Serializable.class)
-			// @Getter 注解
-			.addAnnotation(Getter.class)
-			// @Setter 注解
-			.addAnnotation(Setter.class)
+			// 添加 @Data 注解
+			.addAnnotation(Data.class)
 			// 添加 @Table 注解
 			.addAnnotation(AnnotationSpec.builder(Table.class)
 				.addMember("value", "$S", bean.tableName)
@@ -101,10 +96,6 @@ public final class CodeBean {
 					// @Column 注解
 					.addAnnotation(AnnotationSpec.builder(Column.class)
 						.addMember("value", "$S", fieldInfo.getColumnName())
-						.build())
-					// @Comment 注解
-					.addAnnotation(AnnotationSpec.builder(Comment.class)
-						.addMember("value", "$S", StringUtil.defaultIfBlank(fieldInfo.getRemarks(), ""))
 						.build())
 					.build());
 			})

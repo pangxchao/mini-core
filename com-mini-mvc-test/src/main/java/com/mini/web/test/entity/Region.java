@@ -5,6 +5,7 @@ import com.mini.core.jdbc.annotation.Id;
 import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.core.jdbc.util.JdbcUtil;
+import lombok.Data;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
  * Region.java
  * @author xchao
  */
+@Data
 @Table("common_region")
 public class Region implements Serializable {
 	/**
@@ -72,46 +74,6 @@ public class Region implements Serializable {
 		setIdUri(builder.idUri);
 		setNameUri(builder.nameUri);
 		setRegionId(builder.regionId);
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getIdUri() {
-		return idUri;
-	}
-
-	public void setIdUri(String idUri) {
-		this.idUri = idUri;
-	}
-
-	public String getNameUri() {
-		return nameUri;
-	}
-
-	public void setNameUri(String nameUri) {
-		this.nameUri = nameUri;
-	}
-
-	public Integer getRegionId() {
-		return regionId;
-	}
-
-	public void setRegionId(Integer regionId) {
-		this.regionId = regionId;
 	}
 
 	public static Builder newBuilder() {
