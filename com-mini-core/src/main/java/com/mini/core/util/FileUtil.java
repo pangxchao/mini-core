@@ -1,5 +1,7 @@
 package com.mini.core.util;
 
+import lombok.Getter;
+
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;

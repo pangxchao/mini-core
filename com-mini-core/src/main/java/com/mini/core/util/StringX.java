@@ -1,5 +1,6 @@
 package com.mini.core.util;
 
+import javax.annotation.processing.Processor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
