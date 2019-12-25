@@ -29,14 +29,18 @@ public final class JdbcTransManager implements TransManager {
 	private <T> T transaction(Iterator<JdbcTemplate> iterator, TransManagerCallback<T> callback) throws Throwable {
 		if (!iterator.hasNext()) return callback.apply();
 		// 获取 JdbcTemplate
-		JdbcTemplate jdbcTemplate = iterator.next();
+		JdbcTemplate dao = iterator.next();
 		boolean commit = false;
 		try {
+			// 开启事务
+			dao.startTransaction();
+			// 调用下一个拦截器
 			T result = transaction(iterator, callback);
+			// 提交事务
 			commit = true;
 			return result;
 		} finally {
-			jdbcTemplate.endTransaction(commit);
+			dao.endTransaction(commit);
 		}
 	}
 }

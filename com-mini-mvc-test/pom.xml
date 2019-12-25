@@ -54,7 +54,7 @@
 		<!-- 公共工具类依赖 -->
 		<dependency>
 			<groupId>com.mini</groupId>
-			<artifactId>mvc</artifactId>
+			<artifactId>core</artifactId>
 			<version>1.0</version>
 		</dependency>
 		
