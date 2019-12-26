@@ -8,13 +8,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.function.Function;
-
-import static java.util.Optional.ofNullable;
 
 public abstract class JdbcAccessor implements EventListener {
 	private static final JdbcThreadLocal resources = new JdbcThreadLocal();
-	private static final TransThreadLocal TRANS = new TransThreadLocal();
 	private final DataSource dataSource;
 
 	public JdbcAccessor(@Nonnull DataSource dataSource) {
@@ -92,30 +88,16 @@ public abstract class JdbcAccessor implements EventListener {
 
 	/**
 	 * 开启一个数据库事务
-	 * @see Connection#setAutoCommit(boolean)
-	 * @see Connection#rollback(Savepoint)
-	 * @see Connection#rollback()
-	 * @see Connection#commit()
+	 * @param callback 事务过程
+	 * @return 返回类型实例
 	 */
-	public final void startTransaction() {
-		TRANS.getTrans(dataSource, dataSourceKey -> {
-			try {
-				return new JdbcTransaction(getConnection());
-			} catch (SQLException | RuntimeException e) {
-				throw new RuntimeException(e);
-			}
-		}).open();
-	}
-
-	public final void endTransaction(boolean commit) {
-		ofNullable(TRANS.getTrans(dataSource)) //
-			.ifPresent(trans -> {
-				try (trans) {
-					if (commit) {
-						trans.commit();
-					}
-				}
-			});
+	public final <T> T transaction(TransactionCallback<T> callback) {
+		try (Holder holder = (Holder) getConnection()) {
+			var trans = new HolderTransaction(holder);
+			return callback.trans(trans);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private Holder createHolder(DataSource dataSource) throws SQLException {
@@ -124,6 +106,7 @@ public abstract class JdbcAccessor implements EventListener {
 
 	private static class Holder implements Connection {
 		private final Connection connection;
+		private int transactionCount = 0;
 		private int referenceCount;
 
 		public Holder(Connection connection) {
@@ -149,8 +132,8 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 
 		@Override
-		public void setAutoCommit(boolean autoCommit) throws SQLException {
-			connection.setAutoCommit(autoCommit);
+		public void commit() throws SQLException {
+			connection.commit();
 		}
 
 		@Override
@@ -159,13 +142,13 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 
 		@Override
-		public void rollback(Savepoint arg0) throws SQLException {
-			connection.rollback(arg0);
+		public void rollback(Savepoint savepoint) throws SQLException {
+			connection.rollback(savepoint);
 		}
 
 		@Override
-		public void commit() throws SQLException {
-			connection.commit();
+		public void setAutoCommit(boolean autoCommit) throws SQLException {
+			connection.setAutoCommit(autoCommit);
 		}
 
 		@Override
@@ -439,7 +422,73 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 	}
 
-	//
+	private static final class HolderTransaction implements JdbcTransaction {
+		private final Holder holder;
+		private Savepoint point;
+
+		public HolderTransaction(Holder holder) {
+			this.holder = holder;
+		}
+
+		public final void setTransactionIsolation(int level) throws SQLException {
+			holder.setTransactionIsolation(level);
+		}
+
+		public final void startTransaction() throws SQLException {
+			if (holder.transactionCount > 0) {
+				holder.transactionCount++;
+				return;
+			}
+			holder.setAutoCommit(false);
+			holder.transactionCount = 1;
+		}
+
+		public final Savepoint setSavepoint() throws SQLException {
+			this.point = holder.setSavepoint();
+			return this.point;
+		}
+
+		@SuppressWarnings("unused")
+		public final Savepoint setSavepoint(String name) throws SQLException {
+			this.point = holder.setSavepoint(name);
+			return this.point;
+		}
+
+		@SuppressWarnings("unused")
+		public final void transactionRollback(Savepoint point) throws SQLException {
+			holder.rollback(point);
+		}
+
+		public final void endTransaction(boolean trans_commit) throws SQLException {
+			// 事务计数 -1
+			holder.transactionCount--;
+			// 回滚事务到设置的回滚点
+			if (!trans_commit && point != null) {
+				try {
+					holder.rollback(point);
+				} catch (SQLException ignored) { }
+			}
+			// 所有事务完成处理
+			if (holder.transactionCount <= 0) {
+				boolean rollback = true;
+				try {
+					if (trans_commit) {
+						holder.commit();
+						rollback = false;
+					}
+				} finally {
+					try {
+						if (rollback) {
+							holder.rollback();
+						}
+					} finally {
+						holder.setAutoCommit(true);
+					}
+				}
+			}
+		}
+	}
+
 	private static class JdbcThreadLocal extends ThreadLocal<Map<DataSource, Holder>> {
 		@Override
 		protected Map<DataSource, Holder> initialValue() {
@@ -453,100 +502,14 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 	}
 
-	// 数据库事务类
-	private static final class JdbcTransaction implements AutoCloseable {
-		private boolean commit = false;
-		private final Connection conn;
-		private boolean trans = true;
-		private int transCount = 0;
-
-		public JdbcTransaction(@Nonnull Connection conn) {
-			this.conn = conn;
-		}
-
-		public final void close() {
-			endTrans(commit);
-			commit = false;
-		}
-
-		protected final void open() {
-			this.startTrans();
-			commit = false;
-		}
-
-		protected final void commit() {
-			commit = true;
-		}
-
-		protected final void startTrans() {
-			try {
-				// 事务计数+1
-				if (this.transCount > 0) {
-					++this.transCount;
-					return;
-				}
-				// 开启数据库事务
-				conn.setAutoCommit(false);
-				transCount = 1;
-				trans      = true;
-			} catch (SQLException | RuntimeException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		protected final void endTrans(boolean transCommit) {
-			try {
-				// 事务计数 -1
-				if (this.transCount > 1) {
-					--this.transCount;
-					if (!transCommit) {
-						trans = false;
-					}
-					return;
-				}
-
-				// 提交或者回滚事物
-				try {
-					this.transCount = 0;
-					if (commit && trans) {
-						conn.commit();
-					} else conn.rollback();
-				} finally {
-				    // 重新设置为自动提交
-					conn.setAutoCommit(true);
-				}
-			} catch (SQLException | RuntimeException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	private static final class TransThreadLocal extends ThreadLocal<Map<DataSource, JdbcTransaction>> {
-		@Override
-		protected Map<DataSource, JdbcTransaction> initialValue() {
-			return new ConcurrentHashMap<>();
-		}
-
-		@Nonnull
-		@Override
-		public Map<DataSource, JdbcTransaction> get() {
-			return super.get();
-		}
-
-		@Nonnull
-		public JdbcTransaction getTrans(DataSource dataSource, Function<DataSource, JdbcTransaction> m) {
-			return get().computeIfAbsent(dataSource, m);
-		}
-
-		public JdbcTransaction getTrans(DataSource dataSource) {
-			return get().get(dataSource);
-		}
-	}
-
-
 	@FunctionalInterface
 	public interface ConnectionCallback<T> {
 		T apply(Connection con) throws SQLException;
+	}
+
+	@FunctionalInterface
+	public interface TransactionCallback<T> {
+		T trans(JdbcTransaction trans) throws Throwable;
 	}
 
 	@FunctionalInterface

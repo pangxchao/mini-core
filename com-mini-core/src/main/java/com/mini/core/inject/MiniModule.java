@@ -2,20 +2,23 @@ package com.mini.core.inject;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
-import com.google.inject.matcher.Matchers;
+import com.google.inject.matcher.Matcher;
 import com.google.inject.name.Names;
 import com.mini.core.inject.annotation.ComponentScan;
 import com.mini.core.inject.annotation.PropertySource;
 import com.mini.core.inject.annotation.PropertySources;
 import com.mini.core.jdbc.transaction.TransInterceptor;
+import com.mini.core.jdbc.transaction.TransactionEnable;
 import com.mini.core.jdbc.transaction.Transactional;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Properties;
 
 import static com.google.inject.Key.get;
 import static com.google.inject.matcher.Matchers.annotatedWith;
+import static com.google.inject.matcher.Matchers.any;
 import static com.google.inject.name.Names.named;
 import static com.mini.core.util.MiniProperties.createProperties;
 
@@ -30,11 +33,16 @@ public abstract class MiniModule implements Module {
 		Names.bindProperties(binder, properties);
 		binder.requestInjection(this);
 		this.onStartup(binder);
+
 		// 开启事务
-		if (this.getAnnotation(Transactional.class) != null) {
-			binder.bindInterceptor(Matchers.any(), //
-				annotatedWith(Transactional.class), //
-				new TransInterceptor());
+		if (this.getAnnotation(TransactionEnable.class) != null) {
+			// 创建事务拦截器对象并注入属性
+			TransInterceptor interceptor = new TransInterceptor();
+			binder.requestInjection(interceptor);
+
+			// 配置事务拦截器到指定方法上
+			var element = annotatedWith(Transactional.class);
+			binder.bindInterceptor(any(), element, interceptor);
 		}
 	}
 

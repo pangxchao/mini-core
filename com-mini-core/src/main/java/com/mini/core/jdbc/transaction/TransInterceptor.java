@@ -11,20 +11,20 @@ import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class TransInterceptor implements MethodInterceptor {
-    private TransManager transactionManager;
+    private TransManager transManager;
 
     /**
-     * The value of transactionManager
-     * @param transactionManager The value of transactionManager
+     * The value of transManager
+     * @param transManager The value of transManager
      */
     @Inject
-    public void setTransactionManager(@Nullable TransManager transactionManager) {
-        this.transactionManager = transactionManager;
+    public void setTransManager(@Nullable TransManager transManager) {
+        this.transManager = transManager;
     }
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        requireNonNull(transactionManager, "TransactionManager can not be null");
-        return transactionManager.open(invocation::proceed);
+        requireNonNull(transManager, "TransManager can not be null");
+        return transManager.open(invocation::proceed);
     }
 }

@@ -6,5 +6,9 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {
+	/**
+	 * 字段名称
+	 * @return 字段名称
+	 */
 	String value();
 }
