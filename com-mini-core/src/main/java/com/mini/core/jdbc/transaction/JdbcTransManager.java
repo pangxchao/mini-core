@@ -42,6 +42,7 @@ public final class JdbcTransManager implements TransManager {
 				commit = true;
 				return t;
 			} finally {
+				// 结束当前事务 (true-提交)
 				trans.endTransaction(commit);
 			}
 		}) : callback.apply();

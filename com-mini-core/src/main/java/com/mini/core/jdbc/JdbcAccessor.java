@@ -2,15 +2,23 @@ package com.mini.core.jdbc;
 
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
+import javax.transaction.UserTransaction;
+import java.io.Serializable;
 import java.sql.*;
 import java.util.EventListener;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-public abstract class JdbcAccessor implements EventListener {
-	private static final JdbcThreadLocal resources = new JdbcThreadLocal();
+import static java.lang.ThreadLocal.withInitial;
+
+public abstract class JdbcAccessor implements EventListener, Serializable {
+	private static final ThreadLocal<Map<DataSource, Holder>> RESOURCES //
+		= withInitial(ConcurrentHashMap::new);
+	private static final ThreadLocal<JtaHolderTransaction> JTA //
+		= new ThreadLocal<>();
 	private final DataSource dataSource;
 
 	public JdbcAccessor(@Nonnull DataSource dataSource) {
@@ -24,10 +32,10 @@ public abstract class JdbcAccessor implements EventListener {
 
 	@Nonnull
 	protected final Connection getConnection() throws SQLException {
-		Holder connection = resources.get().get(dataSource);
+		Holder connection = RESOURCES.get().get(dataSource);
 		if (connection == null || connection.isClosed()) {
-			connection = this.createHolder(dataSource);
-			resources.get().put(dataSource, connection);
+			connection = JdbcAccessor.create(dataSource);
+			RESOURCES.get().put(dataSource, connection);
 		}
 		// 返回连接并更新连接使用计数，嵌套时不会关闭错误
 		return connection.requestedConnection();
@@ -39,7 +47,7 @@ public abstract class JdbcAccessor implements EventListener {
 	 * @param <T>      返回类型
 	 * @return 返回类型实例
 	 */
-	public final <T> T execute(JdbcTemplate.ConnectionCallback<T> callback) {
+	public final <T> T execute(ConnectionCallback<T> callback) {
 		try (Connection con = this.getConnection()) {
 			return callback.apply(con);
 		} catch (SQLException | RuntimeException e) {
@@ -54,8 +62,8 @@ public abstract class JdbcAccessor implements EventListener {
 	 * @param <T>      返回类型
 	 * @return 返回类型实例
 	 */
-	public final <T> T execute(JdbcTemplate.DatabaseMetaDataCallback<T> callback) {
-		return this.execute((JdbcTemplate.ConnectionCallback<T>) (connection) -> {
+	public final <T> T execute(DatabaseMetaDataCallback<T> callback) {
+		return this.execute((ConnectionCallback<T>) (connection) -> {
 			return callback.apply(connection.getMetaData()); //
 		});
 	}
@@ -67,8 +75,8 @@ public abstract class JdbcAccessor implements EventListener {
 	 * @param <T>      返回类型
 	 * @return 返回类型实例
 	 */
-	public final <T> T execute(JdbcTemplate.PreparedStatementCreator creator, JdbcTemplate.PreparedStatementCallback<T> callback) {
-		return this.execute((JdbcTemplate.ConnectionCallback<T>) (connection) -> {
+	public final <T> T execute(PreparedStatementCreator creator, PreparedStatementCallback<T> callback) {
+		return this.execute((ConnectionCallback<T>) (connection) -> {
 			return callback.apply(creator.apply(connection)); //
 		});
 	}
@@ -80,8 +88,8 @@ public abstract class JdbcAccessor implements EventListener {
 	 * @param <T>      返回类型
 	 * @return 返回类型实例
 	 */
-	public final <T> T execute(JdbcTemplate.CallableStatementCreator creator, JdbcTemplate.CallableStatementCallback<T> callback) {
-		return this.execute((JdbcTemplate.ConnectionCallback<T>) (connection) -> {
+	public final <T> T execute(CallableStatementCreator creator, CallableStatementCallback<T> callback) {
+		return this.execute((ConnectionCallback<T>) (connection) -> {
 			return callback.apply(creator.apply(connection)); //
 		});
 	}
@@ -91,22 +99,34 @@ public abstract class JdbcAccessor implements EventListener {
 	 * @param callback 事务过程
 	 * @return 返回类型实例
 	 */
-	public final <T> T transaction(TransactionCallback<T> callback) {
-		try (Holder holder = (Holder) getConnection()) {
-			var trans = new HolderTransaction(holder);
+	public final <T> T transaction(JdbcTransactionCallback<T> callback) throws Throwable {
+		try (Holder holder = (Holder) this.getConnection()) {
+			var trans = new JdbcHolderTransaction(holder);
 			return callback.trans(trans);
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
 		}
 	}
 
-	private Holder createHolder(DataSource dataSource) throws SQLException {
+	/**
+	 * 开启一个数据库事务
+	 * @param holder   全局事务管理
+	 * @param callback 事务过程
+	 * @return 返回类型实例
+	 */
+	public static <T> T transaction(UserTransaction holder, JtaTransactionCallback<T> callback) throws Throwable {
+		var trans = Optional.ofNullable(JTA.get()).orElseGet(() -> {
+			JTA.set(new JtaHolderTransaction(holder));
+			return JTA.get();
+		});
+		return callback.trans(trans);
+	}
+
+	// 创建 Holder Connection 对象
+	private static Holder create(DataSource dataSource) throws SQLException {
 		return new Holder(dataSource.getConnection());
 	}
 
 	private static class Holder implements Connection {
 		private final Connection connection;
-		private int transactionCount = 0;
 		private int referenceCount;
 
 		public Holder(Connection connection) {
@@ -382,11 +402,13 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 
 		@Override
+		@SuppressWarnings("SpellCheckingInspection")
 		public synchronized <T> T unwrap(Class<T> iface) throws SQLException {
 			return connection.unwrap(iface);
 		}
 
 		@Override
+		@SuppressWarnings("SpellCheckingInspection")
 		public boolean isWrapperFor(Class<?> iface) throws SQLException {
 			return connection.isWrapperFor(iface);
 		}
@@ -422,11 +444,12 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 	}
 
-	private static final class HolderTransaction implements JdbcTransaction {
+	private static final class JdbcHolderTransaction implements JdbcTransaction {
+		private int transactionCount = 0;
 		private final Holder holder;
 		private Savepoint point;
 
-		public HolderTransaction(Holder holder) {
+		public JdbcHolderTransaction(Holder holder) {
 			this.holder = holder;
 		}
 
@@ -435,12 +458,12 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 
 		public final void startTransaction() throws SQLException {
-			if (holder.transactionCount > 0) {
-				holder.transactionCount++;
+			if (this.transactionCount > 0) {
+				this.transactionCount++;
 				return;
 			}
 			holder.setAutoCommit(false);
-			holder.transactionCount = 1;
+			this.transactionCount = 1;
 		}
 
 		public final Savepoint setSavepoint() throws SQLException {
@@ -461,7 +484,7 @@ public abstract class JdbcAccessor implements EventListener {
 
 		public final void endTransaction(boolean trans_commit) throws SQLException {
 			// 事务计数 -1
-			holder.transactionCount--;
+			this.transactionCount--;
 			// 回滚事务到设置的回滚点
 			if (!trans_commit && point != null) {
 				try {
@@ -469,7 +492,7 @@ public abstract class JdbcAccessor implements EventListener {
 				} catch (SQLException ignored) { }
 			}
 			// 所有事务完成处理
-			if (holder.transactionCount <= 0) {
+			if (this.transactionCount <= 0) {
 				boolean rollback = true;
 				try {
 					if (trans_commit) {
@@ -489,16 +512,42 @@ public abstract class JdbcAccessor implements EventListener {
 		}
 	}
 
-	private static class JdbcThreadLocal extends ThreadLocal<Map<DataSource, Holder>> {
-		@Override
-		protected Map<DataSource, Holder> initialValue() {
-			return new ConcurrentHashMap<>();
+	private static final class JtaHolderTransaction implements JtaTransaction {
+		private final UserTransaction holder;
+		private int transactionCount = 0;
+
+		private JtaHolderTransaction(UserTransaction transaction) {
+			this.holder = transaction;
 		}
 
-		@Nonnull
 		@Override
-		public Map<DataSource, Holder> get() {
-			return super.get();
+		public void startTransaction() throws Exception {
+			if (this.transactionCount > 0) {
+				this.transactionCount++;
+				return;
+			}
+			this.transactionCount = 1;
+			holder.begin();
+		}
+
+		@Override
+		public void endTransaction(boolean trans_commit) throws Exception {
+			// 事务计数 -1
+			this.transactionCount--;
+			// 所有事务完成处理
+			if (this.transactionCount <= 0) {
+				boolean rollback = true;
+				try {
+					if (trans_commit) {
+						holder.commit();
+						rollback = false;
+					}
+				} finally {
+					if (rollback) {
+						holder.rollback();
+					}
+				}
+			}
 		}
 	}
 
@@ -508,8 +557,13 @@ public abstract class JdbcAccessor implements EventListener {
 	}
 
 	@FunctionalInterface
-	public interface TransactionCallback<T> {
+	public interface JdbcTransactionCallback<T> {
 		T trans(JdbcTransaction trans) throws Throwable;
+	}
+
+	@FunctionalInterface
+	public interface JtaTransactionCallback<T> {
+		T trans(JtaTransaction trans) throws Throwable;
 	}
 
 	@FunctionalInterface
