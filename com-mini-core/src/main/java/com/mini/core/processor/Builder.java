@@ -1,8 +1,8 @@
-package com.mini.core.model;
+package com.mini.core.processor;
 
 import java.lang.annotation.*;
 
-import static com.mini.core.model.AccessLevel.PUBLIC;
+import static com.mini.core.processor.AccessLevel.PUBLIC;
 
 @Documented
 @Target(ElementType.FIELD)

@@ -1,4 +1,4 @@
-package com.mini.core.model;
+package com.mini.core.processor;
 
 public enum AccessLevel {
 	PROTECTED,
