@@ -17,8 +17,6 @@ import com.mini.core.web.argument.ArgumentResolverContext;
 import com.mini.core.web.argument.ArgumentResolverModel;
 import com.mini.core.web.argument.ArgumentResolverSession;
 import com.mini.core.web.argument.defaults.*;
-import com.mini.core.web.argument.paging.ArgumentResolverPagingDefault;
-import com.mini.core.web.argument.paging.ArgumentResolverPagingRequestParam;
 import com.mini.core.web.argument.request.param.*;
 import com.mini.core.web.argument.request.uri.ArgumentResolverArrayRequestUri;
 import com.mini.core.web.argument.request.uri.ArgumentResolverBasicRequestUri;
@@ -169,10 +167,6 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		configure.addArgumentResolver(ArgumentResolverBasicRequestUri.class);
 		configure.addArgumentResolver(ArgumentResolverArrayRequestUri.class);
 		configure.addArgumentResolver(ArgumentResolverMapRequestUri.class);
-
-		// 分页器参数解析
-		configure.addArgumentResolver(ArgumentResolverPagingRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverPagingDefault.class);
 	}
 
 	// 注册默认的 ActionInvocationProxy

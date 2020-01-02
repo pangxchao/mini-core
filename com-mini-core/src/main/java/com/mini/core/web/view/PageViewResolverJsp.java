@@ -10,25 +10,25 @@ import java.util.Map;
 
 @Singleton
 public class PageViewResolverJsp implements PageViewResolver, Serializable {
-    private static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = -1L;
 
-    @Inject
-    @Named("ViewPrefix")
-    private String prefix = "";
+	@Inject
+	@Named("ViewPrefix")
+	private String prefix = "";
 
-    @Inject
-    @Named("ViewSuffix")
-    private String suffix;
+	@Inject
+	@Named("ViewSuffix")
+	private String suffix;
 
-    @Override
-    public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        String view = prefix + viewPath + suffix;
-        data.forEach(request::setAttribute);
-        forward(view, request, response);
-    }
+	@Override
+	public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response)
+		throws Exception {
+		String view = prefix + viewPath + suffix;
+		data.forEach(request::setAttribute);
+		forward(view, request, response);
+	}
 
-    private void forward(String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        request.getRequestDispatcher(viewPath).forward(request, response);
-    }
+	private void forward(String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		request.getRequestDispatcher(viewPath).forward(request, response);
+	}
 }

@@ -139,7 +139,7 @@ public interface JdbcInterface extends EventListener {
 
 	/**
 	 * 查询列表
-	 * @param skip   跳过的数据条数
+	 * @param start   跳过的数据条数
 	 * @param limit  获取指定的条数
 	 * @param str    SQL
 	 * @param m      映射器
@@ -148,11 +148,11 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(int skip, int limit, String str, Mapper<T> m, Object... params);
+	<T> List<T> queryList(int start, int limit, String str, Mapper<T> m, Object... params);
 
 	/**
 	 * 查询列表
-	 * @param skip    跳过的数据条数
+	 * @param start    跳过的数据条数
 	 * @param limit   获取指定的条数
 	 * @param builder SQL和参数
 	 * @param m       映射器
@@ -160,11 +160,11 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(int skip, int limit, SQLBuilder builder, Mapper<T> m);
+	<T> List<T> queryList(int start, int limit, SQLBuilder builder, Mapper<T> m);
 
 	/**
 	 * 查询列表
-	 * @param skip   跳过的数据条数
+	 * @param start   跳过的数据条数
 	 * @param limit  获取指定的条数
 	 * @param str    SQL
 	 * @param type   类型类对象
@@ -173,11 +173,11 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(int skip, int limit, String str, Class<T> type, Object[] params);
+	<T> List<T> queryList(int start, int limit, String str, Class<T> type, Object[] params);
 
 	/**
 	 * 查询列表
-	 * @param skip    跳过的数据条数
+	 * @param start    跳过的数据条数
 	 * @param limit   获取指定的条数
 	 * @param builder SQL和参数
 	 * @param type    类型类对象
@@ -185,11 +185,11 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(int skip, int limit, SQLBuilder builder, Class<T> type);
+	<T> List<T> queryList(int start, int limit, SQLBuilder builder, Class<T> type);
 
 	/**
 	 * 查询列表
-	 * @param skip   跳过的数据条数
+	 * @param start   跳过的数据条数
 	 * @param limit  获取指定的条数
 	 * @param str    SQL
 	 * @param type   类型类对象
@@ -198,11 +198,11 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryListSingle(int skip, int limit, String str, Class<T> type, Object[] params);
+	<T> List<T> queryListSingle(int start, int limit, String str, Class<T> type, Object[] params);
 
 	/**
 	 * 查询列表
-	 * @param skip    跳过的数据条数
+	 * @param start    跳过的数据条数
 	 * @param limit   获取指定的条数
 	 * @param builder SQL和参数
 	 * @param type    类型类对象
@@ -210,7 +210,7 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryListSingle(int skip, int limit, SQLBuilder builder, Class<T> type);
+	<T> List<T> queryListSingle(int start, int limit, SQLBuilder builder, Class<T> type);
 
 	/**
 	 * 查询列表
@@ -283,7 +283,8 @@ public interface JdbcInterface extends EventListener {
 
 	/**
 	 * 查询列表
-	 * @param paging 分页器
+	 * @param page   当前页数
+	 * @param limit  每页条数
 	 * @param str    SQL
 	 * @param m      映射器
 	 * @param params 参数
@@ -291,22 +292,24 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(Paging paging, String str, Mapper<T> m, Object... params);
+	<T> Paging<T> queryPaging(int page, int limit, String str, Mapper<T> m, Object... params);
 
 	/**
 	 * 查询列表
-	 * @param paging  分页器
+	 * @param page    当前页数
+	 * @param limit   每页条数
 	 * @param builder SQL和参数
 	 * @param m       映射器
 	 * @param <T>     解析器类型
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(Paging paging, SQLBuilder builder, Mapper<T> m);
+	<T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Mapper<T> m);
 
 	/**
 	 * 查询列表
-	 * @param paging 分页器
+	 * @param page   当前页数
+	 * @param limit  每页条数
 	 * @param str    SQL
 	 * @param type   类型类对象
 	 * @param params 参数
@@ -314,22 +317,24 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(Paging paging, String str, Class<T> type, Object... params);
+	<T> Paging<T> queryPaging(int page, int limit, String str, Class<T> type, Object... params);
 
 	/**
 	 * 查询列表
-	 * @param paging  分页器
+	 * @param page    当前页数
+	 * @param limit   每页条数
 	 * @param builder SQL和参数
 	 * @param type    类型类对象
 	 * @param <T>     解析器类型
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryList(Paging paging, SQLBuilder builder, Class<T> type);
+	<T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Class<T> type);
 
 	/**
 	 * 查询列表
-	 * @param paging 分页器
+	 * @param page   当前页数
+	 * @param limit  每页条数
 	 * @param str    SQL
 	 * @param type   类型类对象
 	 * @param params 参数
@@ -337,18 +342,19 @@ public interface JdbcInterface extends EventListener {
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryListSingle(Paging paging, String str, Class<T> type, Object... params);
+	<T> Paging<T> queryPagingSingle(int page, int limit, String str, Class<T> type, Object... params);
 
 	/**
 	 * 查询列表
-	 * @param paging  分页器
+	 * @param page    当前页数
+	 * @param limit   每页条数
 	 * @param builder SQL和参数
 	 * @param type    类型类对象
 	 * @param <T>     解析器类型
 	 * @return 查询结果
 	 */
 	@Nonnull
-	<T> List<T> queryListSingle(Paging paging, SQLBuilder builder, Class<T> type);
+	<T> Paging<T> queryPagingSingle(int page, int limit, SQLBuilder builder, Class<T> type);
 
 	/**
 	 * 查询对象

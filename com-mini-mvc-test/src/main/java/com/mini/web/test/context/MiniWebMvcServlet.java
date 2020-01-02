@@ -1,7 +1,6 @@
 package com.mini.web.test.context;
 
 import com.mini.core.web.servlet.AbstractDispatcherHttpServlet;
-import com.mini.core.web.servlet.AbstractDispatcherHttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
 

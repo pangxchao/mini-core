@@ -90,38 +90,38 @@ public abstract class AbstractDao implements JdbcInterface {
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(int skip, int limit, String str, Mapper<T> m, Object... params) {
-		return readTemplate().queryList(skip, limit, str, m, params);
+	public <T> List<T> queryList(int start, int limit, String str, Mapper<T> m, Object... params) {
+		return readTemplate().queryList(start, limit, str, m, params);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(int skip, int limit, SQLBuilder builder, Mapper<T> m) {
-		return readTemplate().queryList(skip, limit, builder, m);
+	public <T> List<T> queryList(int start, int limit, SQLBuilder builder, Mapper<T> m) {
+		return readTemplate().queryList(start, limit, builder, m);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(int skip, int limit, String str, Class<T> type, Object[] params) {
-		return readTemplate().queryList(skip, limit, str, type, params);
+	public <T> List<T> queryList(int start, int limit, String str, Class<T> type, Object[] params) {
+		return readTemplate().queryList(start, limit, str, type, params);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(int skip, int limit, SQLBuilder builder, Class<T> type) {
-		return readTemplate().queryList(skip, limit, builder, type);
+	public <T> List<T> queryList(int start, int limit, SQLBuilder builder, Class<T> type) {
+		return readTemplate().queryList(start, limit, builder, type);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryListSingle(int skip, int limit, String str, Class<T> type, Object[] params) {
-		return readTemplate().queryListSingle(skip, limit, str, type, params);
+	public <T> List<T> queryListSingle(int start, int limit, String str, Class<T> type, Object[] params) {
+		return readTemplate().queryListSingle(start, limit, str, type, params);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryListSingle(int skip, int limit, SQLBuilder builder, Class<T> type) {
-		return readTemplate().queryListSingle(skip, limit, builder, type);
+	public <T> List<T> queryListSingle(int start, int limit, SQLBuilder builder, Class<T> type) {
+		return readTemplate().queryListSingle(start, limit, builder, type);
 	}
 
 	@Nonnull
@@ -162,38 +162,38 @@ public abstract class AbstractDao implements JdbcInterface {
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(Paging paging, String str, Mapper<T> m, Object... params) {
-		return readTemplate().queryList(paging, str, m, params);
+	public final <T> Paging<T> queryPaging(int page, int limit, String str, Mapper<T> m, Object... params) {
+		return readTemplate().queryPaging(page, limit, str, m, params);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(Paging paging, SQLBuilder builder, Mapper<T> m) {
-		return readTemplate().queryList(paging, builder, m);
+	public final <T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Mapper<T> m) {
+		return readTemplate().queryPaging(page, limit, builder, m);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(Paging paging, String str, Class<T> type, Object... params) {
-		return readTemplate().queryList(paging, str, type, params);
+	public final <T> Paging<T> queryPaging(int page, int limit, String str, Class<T> type, Object... params) {
+		return readTemplate().queryPaging(page, limit, str, type, params);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryList(Paging paging, SQLBuilder builder, Class<T> type) {
-		return readTemplate().queryList(paging, builder, type);
+	public final <T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Class<T> type) {
+		return readTemplate().queryPaging(page, limit, builder, type);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryListSingle(Paging paging, String str, Class<T> type, Object... params) {
-		return readTemplate().queryListSingle(paging, str, type, params);
+	public final <T> Paging<T> queryPagingSingle(int page, int limit, String str, Class<T> type, Object... params) {
+		return readTemplate().queryPagingSingle(page, limit, str, type, params);
 	}
 
 	@Nonnull
 	@Override
-	public <T> List<T> queryListSingle(Paging paging, SQLBuilder builder, Class<T> type) {
-		return readTemplate().queryListSingle(paging, builder, type);
+	public final <T> Paging<T> queryPagingSingle(int page, int limit, SQLBuilder builder, Class<T> type) {
+		return readTemplate().queryPagingSingle(page, limit, builder, type);
 	}
 
 	@Nullable

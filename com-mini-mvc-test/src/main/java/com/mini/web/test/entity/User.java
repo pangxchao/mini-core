@@ -1,10 +1,13 @@
 package com.mini.web.test.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.mini.core.jdbc.annotation.Column;
 import com.mini.core.jdbc.annotation.Id;
 import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.core.jdbc.util.JdbcUtil;
+import com.mini.core.util.DateFormatUtil;
 import lombok.Data;
 
 import javax.annotation.Nonnull;
@@ -82,6 +85,9 @@ public class User implements Serializable {
 
 	@Id
 	@Column("user_id")
+	@JSONField(
+		serializeUsing = ToStringSerializer.class
+	)
 	private long id;
 
 	@Column("user_name")
@@ -129,6 +135,18 @@ public class User implements Serializable {
 		setHeadUrl(builder.headUrl);
 		setRegionId(builder.regionId);
 		setCreateTime(builder.createTime);
+	}
+
+	public final String getCreateTime_DT() {
+		return DateFormatUtil.formatDateTime(createTime);
+	}
+
+	public final String getCreateTime_D() {
+		return DateFormatUtil.formatDate(createTime);
+	}
+
+	public final String getCreateTime_T() {
+		return DateFormatUtil.formatTime(createTime);
 	}
 
 	public static Builder newBuilder() {

@@ -9,9 +9,9 @@ import com.mini.core.jdbc.MysqlJdbcTemplate;
 import com.mini.core.jdbc.transaction.JdbcTransManager;
 import com.mini.core.jdbc.transaction.TransManager;
 import com.mini.core.jdbc.transaction.TransactionEnable;
+import com.mini.core.web.support.WebApplicationInitializer;
 import com.mini.core.web.support.config.Configures;
 import com.mini.web.test.R;
-import com.mini.core.web.support.WebApplicationInitializer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

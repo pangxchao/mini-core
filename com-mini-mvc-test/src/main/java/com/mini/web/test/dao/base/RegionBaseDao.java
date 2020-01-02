@@ -146,11 +146,12 @@ public interface RegionBaseDao extends JdbcInterface {
 
 	/**
 	 * 查询所有实体信息
-	 * @param paging 分页工具
+	 * @param page  分页-页码数
+	 * @param limit 分页- 每页条数
 	 * @return 实体信息列表
 	 */
-	default List<Region> queryAll(Paging paging) {
-		return queryList(paging, new Region.RegionBuilder() {{
+	default Paging<Region> queryAll(int page, int limit) {
+		return queryPaging(page, limit, new Region.RegionBuilder() {{
 			//
 		}}, Region::mapper);
 	}

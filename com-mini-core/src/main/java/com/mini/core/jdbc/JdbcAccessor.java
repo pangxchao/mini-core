@@ -15,10 +15,8 @@ import java.util.concurrent.Executor;
 import static java.lang.ThreadLocal.withInitial;
 
 public abstract class JdbcAccessor implements EventListener, Serializable {
-	private static final ThreadLocal<Map<DataSource, Holder>> RESOURCES //
-		= withInitial(ConcurrentHashMap::new);
-	private static final ThreadLocal<JtaHolderTransaction> JTA //
-		= new ThreadLocal<>();
+	private static final ThreadLocal<Map<DataSource, Holder>> RESOURCES = withInitial(ConcurrentHashMap::new);
+	private static final ThreadLocal<JtaTransaction> JTA = new ThreadLocal<>();
 	private final DataSource dataSource;
 
 	public JdbcAccessor(@Nonnull DataSource dataSource) {
@@ -101,7 +99,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 	 */
 	public final <T> T transaction(JdbcTransactionCallback<T> callback) throws Throwable {
 		try (Holder holder = (Holder) this.getConnection()) {
-			var trans = new JdbcHolderTransaction(holder);
+			var trans = holder.getTransaction();
 			return callback.trans(trans);
 		}
 	}
@@ -114,7 +112,36 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 	 */
 	public static <T> T transaction(UserTransaction holder, JtaTransactionCallback<T> callback) throws Throwable {
 		var trans = Optional.ofNullable(JTA.get()).orElseGet(() -> {
-			JTA.set(new JtaHolderTransaction(holder));
+			JTA.set(new JdbcAccessor.JtaTransaction() {
+				private int transactionCount = 0;
+
+				@Override
+				public void startTransaction() throws Exception {
+					if (this.transactionCount > 0) {
+						this.transactionCount++;
+						return;
+					}
+					this.transactionCount = 1;
+					holder.begin();
+				}
+
+				@Override
+				public void endTransaction(boolean trans_commit) throws Exception {
+					if (--this.transactionCount <= 0) {
+						boolean rollback = true;
+						try {
+							if (trans_commit) {
+								holder.commit();
+								rollback = false;
+							}
+						} finally {
+							if (rollback) {
+								holder.rollback();
+							}
+						}
+					}
+				}
+			});
 			return JTA.get();
 		});
 		return callback.trans(trans);
@@ -127,6 +154,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 
 	private static class Holder implements Connection {
 		private final Connection connection;
+		private int transactionCount = 0;
 		private int referenceCount;
 
 		public Holder(Connection connection) {
@@ -137,6 +165,71 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 		public Holder requestedConnection() {
 			this.referenceCount++;
 			return this;
+		}
+
+		protected JdbcTransaction getTransaction() {
+			return new JdbcAccessor.JdbcTransaction() {
+				private Savepoint point;
+
+				public final void setTransactionIsolation(int level) throws SQLException {
+					Holder.this.setTransactionIsolation(level);
+				}
+
+				public final void startTransaction() throws SQLException {
+					if (transactionCount > 0) {
+						transactionCount++;
+						return;
+					}
+					setAutoCommit(false);
+					transactionCount = 1;
+				}
+
+				public final Savepoint setSavepoint() throws SQLException {
+					this.point = Holder.this.setSavepoint();
+					return this.point;
+				}
+
+				@SuppressWarnings("unused")
+				public final Savepoint setSavepoint(String name) throws SQLException {
+					this.point = Holder.this.setSavepoint(name);
+					return this.point;
+				}
+
+				@SuppressWarnings("unused")
+				public final void transactionRollback(Savepoint point) throws SQLException {
+					Holder.this.rollback(point);
+					this.point = null;
+				}
+
+				public final void endTransaction(boolean trans_commit) throws SQLException {
+					try {
+						// 事务计数 -1
+						Holder.this.transactionCount--;
+						if (!trans_commit && point != null) {
+							rollback(point);
+						}
+					} finally {
+						// 所有事务完成处理
+						if (transactionCount <= 0) {
+							boolean rollback = true;
+							try {
+								if (trans_commit) {
+									commit();
+									rollback = false;
+								}
+							} finally {
+								try {
+									if (rollback) {
+										rollback();
+									}
+								} finally {
+									setAutoCommit(true);
+								}
+							}
+						}
+					}
+				}
+			};
 		}
 
 		@Override
@@ -444,112 +537,6 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 		}
 	}
 
-	private static final class JdbcHolderTransaction implements JdbcTransaction {
-		private int transactionCount = 0;
-		private final Holder holder;
-		private Savepoint point;
-
-		public JdbcHolderTransaction(Holder holder) {
-			this.holder = holder;
-		}
-
-		public final void setTransactionIsolation(int level) throws SQLException {
-			holder.setTransactionIsolation(level);
-		}
-
-		public final void startTransaction() throws SQLException {
-			if (this.transactionCount > 0) {
-				this.transactionCount++;
-				return;
-			}
-			holder.setAutoCommit(false);
-			this.transactionCount = 1;
-		}
-
-		public final Savepoint setSavepoint() throws SQLException {
-			this.point = holder.setSavepoint();
-			return this.point;
-		}
-
-		@SuppressWarnings("unused")
-		public final Savepoint setSavepoint(String name) throws SQLException {
-			this.point = holder.setSavepoint(name);
-			return this.point;
-		}
-
-		@SuppressWarnings("unused")
-		public final void transactionRollback(Savepoint point) throws SQLException {
-			holder.rollback(point);
-		}
-
-		public final void endTransaction(boolean trans_commit) throws SQLException {
-			// 事务计数 -1
-			this.transactionCount--;
-			// 回滚事务到设置的回滚点
-			if (!trans_commit && point != null) {
-				try {
-					holder.rollback(point);
-				} catch (SQLException ignored) { }
-			}
-			// 所有事务完成处理
-			if (this.transactionCount <= 0) {
-				boolean rollback = true;
-				try {
-					if (trans_commit) {
-						holder.commit();
-						rollback = false;
-					}
-				} finally {
-					try {
-						if (rollback) {
-							holder.rollback();
-						}
-					} finally {
-						holder.setAutoCommit(true);
-					}
-				}
-			}
-		}
-	}
-
-	private static final class JtaHolderTransaction implements JtaTransaction {
-		private final UserTransaction holder;
-		private int transactionCount = 0;
-
-		private JtaHolderTransaction(UserTransaction transaction) {
-			this.holder = transaction;
-		}
-
-		@Override
-		public void startTransaction() throws Exception {
-			if (this.transactionCount > 0) {
-				this.transactionCount++;
-				return;
-			}
-			this.transactionCount = 1;
-			holder.begin();
-		}
-
-		@Override
-		public void endTransaction(boolean trans_commit) throws Exception {
-			// 事务计数 -1
-			this.transactionCount--;
-			// 所有事务完成处理
-			if (this.transactionCount <= 0) {
-				boolean rollback = true;
-				try {
-					if (trans_commit) {
-						holder.commit();
-						rollback = false;
-					}
-				} finally {
-					if (rollback) {
-						holder.rollback();
-					}
-				}
-			}
-		}
-	}
 
 	@FunctionalInterface
 	public interface ConnectionCallback<T> {
@@ -590,4 +577,76 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 	public interface CallableStatementCallback<T> {
 		T apply(CallableStatement stm) throws SQLException;
 	}
+
+	// JDBC 事务接口
+	public interface JdbcTransaction {
+		/**
+		 * 设置事务隔离级别
+		 * @param level 隔离级别
+		 */
+		void setTransactionIsolation(int level) throws SQLException;
+
+		/**
+		 * 开启一个数据库事务
+		 * @see Connection#setAutoCommit(boolean)
+		 * @see Connection#rollback(Savepoint)
+		 * @see Connection#rollback()
+		 * @see Connection#commit()
+		 */
+		void startTransaction() throws SQLException;
+
+		/**
+		 * 事务中保存一个回滚点
+		 * @return 回滚点
+		 */
+		Savepoint setSavepoint() throws SQLException;
+
+		/**
+		 * 事务中保存一个回滚点
+		 * @param name 保存点名称
+		 * @return 回滚点
+		 */
+		Savepoint setSavepoint(String name) throws SQLException;
+
+		/**
+		 * 回滚事务到指定回滚点
+		 * @param point 指定回滚保存点
+		 * @see Connection#setAutoCommit(boolean)
+		 * @see Connection#rollback(Savepoint)
+		 * @see Connection#rollback()
+		 * @see Connection#commit()
+		 */
+		void transactionRollback(Savepoint point) throws SQLException;
+
+		/**
+		 * 结束一个数据库事务
+		 * @param commit true-提交
+		 * @see Connection#setAutoCommit(boolean)
+		 * @see Connection#rollback(Savepoint)
+		 * @see Connection#rollback()
+		 * @see Connection#commit()
+		 */
+		void endTransaction(boolean commit) throws SQLException;
+	}
+
+	// JTA 事务接口
+	public interface JtaTransaction {
+		/**
+		 * 开启一个数据库事务
+		 * @see UserTransaction#begin()
+		 * @see UserTransaction#commit()
+		 * @see UserTransaction#rollback()
+		 */
+		void startTransaction() throws Exception;
+
+		/**
+		 * 结束一个数据库事务
+		 * @param commit true-提交
+		 * @see UserTransaction#begin()
+		 * @see UserTransaction#commit()
+		 * @see UserTransaction#rollback()
+		 */
+		void endTransaction(boolean commit) throws Exception;
+	}
+
 }

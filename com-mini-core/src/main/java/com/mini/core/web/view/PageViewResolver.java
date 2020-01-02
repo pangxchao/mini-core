@@ -10,13 +10,13 @@ import java.util.Map;
  * @author xchao
  */
 public interface PageViewResolver extends Serializable {
-    /**
-     * 生成页面
-     * @param data     传入页面方法
-     * @param viewPath 视图文件路径
-     * @param request  HttpServletRequest
-     * @param response HttpServletResponse
-     */
-    void generator(Map<String, Object> data, String viewPath, HttpServletRequest request,
-            HttpServletResponse response) throws Exception;
+	/**
+	 * 生成页面
+	 * @param data     传入页面方法
+	 * @param viewPath 视图文件路径
+	 * @param request  HttpServletRequest
+	 * @param response HttpServletResponse
+	 */
+	void generator(Map<String, Object> data, String viewPath, HttpServletRequest request,
+		HttpServletResponse response) throws Exception;
 }

@@ -13,6 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Before {
-    @Nonnull
-    Class<? extends ActionInterceptor>[] value() default {};
+	@Nonnull
+	Class<? extends ActionInterceptor>[] value() default {};
 }

@@ -11,17 +11,17 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Controller {
-    /**
-     * 访问地址
-     * @return 访问地址
-     */
-    @Nonnull
-    String url() default "";
+	/**
+	 * 访问地址
+	 * @return 访问地址
+	 */
+	@Nonnull
+	String url() default "";
 
-    /**
-     * 视图路径
-     * @return 视图路径
-     */
-    @Nonnull
-    String path() default "";
+	/**
+	 * 视图路径
+	 * @return 视图路径
+	 */
+	@Nonnull
+	String path() default "";
 }

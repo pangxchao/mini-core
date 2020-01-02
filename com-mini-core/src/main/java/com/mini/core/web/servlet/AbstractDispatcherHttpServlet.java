@@ -27,10 +27,14 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.mini.core.logger.LoggerFactory.getLogger;
+import static com.mini.core.util.ThrowsUtil.getLastInvocationTarget;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Stream.of;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
@@ -218,7 +222,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 				@Override
 				public synchronized final Object[] getParameterValues() {
 					return Stream.of(proxy.getParameterHandlers()).map(param -> {
-                        return param.getValue(this); //
+						return param.getValue(this); //
 					}).toArray(Object[]::new);
 				}
 
@@ -226,12 +230,13 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 				public synchronized final Object invoke() throws Throwable {
 					try {
 						if (iterator.hasNext()) {
-							return iterator.next().invoke(this);
+							return iterator.next() //
+								.invoke(this);
 						}
 						Object[] values = getParameterValues();
 						return getMethod().invoke(instance, values);
 					} catch (InvocationTargetException ex) {
-						throw ex.getTargetException();
+						throw getLastInvocationTarget(ex);
 					}
 				}
 			};

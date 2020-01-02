@@ -1,5 +1,7 @@
 package com.mini.code.impl;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.mini.code.Configure;
 import com.mini.code.Configure.BeanItem;
 import com.mini.code.Configure.ClassInfo;
@@ -11,6 +13,8 @@ import com.mini.core.jdbc.annotation.Id;
 import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.builder.SQLBuilder;
 import com.mini.core.jdbc.util.JdbcUtil;
+import com.mini.core.util.DateFormatUtil;
+import com.mini.core.util.StringUtil;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -22,6 +26,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import static com.mini.core.util.StringUtil.*;
 import static javax.lang.model.element.Modifier.*;
@@ -97,6 +102,12 @@ public final class CodeBean {
 					.addAnnotation(AnnotationSpec.builder(Column.class)
 						.addMember("value", "$S", fieldInfo.getColumnName())
 						.build())
+					// 添加JSON转换时，将 Long 型转换成 String 类型的注解
+					.ifAdd(fieldInfo.getTypeClass() == Long.class || fieldInfo.getTypeClass() == long.class, field -> { //
+						field.addAnnotation(AnnotationSpec.builder(JSONField.class)
+							.addMember("serializeUsing", "$T.class", ToStringSerializer.class)
+							.build());
+					})
 					.build());
 			})
 
@@ -108,6 +119,29 @@ public final class CodeBean {
 					String name = toJavaName(fieldInfo.getFieldName(), false);
 					method.addStatement("set$L(builder.$L)", firstUpperCase(name), name);
 				}).build())
+
+			.forAdd(info.getFieldList(), (builder, fieldInfo) -> { //
+				builder.ifAdd(Date.class.isAssignableFrom(fieldInfo.getTypeClass()), m -> {
+					String name = toJavaName(fieldInfo.getFieldName(), false);
+					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + StringUtil.firstUpperCase(name) + "_DT")
+						.addModifiers(PUBLIC, FINAL)
+						.returns(String.class)
+						.addStatement("return $T.formatDateTime($N)", DateFormatUtil.class, name)
+						.build());
+
+					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + StringUtil.firstUpperCase(name) + "_D")
+						.addModifiers(PUBLIC, FINAL)
+						.returns(String.class)
+						.addStatement("return $T.formatDate($N)", DateFormatUtil.class, name)
+						.build());
+
+					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + StringUtil.firstUpperCase(name) + "_T")
+						.addModifiers(PUBLIC, FINAL)
+						.returns(String.class)
+						.addStatement("return $T.formatTime($N)", DateFormatUtil.class, name)
+						.build());
+				});
+			})
 
 			// 生成静态无参数 newBuilder 方法
 			.addMethod(MethodSpecBuilder.methodBuilder("newBuilder")

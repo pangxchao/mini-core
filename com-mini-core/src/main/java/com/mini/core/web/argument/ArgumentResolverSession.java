@@ -11,13 +11,13 @@ import javax.inject.Singleton;
 @Singleton
 public final class ArgumentResolverSession implements ArgumentResolver {
 
-    @Override
-    public boolean supportParameter(MiniParameter parameter) {
-        return WebSession.class.isAssignableFrom(parameter.getType());
-    }
+	@Override
+	public boolean supportParameter(MiniParameter parameter) {
+		return WebSession.class.isAssignableFrom(parameter.getType());
+	}
 
-    @Override
-    public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
-        return invocation.getSession().getAttribute(WebSession.SESSION_KEY);
-    }
+	@Override
+	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
+		return invocation.getSession().getAttribute(WebSession.SESSION_KEY);
+	}
 }

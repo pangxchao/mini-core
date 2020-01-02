@@ -5,7 +5,7 @@ import com.mini.core.web.interceptor.ActionInvocation;
 
 public interface ArgumentResolver {
 
-    boolean supportParameter(MiniParameter parameter);
+	boolean supportParameter(MiniParameter parameter);
 
-    Object getValue(MiniParameter parameter, ActionInvocation invocation);
+	Object getValue(MiniParameter parameter, ActionInvocation invocation);
 }

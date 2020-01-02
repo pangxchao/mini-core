@@ -10,13 +10,13 @@ import javax.inject.Singleton;
 @Named
 @Singleton
 public final class ArgumentResolverModel implements ArgumentResolver {
-    @Override
-    public boolean supportParameter(MiniParameter parameter) {
-        return IModel.class.isAssignableFrom(parameter.getType());
-    }
+	@Override
+	public boolean supportParameter(MiniParameter parameter) {
+		return IModel.class.isAssignableFrom(parameter.getType());
+	}
 
-    @Override
-    public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
-        return invocation.getModel();
-    }
+	@Override
+	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
+		return invocation.getModel();
+	}
 }

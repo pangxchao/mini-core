@@ -1,16 +1,16 @@
 package com.mini.core.processor.handler;
 
+import com.google.auto.service.AutoService;
 import com.mini.core.processor.Getter;
-import lombok.Builder;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
-// @AutoService(Processor.class)
-@Builder
+@AutoService(Processor.class)
 public class GetterProcessor extends AbstractProcessor {
 
 	@Override
@@ -34,6 +34,6 @@ public class GetterProcessor extends AbstractProcessor {
 		//}
 
 
-		return false;
+		return true;
 	}
 }

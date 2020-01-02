@@ -9,9 +9,9 @@ import java.lang.annotation.*;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestUri {
-    /**
-     * 参数名称
-     * @return 参数名称
-     */
-    String value() default "";
+	/**
+	 * 参数名称
+	 * @return 参数名称
+	 */
+	String value() default "";
 }

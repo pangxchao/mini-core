@@ -13,7 +13,7 @@
 		testWhileIdle="true"
 		validationQuery="select 1"
 		url="jdbc:mysql://192.168.1.200:3306/mini_test?useSSL=false&amp;serverTimezone=GMT%2B8" />
-
+	
 	<Parameter name="KEY_PATH"
 		value="d:/static/" />
 	<Parameter name="KEY_URL"

@@ -3,9 +3,6 @@ package com.mini.web.test.controller;
 import com.mini.core.web.annotation.Action;
 import com.mini.core.web.annotation.Controller;
 import com.mini.core.web.model.PageModel;
-import com.mini.core.web.annotation.Action;
-import com.mini.core.web.annotation.Controller;
-import com.mini.core.web.model.PageModel;
 
 import javax.inject.Singleton;
 

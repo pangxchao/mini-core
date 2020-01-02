@@ -11,8 +11,9 @@ import com.mini.core.web.annotation.Controller;
 import com.mini.core.web.model.JsonModel;
 import com.mini.core.web.model.PageModel;
 import com.mini.core.web.model.factory.ModelType;
+import com.mini.web.test.dao.UserDao;
 import com.mini.web.test.entity.User;
-import com.mini.web.test.service.UserService;
+import com.mini.web.test.entity.extend.UserExt;
 import com.mini.web.test.util.FileGenerator;
 
 import javax.inject.Inject;
@@ -36,7 +37,8 @@ import static com.mini.core.validate.ValidateUtil.sendError;
 @Controller(path = "back/demo", url = "back/demo")
 public class DemoController {
 	@Inject
-	private UserService userService;
+	private UserDao userDao;
+
 
 	/**
 	 * 实体列表首页
@@ -49,7 +51,8 @@ public class DemoController {
 	/**
 	 * 实体列表数据分页
 	 * @param model     数据模型渲染器
-	 * @param paging    数据分页工具
+	 * @param page      分页页码数
+	 * @param limit     分页每页条数
 	 * @param search    搜索关键字
 	 * @param sortType  排序方式
 	 * @param phone     手机号是否认证
@@ -62,7 +65,7 @@ public class DemoController {
 	 * @param request   HttpServletRequest
 	 */
 	@Action(value = ModelType.JSON, url = "pages.htm")
-	public void pages(JsonModel model, Paging paging, String search, int sortType, int phone, int email, int province, int city,
+	public void pages(JsonModel model, int page, int limit, String search, int sortType, int phone, int email, int province, int city,
 		int district, LocalDate startTime, LocalDate endTime, HttpServletRequest request) {
 		System.out.println("===================back========================");
 		System.out.println(JSON.toJSONString(request.getParameterMap()));
@@ -80,8 +83,8 @@ public class DemoController {
 			regionIdUri.append(district);
 		}
 		System.out.println(regionIdUri.toString());
-		model.addData("data", userService.search(paging, search, sortType, phone, email, regionIdUri.toString(), //
-			startTime, endTime).stream().map(user -> {
+		Paging<UserExt> paging = userDao.search(page, limit, search, sortType, phone, email, regionIdUri.toString(), startTime, endTime);
+		model.addData("data", paging.getRows().stream().map(user -> {
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", String.valueOf(user.getId()));
 			map.put("name", user.getName());
@@ -118,7 +121,7 @@ public class DemoController {
 		user.setCreateTime(new Date());
 		user.setId(PKGenerator.id());
 		// 添加用户信息到数据库
-		if (userService.insert(user) != 1) {
+		if (userDao.insert(user) != 1) {
 			sendError(600, "添加用户信息失败");
 			return;
 		}
@@ -137,11 +140,11 @@ public class DemoController {
 		ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
 		ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
 
-		User info = userService.queryById(user.getId());
+		User info = userDao.queryById(user.getId());
 		ValidateUtil.isNotNull(info, 600, "用户信息不存在");
 		user.setCreateTime(info.getCreateTime());
 		user.setPassword(info.getPassword());
-		if (userService.update(user) != 1) {
+		if (userDao.update(user) != 1) {
 			sendError(600, "修改用户信息失败");
 		}
 	}
@@ -153,7 +156,9 @@ public class DemoController {
 	 */
 	@Action(value = ModelType.JSON, url = "delete.htm")
 	public void delete(JsonModel model, long[] idList) {
-		ValidateUtil.is(idList != null && idList.length > 0, 600, "未选中数据");
-		userService.delete(idList);
+		if (idList == null || idList.length <= 0) {
+			ValidateUtil.sendError(600, "未选中数据");
+		}
+		userDao.delete(idList);
 	}
 }

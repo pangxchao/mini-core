@@ -12,7 +12,6 @@ import com.mini.web.test.entity.extend.UserExt.UserExtendBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static com.mini.web.test.entity.User.*;
 
@@ -23,9 +22,9 @@ import static com.mini.web.test.entity.User.*;
 @ImplementedBy(UserDaoImpl.class)
 public interface UserDao extends UserBaseDao {
 
-	default List<UserExt> search(Paging paging, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
+	default Paging<UserExt> search(int page, int limit, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
 		LocalDate startTime, LocalDate endTime) {
-		return queryList(paging, new UserExtendBuilder() {{
+		return queryPaging(page, limit, new UserExtendBuilder() {{
 			// 搜索关键字条件
 			if (!StringUtils.isBlank(search)) {
 				where("(%s LIKE ? OR %s LIKE ? OR %s LIKE ?)", NAME, FULL_NAME, PHONE);

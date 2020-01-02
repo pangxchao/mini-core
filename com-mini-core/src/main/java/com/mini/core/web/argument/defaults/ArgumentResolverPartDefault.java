@@ -3,7 +3,6 @@ package com.mini.core.web.argument.defaults;
 import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolver;
-import com.mini.core.web.argument.ArgumentResolver;
 import com.mini.core.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
@@ -19,35 +18,35 @@ import static java.util.Optional.ofNullable;
 @Singleton
 public final class ArgumentResolverPartDefault implements ArgumentResolver {
 
-    @Override
-    public boolean supportParameter(MiniParameter parameter) {
-        for (var annotation : parameter.getAnnotations()) {
-            if (annotation.getClass().getAnnotation( //
-                    Associated.class) != null) {
-                return false;
-            }
-        }
-        return Part.class == parameter.getType();
-    }
+	@Override
+	public boolean supportParameter(MiniParameter parameter) {
+		for (var annotation : parameter.getAnnotations()) {
+			if (annotation.getClass().getAnnotation( //
+				Associated.class) != null) {
+				return false;
+			}
+		}
+		return Part.class == parameter.getType();
+	}
 
-    /**
-     * 获取参数名称
-     * @param parameter 参数对象
-     * @return 参数名称
-     */
-    @Nonnull
-    private String getParameterName(MiniParameter parameter) {
-        return parameter.getName();
-    }
+	/**
+	 * 获取参数名称
+	 * @param parameter 参数对象
+	 * @return 参数名称
+	 */
+	@Nonnull
+	private String getParameterName(MiniParameter parameter) {
+		return parameter.getName();
+	}
 
-    @Override
-    public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
-        try {
-            String name = this.getParameterName(parameter);
-            return ofNullable(invocation.getRequest().getPart(name))
-                    .filter(part -> part.getSize() > 0)
-                    .orElse(null);
-        } catch (IOException | ServletException ignored) {}
-        return null;
-    }
+	@Override
+	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
+		try {
+			String name = this.getParameterName(parameter);
+			return ofNullable(invocation.getRequest().getPart(name))
+				.filter(part -> part.getSize() > 0)
+				.orElse(null);
+		} catch (IOException | ServletException ignored) {}
+		return null;
+	}
 }

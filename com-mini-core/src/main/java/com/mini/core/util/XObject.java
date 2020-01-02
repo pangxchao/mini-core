@@ -1,12 +1,15 @@
 package com.mini.core.util;
 
-public final class XObject extends XAbstract<Object, XObject> {
-    private XObject(Object value) {
-        super(value);
-    }
+import javax.annotation.Nonnull;
 
-    @Override
-    protected XObject getThis() {
-        return this;
-    }
+public final class XObject extends XAbstract<Object, XObject> {
+	private XObject(Object value) {
+		super(value);
+	}
+
+	@Nonnull
+	@Override
+	protected XObject getThis() {
+		return this;
+	}
 }

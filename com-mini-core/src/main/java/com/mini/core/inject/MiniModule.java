@@ -2,7 +2,6 @@ package com.mini.core.inject;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
-import com.google.inject.matcher.Matcher;
 import com.google.inject.name.Names;
 import com.mini.core.inject.annotation.ComponentScan;
 import com.mini.core.inject.annotation.PropertySource;
@@ -13,7 +12,6 @@ import com.mini.core.jdbc.transaction.Transactional;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.util.Properties;
 
 import static com.google.inject.Key.get;

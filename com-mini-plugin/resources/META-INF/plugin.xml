@@ -53,13 +53,18 @@
     ]]></change-notes>
 	<idea-version since-build="173.0" />
 	
-	<!-- 插件依赖配置 -->
-	<!--  <depends>com.intellij.modules.platform</depends>-->
+	<!--必须为企业版-->
 	<depends>com.intellij.modules.lang</depends>
+	<!--必须依赖 Database 插件-->
 	<depends>com.intellij.database</depends>
+	<!--必须依赖Velocity插件-->
+	<depends>com.intellij.velocity</depends>
 	
 	<!-- 扩展配置、高亮语法、语言支持等 -->
 	<extensions defaultExtensionNs="com.intellij">
+		<applicationService serviceImplementation="com.mini.plugin.config.Settings" />
+		<applicationConfigurable instance="com.mini.plugin.ui.MainSetting"
+			dynamic="true" />
 		<!--    <applicationService serviceImplementation="com.sjhy.plugin.config.Settings"/>-->
 		<!--    <projectService serviceInterface="com.sjhy.plugin.service.TableInfoService"-->
 		<!--                    serviceImplementation="com.sjhy.plugin.service.impl.TableInfoServiceImpl"/>-->
@@ -69,6 +74,13 @@
 		<!--    <velocity.globalVariableProvider implementation="com.sjhy.plugin.provider.EasyCodeGlobalVariableProvider"/>-->
 	</extensions>
 	
+	<!--	<application-components>-->
+	<!--	</application-components>-->
+	<!--	<project-components>-->
+	<!--		<component>-->
+	<!--			<implementation-class>com.jsmzr.cipher.component.CipherTools</implementation-class>-->
+	<!--		</component>-->
+	<!--	</project-components>-->
 	
 	<actions>
 		<!-- 数据库表右键菜单分组 -->

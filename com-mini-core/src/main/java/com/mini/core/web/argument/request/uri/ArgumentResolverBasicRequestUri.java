@@ -11,24 +11,24 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ArgumentResolverBasicRequestUri extends ArgumentResolverBasic {
-    @Override
-    public boolean supportParameter(MiniParameter parameter) {
-        RequestUri param = parameter.getAnnotation(RequestUri.class);
-        return param != null && super.supportParameter(parameter);
-    }
+	@Override
+	public boolean supportParameter(MiniParameter parameter) {
+		RequestUri param = parameter.getAnnotation(RequestUri.class);
+		return param != null && super.supportParameter(parameter);
+	}
 
-    @Nonnull
-    @Override
-    protected String getParameterName(MiniParameter parameter) {
-        RequestUri param = parameter.getAnnotation(RequestUri.class);
-        if (param == null || StringUtil.isBlank(param.value())) {
-            return parameter.getName();
-        }
-        return param.value();
-    }
+	@Nonnull
+	@Override
+	protected String getParameterName(MiniParameter parameter) {
+		RequestUri param = parameter.getAnnotation(RequestUri.class);
+		if (param == null || StringUtil.isBlank(param.value())) {
+			return parameter.getName();
+		}
+		return param.value();
+	}
 
-    @Override
-    protected String getValue(String name, ActionInvocation invocation) {
-        return invocation.getRequest().getParameter(name);
-    }
+	@Override
+	protected String getValue(String name, ActionInvocation invocation) {
+		return invocation.getRequest().getParameter(name);
+	}
 }

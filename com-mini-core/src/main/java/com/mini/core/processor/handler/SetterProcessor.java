@@ -27,6 +27,6 @@ public class SetterProcessor extends AbstractProcessor {
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
 
-		return false;
+		return true;
 	}
 }

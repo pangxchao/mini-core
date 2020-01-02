@@ -158,32 +158,32 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(int skip, int limit, SQLBuilder builder, Mapper<T> m) {
-		return queryList(skip, limit, builder.toString(), m, builder.toArray());
+	public final <T> List<T> queryList(int start, int limit, SQLBuilder builder, Mapper<T> m) {
+		return queryList(start, limit, builder.toString(), m, builder.toArray());
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(int skip, int limit, String str, Class<T> type, Object[] params) {
-		return queryList(skip, limit, str, BeanMapper.create(type), params);
+	public final <T> List<T> queryList(int start, int limit, String str, Class<T> type, Object[] params) {
+		return queryList(start, limit, str, BeanMapper.create(type), params);
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(int skip, int limit, SQLBuilder builder, Class<T> type) {
-		return queryList(skip, limit, builder, BeanMapper.create(type));
+	public final <T> List<T> queryList(int start, int limit, SQLBuilder builder, Class<T> type) {
+		return queryList(start, limit, builder, BeanMapper.create(type));
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryListSingle(int skip, int limit, String str, Class<T> type, Object[] params) {
-		return queryList(skip, limit, str, SingleMapper.create(type), params);
+	public final <T> List<T> queryListSingle(int start, int limit, String str, Class<T> type, Object[] params) {
+		return queryList(start, limit, str, SingleMapper.create(type), params);
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryListSingle(int skip, int limit, SQLBuilder builder, Class<T> type) {
-		return queryList(skip, limit, builder, SingleMapper.create(type));
+	public final <T> List<T> queryListSingle(int start, int limit, SQLBuilder builder, Class<T> type) {
+		return queryList(start, limit, builder, SingleMapper.create(type));
 	}
 
 	@Nonnull
@@ -222,42 +222,43 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 		return queryList(0, limit, builder, SingleMapper.create(type));
 	}
 
-
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(Paging paging, String str, Mapper<T> m, Object... params) {
+	public final <T> Paging<T> queryPaging(int page, int limit, String str, Mapper<T> m, Object... params) {
+		com.mini.core.jdbc.model.Paging<T> paging = new com.mini.core.jdbc.model.Paging<>(page, limit);
+		paging.addRows(queryList(paging(paging.getStart(), paging.getLimit(), str), m, params));
 		paging.setTotal(query(totals(str), (rs -> rs.next() ? rs.getInt(1) : 0), params));
-		return queryList(paging(paging.getSkip(), paging.getLimit(), str), m, params);
+		return paging;
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(Paging paging, SQLBuilder builder, Mapper<T> m) {
-		return queryList(paging, builder.toString(), m, builder.toArray());
+	public final <T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Mapper<T> m) {
+		return queryPaging(page, limit, builder.toString(), m, builder.toArray());
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(Paging paging, String str, Class<T> type, Object... params) {
-		return queryList(paging, str, BeanMapper.create(type), params);
+	public final <T> Paging<T> queryPaging(int page, int limit, String str, Class<T> type, Object... params) {
+		return queryPaging(page, limit, str, BeanMapper.create(type), params);
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryList(Paging paging, SQLBuilder builder, Class<T> type) {
-		return queryList(paging, builder, BeanMapper.create(type));
+	public final <T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Class<T> type) {
+		return queryPaging(page, limit, builder, BeanMapper.create(type));
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryListSingle(Paging paging, String str, Class<T> type, Object... params) {
-		return queryList(paging, str, SingleMapper.create(type), params);
+	public final <T> Paging<T> queryPagingSingle(int page, int limit, String str, Class<T> type, Object... params) {
+		return queryPaging(page, limit, str, SingleMapper.create(type), params);
 	}
 
 	@Nonnull
 	@Override
-	public final <T> List<T> queryListSingle(Paging paging, SQLBuilder builder, Class<T> type) {
-		return queryList(paging, builder, SingleMapper.create(type));
+	public final <T> Paging<T> queryPagingSingle(int page, int limit, SQLBuilder builder, Class<T> type) {
+		return queryPaging(page, limit, builder, SingleMapper.create(type));
 	}
 
 	@Nullable

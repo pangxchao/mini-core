@@ -1,11 +1,11 @@
 package com.mini.web.test.controller;
 
 import com.mini.core.util.PKGenerator;
-import com.mini.core.web.model.factory.ModelType;
 import com.mini.core.web.annotation.Action;
 import com.mini.core.web.annotation.Controller;
 import com.mini.core.web.model.JsonModel;
 import com.mini.core.web.model.PageModel;
+import com.mini.core.web.model.factory.ModelType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;

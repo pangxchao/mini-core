@@ -11,44 +11,44 @@ import static java.security.MessageDigest.getInstance;
  * @author xchao
  */
 public abstract class BaseDigest extends SecurityBase<BaseDigest> {
-    private final MessageDigest digest;
+	private final MessageDigest digest;
 
-    protected BaseDigest(MessageDigest digest) {
-        this.digest = digest;
-    }
+	protected BaseDigest(MessageDigest digest) {
+		this.digest = digest;
+	}
 
-    protected BaseDigest(String algorithm) throws Exception {
-        this(getInstance(algorithm));
-    }
+	protected BaseDigest(String algorithm) throws Exception {
+		this(getInstance(algorithm));
+	}
 
-    public final BaseDigest update(byte[] input, int offset, int len) {
-        digest.update(input, offset, len);
-        return this;
-    }
+	public final BaseDigest update(byte[] input, int offset, int len) {
+		digest.update(input, offset, len);
+		return this;
+	}
 
-    public final BaseDigest update(byte[] input) {
-        digest.update(input);
-        return this;
-    }
+	public final BaseDigest update(byte[] input) {
+		digest.update(input);
+		return this;
+	}
 
-    public final BaseDigest update(byte input) {
-        digest.update(input);
-        return this;
-    }
+	public final BaseDigest update(byte input) {
+		digest.update(input);
+		return this;
+	}
 
-    public final byte[] digest(byte[] input) {
-        return digest.digest(input);
-    }
+	public final byte[] digest(byte[] input) {
+		return digest.digest(input);
+	}
 
-    public final byte[] digest() {
-        return digest.digest();
-    }
+	public final byte[] digest() {
+		return digest.digest();
+	}
 
-    public final String toString() {
-        return digest.toString();
-    }
+	public final String toString() {
+		return digest.toString();
+	}
 
-    public final void reset() {
-        digest.reset();
-    }
+	public final void reset() {
+		digest.reset();
+	}
 }

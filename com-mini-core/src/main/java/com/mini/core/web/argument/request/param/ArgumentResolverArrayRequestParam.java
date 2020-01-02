@@ -12,24 +12,24 @@ import javax.inject.Singleton;
 @Singleton
 public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArray {
 
-    @Override
-    public boolean supportParameter(MiniParameter parameter) {
-        RequestParam param = parameter.getAnnotation(RequestParam.class);
-        return param != null && super.supportParameter(parameter);
-    }
+	@Override
+	public boolean supportParameter(MiniParameter parameter) {
+		RequestParam param = parameter.getAnnotation(RequestParam.class);
+		return param != null && super.supportParameter(parameter);
+	}
 
-    @Nonnull
-    @Override
-    protected String getParameterName(MiniParameter parameter) {
-        RequestParam param = parameter.getAnnotation(RequestParam.class);
-        if (param == null || StringUtil.isBlank(param.value())) {
-            return parameter.getName();
-        }
-        return param.value();
-    }
+	@Nonnull
+	@Override
+	protected String getParameterName(MiniParameter parameter) {
+		RequestParam param = parameter.getAnnotation(RequestParam.class);
+		if (param == null || StringUtil.isBlank(param.value())) {
+			return parameter.getName();
+		}
+		return param.value();
+	}
 
-    @Override
-    protected String[] getValue(String name, ActionInvocation invocation) {
-        return invocation.getRequest().getParameterValues(name);
-    }
+	@Override
+	protected String[] getValue(String name, ActionInvocation invocation) {
+		return invocation.getRequest().getParameterValues(name);
+	}
 }

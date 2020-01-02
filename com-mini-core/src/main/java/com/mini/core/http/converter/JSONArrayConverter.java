@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class JSONArrayConverter implements Converter<JSONArray> {
-    public static final JSONArrayConverter INSTANCE = new JSONArrayConverter();
+	public static final JSONArrayConverter INSTANCE = new JSONArrayConverter();
 
-    @Override
-    public JSONArray apply(@Nonnull Call call, @Nonnull Response response) throws IOException {
-        if (!response.isSuccessful()) throw new IOException(response.message());
-        try (ResponseBody body = Objects.requireNonNull(response.body())) {
-            String string = Objects.requireNonNull(body.string());
-            return JSON.parseArray(string);
-        }
-    }
+	@Override
+	public JSONArray apply(@Nonnull Call call, @Nonnull Response response) throws IOException {
+		if (!response.isSuccessful()) throw new IOException(response.message());
+		try (ResponseBody body = Objects.requireNonNull(response.body())) {
+			String string = Objects.requireNonNull(body.string());
+			return JSON.parseArray(string);
+		}
+	}
 }
