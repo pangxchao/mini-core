@@ -33,12 +33,12 @@ public class ThrowsUtil {
 		return throwable;
 	}
 
-	public static RuntimeException sneaky(@Nonnull Throwable t) {
-		return ThrowsUtil.sneaky0(t);
+	public static RuntimeException hidden(@Nonnull Throwable t) {
+		return ThrowsUtil.hidden_(t);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends Throwable> T sneaky0(Throwable t) throws T {
+	private static <T extends Throwable> T hidden_(Throwable t) throws T {
 		throw (T) t;
 	}
 }

@@ -53,7 +53,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		try {
 			this.fileName = new String(fileName.getBytes(), "ISO8859-1");
 		} catch (UnsupportedEncodingException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 		return model();
 	}
@@ -62,7 +62,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		try {
 			this.fileName = new String(fileName.getBytes(charset), "ISO8859-1");
 		} catch (UnsupportedEncodingException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 		return model();
 	}
@@ -71,7 +71,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		try {
 			this.fileName = new String(fileName.getBytes(charset), "ISO8859-1");
 		} catch (UnsupportedEncodingException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 		return model();
 	}

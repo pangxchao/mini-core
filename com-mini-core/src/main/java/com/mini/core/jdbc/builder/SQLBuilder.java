@@ -1,16 +1,23 @@
 package com.mini.core.jdbc.builder;
 
+import com.mini.core.jdbc.annotation.Column;
+import com.mini.core.jdbc.annotation.Join;
+import com.mini.core.jdbc.annotation.Ref;
+import com.mini.core.jdbc.annotation.Table;
+import com.mini.core.util.Assert;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.*;
 
+import static com.mini.core.jdbc.builder.SQLBuilder.StatementType.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.addAll;
 
-public class SQLBuilder {
+public class SQLBuilder implements EventListener, Serializable {
 	private final OuterJoinStatement outerJoin = new OuterJoinStatement();
 	private final RightJoinStatement rightJoin = new RightJoinStatement();
 	private final LeftJoinStatement leftJoin = new LeftJoinStatement();
@@ -33,7 +40,68 @@ public class SQLBuilder {
 	public SQLBuilder() {}
 
 	public <T> SQLBuilder(Class<T> type) {
+		Table table = type.getAnnotation(Table.class);
+		Assert.notNull(table, "@Table cannot be empty: " + type);
+		List<Join> joinList = Arrays.asList(type.getAnnotationsByType(Join.class));
 
+		from(table.value());
+		Class<? super T> supers = type;
+		Set<String> columns = new HashSet<>();
+		for (; supers != null; supers = supers.getSuperclass()) {
+			for (Field field : supers.getDeclaredFields()) {
+				Optional.ofNullable(field.getAnnotation(Column.class))
+					.filter(column -> !columns.contains(column.value()))
+					.ifPresent(column -> {
+						columns.add(column.value());
+						select(column.value());
+						Optional.ofNullable(field.getAnnotation(Ref.class)).ifPresent(ref -> { //
+							joinList.stream().filter(join -> { //
+								return join.column().equals(ref.column());
+							}).findAny().ifPresent(join -> {
+								String sql = String.format("%s ON %s = %s", ref.table(), column.value(), ref.column());
+								switch (join.type()) {
+									case LEFT: {
+										leftJoin(sql);
+										break;
+									}
+									case RIGHT: {
+										rightJoin(sql);
+										break;
+									}
+									case OUTER: {
+										outerJoin(sql);
+										break;
+									}
+									default: {
+										join(sql);
+									}
+								}
+							});
+						});
+					});
+			}
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static void copy(SQLBuilder source, SQLBuilder copy) {
+		source.outerJoin.values.addAll(copy.outerJoin.values);
+		source.rightJoin.values.addAll(copy.rightJoin.values);
+		source.leftJoin.values.addAll(copy.leftJoin.values);
+		source.groupBy.values.addAll(copy.groupBy.values);
+		source.orderBy.values.addAll(copy.orderBy.values);
+		source.columns.values.addAll(copy.columns.values);
+		source.having.values.addAll(copy.having.values);
+		source.values.values.addAll(copy.values.values);
+		source.select.values.addAll(copy.select.values);
+		source.table.values.addAll(copy.table.values);
+		source.where.values.addAll(copy.where.values);
+		source.from.values.addAll(copy.from.values);
+		source.join.values.addAll(copy.join.values);
+		source.set.values.addAll(copy.set.values);
+		source.statement = copy.statement;
+		source.params.addAll(copy.params);
+		source.distinct = copy.distinct;
 	}
 
 	public final SQLBuilder params(Object... param) {
@@ -46,13 +114,13 @@ public class SQLBuilder {
 	}
 
 	public final SQLBuilder insertInto(String table) {
-		this.statement = StatementType.INSERT;
+		this.statement = INSERT;
 		this.table.addValues(table);
 		return this;
 	}
 
 	public final SQLBuilder replaceInto(String table) {
-		this.statement = StatementType.REPLACE;
+		this.statement = REPLACE;
 		this.table.addValues(table);
 		return this;
 	}
@@ -64,7 +132,7 @@ public class SQLBuilder {
 	}
 
 	public final SQLBuilder update(String... tables) {
-		this.statement = StatementType.UPDATE;
+		this.statement = UPDATE;
 		this.table.addValues(tables);
 		return this;
 	}
@@ -226,12 +294,12 @@ public class SQLBuilder {
 	 */
 	public synchronized final String toString() {
 		//  Insert 语句
-		if (statement == StatementType.INSERT) {
+		if (statement == INSERT) {
 			return this.insertString();
 		}
 
 		// Replace 语句
-		if (statement == StatementType.REPLACE) {
+		if (statement == REPLACE) {
 			return this.replaceString();
 		}
 
@@ -241,7 +309,7 @@ public class SQLBuilder {
 		}
 
 		// Update 语句
-		if (statement == StatementType.UPDATE) {
+		if (statement == UPDATE) {
 			return this.updateString();
 		}
 
@@ -547,7 +615,9 @@ public class SQLBuilder {
 		}
 	}
 
-	private enum StatementType {
+	public enum StatementType {
 		INSERT, REPLACE, DELETE, UPDATE, SELECT
 	}
+
+
 }

@@ -3,7 +3,7 @@ package com.mini.core.jdbc.mapper;
 import com.mini.core.jdbc.annotation.Column;
 import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.jdbc.util.JdbcUtil;
-import com.mini.core.util.Assert;
+import com.mini.core.util.ThrowsUtil;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import javax.annotation.Nonnull;
@@ -18,9 +18,11 @@ import java.sql.SQLException;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mini.core.jdbc.util.JdbcUtil.getObject;
+import static org.apache.commons.lang3.Validate.notNull;
 
 /**
  * BeanMapper.java
@@ -56,13 +58,14 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 					Method method = pd.getWriteMethod();
 					if (method == null) continue;
 
+
 					// 设置字段的值
 					method.invoke(value, getObject(rs, column, field.getType()));
 				} catch (IntrospectionException ignored) {}
 			}
 			return value;
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException(e);
+			throw ThrowsUtil.hidden(e);
 		}
 	}
 
@@ -78,17 +81,15 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			while (table == null && supers != null) {
 				table = supers.getAnnotation(Table.class);
 			}
-
 			// 验证@Table是否为空，为空时提示错误信息
-			Assert.notNull(table, "%s is not find @Table", type.getName());
+			notNull(table, "%s is not find @Table", type.getName());
 
 			// 创建 Mapper 对象
 			BeanMapper<T> mapper = new BeanMapper<>(type);
 			for (supers = type; supers != null; supers = supers.getSuperclass()) {
 				for (Field field : supers.getDeclaredFields()) {
-					Column column = field.getAnnotation(Column.class);
-					if (column == null) continue;
-					mapper.addField(column.value(), field);
+					Optional.ofNullable(field.getAnnotation(Column.class))
+						.ifPresent(column -> mapper.addField(column.value(), field));
 				}
 			}
 			return mapper;

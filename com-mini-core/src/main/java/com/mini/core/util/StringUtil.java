@@ -36,7 +36,7 @@ public class StringUtil extends StringUtils {
 		try {
 			return new URL(self);
 		} catch (MalformedURLException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 	}
 
@@ -49,7 +49,7 @@ public class StringUtil extends StringUtils {
 		try {
 			return new URI(self);
 		} catch (URISyntaxException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class StringUtil extends StringUtils {
 		try {
 			return URLEncoder.encode(self, charset);
 		} catch (UnsupportedEncodingException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class StringUtil extends StringUtils {
 		try {
 			return URLDecoder.decode(self, charset);
 		} catch (UnsupportedEncodingException e) {
-			throw ThrowsUtil.sneaky(e);
+			throw ThrowsUtil.hidden(e);
 		}
 	}
 
