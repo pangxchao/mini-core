@@ -17,6 +17,7 @@ import java.util.Date;
 @Param
 @Table("user_info")
 public class User implements Serializable {
+	
 	@Comment("表名称user_info")
 	public static final String TABLE = "user_info";
 	
