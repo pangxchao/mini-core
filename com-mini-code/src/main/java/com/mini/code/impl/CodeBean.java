@@ -1,20 +1,17 @@
 package com.mini.code.impl;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.mini.code.Configure;
 import com.mini.code.Configure.BeanItem;
 import com.mini.code.Configure.ClassInfo;
 import com.mini.code.util.FieldSpecBuilder;
 import com.mini.code.util.MethodSpecBuilder;
 import com.mini.code.util.TypeSpecBuilder;
-import com.mini.core.jdbc.annotation.Column;
-import com.mini.core.jdbc.annotation.Id;
-import com.mini.core.jdbc.annotation.Table;
-import com.mini.core.jdbc.builder.SQLBuilder;
-import com.mini.core.jdbc.util.JdbcUtil;
+import com.mini.core.holder.jdbc.Column;
+import com.mini.core.holder.jdbc.Comment;
+import com.mini.core.holder.jdbc.Id;
+import com.mini.core.holder.jdbc.Table;
+import com.mini.core.holder.web.Param;
 import com.mini.core.util.DateFormatUtil;
-import com.mini.core.util.StringUtil;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -24,11 +21,10 @@ import lombok.Data;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Date;
 
-import static com.mini.core.util.StringUtil.*;
+import static com.mini.core.util.StringUtil.firstUpperCase;
+import static com.mini.core.util.StringUtil.toJavaName;
 import static javax.lang.model.element.Modifier.*;
 
 public final class CodeBean {
@@ -43,7 +39,7 @@ public final class CodeBean {
 		if (!cover && configure.exists(info.getBeanPackage(), info.getBeanName())) {
 			return;
 		}
-
+		
 		JavaFile.builder(info.getBeanPackage(), TypeSpecBuilder
 			// 类名称
 			.classBuilder(info.getBeanClass())
@@ -53,6 +49,8 @@ public final class CodeBean {
 			.addSuperinterface(Serializable.class)
 			// 添加 @Data 注解
 			.addAnnotation(Data.class)
+			// 添加 @Param 注解
+			.addAnnotation(Param.class)
 			// 添加 @Table 注解
 			.addAnnotation(AnnotationSpec.builder(Table.class)
 				.addMember("value", "$S", bean.tableName)
@@ -60,36 +58,40 @@ public final class CodeBean {
 			// 添加类注释文档
 			.addJavadoc("$L.java \n", info.getBeanName())
 			.addJavadoc("@author xchao \n")
-
+			
 			// serialVersionUID 属性，IDEA 编辑器一般不需要该属性
 			.ifAdd(configure.generatorSerialVersionUID(), (builder) -> //
 				builder.addField(FieldSpec.builder(long.class, "serialVersionUID")
 					.addModifiers(PRIVATE, STATIC, FINAL)
 					.initializer("$L", "-1L")
 					.build()))
-
+			
 			// 生成常量 TABLE 字段
 			.addField(FieldSpec.builder(String.class, "TABLE")
 				.addModifiers(PUBLIC, STATIC, FINAL)
-				.addJavadoc(" 表名称 $L \n", bean.tableName)
 				.initializer("$S", bean.tableName)
+				.addAnnotation(AnnotationSpec.builder(Comment.class)
+					.addMember("value", "$S", "表名称" + bean.tableName)
+					.build())
 				.build())
-
+			
 			// 生成字段常量
 			.forAdd(info.getFieldList(), (builder, fieldInfo) -> {
-				String db_name = fieldInfo.getFieldName().toUpperCase();
-				builder.addField(FieldSpec.builder(String.class, db_name)
+				String fieldName = fieldInfo.getColumnName().toUpperCase();
+				builder.addField(FieldSpec.builder(String.class, fieldName)
 					.addModifiers(PUBLIC, STATIC, FINAL)
 					.initializer("$S ", fieldInfo.getColumnName())
-					.addJavadoc("$L \n", defaultIfEmpty(fieldInfo.getRemarks(), fieldInfo.getColumnName()))
+					.addAnnotation(AnnotationSpec.builder(Comment.class)
+						.addMember("value", "$S", fieldInfo.getRemarks())
+						.build())
 					.build());
 			})
-
+			
 			// 生成默认无参构造方法
 			.addMethod(MethodSpec.constructorBuilder()
 				.addModifiers(PUBLIC)
 				.build())
-
+			
 			// 生成属性信息
 			.forAdd(info.getFieldList(), (builder, fieldInfo) -> {
 				String name = toJavaName(fieldInfo.getFieldName(), false);
@@ -100,17 +102,11 @@ public final class CodeBean {
 						field -> field.addAnnotation(Id.class))
 					// @Column 注解
 					.addAnnotation(AnnotationSpec.builder(Column.class)
-						.addMember("value", "$S", fieldInfo.getColumnName())
+						.addMember("value", "$L", fieldInfo.getColumnName().toUpperCase())
 						.build())
-					// 添加JSON转换时，将 Long 型转换成 String 类型的注解
-					.ifAdd(fieldInfo.getTypeClass() == Long.class || fieldInfo.getTypeClass() == long.class, field -> { //
-						field.addAnnotation(AnnotationSpec.builder(JSONField.class)
-							.addMember("serializeUsing", "$T.class", ToStringSerializer.class)
-							.build());
-					})
 					.build());
 			})
-
+			
 			// 生成私有 Builder 构造方法
 			.addMethod(MethodSpecBuilder.constructorBuilder()
 				.addModifiers(PRIVATE)
@@ -119,37 +115,38 @@ public final class CodeBean {
 					String name = toJavaName(fieldInfo.getFieldName(), false);
 					method.addStatement("set$L(builder.$L)", firstUpperCase(name), name);
 				}).build())
-
+			
+			// 生成日期格式化扩展方法
 			.forAdd(info.getFieldList(), (builder, fieldInfo) -> { //
 				builder.ifAdd(Date.class.isAssignableFrom(fieldInfo.getTypeClass()), m -> {
 					String name = toJavaName(fieldInfo.getFieldName(), false);
-					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + StringUtil.firstUpperCase(name) + "_DT")
+					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + firstUpperCase(name) + "_DT")
 						.addModifiers(PUBLIC, FINAL)
 						.returns(String.class)
 						.addStatement("return $T.formatDateTime($N)", DateFormatUtil.class, name)
 						.build());
-
-					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + StringUtil.firstUpperCase(name) + "_D")
+					
+					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + firstUpperCase(name) + "_D")
 						.addModifiers(PUBLIC, FINAL)
 						.returns(String.class)
 						.addStatement("return $T.formatDate($N)", DateFormatUtil.class, name)
 						.build());
-
-					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + StringUtil.firstUpperCase(name) + "_T")
+					
+					builder.addMethod(MethodSpecBuilder.methodBuilder("get" + firstUpperCase(name) + "_T")
 						.addModifiers(PUBLIC, FINAL)
 						.returns(String.class)
 						.addStatement("return $T.formatTime($N)", DateFormatUtil.class, name)
 						.build());
 				});
 			})
-
+			
 			// 生成静态无参数 newBuilder 方法
 			.addMethod(MethodSpecBuilder.methodBuilder("newBuilder")
 				.addModifiers(PUBLIC, STATIC)
 				.returns(info.getBuilderClass())
 				.addStatement("return new $T()", info.getBuilderClass())
 				.build())
-
+			
 			// 生成静态 copy newBuilder 方法
 			.addMethod(MethodSpecBuilder.methodBuilder("newBuilder")
 				.addModifiers(PUBLIC, STATIC)
@@ -162,23 +159,7 @@ public final class CodeBean {
 				})
 				.addStatement("return builder")
 				.build())
-
-			// 生成静态 Mapper mapper 方法
-			.addMethod(MethodSpecBuilder.methodBuilder("mapper")
-				.addModifiers(PUBLIC, STATIC)
-				.returns(info.getBeanClass())
-				.addParameter(ResultSet.class, "rs")
-				.addParameter(int.class, "number")
-				.addException(SQLException.class)
-				.addStatement("$T builder = $T.newBuilder()", info.getBuilderClass(), info.getBeanClass())
-				.forAdd(info.getFieldList(), (method, fieldInfo) -> {
-					String type_name = fieldInfo.getMapperGetName();
-					String db_name = fieldInfo.getFieldName().toUpperCase();
-					String name = toJavaName(fieldInfo.getFieldName(), false);
-					method.addStatement("builder.$L = $T.get$L(rs, $L)", name, JdbcUtil.class, type_name, db_name);
-				}).addStatement("return builder.build()")
-				.build())
-
+			
 			// 生成静态 Builder 类对象
 			.addType(TypeSpecBuilder.classBuilder(info.getBuilderClass())
 				.addModifiers(PUBLIC, STATIC, FINAL)
@@ -201,7 +182,7 @@ public final class CodeBean {
 						.addStatement("this.$L = $L", name, name)
 						.addStatement("return this")
 						.build());
-
+					
 				})
 				// 生成 builder 方法
 				.addMethod(MethodSpecBuilder.methodBuilder("build")
@@ -211,27 +192,12 @@ public final class CodeBean {
 					.addStatement("return new $T(this)", info.getBeanClass())
 					.build())
 				.build())
-
-			// 生成静态的 SQLBuilder 类对象
-			.addType(TypeSpecBuilder.classBuilder(info.getSQLClass())
-				.addModifiers(PUBLIC, STATIC)
-				.superclass(SQLBuilder.class)
-				// 生成默认 PROTECTED 无参构造方法
-				.addMethod(MethodSpecBuilder.constructorBuilder()
-					.addModifiers(PROTECTED)
-					.forAdd(info.getFieldList(), (method, fieldInfo) -> {
-						String db_name = fieldInfo.getFieldName().toUpperCase();
-						method.addStatement("select($L)", db_name);
-					})
-					.addStatement("from(TABLE)")
-					.build())
-				.build())
-
+			
 			// 生成类
 			.build())
 			// 生成文件信息，并将文件信息转出到本地
 			.build().writeTo(new File(configure.getClassPath()));
-
+		
 		System.out.println("====================================");
 		System.out.println("Code Bean : " + info.getBeanName() + "\r\n");
 	}

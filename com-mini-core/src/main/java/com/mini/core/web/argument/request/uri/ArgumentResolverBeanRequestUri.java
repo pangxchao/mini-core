@@ -1,23 +1,20 @@
 package com.mini.core.web.argument.request.uri;
 
-import com.mini.core.util.StringUtil;
 import com.mini.core.util.reflect.MiniParameter;
-import com.mini.core.web.argument.ArgumentResolverArray;
+import com.mini.core.web.argument.ArgumentResolverBean;
 import com.mini.core.web.argument.annotation.RequestUri;
 import com.mini.core.web.interceptor.ActionInvocation;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import static java.util.Optional.ofNullable;
+import java.util.Optional;
 
 @Singleton
-public final class ArgumentResolverArrayRequestUri extends ArgumentResolverArray {
+public final class ArgumentResolverBeanRequestUri extends ArgumentResolverBean {
 	
 	@Inject
-	public ArgumentResolverArrayRequestUri(
+	public ArgumentResolverBeanRequestUri(
 		@Named("DateTimeFormat") String dateTimeFormat,
 		@Named("DateFormat") String dateFormat,
 		@Named("TimeFormat") String timeFormat) {
@@ -30,19 +27,9 @@ public final class ArgumentResolverArrayRequestUri extends ArgumentResolverArray
 		return param != null && super.supportParameter(parameter);
 	}
 	
-	@Nonnull
-	@Override
-	protected String getParameterName(MiniParameter parameter) {
-		RequestUri param = parameter.getAnnotation(RequestUri.class);
-		if (param == null || StringUtil.isBlank(param.value())) {
-			return parameter.getName();
-		}
-		return param.value();
-	}
-	
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
-		return ofNullable(invocation.getUriParameters().get(name))
-			.stream().toArray(String[]::new);
+		return Optional.ofNullable(invocation.getUriParameters().get(name))
+			.map(v -> new String[]{v}).orElse(null);
 	}
 }

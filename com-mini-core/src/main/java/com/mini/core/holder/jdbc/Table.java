@@ -1,4 +1,4 @@
-package com.mini.core.jdbc.annotation;
+package com.mini.core.holder.jdbc;
 
 import java.lang.annotation.*;
 

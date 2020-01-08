@@ -7,10 +7,20 @@ import com.mini.core.web.argument.annotation.RequestUri;
 import com.mini.core.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 public final class ArgumentResolverBasicRequestUri extends ArgumentResolverBasic {
+	@Inject
+	public ArgumentResolverBasicRequestUri(
+		@Named("DateTimeFormat") String dateTimeFormat,
+		@Named("DateFormat") String dateFormat,
+		@Named("TimeFormat") String timeFormat) {
+		super(dateTimeFormat, dateFormat, timeFormat);
+	}
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestUri param = parameter.getAnnotation(RequestUri.class);

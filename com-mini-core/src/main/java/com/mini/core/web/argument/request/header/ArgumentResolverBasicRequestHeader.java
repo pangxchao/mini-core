@@ -1,9 +1,9 @@
-package com.mini.core.web.argument.request.param;
+package com.mini.core.web.argument.request.header;
 
 import com.mini.core.util.StringUtil;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolverBasic;
-import com.mini.core.web.argument.annotation.RequestParam;
+import com.mini.core.web.argument.annotation.RequestHeader;
 import com.mini.core.web.interceptor.ActionInvocation;
 
 import javax.annotation.Nonnull;
@@ -12,9 +12,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ArgumentResolverBasicRequestParam extends ArgumentResolverBasic {
+public final class ArgumentResolverBasicRequestHeader extends ArgumentResolverBasic {
 	@Inject
-	public ArgumentResolverBasicRequestParam(
+	public ArgumentResolverBasicRequestHeader(
 		@Named("DateTimeFormat") String dateTimeFormat,
 		@Named("DateFormat") String dateFormat,
 		@Named("TimeFormat") String timeFormat) {
@@ -23,22 +23,22 @@ public final class ArgumentResolverBasicRequestParam extends ArgumentResolverBas
 	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
-		RequestParam param = parameter.getAnnotation(RequestParam.class);
+		RequestHeader param = parameter.getAnnotation(RequestHeader.class);
 		return param != null && super.supportParameter(parameter);
 	}
-
+	
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
-		RequestParam param = parameter.getAnnotation(RequestParam.class);
+		RequestHeader param = parameter.getAnnotation(RequestHeader.class);
 		if (param == null || StringUtil.isBlank(param.value())) {
 			return parameter.getName();
 		}
 		return param.value();
 	}
-
+	
 	@Override
 	protected String getValue(String name, ActionInvocation invocation) {
-		return invocation.getRequest().getParameter(name);
+		return invocation.getRequest().getHeader(name);
 	}
 }

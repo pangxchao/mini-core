@@ -2,21 +2,18 @@ package com.mini.core.web.argument.defaults;
 
 import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
-import com.mini.core.web.argument.ArgumentResolverBasic;
+import com.mini.core.web.argument.ArgumentResolverBean;
 import com.mini.core.web.interceptor.ActionInvocation;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-
 @Singleton
-public final class ArgumentResolverBasicDefault extends ArgumentResolverBasic {
+public final class ArgumentResolverBeanDefault extends ArgumentResolverBean {
 	
 	@Inject
-	public ArgumentResolverBasicDefault(
+	public ArgumentResolverBeanDefault(
 		@Named("DateTimeFormat") String dateTimeFormat,
 		@Named("DateFormat") String dateFormat,
 		@Named("TimeFormat") String timeFormat) {
@@ -34,15 +31,8 @@ public final class ArgumentResolverBasicDefault extends ArgumentResolverBasic {
 		return super.supportParameter(parameter);
 	}
 	
-	@Nonnull
 	@Override
-	protected String getParameterName(MiniParameter parameter) {
-		return parameter.getName();
-	}
-	
-	@Override
-	protected String getValue(String name, ActionInvocation invocation) {
-		return defaultIfBlank(invocation.getRequest().getParameter(name), //
-			invocation.getUriParameters().get(name));
+	protected String[] getValue(String name, ActionInvocation invocation) {
+		return invocation.getRequest().getParameterValues(name);
 	}
 }

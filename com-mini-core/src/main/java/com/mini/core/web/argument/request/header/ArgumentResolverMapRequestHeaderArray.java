@@ -1,8 +1,8 @@
-package com.mini.core.web.argument.request.uri;
+package com.mini.core.web.argument.request.header;
 
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolver;
-import com.mini.core.web.argument.annotation.RequestUri;
+import com.mini.core.web.argument.annotation.RequestHeader;
 import com.mini.core.web.interceptor.ActionInvocation;
 
 import javax.inject.Named;
@@ -11,17 +11,18 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Named
 @Singleton
-public final class ArgumentResolverMapRequestUri implements ArgumentResolver {
+public final class ArgumentResolverMapRequestHeaderArray implements ArgumentResolver {
 	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		if (Map.class != parameter.getType()) {
 			return false;
 		}
-		if (parameter.getAnnotation(RequestUri.class) == null) {
+		if (parameter.getAnnotation(RequestHeader.class) == null) {
 			return false;
 		}
 		Type type = parameter.getParameterizedType();
@@ -34,13 +35,21 @@ public final class ArgumentResolverMapRequestUri implements ArgumentResolver {
 			if (!arr[0].getTypeName().equals(String.class.getName())) {
 				return false;
 			}
-			return arr[1].getTypeName().equals(String.class.getName());
+			return arr[1].getTypeName().equals(String[].class.getName());
 		}
 		return false;
 	}
 	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
-		return new HashMap<>(invocation.getUriParameters());
+		HashMap<String, String[]> result = new HashMap<>();
+		invocation.getRequest().getHeaderNames().asIterator().forEachRemaining(name -> {
+			result.put(name, Stream.of(invocation.getRequest().getHeaders(name)).flatMap(v -> {
+				Stream.Builder<String> builder = Stream.builder();
+				v.asIterator().forEachRemaining(builder::add);
+				return builder.build();
+			}).toArray(String[]::new)); //
+		});
+		return result;
 	}
 }

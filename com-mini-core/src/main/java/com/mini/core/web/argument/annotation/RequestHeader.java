@@ -8,5 +8,10 @@ import java.lang.annotation.*;
 @Associated
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequestBean {
+public @interface RequestHeader {
+	/**
+	 * 参数名称
+	 * @return 参数名称
+	 */
+	String value() default "";
 }

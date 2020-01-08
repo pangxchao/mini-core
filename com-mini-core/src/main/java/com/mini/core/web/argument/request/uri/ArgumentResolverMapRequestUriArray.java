@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Named
 @Singleton
-public final class ArgumentResolverMapRequestUri implements ArgumentResolver {
+public final class ArgumentResolverMapRequestUriArray implements ArgumentResolver {
 	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
@@ -34,13 +34,17 @@ public final class ArgumentResolverMapRequestUri implements ArgumentResolver {
 			if (!arr[0].getTypeName().equals(String.class.getName())) {
 				return false;
 			}
-			return arr[1].getTypeName().equals(String.class.getName());
+			return arr[1].getTypeName().equals(String[].class.getName());
 		}
 		return false;
 	}
 	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
-		return new HashMap<>(invocation.getUriParameters());
+		HashMap<String, String[]> result = new HashMap<>();
+		invocation.getUriParameters().forEach((k, v) -> {
+			result.put(k, new String[]{v}); //
+		});
+		return result;
 	}
 }
