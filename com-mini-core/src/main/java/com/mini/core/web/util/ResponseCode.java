@@ -265,7 +265,7 @@ public interface ResponseCode {
 	 *     <li>其它普通错误</li>
 	 * </ul>
 	 */
-	int VERIFY = PRECONDITION_FAILED;
+	int VERIFY = BAD_REQUEST;
 
 	/**
 	 * 用户未登录错误码（需要身份验证）

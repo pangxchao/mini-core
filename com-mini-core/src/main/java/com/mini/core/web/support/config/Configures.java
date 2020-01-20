@@ -1,7 +1,6 @@
 package com.mini.core.web.support.config;
 
 import com.google.inject.Injector;
-import com.mini.core.logger.Logger;
 import com.mini.core.util.matcher.PathMatcher;
 import com.mini.core.util.matcher.PathMatcherAnt;
 import com.mini.core.web.annotation.Action.Method;
@@ -10,6 +9,7 @@ import com.mini.core.web.handler.ExceptionHandler;
 import com.mini.core.web.interceptor.ActionInterceptor;
 import com.mini.core.web.support.ActionSupportProxy;
 import com.mini.core.web.view.PageViewResolver;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.mini.core.logger.LoggerFactory.getLogger;
 import static java.lang.String.format;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.requireNonNull;
 import static javax.servlet.DispatcherType.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Singleton
 public final class Configures implements EventListener, Serializable {

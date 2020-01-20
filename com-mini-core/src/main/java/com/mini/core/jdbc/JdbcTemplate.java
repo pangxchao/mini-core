@@ -61,7 +61,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final int execute(HolderGenerated holder, String str, Object... params) {
-		return execute((PreparedStatementCreator) con -> con.prepareStatement( //
+		return execute((PreparedStatementCreator) con -> con.prepareStatement(//
 			str, RETURN_GENERATED_KEYS), stm -> {
 			int result = full(stm, params).executeUpdate();
 			try (ResultSet rs = stm.getGeneratedKeys()) {

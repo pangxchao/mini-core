@@ -19,7 +19,7 @@ public class ConfigureDefault extends Configure implements EventListener {
     public String getClassPath() {
         return format("%s/src/main/java", PATH);
     }
-
+    //D:\workspace-git\UserAuth_Web\com-mengyi
     @Override
     public String getDocumentPath() {
         return format("%s/document", PATH);

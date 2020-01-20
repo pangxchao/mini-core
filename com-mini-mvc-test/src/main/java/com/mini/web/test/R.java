@@ -10,11 +10,11 @@ public final class R {
 	@Inject
 	@Named("KEY_URL")
 	private static String url;
-
+	
 	public static String getPath() {
 		return path;
 	}
-
+	
 	public static String getUrl() {
 		return url;
 	}

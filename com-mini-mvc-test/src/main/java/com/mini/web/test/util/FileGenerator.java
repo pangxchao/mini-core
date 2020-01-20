@@ -16,7 +16,7 @@ import static com.mini.core.util.FileUtil.createFile;
  */
 public final class FileGenerator {
 	static final DateFormat FORMAT = new SimpleDateFormat("yyyyMM/dd/HH/");
-
+	
 	/**
 	 * 获取根据时间缀生成的文件路径在数据库存储的路径部分
 	 * @param fileName 文件后缀带 '.' 比如: (.png, .txt, .zip )
@@ -25,7 +25,7 @@ public final class FileGenerator {
 	public static String getDBPath(String fileName) {
 		return FORMAT.format(new Date()) + createFile(fileName);
 	}
-
+	
 	/**
 	 * 根据文件在数据库存储的路径,获取公共文件在硬盘或者其它存储中的绝对路径
 	 * @param dbPath 数据库部分路径、
@@ -44,7 +44,7 @@ public final class FileGenerator {
 		// 创建文件夹失败
 		return null;
 	}
-
+	
 	/**
 	 * 根据文件在数据库存储的路径,获取该文件在网页中访问的绝对路径
 	 * @param dbPath 数据库部分路径
@@ -54,5 +54,5 @@ public final class FileGenerator {
 		Pattern pattern = Pattern.compile("(\\w+)(://)(\\S*)");
 		return pattern.matcher(dbPath).matches() ? dbPath : R.getUrl() + dbPath;
 	}
-
+	
 }

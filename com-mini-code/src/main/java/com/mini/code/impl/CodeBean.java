@@ -12,10 +12,7 @@ import com.mini.core.holder.jdbc.Id;
 import com.mini.core.holder.jdbc.Table;
 import com.mini.core.holder.web.Param;
 import com.mini.core.util.DateFormatUtil;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.*;
 import lombok.Data;
 
 import javax.annotation.Nonnull;
@@ -87,11 +84,6 @@ public final class CodeBean {
 					.build());
 			})
 			
-			// 生成默认无参构造方法
-			.addMethod(MethodSpec.constructorBuilder()
-				.addModifiers(PUBLIC)
-				.build())
-			
 			// 生成属性信息
 			.forAdd(info.getFieldList(), (builder, fieldInfo) -> {
 				String name = toJavaName(fieldInfo.getFieldName(), false);
@@ -106,15 +98,6 @@ public final class CodeBean {
 						.build())
 					.build());
 			})
-			
-			// 生成私有 Builder 构造方法
-			.addMethod(MethodSpecBuilder.constructorBuilder()
-				.addModifiers(PRIVATE)
-				.addParameter(info.getBuilderClass(), "builder")
-				.forAdd(info.getFieldList(), (method, fieldInfo) -> {
-					String name = toJavaName(fieldInfo.getFieldName(), false);
-					method.addStatement("set$L(builder.$L)", firstUpperCase(name), name);
-				}).build())
 			
 			// 生成日期格式化扩展方法
 			.forAdd(info.getFieldList(), (builder, fieldInfo) -> { //
@@ -140,56 +123,56 @@ public final class CodeBean {
 				});
 			})
 			
-			// 生成静态无参数 newBuilder 方法
-			.addMethod(MethodSpecBuilder.methodBuilder("newBuilder")
+			// 生成静态无参数 builder 方法
+			.addMethod(MethodSpecBuilder.methodBuilder("builder")
 				.addModifiers(PUBLIC, STATIC)
 				.returns(info.getBuilderClass())
-				.addStatement("return new $T()", info.getBuilderClass())
+				.addStatement("return new $T(new $T())", info.getBuilderClass(), info.getBeanClass())
 				.build())
 			
-			// 生成静态 copy newBuilder 方法
-			.addMethod(MethodSpecBuilder.methodBuilder("newBuilder")
+			// 生成静态 copy builder 方法
+			.addMethod(MethodSpecBuilder.methodBuilder("builder")
 				.addModifiers(PUBLIC, STATIC)
 				.returns(info.getBuilderClass())
 				.addParameter(info.getBeanClass(), "copy")
-				.addStatement("$T builder = new $T()", info.getBuilderClass(), info.getBuilderClass())
+				.addCode("return $T.builder()", info.getBeanClass())
 				.forAdd(info.getFieldList(), (method, fieldInfo) -> {
 					String name = toJavaName(fieldInfo.getFieldName(), false);
-					method.addStatement("builder.$L = copy.get$L()", name, firstUpperCase(name));
+					method.addCode("\n\t .$L(copy.get$L())", name, firstUpperCase(name));
 				})
-				.addStatement("return builder")
+				.addStatement("")
 				.build())
 			
 			// 生成静态 Builder 类对象
 			.addType(TypeSpecBuilder.classBuilder(info.getBuilderClass())
-				.addModifiers(PUBLIC, STATIC, FINAL)
-				// 生成所有字段的属性
-				.forAdd(info.getFieldList(), (builder, fieldInfo) -> {
-					String name = toJavaName(fieldInfo.getFieldName(), false);
-					builder.addField(fieldInfo.getTypeClass(), name, PRIVATE);
-				})
-				// 生成私有无参构造方法
-				.addMethod(MethodSpecBuilder.constructorBuilder()
-					.addModifiers(PRIVATE)
+				.addModifiers(PUBLIC, STATIC)
+				// 私有属性
+				.addField(FieldSpecBuilder.builder(info.getBeanClass(), info.getBeanName())
+					.addModifiers(PRIVATE, FINAL)
+					.build())
+				// 构造方法
+				.addMethod(MethodSpec.constructorBuilder()
+					.addModifiers(PROTECTED)
+					.addParameter(info.getBeanClass(), info.getBeanName())
+					.addStatement("this.$L = $L", info.getBeanName(), info.getBeanName())
 					.build())
 				// 为每个属性生成一个 Setter 方法
 				.forAdd(info.getFieldList(), (builder, fieldInfo) -> {
 					String name = toJavaName(fieldInfo.getFieldName(), false);
-					builder.addMethod(MethodSpecBuilder.methodBuilder("set" + firstUpperCase(name))
-						.addModifiers(PUBLIC, FINAL)
+					builder.addMethod(MethodSpecBuilder.methodBuilder(name)
+						.addModifiers(PUBLIC)
 						.returns(info.getBuilderClass())
 						.addParameter(fieldInfo.getTypeClass(), name)
-						.addStatement("this.$L = $L", name, name)
+						.addStatement("$L.set$L($L)", info.getBeanName(), firstUpperCase(name), name)
 						.addStatement("return this")
 						.build());
-					
 				})
 				// 生成 builder 方法
 				.addMethod(MethodSpecBuilder.methodBuilder("build")
-					.addModifiers(PUBLIC, FINAL)
+					.addModifiers(PUBLIC)
 					.returns(info.getBeanClass())
 					.addAnnotation(Nonnull.class)
-					.addStatement("return new $T(this)", info.getBeanClass())
+					.addStatement("return $L", info.getBeanName())
 					.build())
 				.build())
 			

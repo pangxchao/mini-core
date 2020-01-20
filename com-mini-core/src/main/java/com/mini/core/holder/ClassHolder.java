@@ -22,6 +22,13 @@ public final class ClassHolder<T> implements Serializable, EventListener {
 	private final Param param;
 	private final Table table;
 	
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(columns, fields, type, param, table);
+		result = 31 * result + Arrays.hashCode(joins);
+		return result;
+	}
+	
 	private ClassHolder(@Nonnull Class<T> type) {
 		// @Join 注解
 		joins = type.getAnnotationsByType(Join.class);

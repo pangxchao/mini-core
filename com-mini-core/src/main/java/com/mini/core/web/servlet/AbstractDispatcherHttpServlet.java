@@ -1,7 +1,6 @@
 package com.mini.core.web.servlet;
 
 import com.google.inject.Injector;
-import com.mini.core.logger.Logger;
 import com.mini.core.util.StringUtil;
 import com.mini.core.util.matcher.PathMatcher;
 import com.mini.core.util.matcher.PathMatcherAnt;
@@ -14,6 +13,7 @@ import com.mini.core.web.support.ActionSupportProxy;
 import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;
 import com.mini.core.web.view.PageViewResolver;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -33,12 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.mini.core.logger.LoggerFactory.getLogger;
 import static com.mini.core.util.ThrowsUtil.getLastInvocationTarget;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Stream.of;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * 默认的Servlet
@@ -50,62 +50,62 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 	private static final long serialVersionUID = 1L;
 	private Configures configure;
 	private Injector injector;
-
+	
 	public final Configures getConfigure() {
 		return configure;
 	}
-
+	
 	public final Injector getInjector() {
 		return injector;
 	}
-
+	
 	@Inject
 	public final void setConfigure(Configures configure) {
 		this.configure = configure;
 	}
-
+	
 	@Inject
 	public final void setInjector(Injector injector) {
 		this.injector = injector;
 	}
-
+	
 	@Override
 	public final void init(ServletConfig config) throws ServletException {
 		requireNonNull(configure);
 		requireNonNull(injector);
 		super.init(config);
 	}
-
+	
 	@Override
 	protected void doHead(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.doService(Action.Method.HEAD, request, response);
 	}
-
+	
 	@Override
 	protected final void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.doService(Action.Method.GET, request, response);
 	}
-
+	
 	@Override
 	protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.doService(Action.Method.POST, request, response);
 	}
-
+	
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.doService(Action.Method.PUT, request, response);
 	}
-
+	
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.doService(Action.Method.DELETE, request, response);
 	}
-
+	
 	@Override
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		this.doService(Action.Method.OPTIONS, request, response);
 	}
-
+	
 	/**
 	 * ActionInvocation 核心处理方法
 	 * @param method   提交数据是以哪种方法提交的
@@ -148,76 +148,76 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 			Object instance = injector.getInstance(proxy.getClazz());
 			// 创建 ActionInvocation 对象
 			final ActionInvocation action = new ActionInvocation() {
-
+				
 				@Nonnull
 				@Override
 				public final Method getMethod() {
 					return proxy.getMethod();
 				}
-
+				
 				@Nonnull
 				@Override
 				public final Class<?> getClazz() {
 					return proxy.getClazz();
 				}
-
+				
 				@Nonnull
 				@Override
 				public final Object getInstance() {
 					return instance;
 				}
-
+				
 				@Nonnull
 				@Override
 				public final List<ActionInterceptor> getInterceptors() {
 					return proxy.getInterceptors();
 				}
-
+				
 				@Override
 				public final String getViewPath() {
 					return proxy.getViewPath();
 				}
-
+				
 				@Nonnull
 				@Override
 				public final IModel<?> getModel() {
 					return model;
 				}
-
+				
 				@Nonnull
 				@Override
 				public final HttpServletRequest getRequest() {
 					return request;
 				}
-
+				
 				@Nonnull
 				@Override
 				public final HttpServletResponse getResponse() {
 					return response;
 				}
-
+				
 				@Override
 				public final HttpSession getSession() {
 					return request.getSession();
 				}
-
+				
 				@Override
 				public final ServletContext getServletContext() {
 					return request.getServletContext();
 				}
-
+				
 				@Nonnull
 				@Override
 				public final Map<String, String> getUriParameters() {
 					return uriParam;
 				}
-
+				
 				@Nonnull
 				@Override
 				public MiniParameter[] getParameters() {
 					return proxy.getParameters();
 				}
-
+				
 				@Nonnull
 				@Override
 				public synchronized final Object[] getParameterValues() {
@@ -225,7 +225,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 						return param.getValue(this); //
 					}).toArray(Object[]::new);
 				}
-
+				
 				@Override
 				public synchronized final Object invoke() throws Throwable {
 					try {
@@ -240,7 +240,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 					}
 				}
 			};
-
+			
 			// 调用目标方法
 			action.invoke();
 		} catch (Throwable exception) {
@@ -256,14 +256,14 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 				}
 			}
 		}
-
+		
 		try { // 返回数据
 			model.onSubmit(request, response);
 		} catch (Exception | Error exception) {
-			LOGGER.error(exception);
+			LOGGER.error(exception.getMessage(), exception);
 		}
 	}
-
+	
 	/**
 	 * 获取实际的 ActionProxy 对象的 Uri
 	 * @param request HttpServletRequest 对象

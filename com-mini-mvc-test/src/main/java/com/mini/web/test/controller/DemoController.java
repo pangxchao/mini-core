@@ -38,8 +38,8 @@ import static com.mini.core.validate.ValidateUtil.sendError;
 public class DemoController {
 	@Inject
 	private UserDao userDao;
-
-
+	
+	
 	/**
 	 * 实体列表首页
 	 * @param model 数据模型渲染器
@@ -47,7 +47,7 @@ public class DemoController {
 	@Action(url = "index.htm")
 	public void index(PageModel model) {
 	}
-
+	
 	/**
 	 * 实体列表数据分页
 	 * @param model     数据模型渲染器
@@ -69,7 +69,7 @@ public class DemoController {
 		int district, LocalDate startTime, LocalDate endTime, HttpServletRequest request) {
 		System.out.println("===================back========================");
 		System.out.println(JSON.toJSONString(request.getParameterMap()));
-
+		
 		StringBuilder regionIdUri = new StringBuilder();
 		if (province > 0) {
 			regionIdUri.append(province);
@@ -104,7 +104,7 @@ public class DemoController {
 		model.addData("msg", "查询成功");
 		model.addData("code", 0);
 	}
-
+	
 	/**
 	 * 添加用户信息处理
 	 * @param model 数据模型渲染器
@@ -128,7 +128,7 @@ public class DemoController {
 		// 返回用户信息到客户端
 		model.addData("id", String.valueOf(user.getId()));
 	}
-
+	
 	/**
 	 * 修改用户信息处理
 	 * @param model 数据模型渲染器
@@ -139,7 +139,7 @@ public class DemoController {
 		ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
 		ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
 		ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
-
+		
 		User info = userDao.queryById(user.getId());
 		ValidateUtil.isNotNull(info, 600, "用户信息不存在");
 		user.setCreateTime(info.getCreateTime());
@@ -148,7 +148,7 @@ public class DemoController {
 			sendError(600, "修改用户信息失败");
 		}
 	}
-
+	
 	/**
 	 * 删除用户信息
 	 * @param model  数据模型渲染器

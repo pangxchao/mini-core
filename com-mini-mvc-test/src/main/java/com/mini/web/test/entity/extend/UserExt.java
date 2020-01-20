@@ -7,6 +7,7 @@ import com.mini.web.test.entity.User;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -15,7 +16,7 @@ import static com.mini.web.test.entity.User.USER_REGION_ID;
 import static com.mini.web.test.util.FileGenerator.getPublicFullUrl;
 
 /**
- * User.java
+ * java
  * @author xchao
  */
 @Data
@@ -40,137 +41,113 @@ public class UserExt extends User implements Serializable {
 		return getPublicFullUrl(getHeadUrl());
 	}
 	
-	private UserExt(Builder builder) {
-		setId(builder.id);
-		setName(builder.name);
-		setPassword(builder.password);
-		setPhone(builder.phone);
-		setPhoneAuth(builder.phoneAuth);
-		setFullName(builder.fullName);
-		setEmail(builder.email);
-		setEmailAuth(builder.emailAuth);
-		setHeadUrl(builder.headUrl);
-		setRegionId(builder.regionId);
-		setCreateTime(builder.createTime);
-		setRegionName(builder.regionName);
-		setRegionIdUri(builder.regionIdUri);
-		setRegionNameUri(builder.regionNameUri);
+	public static UserExt.Builder builder() {
+		return new Builder(new UserExt());
 	}
 	
-	public static Builder extBuilder() {
-		return new Builder();
+	public static Builder builder(UserExt copy) {
+		return UserExt.builder()
+			.id(copy.getId())
+			.name(copy.getName())
+			.password(copy.getPassword())
+			.phone(copy.getPhone())
+			.phoneAuth(copy.getPhoneAuth())
+			.fullName(copy.getFullName())
+			.email(copy.getEmail())
+			.emailAuth(copy.getEmailAuth())
+			.headUrl(copy.getHeadUrl())
+			.regionId(copy.getRegionId())
+			.createTime(copy.getCreateTime())
+			.regionName(copy.getRegionName())
+			.regionIdUri(copy.getRegionIdUri())
+			.regionNameUri(copy.getRegionNameUri());
 	}
 	
-	public static Builder extBuilder(UserExt copy) {
-		Builder builder = new Builder();
-		builder.id            = copy.getId();
-		builder.name          = copy.getName();
-		builder.password      = copy.getPassword();
-		builder.phone         = copy.getPhone();
-		builder.phoneAuth     = copy.getPhoneAuth();
-		builder.fullName      = copy.getFullName();
-		builder.email         = copy.getEmail();
-		builder.emailAuth     = copy.getEmailAuth();
-		builder.headUrl       = copy.getHeadUrl();
-		builder.regionId      = copy.getRegionId();
-		builder.createTime    = copy.getCreateTime();
-		builder.regionName    = copy.getRegionName();
-		builder.regionIdUri   = copy.getRegionIdUri();
-		builder.regionNameUri = copy.getRegionNameUri();
-		return builder;
-	}
-	
-	
-	public static final class Builder {
-		private long id;
-		private String name;
-		private String password;
-		private String phone;
-		private int phoneAuth;
-		private String fullName;
-		private String email;
-		private int emailAuth;
-		private String headUrl;
-		private Integer regionId;
-		private Date createTime;
-		private String regionName;
-		private String regionIdUri;
-		private String regionNameUri;
+	public static class Builder extends User.Builder {
+		private final UserExt user;
 		
-		private Builder() {}
+		protected Builder(UserExt user) {
+			super(user);
+			this.user = user;
+		}
 		
-		public Builder id(long val) {
-			id = val;
+		public Builder id(long id) {
+			user.setId(id);
 			return this;
 		}
 		
-		public Builder name(String val) {
-			name = val;
+		public Builder name(String name) {
+			user.setName(name);
 			return this;
 		}
 		
-		public Builder password(String val) {
-			password = val;
+		public Builder password(String password) {
+			user.setPassword(password);
 			return this;
 		}
 		
-		public Builder phone(String val) {
-			phone = val;
+		public Builder phone(String phone) {
+			user.setPhone(phone);
 			return this;
 		}
 		
-		public Builder phoneAuth(int val) {
-			phoneAuth = val;
+		public Builder phoneAuth(int phoneAuth) {
+			user.setPhoneAuth(phoneAuth);
 			return this;
 		}
 		
-		public Builder fullName(String val) {
-			fullName = val;
+		public Builder fullName(String fullName) {
+			user.setFullName(fullName);
 			return this;
 		}
 		
-		public Builder email(String val) {
-			email = val;
+		public Builder email(String email) {
+			user.setEmail(email);
 			return this;
 		}
 		
-		public Builder emailAuth(int val) {
-			emailAuth = val;
+		public Builder emailAuth(int emailAuth) {
+			user.setEmailAuth(emailAuth);
 			return this;
 		}
 		
-		public Builder headUrl(String val) {
-			headUrl = val;
+		public Builder headUrl(String headUrl) {
+			user.setHeadUrl(headUrl);
 			return this;
 		}
 		
-		public Builder regionId(Integer val) {
-			regionId = val;
+		public Builder regionId(Integer regionId) {
+			user.setRegionId(regionId);
 			return this;
 		}
 		
-		public Builder createTime(Date val) {
-			createTime = val;
+		public Builder createTime(Date createTime) {
+			user.setCreateTime(createTime);
 			return this;
 		}
 		
-		public Builder regionName(String val) {
-			regionName = val;
+		public Builder regionName(String regionName) {
+			user.setRegionName(regionName);
 			return this;
 		}
 		
-		public Builder regionIdUri(String val) {
-			regionIdUri = val;
+		public Builder regionIdUri(String regionIdUri) {
+			user.setRegionIdUri(regionIdUri);
 			return this;
 		}
 		
-		public Builder regionNameUri(String val) {
-			regionNameUri = val;
+		public Builder regionNameUri(String regionNameUri) {
+			user.setRegionNameUri(regionNameUri);
 			return this;
 		}
 		
+		@Nonnull
 		public UserExt build() {
-			return new UserExt(this);
+			return user;
 		}
+	}
+	
+	public static void main(String[] args) throws NoSuchMethodException {
+		System.out.println(UserExt.class.getMethod("builder"));
 	}
 }

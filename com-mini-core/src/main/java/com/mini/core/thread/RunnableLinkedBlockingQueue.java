@@ -1,17 +1,18 @@
 package com.mini.core.thread;
 
-import com.mini.core.logger.Logger;
+
+import org.slf4j.Logger;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.mini.core.logger.LoggerFactory.getLogger;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public final class RunnableLinkedBlockingQueue {
-	private static final Logger logger = getLogger(RunnableLinkedBlockingQueue.class);
+	private static final Logger LOGGER = getLogger(RunnableLinkedBlockingQueue.class);
 	private static final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
 	private static boolean flag = false;
-
+	
 	// 队列监听启动
 	protected synchronized static void start() {
 		// 如果线程正在运行则不处理
@@ -29,12 +30,12 @@ public final class RunnableLinkedBlockingQueue {
 					// 将获取消息交由线程池处理
 					ScheduledThreadExecutor.execute(runnable);
 				} catch (Exception | Error exception) {
-					logger.error(exception);
+					LOGGER.error(exception.getMessage(), exception);
 				}
 			}
 		});
 	}
-
+	
 	/**
 	 * 添加一个任务到队列
 	 * @param runnable 任务执行过程
@@ -44,7 +45,7 @@ public final class RunnableLinkedBlockingQueue {
 			RunnableLinkedBlockingQueue.queue.put(runnable);
 			RunnableLinkedBlockingQueue.start();
 		} catch (Exception | Error exception) {
-			logger.error(exception);
+			LOGGER.error(exception.getMessage(), exception);
 		}
 	}
 }

@@ -111,12 +111,6 @@
 			<version>${guice.version}</version>
 		</dependency>
 		
-		<!-- 自动生成 Getter Setter 依赖-->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.10</version>
-		</dependency>
 		
 		<!-- Freemarker 模板工具 -->
 		<dependency>
@@ -124,6 +118,22 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.29</version>
 		</dependency>
+		
+		<!-- slf4j 日志框架 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>2.0.0-alpha1</version>
+		</dependency>
+		
+		<!-- logback 日志框架 -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.3.0-alpha5</version>
+		</dependency>
+		
+		
 	</dependencies>
 	
 	<!-- 插件配置 -->

@@ -16,17 +16,17 @@ import javax.inject.Singleton;
 @Named("userDao")
 public class UserDaoImpl extends AbstractDao implements UserDao {
 	private JdbcTemplate jdbcTemplate;
-
+	
 	@Inject
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
-
+	
 	@Override
 	public JdbcTemplate writeTemplate() {
 		return jdbcTemplate;
 	}
-
+	
 	@Override
 	public JdbcTemplate readTemplate() {
 		return jdbcTemplate;

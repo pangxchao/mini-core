@@ -13,7 +13,6 @@ import com.mini.core.web.annotation.Action;
 import com.mini.core.web.annotation.Before;
 import com.mini.core.web.annotation.Clear;
 import com.mini.core.web.annotation.Controller;
-import com.mini.core.web.argument.ArgumentResolverBean;
 import com.mini.core.web.argument.ArgumentResolverContext;
 import com.mini.core.web.argument.ArgumentResolverModel;
 import com.mini.core.web.argument.ArgumentResolverSession;
@@ -27,6 +26,7 @@ import com.mini.core.web.filter.CharacterEncodingFilter;
 import com.mini.core.web.handler.ExceptionHandlerDefault;
 import com.mini.core.web.handler.ExceptionHandlerValidate;
 import com.mini.core.web.interceptor.ActionInterceptor;
+import com.mini.core.web.interceptor.I18nActionInterceptor;
 import com.mini.core.web.model.IModel;
 import com.mini.core.web.servlet.DispatcherHttpServlet;
 import com.mini.core.web.support.config.Configures;
@@ -114,6 +114,8 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 	private void onStartupRegisterSystemDefault(Configures configure) {
 		// 配置默认视图实现类
 		configure.setPageViewResolver(PageViewResolverFreemarker.class);
+		// 设置国际化全局拦截器
+		configure.addInterceptor(I18nActionInterceptor.class);
 		
 		// 注册默认 HttpServlet
 		configure.addServlet(DispatcherHttpServlet.class, registration -> {

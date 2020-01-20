@@ -3,7 +3,6 @@ package com.mini.core.web.argument.request.header;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolver;
 import com.mini.core.web.argument.annotation.RequestHeader;
-import com.mini.core.web.argument.annotation.RequestParam;
 import com.mini.core.web.interceptor.ActionInvocation;
 
 import javax.inject.Named;

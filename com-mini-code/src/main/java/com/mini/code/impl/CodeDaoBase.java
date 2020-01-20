@@ -45,6 +45,155 @@ public final class CodeDaoBase {
 			.addJavadoc("$L.java \n", info.getBaseDaoName())
 			.addJavadoc("@author xchao \n")
 			
+			//// 生成 insert 方法
+			//.addMethod(MethodSpecBuilder
+			//	// 方法名称
+			//	.methodBuilder("insert")
+			//	// default 方法
+			//	.addModifiers(DEFAULT, PUBLIC)
+			//	// 返回类型
+			//	.returns(int.class)
+			//	// 实体信息方法参数
+			//	.addParameter(info.getBeanClass(), firstLowerCase(info.getBeanName()))
+			//	// 方法文档注释
+			//	.addJavadoc("添加实体信息 \n")
+			//	// 实体信息方法文档注释
+			//	.addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.getBeanName()))
+			//	// 返回结果方法文档注释
+			//	.addJavadoc("@return 执行结果 \n")
+			//	//  方法体实现
+			//	.addCode("return execute(new $T() {{ \n", SQLBuilder.class)
+			//	// 方法体， insert into 语句
+			//	.addStatement("\tinsertInto($T.TABLE)", info.getBeanClass())
+			//	// 为每个字段添加一个键值对 修改语句
+			//	.forAdd(info.getFieldList(), (method, fieldInfo) -> {
+			//		// 自动增长字段不处理
+			//		if (fieldInfo.isAuto()) return;
+			//		String db_name = fieldInfo.getColumnName().toUpperCase();
+			//		String name = toJavaName(fieldInfo.getFieldName(), true);
+			//		// 该字段为int或者long类型，不为主键但是为外键的时候需要特殊处理
+			//		method.addCode("\t// $L \n", fieldInfo.getRemarks());
+			//		method.addStatement("\tvalues($T.$L)", info.getBeanClass(), db_name);
+			//		method.addStatement("\tparams($L.get$L())", firstLowerCase(info.getBeanName()), name);
+			//	})
+			//	// 方法体
+			//	.addStatement("}})")
+			//	// 构建
+			//	.build())
+			//
+			//// 生成 replace 方法
+			//.addMethod(MethodSpecBuilder
+			//	// 方法名称
+			//	.methodBuilder("replace")
+			//	// default 方法
+			//	.addModifiers(DEFAULT, PUBLIC)
+			//	// 返回类型
+			//	.returns(int.class)
+			//	// 实体信息参数
+			//	.addParameter(info.getBeanClass(), firstLowerCase(info.getBeanName()))
+			//	// 方法文档注释
+			//	.addJavadoc("添加实体信息 \n")
+			//	// 实体信息参数文档注释
+			//	.addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.getBeanName()))
+			//	// 返回类型文档注释
+			//	.addJavadoc("@return 执行结果 \n")
+			//	//  方法体实现
+			//	.addCode("return execute(new $T() {{ \n", SQLBuilder.class)
+			//	// 方法体 replace info 语句
+			//	.addStatement("\treplaceInto($T.TABLE)", info.getBeanClass())
+			//	// 为每个字段添加一个键值修改语句
+			//	.forAdd(info.getFieldList(), (method, fieldInfo) -> {
+			//		// 自动增长字段不处理
+			//		if (fieldInfo.isAuto()) return;
+			//		String db_name = fieldInfo.getColumnName().toUpperCase();
+			//		String name = toJavaName(fieldInfo.getFieldName(), true);
+			//		// 该字段为int或者long类型，不为主键但是为外键的时候需要特殊处理
+			//		method.addCode("\t// $L \n", fieldInfo.getRemarks());
+			//		method.addStatement("\tvalues($T.$L)", info.getBeanClass(), db_name);
+			//		method.addStatement("\tparams($L.get$L())", firstLowerCase(info.getBeanName()), name);
+			//	})
+			//	// 方法体
+			//	.addStatement("}})")
+			//	// 构建
+			//	.build())
+			//
+			//// 生成 update 方法
+			//.addMethod(MethodSpecBuilder
+			//	// 方法名称
+			//	.methodBuilder("update")
+			//	// default 方法
+			//	.addModifiers(DEFAULT, PUBLIC)
+			//	// 返回类型
+			//	.returns(int.class)
+			//	// 实体信息参数
+			//	.addParameter(info.getBeanClass(), firstLowerCase(info.getBeanName()))
+			//	// 方法文档注释
+			//	.addJavadoc("修改实体信息 \n")
+			//	// 实体参数文档注释
+			//	.addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.getBeanName()))
+			//	// 返回类型文档注释
+			//	.addJavadoc("@return 执行结果 \n")
+			//	// 方法体
+			//	.addCode("return execute(new $T() {{ \n", SQLBuilder.class)
+			//	// 方法体 update 语句
+			//	.addStatement("\tupdate($T.TABLE)", info.getBeanClass())
+			//	// 每个字段添加一个修改语句，和语句中的注入参数
+			//	.forAdd(info.getFieldList(), (method, fieldInfo) -> {
+			//		// 自动增长字段不处理
+			//		if (fieldInfo.isAuto()) return;
+			//		// 其它字段信息
+			//		String db_name = fieldInfo.getColumnName().toUpperCase();
+			//		String name = toJavaName(fieldInfo.getFieldName(), true);
+			//		method.addCode("\t// $L \n", fieldInfo.getRemarks());
+			//		method.addStatement("\tset($S, $T.$L)", "%s = ?", info.getBeanClass(), db_name);
+			//		method.addStatement("\tparams($L.get$L())", firstLowerCase(info.getBeanName()), name);
+			//	})
+			//	// 为每个主键字段添加一个查询限制条件
+			//	.forAdd(info.getPKFieldList(), (method, fieldInfo) -> {
+			//		String db_name = fieldInfo.getColumnName().toUpperCase();
+			//		String name = toJavaName(fieldInfo.getFieldName(), true);
+			//		method.addCode("\t// $L \n", fieldInfo.getRemarks());
+			//		method.addStatement("\twhere($S, $T.$L)", "%s = ?", info.getBeanClass(), db_name);
+			//		method.addStatement("\tparams($L.get$L())", firstLowerCase(info.getBeanName()), name);
+			//	})
+			//	// 方法体
+			//	.addStatement("}})")
+			//	// 构建
+			//	.build())
+			//
+			//// 生成 delete 方法
+			//.addMethod(MethodSpecBuilder
+			//	// 方法名称
+			//	.methodBuilder("delete")
+			//	// default 方法
+			//	.addModifiers(DEFAULT, PUBLIC)
+			//	// 返回类型
+			//	.returns(int.class)
+			//	// 实体参数信息
+			//	.addParameter(info.getBeanClass(), firstLowerCase(info.getBeanName()))
+			//	// 方法文档注释
+			//	.addJavadoc("删除实体信息 \n")
+			//	// 实体参数信息文档注释
+			//	.addJavadoc("@param $N 实体信息 \n", firstLowerCase(info.getBeanName()))
+			//	// 返回结果文档注释
+			//	.addJavadoc("@return 执行结果 \n")
+			//	// 方法体
+			//	.addCode("return execute(new $T() {{ \n", SQLBuilder.class)
+			//	// 方法体 delete 语句
+			//	.addStatement("\tdelete().from($T.TABLE)", info.getBeanClass())
+			//	// 为每个主键信息添加一个查询条件限制
+			//	.forAdd(info.getPKFieldList(), (method, fieldInfo) -> {
+			//		String db_name = fieldInfo.getColumnName().toUpperCase();
+			//		String name = toJavaName(fieldInfo.getFieldName(), true);
+			//		method.addCode("\t// $L \n", fieldInfo.getRemarks());
+			//		method.addStatement("\twhere($S, $T.$L)", "%s = ?", info.getBeanClass(), db_name);
+			//		method.addStatement("\tparams($L.get$L())", firstLowerCase(info.getBeanName()), name);
+			//	})
+			//	// 方法体
+			//	.addStatement("}})")
+			//	// 构建
+			//	.build())
+			
 			// 生成 deleteById 方法
 			.addMethod(MethodSpecBuilder
 				// 方法名称

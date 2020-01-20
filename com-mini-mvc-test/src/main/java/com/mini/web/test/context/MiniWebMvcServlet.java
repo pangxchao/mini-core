@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public final class MiniWebMvcServlet extends AbstractDispatcherHttpServlet {
 	private static final long serialVersionUID = -5104342688489225990L;
-
+	
 	@Override
 	protected String getActionProxyUri(HttpServletRequest request) {
 		return "/front/{userId}/group.htm";
