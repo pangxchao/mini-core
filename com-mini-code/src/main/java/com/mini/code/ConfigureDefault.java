@@ -72,7 +72,7 @@ public class ConfigureDefault extends Configure implements EventListener {
                         // 表字段前缀
                         .setPrefix("user_")
                         .build())
-                .buid();
+                .build();
     }
 
     public static void main(String[] args) throws Exception {

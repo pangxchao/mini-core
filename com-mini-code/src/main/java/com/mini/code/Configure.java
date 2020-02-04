@@ -87,7 +87,7 @@ public abstract class Configure implements EventListener {
 			return this;
 		}
 		
-		public List<BeanItem> buid() {
+		public List<BeanItem> build() {
 			return beans;
 		}
 	}

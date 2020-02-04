@@ -332,7 +332,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		typePath = StringUtils.strip(typePath);
 		typePath = StringUtils.strip(typePath, SEP);
 		// typePath 不能为空
-		Assert.notBlank(typePath);
+		Objects.requireNonNull(typePath);
 		
 		String methodPath = action.path();
 		if (StringUtils.isBlank(methodPath)) {
@@ -347,7 +347,8 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		Assert.notBlank(methodPath);
 		
 		// 获取完整的视图路径
-		return typePath + SEP + methodPath;
+		return StringUtils.strip(typePath + SEP //
+			+ methodPath, SEP);
 	}
 	
 	@Nonnull

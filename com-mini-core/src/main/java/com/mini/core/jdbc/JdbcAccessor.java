@@ -53,7 +53,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 	public final <T> T execute(ConnectionCallback<T> callback) {
 		try (Connection con = this.getConnection()) {
 			return callback.apply(con);
-		} catch (SQLException | RuntimeException e) {
+		} catch (java.sql.SQLException e) {
 			log.error(e.getMessage(), e);
 			throw hidden(e);
 		}
@@ -107,7 +107,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 		try (Holder holder = (Holder) this.getConnection()) {
 			var trans = holder.getTransaction();
 			return callback.trans(trans);
-		} catch (SQLException | RuntimeException e) {
+		} catch (java.sql.SQLException e) {
 			log.error(e.getMessage(), e);
 			throw hidden(e);
 		}
@@ -155,7 +155,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 				return JTA.get();
 			});
 			return callback.trans(trans);
-		} catch (SQLException | RuntimeException e) {
+		} catch (java.sql.SQLException e) {
 			log.error(e.getMessage(), e);
 			throw hidden(e);
 		}

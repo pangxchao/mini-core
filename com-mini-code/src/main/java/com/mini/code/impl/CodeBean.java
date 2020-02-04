@@ -12,10 +12,14 @@ import com.mini.core.holder.jdbc.Id;
 import com.mini.core.holder.jdbc.Table;
 import com.mini.core.holder.web.Param;
 import com.mini.core.util.DateFormatUtil;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import lombok.Data;
 
 import javax.annotation.Nonnull;
+import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
@@ -180,6 +184,7 @@ public final class CodeBean {
 			.build())
 			// 生成文件信息，并将文件信息转出到本地
 			.build().writeTo(new File(configure.getClassPath()));
+		 
 		
 		System.out.println("====================================");
 		System.out.println("Code Bean : " + info.getBeanName() + "\r\n");

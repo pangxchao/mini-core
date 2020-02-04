@@ -1,6 +1,7 @@
 package com.mini.core.util;
 
 import javax.annotation.Nonnull;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
