@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.io.Serializable;
 import java.util.List;
 import java.util.*;
 
@@ -31,7 +30,7 @@ import static java.util.Optional.ofNullable;
  * 分组面板-负责抽象出创建分组、删除分组、复制分组
  * @author xchao
  */
-public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends JPanel implements Serializable, EventListener {
+public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends JPanel {
 	private final CollectionComboBoxModel<String> comboBoxModel;
 	private final ComboBox<String> comboBox = new ComboBox<>();
 	

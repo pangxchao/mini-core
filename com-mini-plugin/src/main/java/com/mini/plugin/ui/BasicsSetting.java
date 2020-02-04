@@ -11,7 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extends JPanel {
 	private final Map<String, T> data = new LinkedHashMap<>();
@@ -23,9 +22,8 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 	public BasicsSetting(Settings settings, Project project) {
 		this.setLayout(new BorderLayout(0, 0));
 		this.groupName = getName(settings);
-		this.settings  = settings;
-		Optional.ofNullable(getData(settings)).ifPresent(g ->
-			g.forEach((k, v) -> data.put(k, v.copy())));
+		data.putAll(getData(settings));
+		this.settings = settings;
 		// 创建模板编辑面板
 		this.templatePanel = new BaseTemplatePanel(project) {
 			protected synchronized void renameHandler(String name, String newName) {
@@ -46,32 +44,11 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 				Optional.ofNullable(data.get(groupName)).map(AbstractGroup //
 					::getElements).ifPresent(templates -> { //
 					Optional.ofNullable(getTemplate(name)).ifPresent(t -> {
-						templates.add(Template.builder().name(newName)
-							.code(t.getCode()).build());
+						templates.put(newName, Template.builder()
+							.name(newName).code(t.getCode())
+							.build());
 						BasicsSetting.this.modified = true;
 					});
-				});
-			}
-			
-			protected synchronized void moveDownHandler(String name, int index) {
-				Optional.ofNullable(data.get(groupName)).map(AbstractGroup //
-					::getElements).ifPresent(templates -> {
-					if (index < 0 || index >= templates.size() - 2) {
-						return;
-					}
-					Collections.swap(templates, index, index + 1);
-					BasicsSetting.this.modified = true;
-				});
-			}
-			
-			protected synchronized void moveUpHandler(String name, int index) {
-				Optional.ofNullable(data.get(groupName)).map(AbstractGroup //
-					::getElements).ifPresent(templates -> {
-					if (index <= 0 || index >= templates.size() - 1) {
-						return;
-					}
-					Collections.swap(templates, index - 1, index);
-					BasicsSetting.this.modified = true;
 				});
 			}
 			
@@ -81,11 +58,12 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 			}
 			
 			protected synchronized void deleteHandler(String name) {
-				Optional.ofNullable(data.get(groupName)).map(AbstractGroup //
-					::getElements).ifPresent(templates -> {
-					templates.remove(getTemplate(name));
-					BasicsSetting.this.modified = true;
-				});
+				Optional.ofNullable(data.get(groupName))
+					.map(AbstractGroup::getElements)
+					.ifPresent(templates -> {
+						templates.remove(name);
+						modified = true;
+					});
 			}
 			
 			@NotNull
@@ -94,13 +72,14 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 			}
 			
 			protected synchronized void addHandler(String name) {
-				Optional.ofNullable(data.get(groupName)).map(AbstractGroup //
-					::getElements).ifPresent(templates -> {
-					BasicsSetting.this.modified = true;
-					templates.add(Template.builder()
-						.name(name).code("")
-						.build());
-				});
+				Optional.ofNullable(data.get(groupName))
+					.map(AbstractGroup::getElements)
+					.ifPresent(templates -> {
+						BasicsSetting.this.modified = true;
+						templates.put(name, Template.builder()
+							.name(name).code("")
+							.build());
+					});
 			}
 		};
 		// 将主面板添加到当前面板的中心
@@ -119,7 +98,9 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 			protected synchronized void copyHandler(String name, String newName) {
 				Optional.ofNullable(data.get(name)).ifPresent(mapper -> {
 					BasicsSetting.this.modified = true;
-					data.put(newName, mapper.copy());
+					T newMapper = mapper.copy();
+					newMapper.setName(newName);
+					data.put(newName, newMapper);
 				});
 			}
 			
@@ -144,8 +125,8 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 			}
 			
 			protected synchronized void addHandler(String name) {
+				data.put(name, createInstance(name));
 				BasicsSetting.this.modified = true;
-				data.put(name, createInstance());
 			}
 		}, BorderLayout.NORTH);
 	}
@@ -154,16 +135,15 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 	private synchronized List<String> getTemplateNames() {
 		return Optional.ofNullable(data.get(groupName))
 			.map(AbstractGroup::getElements)
-			.map(list -> list.stream().map(Template::getName)
-				.collect(Collectors.toList()))
+			.map(map -> new ArrayList<>(map.keySet()))
 			.orElse(new ArrayList<>());
 	}
 	
+	@Nullable
 	private synchronized Template getTemplate(String name) {
 		return Optional.ofNullable(data.get(groupName))
 			.map(AbstractGroup::getElements)
-			.flatMap(list -> list.stream().filter(t -> //
-				Objects.equals(name, t.getName())).findAny())
+			.map(map -> map.get(name))
 			.orElse(null);
 	}
 	
@@ -204,7 +184,7 @@ public abstract class BasicsSetting<T extends AbstractGroup<Template, T>> extend
 	
 	protected abstract String getName(Settings settings);
 	
-	protected abstract T createInstance();
+	protected abstract T createInstance(String name);
 	
 	
 }

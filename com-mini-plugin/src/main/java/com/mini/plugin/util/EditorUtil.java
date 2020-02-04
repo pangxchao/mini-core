@@ -11,15 +11,16 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
+import com.intellij.testFramework.LightVirtualFile;
 
 import static java.util.Objects.requireNonNull;
 
 public class EditorUtil {
-	private static final String TEMPLATE = "Mini-Code.vm";
+	private static final String TEMPLATE = "Mini-Code.groovy";
 	
 	public static Editor createEditor(Project project) {
 		// 创建文件类型对象
-		FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension("vm");
+		FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension("groovy");
 		// 获取编辑器工厂
 		EditorFactory editorFactory = EditorFactory.getInstance();
 		// 创建文件工厂对象
@@ -32,8 +33,9 @@ public class EditorUtil {
 		// 创建文档对象
 		Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
 		// 创建编辑框
-		Editor editor = editorFactory.createEditor(requireNonNull(document), project);
-		
+		Editor editor = editorFactory.createEditor(requireNonNull(document), //
+			project, psiFile.getVirtualFile(), false);
+		// 编辑器设置
 		EditorSettings editorSettings = editor.getSettings();
 		// 关闭标记位置（断点位置）
 		editorSettings.setLineMarkerAreaShown(false);
@@ -54,16 +56,6 @@ public class EditorUtil {
 		editorSettings.setUseSoftWraps(true);
 		// 默认只读
 		document.setReadOnly(true);
-		
-		//// 添加修改事件
-		//editor.getDocument().addDocumentListener(new DocumentListener() {
-		//	public void documentChanged(@NotNull DocumentEvent event) {
-		//		String text = editor.getDocument().getText();
-		//		if (!Objects.equals(text, content)) {
-		//			updateCallback(text);
-		//		}
-		//	}
-		//});
 		return editor;
 	}
 }

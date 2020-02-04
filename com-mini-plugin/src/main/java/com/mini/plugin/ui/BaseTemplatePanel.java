@@ -6,14 +6,10 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.editor.highlighter.EditorHighlighter;
-import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBList;
@@ -30,6 +26,7 @@ import java.util.EventListener;
 import java.util.List;
 
 import static com.intellij.openapi.ui.Messages.showInputDialog;
+import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
 import static com.mini.plugin.util.Constants.TITLE_INFO;
 import static java.util.Optional.ofNullable;
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
@@ -103,28 +100,23 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 			if (event.getValueIsAdjusting()) return;
 			Template t = ofNullable(jbList.getSelectedValue()).map(this::getTemplate)
 				.orElse(Template.builder().name("newFile").code("").build());
-			EditorHighlighterFactory f = EditorHighlighterFactory.getInstance();
-			LightVirtualFile file = new LightVirtualFile(t.getName() + ".vm");
-			EditorHighlighter h = f.createEditorHighlighter(project, file);
-			((EditorEx) editor).setHighlighter(h);
-			// 重置文本内容
 			editor.getDocument().setReadOnly(false);
 			WriteCommandAction.runWriteCommandAction(project, () -> {
-				editor.getDocument().setText(t.getCode() + ""); //
+				String content = defaultIfEmpty(t.getCode(), "");
+				content = content.replaceAll("(\r\n|\n)", "\n");
+				editor.getDocument().setText(content);
 			});
 		});
 		
-		// 编辑器内容修改回调事件
 		editor.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
 			public void documentChanged(@NotNull DocumentEvent event) {
 				String text = editor.getDocument().getText();
 				String name = jbList.getSelectedValue();
 				modifiedHandler(name, text);
 			}
 		});
-		
 		// 默认选中第一个
-		// this.resetModelData(null);
 		if (this.jbListModel.getSize() > 0) {
 			jbList.setSelectedIndex(0);
 		}
@@ -195,58 +187,58 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 				pre.setEnabled(false);
 			}
 		});
-		// 上移事件
-		action.add(new AnAction(AllIcons.Actions.MoveUp) {
-			@Override
-			public void actionPerformed(@NotNull AnActionEvent event) {
-				int index = jbList.getSelectedIndex();
-				int length = jbListModel.getSize();
-				if (length <= 1 || index <= 0) {
-					return;
-				}
-				String name = jbList.getSelectedValue();
-				moveUpHandler(name, index);
-				resetModelData(name);
-			}
-			
-			@Override
-			public void update(@NotNull AnActionEvent event) {
-				Presentation pre = event.getPresentation();
-				int index = jbList.getSelectedIndex();
-				int length = jbListModel.getSize();
-				if (length <= 1 || index <= 0) {
-					pre.setEnabled(false);
-					return;
-				}
-				pre.setEnabled(true);
-			}
-		});
-		// 下移事件
-		action.add(new AnAction(AllIcons.Actions.MoveDown) {
-			@Override
-			public void actionPerformed(@NotNull AnActionEvent event) {
-				int index = jbList.getSelectedIndex();
-				int length = jbListModel.getSize();
-				if (length <= 1 || index >= (length - 1)) {
-					return;
-				}
-				String name = jbList.getSelectedValue();
-				moveDownHandler(name, index);
-				resetModelData(name);
-			}
-			
-			@Override
-			public void update(@NotNull AnActionEvent event) {
-				Presentation pre = event.getPresentation();
-				int index = jbList.getSelectedIndex();
-				int length = jbListModel.getSize();
-				if (length <= 1 || index >= (length - 1)) {
-					pre.setEnabled(false);
-					return;
-				}
-				pre.setEnabled(true);
-			}
-		});
+		//// 上移事件
+		//action.add(new AnAction(AllIcons.Actions.MoveUp) {
+		//	@Override
+		//	public void actionPerformed(@NotNull AnActionEvent event) {
+		//		int index = jbList.getSelectedIndex();
+		//		int length = jbListModel.getSize();
+		//		if (length <= 1 || index <= 0) {
+		//			return;
+		//		}
+		//		String name = jbList.getSelectedValue();
+		//		moveUpHandler(name, index);
+		//		resetModelData(name);
+		//	}
+		//
+		//	@Override
+		//	public void update(@NotNull AnActionEvent event) {
+		//		Presentation pre = event.getPresentation();
+		//		int index = jbList.getSelectedIndex();
+		//		int length = jbListModel.getSize();
+		//		if (length <= 1 || index <= 0) {
+		//			pre.setEnabled(false);
+		//			return;
+		//		}
+		//		pre.setEnabled(true);
+		//	}
+		//});
+		//// 下移事件
+		//action.add(new AnAction(AllIcons.Actions.MoveDown) {
+		//	@Override
+		//	public void actionPerformed(@NotNull AnActionEvent event) {
+		//		int index = jbList.getSelectedIndex();
+		//		int length = jbListModel.getSize();
+		//		if (length <= 1 || index >= (length - 1)) {
+		//			return;
+		//		}
+		//		String name = jbList.getSelectedValue();
+		//		moveDownHandler(name, index);
+		//		resetModelData(name);
+		//	}
+		//
+		//	@Override
+		//	public void update(@NotNull AnActionEvent event) {
+		//		Presentation pre = event.getPresentation();
+		//		int index = jbList.getSelectedIndex();
+		//		int length = jbListModel.getSize();
+		//		if (length <= 1 || index >= (length - 1)) {
+		//			pre.setEnabled(false);
+		//			return;
+		//		}
+		//		pre.setEnabled(true);
+		//	}
+		//});
 		
 		String title = "Head Toolbar";
 		ActionManager m = ActionManager.getInstance();
@@ -259,10 +251,10 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 	protected abstract void modifiedHandler(String name, String text);
 	
 	protected abstract void copyHandler(String name, String newName);
-	
-	protected abstract void moveDownHandler(String name, int index);
-	
-	protected abstract void moveUpHandler(String name, int index);
+	//
+	//protected abstract void moveDownHandler(String name, int index);
+	//
+	//protected abstract void moveUpHandler(String name, int index);
 	
 	@Nullable
 	protected abstract Template getTemplate(String name);

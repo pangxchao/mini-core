@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.mini.plugin.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,11 +15,14 @@ import java.net.URL;
 import java.sql.Blob;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.intellij.openapi.components.ServiceManager.getService;
+import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
 import static com.mini.plugin.util.ThrowsUtil.hidden;
 
 /**
+ * 设置信息类
  * @author xchao
  */
 @State(name = "MiniCode", storages = @Storage("Mini-Code.xml"))
@@ -33,76 +37,154 @@ public final class Settings implements PersistentStateComponent<Settings> {
 	private String encoding = "UTF-8";
 	private String author = "xchao";
 	
-	public void setMapperGroup(Map<String, GroupMapper> mapper) {
-		this.mapperGroup = mapper;
+	public synchronized void setMapperGroup(Map<String, GroupMapper> mapper) {
+		Optional.ofNullable(mapper).ifPresent(m -> {
+			this.getMapperGroup().clear();
+			getMapperGroup().putAll(m);
+		});
 	}
 	
-	public void setCodeGroup(Map<String, GroupCode> code) {
-		this.codeGroup = code;
+	public synchronized void setCodeGroup(Map<String, GroupCode> code) {
+		Optional.ofNullable(code).ifPresent(c -> {
+			this.getCodeGroup().clear();
+			getCodeGroup().putAll(c);
+		});
 	}
 	
-	public void setDbGroup(Map<String, GroupDB> db) {
-		this.dbGroup = db;
+	public synchronized void setDbGroup(Map<String, GroupDB> db) {
+		Optional.ofNullable(db).ifPresent(d -> {
+			this.getDbGroup().clear();
+			getDbGroup().putAll(db);
+		});
 	}
 	
-	public void setMapperGroupName(String mapperGroupName) {
-		this.mapperGroupName = mapperGroupName;
+	public synchronized void setMapperGroupName(String groupName) {
+		mapperGroupName = defaultIfEmpty(groupName, DEFAULT_NAME);
 	}
 	
-	public void setCodeGroupName(String codeGroupName) {
-		this.codeGroupName = codeGroupName;
+	public synchronized void setCodeGroupName(String groupName) {
+		codeGroupName = defaultIfEmpty(groupName, DEFAULT_NAME);
 	}
 	
-	public void setDbGroupName(String dbGroupName) {
-		this.dbGroupName = dbGroupName;
+	public synchronized void setDbGroupName(String groupName) {
+		dbGroupName = defaultIfEmpty(groupName, DEFAULT_NAME);
 	}
 	
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
+	public synchronized void setEncoding(String encoding) {
+		this.encoding = defaultIfEmpty(encoding, "UTF-8");
 	}
 	
-	public void setAuthor(String author) {
-		this.author = author;
+	public synchronized void setAuthor(String author) {
+		this.author = defaultIfEmpty(author, "xchao");
 	}
 	
-	@Nullable
-	public Map<String, GroupMapper> getMapperGroup() {
+	@NotNull
+	public synchronized Map<String, GroupMapper> getMapperGroup() {
+		if (Settings.this.mapperGroup == null) {
+			mapperGroup = new LinkedHashMap<>();
+		}
 		return mapperGroup;
 	}
 	
-	@Nullable
-	public Map<String, GroupCode> getCodeGroup() {
+	@NotNull
+	public synchronized Map<String, GroupCode> getCodeGroup() {
+		if (Settings.this.codeGroup == null) {
+			codeGroup = new LinkedHashMap<>();
+		}
 		return codeGroup;
 	}
 	
-	@Nullable
-	public Map<String, GroupDB> getDbGroup() {
+	@NotNull
+	public synchronized Map<String, GroupDB> getDbGroup() {
+		if (Settings.this.dbGroup == null) {
+			dbGroup = new LinkedHashMap<>();
+		}
 		return dbGroup;
 	}
 	
-	@Nullable
-	public String getMapperGroupName() {
+	@NotNull
+	public synchronized String getMapperGroupName() {
+		if (StringUtil.isEmpty(mapperGroupName)) {
+			mapperGroupName = DEFAULT_NAME;
+		}
 		return mapperGroupName;
 	}
 	
-	@Nullable
-	public String getCodeGroupName() {
+	@NotNull
+	public synchronized String getCodeGroupName() {
+		if (StringUtil.isEmpty(codeGroupName)) {
+			codeGroupName = DEFAULT_NAME;
+		}
 		return codeGroupName;
 	}
 	
-	@Nullable
-	public String getDbGroupName() {
+	@NotNull
+	public synchronized String getDbGroupName() {
+		if (StringUtil.isEmpty(dbGroupName)) {
+			dbGroupName = DEFAULT_NAME;
+		}
 		return dbGroupName;
 	}
 	
-	@Nullable
-	public String getEncoding() {
+	@NotNull
+	public synchronized String getEncoding() {
+		if (StringUtil.isEmpty(encoding)) {
+			encoding = "UTF-8";
+		}
 		return encoding;
 	}
 	
-	@Nullable
-	public String getAuthor() {
+	@NotNull
+	public synchronized String getAuthor() {
+		if (StringUtil.isEmpty(author)) {
+			author = "xchao";
+		}
 		return author;
+	}
+	
+	public final void setCurrentGroupMapper(@NotNull GroupMapper mapper) {
+		this.getMapperGroup().put(mapper.getName(), mapper);
+		this.setMapperGroupName(mapper.getName());
+	}
+	
+	public final void setCurrentGroupCode(@NotNull GroupCode code) {
+		this.getCodeGroup().put(code.getName(), code);
+		this.setCodeGroupName(code.getName());
+	}
+	
+	public final void setCurrentGroupDB(@NotNull GroupDB db) {
+		this.getDbGroup().put(db.getName(), db);
+		this.setDbGroupName(db.getName());
+	}
+	
+	@Nullable
+	public final GroupMapper getGroupMapper(@NotNull String groupName) {
+		return getMapperGroup().get(groupName);
+	}
+	
+	@Nullable
+	public final GroupCode getGroupCode(@NotNull String groupName) {
+		return getCodeGroup().get(groupName);
+	}
+	
+	@Nullable
+	public final GroupDB getGroupDB(@NotNull String groupName) {
+		return getDbGroup().get(groupName);
+	}
+	
+	@Nullable
+	public final GroupMapper getCurrentGroupMapper() {
+		return getGroupMapper(getMapperGroupName());
+	}
+	
+	@Nullable
+	public final GroupCode getCurrentGroupCode() {
+		return getGroupCode(getCodeGroupName());
+	}
+	
+	@Nullable
+	public final GroupDB getCurrentGroupDB() {
+		return getGroupDB(getDbGroupName());
 	}
 	
 	// 加载默认配置
@@ -134,248 +216,235 @@ public final class Settings implements PersistentStateComponent<Settings> {
 	
 	// 重置到默认配置
 	private synchronized void init_default() {
-		this.setMapperGroup(new LinkedHashMap<>());
-		this.setCodeGroup(new LinkedHashMap<>());
-		this.setDbGroup(new LinkedHashMap<>());
-		// 默认类型映射
-		GroupMapper groupMapper = new GroupMapper();
-		groupMapper.setName(DEFAULT_NAME);
-		// LONGTEXT => String
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.databaseType("LONGTEXT")
-			.build());
-		// MEDIUMTEXT => String
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.databaseType("MEDIUMTEXT")
-			.build());
-		// TEXT => String
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.databaseType("TEXT")
-			.build());
-		// TINYTEXT => String
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.databaseType("TINYTEXT")
-			.build());
-		// VARCHAR => String
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.databaseType("VARCHAR")
-			.build());
-		// CHAR => String
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(String.class.getCanonicalName())
-			.javaType(String.class.getCanonicalName())
-			.databaseType("CHAR")
-			.build());
-		// NUMERIC => BigDecimal
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(BigDecimal.class.getCanonicalName())
-			.javaType(BigDecimal.class.getCanonicalName())
-			.databaseType("NUMERIC")
-			.build());
-		// BIGINT => long
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Long.class.getCanonicalName())
-			.javaType(long.class.getCanonicalName())
-			.databaseType("BIGINT")
-			.build());
-		// LONG => long
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Long.class.getCanonicalName())
-			.javaType(long.class.getCanonicalName())
-			.databaseType("LONG")
-			.build());
-		// INT8 => long
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Long.class.getCanonicalName())
-			.javaType(long.class.getCanonicalName())
-			.databaseType("INT8")
-			.build());
-		// MEDIUMINT => int
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Integer.class.getCanonicalName())
-			.javaType(Integer.class.getCanonicalName())
-			.databaseType("MEDIUMINT")
-			.build());
-		// INTEGER => int
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Integer.class.getCanonicalName())
-			.javaType(Integer.class.getCanonicalName())
-			.databaseType("INTEGER")
-			.build());
-		// INT4 => int
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Integer.class.getCanonicalName())
-			.javaType(int.class.getCanonicalName())
-			.databaseType("INT4")
-			.build());
-		// INT => int
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Integer.class.getCanonicalName())
-			.javaType(int.class.getCanonicalName())
-			.databaseType("INT")
-			.build());
-		// SMALLINT => int
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Short.class.getCanonicalName())
-			.javaType(short.class.getCanonicalName())
-			.databaseType("SMALLINT")
-			.build());
-		// TINYINT => int
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Byte.class.getCanonicalName())
-			.javaType(byte.class.getCanonicalName())
-			.databaseType("TINYINT")
-			.build());
-		// BOOLEAN => boolean
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Boolean.class.getCanonicalName())
-			.javaType(boolean.class.getCanonicalName())
-			.databaseType("BOOLEAN")
-			.build());
-		// BOOL => boolean
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Boolean.class.getCanonicalName())
-			.javaType(boolean.class.getCanonicalName())
-			.databaseType("BOOL")
-			.build());
-		// BIT => boolean
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Boolean.class.getCanonicalName())
-			.javaType(boolean.class.getCanonicalName())
-			.databaseType("BIT")
-			.build());
-		// DECIMAL => double
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Double.class.getCanonicalName())
-			.javaType(double.class.getCanonicalName())
-			.databaseType("DECIMAL")
-			.build());
-		// DOUBLE => double
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Double.class.getCanonicalName())
-			.javaType(double.class.getCanonicalName())
-			.databaseType("DOUBLE")
-			.build());
-		// FLOAT => float
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(Float.class.getCanonicalName())
-			.javaType(float.class.getCanonicalName())
-			.databaseType("FLOAT")
-			.build());
-		// TIME => java.sql.Time
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(java.sql.Time.class.getCanonicalName())
-			.javaType(java.sql.Time.class.getCanonicalName())
-			.databaseType("TIME")
-			.build());
-		// DATE => java.util.Date
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(java.util.Date.class.getCanonicalName())
-			.javaType(java.util.Date.class.getCanonicalName())
-			.databaseType("DATE")
-			.build());
-		// DATETIME => java.util.Date
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(java.util.Date.class.getCanonicalName())
-			.javaType(java.util.Date.class.getCanonicalName())
-			.databaseType("DATETIME")
-			.build());
-		// TIMESTAMP => java.util.Date
-		groupMapper.addElement(TypeMapper.builder()
-			.nullJavaType(java.util.Date.class.getCanonicalName())
-			.javaType(java.util.Date.class.getCanonicalName())
-			.databaseType("TIMESTAMP")
-			.build());
-		// LONGBLOB => Blob.
-		groupMapper.addElement(TypeMapper.builder()
-			.javaType(Blob.class.getCanonicalName())
-			.databaseType("LONGBLOB")
-			.build());
-		// MEDIUMBLOB => Blob.
-		groupMapper.addElement(TypeMapper.builder()
-			.javaType(Blob.class.getCanonicalName())
-			.databaseType("MEDIUMBLOB")
-			.build());
-		// BLOB => Blob.
-		groupMapper.addElement(TypeMapper.builder()
-			.javaType(Blob.class.getCanonicalName())
-			.databaseType("BLOB")
-			.build());
-		// TINYBLOB => Blob.
-		groupMapper.addElement(TypeMapper.builder()
-			.javaType(Blob.class.getCanonicalName())
-			.databaseType("TINYBLOB")
-			.build());
 		// 添加默认类型映射
-		this.mapperGroup.put(DEFAULT_NAME, groupMapper);
+		this.setCurrentGroupMapper(GroupMapper.builder()
+			.name(Settings.DEFAULT_NAME)
+			// LONGTEXT => String
+			.element(TypeMapper.builder()
+				.nullJavaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.databaseType("LONGTEXT")
+				.build())
+			// MEDIUMTEXT => String
+			.element(TypeMapper.builder()
+				.nullJavaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.databaseType("MEDIUMTEXT")
+				.build())
+			// TEXT => String
+			.element(TypeMapper.builder()
+				.nullJavaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.databaseType("TEXT")
+				.build())
+			// TINYTEXT => String
+			.element(TypeMapper.builder()
+				.nullJavaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.databaseType("TINYTEXT")
+				.build())
+			// VARCHAR => String
+			.element(TypeMapper.builder()
+				.nullJavaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.databaseType("VARCHAR")
+				.build())
+			// CHAR => String
+			.element(TypeMapper.builder()
+				.nullJavaType(String.class.getCanonicalName())
+				.javaType(String.class.getCanonicalName())
+				.databaseType("CHAR")
+				.build())
+			// NUMERIC => BigDecimal
+			.element(TypeMapper.builder()
+				.nullJavaType(BigDecimal.class.getCanonicalName())
+				.javaType(BigDecimal.class.getCanonicalName())
+				.databaseType("NUMERIC")
+				.build())
+			// BIGINT => long
+			.element(TypeMapper.builder()
+				.nullJavaType(Long.class.getCanonicalName())
+				.javaType(long.class.getCanonicalName())
+				.databaseType("BIGINT")
+				.build())
+			// LONG => long
+			.element(TypeMapper.builder()
+				.nullJavaType(Long.class.getCanonicalName())
+				.javaType(long.class.getCanonicalName())
+				.databaseType("LONG")
+				.build())
+			// INT8 => long
+			.element(TypeMapper.builder()
+				.nullJavaType(Long.class.getCanonicalName())
+				.javaType(long.class.getCanonicalName())
+				.databaseType("INT8")
+				.build())
+			// MEDIUMINT => int
+			.element(TypeMapper.builder()
+				.nullJavaType(Integer.class.getCanonicalName())
+				.javaType(Integer.class.getCanonicalName())
+				.databaseType("MEDIUMINT")
+				.build())
+			// INTEGER => int
+			.element(TypeMapper.builder()
+				.nullJavaType(Integer.class.getCanonicalName())
+				.javaType(Integer.class.getCanonicalName())
+				.databaseType("INTEGER")
+				.build())
+			// INT4 => int
+			.element(TypeMapper.builder()
+				.nullJavaType(Integer.class.getCanonicalName())
+				.javaType(int.class.getCanonicalName())
+				.databaseType("INT4")
+				.build())
+			// INT => int
+			.element(TypeMapper.builder()
+				.nullJavaType(Integer.class.getCanonicalName())
+				.javaType(int.class.getCanonicalName())
+				.databaseType("INT")
+				.build())
+			// SMALLINT => int
+			.element(TypeMapper.builder()
+				.nullJavaType(Short.class.getCanonicalName())
+				.javaType(short.class.getCanonicalName())
+				.databaseType("SMALLINT")
+				.build())
+			// TINYINT => int
+			.element(TypeMapper.builder()
+				.nullJavaType(Byte.class.getCanonicalName())
+				.javaType(byte.class.getCanonicalName())
+				.databaseType("TINYINT")
+				.build())
+			// BOOLEAN => boolean
+			.element(TypeMapper.builder()
+				.nullJavaType(Boolean.class.getCanonicalName())
+				.javaType(boolean.class.getCanonicalName())
+				.databaseType("BOOLEAN")
+				.build())
+			// BOOL => boolean
+			.element(TypeMapper.builder()
+				.nullJavaType(Boolean.class.getCanonicalName())
+				.javaType(boolean.class.getCanonicalName())
+				.databaseType("BOOL")
+				.build())
+			// BIT => boolean
+			.element(TypeMapper.builder()
+				.nullJavaType(Boolean.class.getCanonicalName())
+				.javaType(boolean.class.getCanonicalName())
+				.databaseType("BIT")
+				.build())
+			// DECIMAL => double
+			.element(TypeMapper.builder()
+				.nullJavaType(Double.class.getCanonicalName())
+				.javaType(double.class.getCanonicalName())
+				.databaseType("DECIMAL")
+				.build())
+			// DOUBLE => double
+			.element(TypeMapper.builder()
+				.nullJavaType(Double.class.getCanonicalName())
+				.javaType(double.class.getCanonicalName())
+				.databaseType("DOUBLE")
+				.build())
+			// FLOAT => float
+			.element(TypeMapper.builder()
+				.nullJavaType(Float.class.getCanonicalName())
+				.javaType(float.class.getCanonicalName())
+				.databaseType("FLOAT")
+				.build())
+			// TIME => java.sql.Time
+			.element(TypeMapper.builder()
+				.nullJavaType(java.sql.Time.class.getCanonicalName())
+				.javaType(java.sql.Time.class.getCanonicalName())
+				.databaseType("TIME")
+				.build())
+			// DATE => java.util.Date
+			.element(TypeMapper.builder()
+				.nullJavaType(java.util.Date.class.getCanonicalName())
+				.javaType(java.util.Date.class.getCanonicalName())
+				.databaseType("DATE")
+				.build())
+			// DATETIME => java.util.Date
+			.element(TypeMapper.builder()
+				.nullJavaType(java.util.Date.class.getCanonicalName())
+				.javaType(java.util.Date.class.getCanonicalName())
+				.databaseType("DATETIME")
+				.build())
+			// TIMESTAMP => java.util.Date
+			.element(TypeMapper.builder()
+				.nullJavaType(java.util.Date.class.getCanonicalName())
+				.javaType(java.util.Date.class.getCanonicalName())
+				.databaseType("TIMESTAMP")
+				.build())
+			// LONGBLOB => Blob.
+			.element(TypeMapper.builder()
+				.javaType(Blob.class.getCanonicalName())
+				.databaseType("LONGBLOB")
+				.build())
+			// MEDIUMBLOB => Blob.
+			.element(TypeMapper.builder()
+				.javaType(Blob.class.getCanonicalName())
+				.databaseType("MEDIUMBLOB")
+				.build())
+			// BLOB => Blob.
+			.element(TypeMapper.builder()
+				.javaType(Blob.class.getCanonicalName())
+				.databaseType("BLOB")
+				.build())
+			// TINYBLOB => Blob.
+			.element(TypeMapper.builder()
+				.javaType(Blob.class.getCanonicalName())
+				.databaseType("TINYBLOB")
+				.build())
+			.build());
 		
 		// 加载默认的数据库模板
-		GroupDB groupDB = new GroupDB();
-		groupDB.setName(Settings.DEFAULT_NAME);
-		// 实体信息
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("Entity_PO"))
-			.name("Entity_PO")
+		this.setCurrentGroupDB(GroupDB.builder()
+			.name(Settings.DEFAULT_NAME)
+			// 实体信息
+			.element(Template.builder()
+				.code(loadTemplateText("Entity"))
+				.name("Entity")
+				.build())
+			// 扩展信息
+			.element(Template.builder()
+				.code(loadTemplateText("EntityVO"))
+				.name("EntityVO")
+				.build())
+			// DaoBase
+			.element(Template.builder()
+				.code(loadTemplateText("DaoBase"))
+				.name("DaoBase")
+				.build())
+			// Dao
+			.element(Template.builder()
+				.code(loadTemplateText("Dao"))
+				.name("Dao")
+				.build())
+			// DaoImpl
+			.element(Template.builder()
+				.code(loadTemplateText("DaoImpl"))
+				.name("DaoImpl")
+				.build())
 			.build());
-		// 扩展信息
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("Entity_VO"))
-			.name("Entity_VO")
-			.build());
-		// Mapper对象
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("Mapper"))
-			.name("Mapper")
-			.build());
-		// SQLBuilder对象
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("SQLBuilder"))
-			.name("SQLBuilder")
-			.build());
-		// DaoBase
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("DaoBase"))
-			.name("DaoBase")
-			.build());
-		// Dao
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("Dao"))
-			.name("Dao")
-			.build());
-		// DaoImpl
-		groupDB.addElement(Template.builder()
-			.code(loadTemplateText("DaoImpl"))
-			.name("DaoImpl")
-			.build());
-		// 添加默认代码生成模板
-		this.dbGroup.put(DEFAULT_NAME, groupDB);
 		
 		// 加载默认的代码生成模板
-		GroupCode groupCode = new GroupCode();
-		groupCode.setName(DEFAULT_NAME);
-		// Builder 模式对象
-		groupCode.addElement(Template.builder()
-			.code(loadTemplateText("Builder"))
-			.name("Builder")
+		this.setCurrentGroupCode(GroupCode.builder()
+			.name(Settings.DEFAULT_NAME)
+			.element(Template.builder()
+				.code(loadTemplateText("Builder"))
+				.name("Builder")
+				.build())
 			.build());
-		// 添加默认数据库模板
-		this.codeGroup.put(DEFAULT_NAME, groupCode);
+		
+		// 编码和作者
+		this.setEncoding("UTF-8");
+		this.setAuthor("xchao");
 	}
 	
 	private String loadTemplateText(String template) {
 		try {
-			String path = "/" + template + ".vm";
+			String path = "/" + template + ".groovy";
 			URL url = getClass().getResource(path);
 			return UrlUtil.loadText(url);
 		} catch (IOException e) {

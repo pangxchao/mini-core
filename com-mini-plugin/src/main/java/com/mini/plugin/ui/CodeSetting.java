@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nls;
 
 import java.util.Map;
 
+import static com.mini.plugin.config.GroupCode.builder;
 import static org.jetbrains.annotations.Nls.Capitalization.Title;
 
 public final class CodeSetting extends BasicsSetting<GroupCode> implements Configurable {
@@ -32,13 +33,13 @@ public final class CodeSetting extends BasicsSetting<GroupCode> implements Confi
 	}
 	
 	@Override
-	protected String getName(Settings settings) {
-		return settings.getCodeGroupName();
+	protected GroupCode createInstance(String name) {
+		return builder().name(name).build();
 	}
 	
 	@Override
-	protected GroupCode createInstance() {
-		return new GroupCode();
+	protected String getName(Settings settings) {
+		return settings.getCodeGroupName();
 	}
 	
 	@Override

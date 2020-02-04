@@ -1,5 +1,7 @@
 package com.mini.plugin.config;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
 import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
@@ -20,15 +22,18 @@ public final class TypeMapper implements Serializable {
 		this.javaType = javaType;
 	}
 	
+	@NotNull
 	public synchronized final String getNullJavaType() {
 		return defaultIfEmpty(nullJavaType, //
 			getJavaType());
 	}
 	
+	@NotNull
 	public synchronized final String getDatabaseType() {
 		return defaultIfEmpty(databaseType, "");
 	}
 	
+	@NotNull
 	public synchronized final String getJavaType() {
 		return defaultIfEmpty(javaType, "");
 	}

@@ -52,18 +52,14 @@
         </ul>
         <p>More <a href="https://github.com/makejavas/EasyCode">Help Info</a>.</p>
     ]]></change-notes>
-	<idea-version since-build="173.0" />
+	<idea-version since-build="183.0" />
 	
 	<!--必须为企业版-->
 	<depends>com.intellij.modules.lang</depends>
 	<!--必须依赖 Database 插件-->
 	<depends>com.intellij.database</depends>
-	<!--必须依赖Velocity插件-->
-	<depends>com.intellij.velocity</depends>
-	
 	<!-- 扩展配置、高亮语法、语言支持等 -->
 	<extensions defaultExtensionNs="com.intellij">
-		<projectService serviceImplementation="com.mini.plugin.service.TableInfoService" />
 		<applicationService serviceImplementation="com.mini.plugin.config.Settings" />
 		<applicationConfigurable instance="com.mini.plugin.ui.MainSetting"
 			dynamic="true" />
@@ -91,7 +87,22 @@
 				description="Mini core table config"
 				text="Table Config">
 			</action>
+			<!-- 表配置动作 -->
+			<action id="com.mini.plugin.action.Dictionaries"
+				class="com.mini.plugin.action.Dictionaries"
+				description="Mini core table Dictionaries"
+				text="Dictionaries">
+			</action>
 		</group>
+		
+		<action class="com.mini.plugin.action.BuilderAction"
+			id="com.mini.plugin.action.BuilderAction"
+			description="Mini builder"
+			text="Mini Builder">
+			<add-to-group group-id="GenerateGroup"
+				relative-to-action="JavaGenerateGroup2"
+				anchor="after" />
+		</action>
 	</actions>
 
 </idea-plugin>

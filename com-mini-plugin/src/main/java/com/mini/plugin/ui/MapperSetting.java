@@ -16,8 +16,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.intellij.openapi.ui.MessageDialogBuilder.yesNo;
 import static com.mini.plugin.util.Constants.CONFIRM_DELETE_MAPPER;
@@ -35,17 +36,15 @@ public final class MapperSetting extends JPanel implements Configurable {
 	private boolean modified;
 	
 	@NotNull
-	private synchronized List<TypeMapper> getTypeMapperData() {
-		return ofNullable(data.get(groupName))
-			.map(GroupMapper::getElements)
-			.orElse(new ArrayList<>());
+	private synchronized LinkedHashMap<String, TypeMapper> getTypeMapperData() {
+		return ofNullable(data.get(groupName)).map(GroupMapper::getElements)
+			.orElse(new LinkedHashMap<>());
 	}
 	
 	private synchronized void resetModelData() {
 		MapperSetting.this.mapperModel.removeAllRow();
-		for (TypeMapper mapper : getTypeMapperData()) {
-			mapperModel.addRow(mapper);
-		}
+		getTypeMapperData().forEach((key, value) -> //
+			mapperModel.addRow(value));
 	}
 	
 	private synchronized String getValueAt(int row, int column) {
@@ -55,9 +54,8 @@ public final class MapperSetting extends JPanel implements Configurable {
 	protected MapperSetting(Settings settings, Project project) {
 		MapperSetting.this.setLayout(new BorderLayout());
 		this.groupName = settings.getMapperGroupName();
-		this.settings  = settings;
-		ofNullable(settings.getMapperGroup()).ifPresent(g ->
-			g.forEach((k, v) -> data.put(k, v.copy())));
+		this.data.putAll(settings.getMapperGroup());
+		this.settings = settings;
 		// 创建分组面板并添加分组面板在主面板上边
 		add(new BaseGroupPanel<TypeMapper, GroupMapper>(settings.getMapperGroupName()) {
 			protected synchronized final void renameHandler(String name, String newName) {
@@ -95,7 +93,8 @@ public final class MapperSetting extends JPanel implements Configurable {
 			
 			protected synchronized final void addHandler(String name) {
 				MapperSetting.this.modified = true;
-				data.put(name, new GroupMapper());
+				data.put(name, GroupMapper.builder()
+					.name(name).build());
 			}
 		}, BorderLayout.NORTH);
 		
@@ -115,23 +114,18 @@ public final class MapperSetting extends JPanel implements Configurable {
 		
 		// 创建表格布局并添加到滚动布局
 		scrollPane.setViewportView((table = new JBTable(mapperModel)));
-		MapperSetting.this.mapperModel.addTableModelListener(event ->
-			ofNullable(data.get(groupName)).map(GroupMapper::getElements)
-				.filter(e -> event.getColumn() >= 0).ifPresent(ele -> {
-				int end = Math.min(event.getLastRow(), ele.size() - 1);
-				int start = Math.max(0, event.getFirstRow());
-				for (int i = start; i <= end; i++) {
-					String dbType = getValueAt(i, 0);
-					String javaType = getValueAt(i, 1);
-					String nullType = getValueAt(i, 2);
-					ofNullable(ele.get(i)).ifPresent(m -> {
-						m.setNullJavaType(nullType);
-						m.setDatabaseType(dbType);
-						m.setJavaType(javaType);
-					});
-					modified = true;
-				}
-			}));
+		MapperSetting.this.mapperModel.addTableModelListener(event -> {
+			GroupMapper.Builder builder = GroupMapper.builder()
+				.name(groupName);
+			for (int i = 0; i < mapperModel.getRowCount(); i++) {
+				builder.element(TypeMapper.builder()
+					.databaseType(getValueAt(i, 0))
+					.nullJavaType(getValueAt(i, 2))
+					.javaType(getValueAt(i, 1))
+					.build());
+			}
+			data.put(groupName, builder.build());
+		});
 		// 表格只能单选
 		table.setSelectionMode(SINGLE_SELECTION);
 	}
@@ -144,9 +138,9 @@ public final class MapperSetting extends JPanel implements Configurable {
 			public void actionPerformed(@NotNull AnActionEvent e) {
 				ofNullable(data.get(groupName)).ifPresent(group -> {
 					group.addElement(TypeMapper.builder()
+						.nullJavaType("NullableType")
 						.databaseType("DBType")
 						.javaType("JavaType")
-						.nullJavaType("NullableType")
 						.build());
 					resetModelData();
 					modified = true;
@@ -158,12 +152,8 @@ public final class MapperSetting extends JPanel implements Configurable {
 			public void actionPerformed(@NotNull AnActionEvent e) {
 				int row = MapperSetting.this.table.getSelectedRow();
 				if (row >= 0 && yesNo(TITLE_INFO, CONFIRM_DELETE_MAPPER).isYes()) {
-					ofNullable(data.get(groupName)).map(GroupMapper::getElements)
-						.filter(ele -> ele.size() > row).ifPresent(elements -> {
-						elements.remove(row);
-						resetModelData();
-						modified = true;
-					});
+					mapperModel.removeRow(row);
+					modified = true;
 				}
 			}
 			
@@ -185,9 +175,9 @@ public final class MapperSetting extends JPanel implements Configurable {
 	// 重置到默认状态
 	public synchronized final void reset(Settings settings) {
 		MapperSetting.this.data.clear();
-		ofNullable(settings.getMapperGroup()).ifPresent(g ->
-			g.forEach((k, v) -> data.put(k, v.copy())));
-		modified = true;
+		data.putAll(settings.getMapperGroup());
+		groupName = settings.getMapperGroupName();
+		modified  = true;
 	}
 	
 	// 重置操作

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nls;
 
 import java.util.Map;
 
+import static com.mini.plugin.config.GroupDB.builder;
 import static org.jetbrains.annotations.Nls.Capitalization.Title;
 
 public final class DBSetting extends BasicsSetting<GroupDB> implements Configurable {
@@ -26,9 +27,16 @@ public final class DBSetting extends BasicsSetting<GroupDB> implements Configura
 		return settings.getDbGroup();
 	}
 	
+	
 	@Override
 	protected void setName(Settings settings, String name) {
 		settings.setDbGroupName(name);
+	}
+	
+	
+	@Override
+	protected GroupDB createInstance(String name) {
+		return builder().name(name).build();
 	}
 	
 	@Override
@@ -36,10 +44,6 @@ public final class DBSetting extends BasicsSetting<GroupDB> implements Configura
 		return settings.getDbGroupName();
 	}
 	
-	@Override
-	protected GroupDB createInstance() {
-		return new GroupDB();
-	}
 	
 	@Override
 	@Nls(capitalization = Title)

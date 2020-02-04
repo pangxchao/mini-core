@@ -75,7 +75,7 @@ public class MainSetting extends JPanel implements Configurable, Configurable.Co
 		resetToDefaultButton.addActionListener(actionListenerEvent -> {
 			if (yesNo(TITLE_INFO, RESET_DEFAULT_SETTING).isYes()) {
 				this.settings.resetToDefault();
-				MainSetting.this.reset(settings);
+				this.init_data();
 			}
 		});
 		
@@ -101,11 +101,7 @@ public class MainSetting extends JPanel implements Configurable, Configurable.Co
 	// 重置操作
 	@Override
 	public synchronized final void reset() {
-		encodingBox.setSelectedItem(settings.getEncoding());
-		authorField.setText(settings.getAuthor());
-		mapperSetting.reset();
-		codeSetting.reset();
-		dbSetting.reset();
+		this.init_data();
 	}
 	
 	// 设置数据是否有修改过

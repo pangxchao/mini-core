@@ -1,15 +1,17 @@
 package com.mini.plugin.config;
 
-import com.google.gson.annotations.Expose;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.intellij.database.model.DasColumn;
 
 import java.io.Serializable;
 import java.util.EventListener;
 
 public final class ColumnInfo implements Serializable, EventListener {
-	private String columnName, fieldName, comment, dbType, fieldType;
 	private boolean auto, id, ref, createAt, updateAt, del, lock;
-	@Expose(serialize = false, deserialize = false)
+	private String columnName, fieldName, comment, dbType;
+	private String refTable, refColumn;
+	private boolean nullable;
+	@JsonIgnore
 	private DasColumn column;
 	private int delValue;
 	private boolean ext;
@@ -22,16 +24,24 @@ public final class ColumnInfo implements Serializable, EventListener {
 		this.fieldName = fieldName;
 	}
 	
-	public void setFieldType(String fieldType) {
-		this.fieldType = fieldType;
-	}
-	
 	public void setCreateAt(boolean createAt) {
 		this.createAt = createAt;
 	}
 	
 	public void setUpdateAt(boolean updateAt) {
 		this.updateAt = updateAt;
+	}
+	
+	public void setRefColumn(String refColumn) {
+		this.refColumn = refColumn;
+	}
+	
+	public void setRefTable(String refTable) {
+		this.refTable = refTable;
+	}
+	
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
 	}
 	
 	public void setComment(String comment) {
@@ -82,8 +92,16 @@ public final class ColumnInfo implements Serializable, EventListener {
 		return fieldName;
 	}
 	
-	public String getFieldType() {
-		return fieldType;
+	public String getRefColumn() {
+		return refColumn;
+	}
+	
+	public String getRefTable() {
+		return refTable;
+	}
+	
+	public boolean isNullable() {
+		return nullable;
 	}
 	
 	public String getComment() {

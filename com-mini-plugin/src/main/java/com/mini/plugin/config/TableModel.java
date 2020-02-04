@@ -1,9 +1,7 @@
 package com.mini.plugin.config;
 
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.List;
 import java.util.Optional;
 
 import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
@@ -13,23 +11,28 @@ public class TableModel extends DefaultTableModel implements EventListener {
 		String.class,
 		String.class,
 		String.class,
-		Boolean.class,
-		Boolean.class,
-		Boolean.class,
-		Boolean.class,
+		String.class,
 		Boolean.class,
 		Boolean.class,
 		String.class,
+		String.class,
+		Boolean.class,
+		Boolean.class,
+		Boolean.class,
+		Boolean.class,
+		Integer.class,
 		Boolean.class
 	};
-	private List<ColumnInfo> data = new ArrayList<>();
 	
 	public TableModel() {
 		addColumn("Column Name");
+		addColumn("Column Type");
 		addColumn("Field Name");
 		addColumn("Comment");
 		addColumn("Id");
 		addColumn("Ref");
+		addColumn("Ref Table");
+		addColumn("Ref Column");
 		addColumn("Auto");
 		addColumn("CreateAt");
 		addColumn("UpdateAt");
@@ -47,10 +50,13 @@ public class TableModel extends DefaultTableModel implements EventListener {
 		Optional.ofNullable(info).ifPresent(m -> { //
 			TableModel.this.addRow(new Object[]{
 				defaultIfEmpty(m.getColumnName(), ""),
+				defaultIfEmpty(m.getDbType(), "VARCHAR").toUpperCase(),
 				defaultIfEmpty(m.getFieldName(), ""),
 				defaultIfEmpty(m.getComment(), ""),
 				m.isId(),
 				m.isRef(),
+				defaultIfEmpty(m.getRefTable(), ""),
+				defaultIfEmpty(m.getRefColumn(), ""),
 				m.isAuto(),
 				m.isCreateAt(),
 				m.isUpdateAt(),
@@ -70,7 +76,7 @@ public class TableModel extends DefaultTableModel implements EventListener {
 	
 	@Override
 	public boolean isCellEditable(int row, int column) {
-		if (column == 0 && !isExtColumn(row)) {
+		if (column <= 8 && !isExtColumn(row)) {
 			return false;
 		}
 		return super.isCellEditable(row, column);

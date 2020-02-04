@@ -3,9 +3,7 @@ package com.mini.plugin.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static java.lang.Character.isUpperCase;
-
-public final class StringUtil {
+public final class StringUtil extends com.intellij.openapi.util.text.StringUtil {
 	/**
 	 * 将字符串转换成URI
 	 * @param self 字符串内容
@@ -61,11 +59,23 @@ public final class StringUtil {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < self.length(); i++) {
 			char ch = self.charAt(i);
-			if (i > 0 && isUpperCase(self.charAt(i))) {
+			if (i > 0 && Character.isUpperCase(self.charAt(i))) {
 				result.append("_");
 			}
 			result.append(Character.toLowerCase(ch));
 		}
 		return result.toString();
+	}
+	
+	public static String toFieldName(String name, String prefix) {
+		return name.replaceFirst(getRegex(prefix), "");
+	}
+	
+	/**
+	 * Gets the value of REGEX.
+	 * @return the value of REGEX
+	 */
+	private static String getRegex(String prefix) {
+		return "((" + prefix + ")(_)*)";
 	}
 }
