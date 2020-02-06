@@ -1,11 +1,10 @@
 package com.mini.plugin.util;
 
-import com.intellij.database.model.DasTypedObject;
-import com.intellij.database.model.DataType;
+import com.intellij.database.model.DasColumn;
+import com.intellij.database.psi.DbTable;
+import com.intellij.database.util.DasUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
-import com.mini.plugin.config.ColumnInfo;
-import com.mini.plugin.config.TableInfo;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -15,11 +14,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
 
 public class DictionariesUtil {
 	
-	public static void generator(List<TableInfo> infoList, VirtualFile file) {
+	public static void generator(List<DbTable> tableList, VirtualFile file) {
 		File outFile = new File(file.getPath(), "dictionary.xls");
 		try (OutputStream out = new FileOutputStream(outFile)) {
 			// 创建工作簿
@@ -69,7 +67,7 @@ public class DictionariesUtil {
 			String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "主键", "非空", "自增", "默认值", "说明"};
 			
 			int rowNum = 0;
-			for (TableInfo info : infoList) {
+			for (DbTable table : tableList) {
 				// 合并单元格
 				sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 8));
 				// 创建表格行
@@ -79,7 +77,7 @@ public class DictionariesUtil {
 				
 				// 表名称标题栏
 				cell = row.createCell(0);
-				cell.setCellValue(info.getTableName());
+				cell.setCellValue(table.getName());
 				cell.setCellStyle(style_center);
 				for (int j = 1; j <= 8; j++) {
 					cell = row.createCell(j);
@@ -98,7 +96,7 @@ public class DictionariesUtil {
 				}
 				
 				int index = 1;
-				for (ColumnInfo column : info.getColumnList()) {
+				for (DasColumn column : DasUtil.getColumns(table)) {
 					rowNum = rowNum + 1;
 					row    = sheet.createRow(rowNum);
 					row.setHeightInPoints(15);
@@ -111,49 +109,44 @@ public class DictionariesUtil {
 					// 字段名称
 					cell = row.createCell(1);
 					cell.setCellStyle(style);
-					cell.setCellValue(column.getColumnName());
+					cell.setCellValue(column.getName());
 					
 					// 字段类型
 					cell = row.createCell(2);
 					cell.setCellStyle(style);
-					cell.setCellValue(column.getDbType());
+					cell.setCellValue(StringUtil.defaultIfEmpty(
+						column.getDataType().typeName, "")
+						.toUpperCase());
 					
 					// 字段长度
 					cell = row.createCell(3);
 					cell.setCellStyle(style);
-					cell.setCellValue(Optional
-						.ofNullable(column.getColumn())
-						.map(DasTypedObject::getDataType)
-						.map(DataType::getLength)
-						.orElse(0));
+					cell.setCellValue(column.getDataType().getLength());
 					
 					// 是否为主键
 					cell = row.createCell(4);
 					cell.setCellStyle(style);
-					cell.setCellValue(column.isId() ? "是" : "");
+					cell.setCellValue(DasUtil.isPrimary(column) ? "是" : "");
 					
 					// 字段是否为非空字段
 					cell = row.createCell(5);
 					cell.setCellStyle(style);
-					cell.setCellValue(column.isNullable() ? "" : "是");
+					cell.setCellValue(column.isNotNull() ? "是" : "");
 					
 					// 字段是否为自增字段
 					cell = row.createCell(6);
 					cell.setCellStyle(style);
-					cell.setCellValue(column.isAuto() ? "是" : "");
+					cell.setCellValue(DasUtil.isAuto(column) ? "是" : "");
 					
 					// 字段默认值
 					cell = row.createCell(7);
 					cell.setCellStyle(style);
-					cell.setCellValue(Optional
-						.ofNullable(column.getColumn())
-						.map(DasTypedObject::getDefault)
-						.orElse(""));
+					cell.setCellValue(StringUtil.defaultIfEmpty(column.getDefault(), ""));
 					
 					// 字段说明
 					cell = row.createCell(8);
 					cell.setCellStyle(style);
-					cell.setCellValue(column.getComment());
+					cell.setCellValue(StringUtil.defaultIfEmpty(column.getComment(), ""));
 					
 					index++;
 				}
@@ -173,8 +166,8 @@ public class DictionariesUtil {
 			
 			workBook.write(out);
 			out.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception | Error e) {
+			ThrowsUtil.hidden(e);
 		}
 	}
 }

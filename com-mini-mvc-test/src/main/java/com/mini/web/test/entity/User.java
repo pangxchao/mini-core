@@ -102,90 +102,90 @@ public class User implements Serializable {
 		return DateFormatUtil.formatTime(createTime);
 	}
 	
+	
 	public static Builder builder() {
 		return new Builder(new User());
 	}
 	
 	public static Builder builder(User copy) {
-		return User.builder()
-			.id(copy.getId())
-			.name(copy.getName())
-			.password(copy.getPassword())
-			.phone(copy.getPhone())
-			.phoneAuth(copy.getPhoneAuth())
-			.fullName(copy.getFullName())
-			.email(copy.getEmail())
-			.emailAuth(copy.getEmailAuth())
-			.headUrl(copy.getHeadUrl())
-			.regionId(copy.getRegionId())
-			.createTime(copy.getCreateTime());
+		Builder builder = new Builder(new User());
+		builder.id(copy.getId());
+		builder.name(copy.getName());
+		builder.password(copy.getPassword());
+		builder.phone(copy.getPhone());
+		builder.phoneAuth(copy.getPhoneAuth());
+		builder.fullName(copy.getFullName());
+		builder.email(copy.getEmail());
+		builder.emailAuth(copy.getEmailAuth());
+		builder.headUrl(copy.getHeadUrl());
+		builder.regionId(copy.getRegionId());
+		builder.createTime(copy.getCreateTime());
+		return builder;
 	}
 	
 	public static class Builder {
-		private final User User;
+		private final User user;
 		
-		protected Builder(User User) {
-			this.User = User;
-		}
+		protected Builder(User user) {this.user = user;}
 		
 		public Builder id(long id) {
-			User.setId(id);
+			user.setId(id);
 			return this;
 		}
 		
 		public Builder name(String name) {
-			User.setName(name);
+			user.setName(name);
 			return this;
 		}
 		
 		public Builder password(String password) {
-			User.setPassword(password);
+			user.setPassword(password);
 			return this;
 		}
 		
 		public Builder phone(String phone) {
-			User.setPhone(phone);
+			user.setPhone(phone);
 			return this;
 		}
 		
 		public Builder phoneAuth(int phoneAuth) {
-			User.setPhoneAuth(phoneAuth);
+			user.setPhoneAuth(phoneAuth);
 			return this;
 		}
 		
 		public Builder fullName(String fullName) {
-			User.setFullName(fullName);
+			user.setFullName(fullName);
 			return this;
 		}
 		
 		public Builder email(String email) {
-			User.setEmail(email);
+			user.setEmail(email);
 			return this;
 		}
 		
 		public Builder emailAuth(int emailAuth) {
-			User.setEmailAuth(emailAuth);
+			user.setEmailAuth(emailAuth);
 			return this;
 		}
 		
 		public Builder headUrl(String headUrl) {
-			User.setHeadUrl(headUrl);
+			user.setHeadUrl(headUrl);
 			return this;
 		}
 		
 		public Builder regionId(Integer regionId) {
-			User.setRegionId(regionId);
+			user.setRegionId(regionId);
 			return this;
 		}
 		
 		public Builder createTime(Date createTime) {
-			User.setCreateTime(createTime);
+			user.setCreateTime(createTime);
 			return this;
 		}
 		
 		@Nonnull
 		public User build() {
-			return User;
+			return user;
 		}
 	}
 }

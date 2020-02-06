@@ -1,5 +1,5 @@
-import com.mini.plugin.builder.MethodSpecBuilder
-import com.mini.plugin.builder.TypeSpecBuilder
+import com.mini.plugin.builder.javapoet.MethodSpecBuilder
+import com.mini.plugin.builder.javapoet.TypeSpecBuilder
 import com.mini.plugin.config.TableInfo
 import com.mini.plugin.util.GroovyUtil
 import com.squareup.javapoet.AnnotationSpec

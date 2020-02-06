@@ -26,5 +26,7 @@ public interface Constants {
 	String CHOOSE_DIRECTORY = "Choose where to store generated files";
 	// 代码生成错误
 	String GENERATED_ERROR = "Error Generating Code";
+	// Builder 生成标题
+	String BUILDER_TITLE = "Select Fields for the Builder";
 	
 }

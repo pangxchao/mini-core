@@ -1,4 +1,4 @@
-import com.mini.plugin.builder.MethodSpecBuilder
+import com.mini.plugin.builder.javapoet.MethodSpecBuilder
 import com.mini.plugin.config.TableInfo
 import com.mini.plugin.util.ColumnUtil
 import com.squareup.javapoet.JavaFile
@@ -44,7 +44,7 @@ return JavaFile.builder(daoBasePackage(info),
 					})
 				})
 			}, {
-				it.addStatement('delete().from($T.$L)', builderClass(info), //
+				it.addStatement('delete().from($T.$L)', beanClass(info), //
 					info.getTableName().toUpperCase())
 			})
 			.forAdd(info.getColumnList(), {method, column ->

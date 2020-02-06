@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
+import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
+
 public final class GroupDB implements AbstractGroup<Template, GroupDB> {
 	private LinkedHashMap<String, Template> elements;
 	private String name;
@@ -36,19 +38,19 @@ public final class GroupDB implements AbstractGroup<Template, GroupDB> {
 	
 	@Nullable
 	@Override
-	public Template get(String name) {
+	public synchronized Template get(String name) {
 		return elements.get(name);
 	}
 	
 	@Override
-	public void setName(String name) {
+	public synchronized void setName(String name) {
 		this.name = name;
 	}
 	
 	@NotNull
 	@Override
-	public String getName() {
-		return name;
+	public synchronized String getName() {
+		return defaultIfEmpty(name, "");
 	}
 	
 	@NotNull

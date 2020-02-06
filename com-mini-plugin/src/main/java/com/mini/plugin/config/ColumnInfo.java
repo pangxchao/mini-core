@@ -10,7 +10,7 @@ public final class ColumnInfo implements Serializable, EventListener {
 	private boolean auto, id, ref, createAt, updateAt, del, lock;
 	private String columnName, fieldName, comment, dbType;
 	private String refTable, refColumn;
-	private boolean nullable;
+	private boolean notNull;
 	@JsonIgnore
 	private DasColumn column;
 	private int delValue;
@@ -40,8 +40,8 @@ public final class ColumnInfo implements Serializable, EventListener {
 		this.refTable = refTable;
 	}
 	
-	public void setNullable(boolean nullable) {
-		this.nullable = nullable;
+	public void setNotNull(boolean notNull) {
+		this.notNull = notNull;
 	}
 	
 	public void setComment(String comment) {
@@ -100,8 +100,8 @@ public final class ColumnInfo implements Serializable, EventListener {
 		return refTable;
 	}
 	
-	public boolean isNullable() {
-		return nullable;
+	public boolean isNotNull() {
+		return notNull;
 	}
 	
 	public String getComment() {

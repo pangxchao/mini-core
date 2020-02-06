@@ -4,12 +4,12 @@ import com.intellij.ide.fileTemplates.impl.UrlUtil;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.mini.plugin.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Blob;
@@ -26,7 +26,7 @@ import static com.mini.plugin.util.ThrowsUtil.hidden;
  * @author xchao
  */
 @State(name = "MiniCode", storages = @Storage("Mini-Code.xml"))
-public final class Settings implements PersistentStateComponent<Settings> {
+public final class Settings implements Serializable, PersistentStateComponent<Settings> {
 	public static final String DEFAULT_NAME = "Default";
 	private String mapperGroupName = DEFAULT_NAME;
 	private String codeGroupName = DEFAULT_NAME;
@@ -202,7 +202,30 @@ public final class Settings implements PersistentStateComponent<Settings> {
 	
 	@Override
 	public final void loadState(@NotNull Settings settings) {
-		XmlSerializerUtil.copyBean(settings, this);
+		if (!StringUtil.isEmpty(settings.getMapperGroupName())) {
+			setMapperGroupName(settings.getMapperGroupName());
+		}
+		if (!StringUtil.isEmpty(settings.getCodeGroupName())) {
+			setCodeGroupName(settings.getCodeGroupName());
+		}
+		if (!StringUtil.isEmpty(settings.getDbGroupName())) {
+			setDbGroupName(settings.getDbGroupName());
+		}
+		if (!StringUtil.isEmpty(settings.getEncoding())) {
+			setEncoding(settings.getEncoding());
+		}
+		if (!StringUtil.isEmpty(settings.getAuthor())) {
+			setAuthor(settings.getAuthor());
+		}
+		if (!settings.getMapperGroup().isEmpty()) {
+			setMapperGroup(settings.getMapperGroup());
+		}
+		if (!settings.getCodeGroup().isEmpty()) {
+			setCodeGroup(settings.getCodeGroup());
+		}
+		if (!settings.getDbGroup().isEmpty()) {
+			setDbGroup(settings.getDbGroup());
+		}
 	}
 	
 	@Override

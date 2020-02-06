@@ -1,6 +1,6 @@
-import com.mini.plugin.builder.FieldSpecBuilder
-import com.mini.plugin.builder.MethodSpecBuilder
-import com.mini.plugin.builder.TypeSpecBuilder
+import com.mini.plugin.builder.javapoet.FieldSpecBuilder
+import com.mini.plugin.builder.javapoet.MethodSpecBuilder
+import com.mini.plugin.builder.javapoet.TypeSpecBuilder
 import com.mini.plugin.config.TableInfo
 import com.mini.plugin.util.ColumnUtil
 import com.squareup.javapoet.AnnotationSpec
@@ -95,23 +95,30 @@ return JavaFile.builder(beanPackage(info),
 
 	// 生成日期格式化扩展方法
 		.forAdd(info.getColumnList(), {builder, column ->
-			builder.ifAdd(Date.class.isAssignableFrom(ColumnUtil.getColumnType(column)) && !column.isExt(), {
-				builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(column.getFieldName()) + '_DT')
+			builder.ifAdd(Date.class.isAssignableFrom(ColumnUtil.getColumnType(column))
+				&& !column.isExt(), {
+				builder.addMethod(MethodSpecBuilder.methodBuilder('get' +
+					firstUpperCase(column.getFieldName()) + '_DT')
 					.addModifiers(PUBLIC, FINAL)
 					.returns(String.class)
-					.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(), column.getFieldName())
+					.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(),
+						column.getFieldName())
 					.build())
 
-				builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(column.getFieldName()) + '_D')
+				builder.addMethod(MethodSpecBuilder.methodBuilder('get' +
+					firstUpperCase(column.getFieldName()) + '_D')
 					.addModifiers(PUBLIC, FINAL)
 					.returns(String.class)
-					.addStatement('return $T.formatDate($N)', dateFormatUtilClass(), column.getFieldName())
+					.addStatement('return $T.formatDate($N)', dateFormatUtilClass(),
+						column.getFieldName())
 					.build())
 
-				builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(column.getFieldName()) + '_T')
+				builder.addMethod(MethodSpecBuilder.methodBuilder('get' +
+					firstUpperCase(column.getFieldName()) + '_T')
 					.addModifiers(PUBLIC, FINAL)
 					.returns(String.class)
-					.addStatement('return $T.formatTime($N)', dateFormatUtilClass(), column.getFieldName())
+					.addStatement('return $T.formatTime($N)', dateFormatUtilClass(),
+						column.getFieldName())
 					.build())
 			})
 		})
@@ -119,19 +126,23 @@ return JavaFile.builder(beanPackage(info),
 	// 生成静态无参数 builder 方法
 		.addMethod(MethodSpecBuilder.methodBuilder('builder')
 			.addModifiers(PUBLIC, STATIC)
-			.returns(beanClass(info))
+			.returns(builderClass(info))
 			.addStatement('return new $T(new $T())', builderClass(info), beanClass(info))
 			.build())
 
 	// 生成静态 copy builder 方法
 		.addMethod(MethodSpecBuilder.methodBuilder('builder')
 			.addModifiers(PUBLIC, STATIC)
-			.returns(beanClass(info))
+			.returns(builderClass(info))
 			.addParameter(beanClass(info), 'copy')
 			.addCode('return $T.builder()', beanClass(info))
 			.forAdd(info.getColumnList(), {method, column ->
 				method.ifAdd(!column.isExt(), {
-					method.addCode('\n\t.$L(copy.get$L())', column.getFieldName(), firstUpperCase(column.getFieldName()))
+					Class<?> type = ColumnUtil.getColumnType(column)
+					String prefix = type == boolean.class || type == Boolean.class //
+						? "is" : "get"
+					method.addCode('\n\t.$L(copy.$L$L())', column.getFieldName(),
+						prefix, firstUpperCase(column.getFieldName()))
 				})
 			})
 			.addStatement('')
@@ -159,7 +170,8 @@ return JavaFile.builder(beanPackage(info),
 						.returns(builderClass(info))
 						.addParameter(ColumnUtil.getColumnType(column), column.getFieldName())
 						.addStatement('$L.set$L($L)', firstLowerCase(beanName(info)),
-							column.getFieldName(), column.getFieldName())
+							firstUpperCase(column.getFieldName()),
+							column.getFieldName())
 						.addStatement('return this')
 						.build())
 				})

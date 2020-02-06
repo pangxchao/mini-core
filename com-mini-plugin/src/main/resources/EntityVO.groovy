@@ -1,6 +1,6 @@
-import com.mini.plugin.builder.FieldSpecBuilder
-import com.mini.plugin.builder.MethodSpecBuilder
-import com.mini.plugin.builder.TypeSpecBuilder
+import com.mini.plugin.builder.javapoet.FieldSpecBuilder
+import com.mini.plugin.builder.javapoet.MethodSpecBuilder
+import com.mini.plugin.builder.javapoet.TypeSpecBuilder
 import com.mini.plugin.config.TableInfo
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.JavaFile
@@ -84,18 +84,22 @@ return JavaFile.builder(voBeanPackage(info),
 	// 生成静态无参数 builder 方法
 		.addMethod(MethodSpecBuilder.methodBuilder('builder')
 			.addModifiers(PUBLIC, STATIC)
-			.returns(voBeanClass(info))
+			.returns(voBuilderClass(info))
 			.addStatement('return new $T(new $T())', voBuilderClass(info), voBeanClass(info))
 			.build())
 
 	// 生成静态 copy builder 方法
 		.addMethod(MethodSpecBuilder.methodBuilder('builder')
 			.addModifiers(PUBLIC, STATIC)
-			.returns(voBeanClass(info))
+			.returns(voBuilderClass(info))
 			.addParameter(voBeanClass(info), 'copy')
 			.addCode('return $T.builder()', voBeanClass(info))
 			.forAdd(info.getColumnList(), {method, column ->
-				method.addCode('\n\t.$L(copy.get$L())', column.getFieldName(), firstUpperCase(column.getFieldName()))
+				Class<?> type = getColumnType(column)
+				String prefix = type == boolean.class || type == Boolean.class //
+					? "is" : "get"
+				method.addCode('\n\t.$L(copy.$L$L())', column.getFieldName(),
+					prefix, firstUpperCase(column.getFieldName()))
 			})
 			.addStatement('')
 			.build())
@@ -123,7 +127,8 @@ return JavaFile.builder(voBeanPackage(info),
 					.returns(voBuilderClass(info))
 					.addParameter(getColumnType(column), column.getFieldName())
 					.addStatement('$L.set$L($L)', firstLowerCase(beanName(info)),
-						column.getFieldName(), column.getFieldName())
+						firstUpperCase(column.getFieldName()),
+						column.getFieldName())
 					.addStatement('return this')
 					.build())
 			})

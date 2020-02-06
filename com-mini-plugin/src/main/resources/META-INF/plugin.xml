@@ -44,7 +44,7 @@
             <li>5.Based on Database Tool development, support a varied of databases</li>
         </ul>
         <ul>
-            <li>1.支持自定义模板(基于velocity)</li>
+            <li>1.支持自定义模板(基于Groovy语言)</li>
             <li>2.支持定制表信息，以及添加扩展属性</li>
             <li>3.支持同时生成多张表与多个模板代码</li>
             <li>4.支持生成与数据库相关的任何代码</li>
@@ -67,13 +67,14 @@
 	
 	<actions>
 		<!-- 数据库表右键菜单分组 -->
-		<group class="com.intellij.openapi.actionSystem.DefaultActionGroup"
-			id="com.mini.plugin.action.DbActionGroup"
+		<group class="com.mini.plugin.action.DBActionGroup"
+			id="com.mini.plugin.action.DBActionGroup"
 			description="Mini core"
 			text="Mini-Core"
 			popup="true">
 			<!-- 挂载到数据库表右键菜单的第一个位置 -->
 			<add-to-group group-id="DatabaseViewPopupMenu"
+				relative-to-action="Jdbc.OpenEditor.DDL"
 				anchor="first" />
 			<!-- 代码生成动作 -->
 			<action id="com.mini.plugin.action.GenerateCode"
@@ -92,6 +93,12 @@
 				class="com.mini.plugin.action.Dictionaries"
 				description="Mini core table Dictionaries"
 				text="Dictionaries">
+			</action>
+			<!-- 创建表语句 -->
+			<action id="com.mini.plugin.action.Creations"
+				class="com.mini.plugin.action.Creations"
+				description="Mini core table Creations"
+				text="Creations">
 			</action>
 		</group>
 		

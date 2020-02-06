@@ -178,11 +178,11 @@ public final class GroovyUtil implements Serializable, EventListener {
 	}
 	
 	public static String voBeanName(TableInfo table) {
-		return beanName(table) + "VO";
+		return table.getEntityName() + "VO";
 	}
 	
 	public static String voBeanPackage(TableInfo table) {
-		return beanPackage(table) + ".entity.vo";
+		return table.getPackageName() + ".entity.vo";
 	}
 	
 	public static ClassName voBeanClass(TableInfo table) {
@@ -199,11 +199,11 @@ public final class GroovyUtil implements Serializable, EventListener {
 	}
 	
 	public static String daoBaseName(TableInfo table) {
-		return beanName(table) + "DaoBase";
+		return table.getEntityName() + "DaoBase";
 	}
 	
 	public static String daoBasePackage(TableInfo table) {
-		return beanPackage(table) + ".dao.base";
+		return table.getPackageName() + ".dao.base";
 	}
 	
 	public static ClassName daoBaseClass(TableInfo table) {
@@ -211,11 +211,11 @@ public final class GroovyUtil implements Serializable, EventListener {
 	}
 	
 	public static String daoName(TableInfo table) {
-		return beanName(table) + "Dao";
+		return table.getEntityName() + "Dao";
 	}
 	
 	public static String daoPackage(TableInfo table) {
-		return beanPackage(table) + ".dao";
+		return table.getPackageName() + ".dao";
 	}
 	
 	public static ClassName daoClass(TableInfo table) {
@@ -223,11 +223,11 @@ public final class GroovyUtil implements Serializable, EventListener {
 	}
 	
 	public static String daoImplName(TableInfo table) {
-		return beanName(table) + "DaoImpl";
+		return table.getEntityName() + "DaoImpl";
 	}
 	
 	public static String daoImplPackage(TableInfo table) {
-		return beanPackage(table) + ".dao.impl";
+		return table.getPackageName() + ".dao.impl";
 	}
 	
 	public static ClassName daoImplClass(TableInfo table) {

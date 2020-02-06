@@ -14,8 +14,7 @@ public final class ColumnUtil implements EventListener, Serializable {
 		return Optional.of(Settings.getInstance())
 			.map(Settings::getCurrentGroupMapper)
 			.map(group -> group.get(column.getDbType()))
-			.map(m -> column.isNullable() ? m.getNullJavaType() //
-				: m.getJavaType())
+			.map(m -> column.isNotNull() ? m.getJavaType() : m.getNullJavaType())
 			.map(ClassUtil::forName)
 			.orElse((Class) Object.class);
 	}

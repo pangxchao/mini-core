@@ -79,6 +79,7 @@ public final class TableUtil implements EventListener, Serializable {
 			columnInfo.setColumnName(column.getName());
 			columnInfo.setId(DasUtil.isPrimary(column));
 			columnInfo.setAuto(DasUtil.isAuto(column));
+			columnInfo.setNotNull(column.isNotNull());
 			// java 属性名称处理
 			if (StringUtil.isEmpty(columnInfo.getFieldName())) {
 				columnInfo.setFieldName(toJavaName(column.getName(), false));

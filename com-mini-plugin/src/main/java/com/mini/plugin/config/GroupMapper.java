@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
+import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
+
 public final class GroupMapper implements AbstractGroup<TypeMapper, GroupMapper> {
 	private LinkedHashMap<String, TypeMapper> elements;
 	private String name;
@@ -36,12 +38,12 @@ public final class GroupMapper implements AbstractGroup<TypeMapper, GroupMapper>
 	}
 	
 	@Override
-	public void setName(String name) {
+	public synchronized void setName(String name) {
 		this.name = name;
 	}
 	
 	@Override
-	public TypeMapper get(String name) {
+	public synchronized TypeMapper get(String name) {
 		if (StringUtil.isEmpty(name)) {
 			return null;
 		}
@@ -51,8 +53,8 @@ public final class GroupMapper implements AbstractGroup<TypeMapper, GroupMapper>
 	
 	@NotNull
 	@Override
-	public String getName() {
-		return name;
+	public synchronized String getName() {
+		return defaultIfEmpty(name, "");
 	}
 	
 	@NotNull
