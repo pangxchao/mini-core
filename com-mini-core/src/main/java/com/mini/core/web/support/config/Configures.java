@@ -363,7 +363,7 @@ public final class Configures implements EventListener, Serializable {
 	}
 	
 	@Inject
-	@Named("AccessControlAllowOrigin")
+	@Named("AccessControlMaxAge")
 	private int accessControlMaxAge;
 	
 	/**
@@ -380,6 +380,26 @@ public final class Configures implements EventListener, Serializable {
 	 */
 	public void setAccessControlMaxAge(int accessControlMaxAge) {
 		this.accessControlMaxAge = accessControlMaxAge;
+	}
+	
+	@Inject
+	@Named("AccessControlAllowCredentials")
+	private boolean accessControlAllowCredentials;
+	
+	/**
+	 * 设置跨域是否允许自定义请求头
+	 * @return 跨域是否允许自定义请求头
+	 */
+	public boolean isAccessControlAllowCredentials() {
+		return accessControlAllowCredentials;
+	}
+	
+	/**
+	 * 跨域是否允许自定义请求头
+	 * @param accessControlAllowCredentials 默认-true
+	 */
+	public void setAccessControlAllowCredentials(boolean accessControlAllowCredentials) {
+		this.accessControlAllowCredentials = accessControlAllowCredentials;
 	}
 	
 	@Inject

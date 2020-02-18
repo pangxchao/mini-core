@@ -4,19 +4,16 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolverBean;
 import com.mini.core.web.argument.annotation.RequestParam;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 public final class ArgumentResolverBeanRequestParam extends ArgumentResolverBean {
 	@Inject
-	public ArgumentResolverBeanRequestParam(
-		@Named("DateTimeFormat") String dateTimeFormat,
-		@Named("DateFormat") String dateFormat,
-		@Named("TimeFormat") String timeFormat) {
-		super(dateTimeFormat, dateFormat, timeFormat);
+	public ArgumentResolverBeanRequestParam(Configures configures) {
+		super(configures);
 	}
 	
 	@Override

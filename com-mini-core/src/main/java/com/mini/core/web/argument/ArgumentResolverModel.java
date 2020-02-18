@@ -14,7 +14,7 @@ public final class ArgumentResolverModel implements ArgumentResolver {
 	public boolean supportParameter(MiniParameter parameter) {
 		return IModel.class.isAssignableFrom(parameter.getType());
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		return invocation.getModel();

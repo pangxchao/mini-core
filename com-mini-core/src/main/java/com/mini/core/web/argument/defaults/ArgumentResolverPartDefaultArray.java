@@ -29,7 +29,7 @@ public final class ArgumentResolverPartDefaultArray implements ArgumentResolver 
 		}
 		return Part[].class == parameter.getType();
 	}
-
+	
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -39,7 +39,7 @@ public final class ArgumentResolverPartDefaultArray implements ArgumentResolver 
 	private String getParameterName(MiniParameter parameter) {
 		return parameter.getName();
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		try {
@@ -53,5 +53,5 @@ public final class ArgumentResolverPartDefaultArray implements ArgumentResolver 
 		} catch (IOException | ServletException ignored) {}
 		return null;
 	}
-
+	
 }

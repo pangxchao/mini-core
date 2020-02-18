@@ -52,8 +52,13 @@ public final class TableUtil implements EventListener, Serializable {
 			info.setComment(table.getComment());
 			return info;
 		});
+		// 默认所有字段都为扩展字段
+		tableInfo.getColumnList().forEach(column -> {
+			column.setExt(true); //
+		});
 		tableInfo.setTableName(table.getName());
 		tableInfo.setTable(table);
+		
 		// 获取所有的外键信息
 		Map<String, Ref> foreignKey = new HashMap<>();
 		for (DasForeignKey key : DasUtil.getForeignKeys(table)) {

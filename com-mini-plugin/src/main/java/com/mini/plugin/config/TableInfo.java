@@ -58,6 +58,10 @@ public final class TableInfo implements Serializable, EventListener {
 		return columns;
 	}
 	
+	public boolean hasColumn(String name) {
+		return columns.containsKey(name);
+	}
+	
 	@Nullable
 	public String getPackageName() {
 		return packageName;

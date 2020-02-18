@@ -5,10 +5,10 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolverArray;
 import com.mini.core.web.argument.annotation.RequestHeader;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.stream.Stream;
 
@@ -17,11 +17,8 @@ import static java.util.stream.Stream.of;
 @Singleton
 public final class ArgumentResolverArrayRequestHeader extends ArgumentResolverArray {
 	@Inject
-	public ArgumentResolverArrayRequestHeader(
-		@Named("DateTimeFormat") String dateTimeFormat,
-		@Named("DateFormat") String dateFormat,
-		@Named("TimeFormat") String timeFormat) {
-		super(dateTimeFormat, dateFormat, timeFormat);
+	public ArgumentResolverArrayRequestHeader(Configures configures) {
+		super(configures);
 	}
 	
 	@Override

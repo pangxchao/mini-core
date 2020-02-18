@@ -15,7 +15,7 @@ import java.util.Map;
 @Named
 @Singleton
 public final class ArgumentResolverMapDefault implements ArgumentResolver {
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		for (var annotation : parameter.getAnnotations()) {
@@ -41,7 +41,7 @@ public final class ArgumentResolverMapDefault implements ArgumentResolver {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		HashMap<String, String> result = new HashMap<>();

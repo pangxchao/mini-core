@@ -4,10 +4,10 @@ import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolverBasic;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
@@ -16,11 +16,8 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 public final class ArgumentResolverBasicDefault extends ArgumentResolverBasic {
 	
 	@Inject
-	public ArgumentResolverBasicDefault(
-		@Named("DateTimeFormat") String dateTimeFormat,
-		@Named("DateFormat") String dateFormat,
-		@Named("TimeFormat") String timeFormat) {
-		super(dateTimeFormat, dateFormat, timeFormat);
+	public ArgumentResolverBasicDefault(Configures configures) {
+		super(configures);
 	}
 	
 	@Override

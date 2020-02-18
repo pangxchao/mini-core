@@ -4,6 +4,7 @@ import com.mini.core.holder.ClassHolder;
 import com.mini.core.holder.FieldHolder;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import javax.annotation.Nullable;
 import java.util.EventListener;
@@ -19,8 +20,8 @@ public abstract class ArgumentResolverBean implements ArgumentResolver, EventLis
 	private static Map<Class<?>, ArgumentResolver> MAP = new ConcurrentHashMap<>();
 	private static final String $RESOLVER$ = "_$$$RESOLVER$$$";
 	
-	protected ArgumentResolverBean(String dateTimeFormat, String dateFormat, String timeFormat) {
-		ArgumentResolverSupport.init(dateTimeFormat, dateFormat, timeFormat);
+	protected ArgumentResolverBean(Configures configures) {
+		ArgumentResolverSupport.init(configures);
 	}
 	
 	@Override

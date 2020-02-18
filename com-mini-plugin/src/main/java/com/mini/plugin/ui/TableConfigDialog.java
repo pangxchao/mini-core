@@ -13,8 +13,8 @@ import com.intellij.util.ui.JBUI;
 import com.mini.plugin.config.ColumnInfo;
 import com.mini.plugin.config.TableInfo;
 import com.mini.plugin.config.TableModel;
-import com.mini.plugin.util.TableUtil;
 import com.mini.plugin.util.StringUtil;
+import com.mini.plugin.util.TableUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -30,7 +30,6 @@ import java.util.Optional;
 import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static com.mini.plugin.util.StringUtil.toFieldName;
 import static com.mini.plugin.util.StringUtil.toJavaName;
-import static java.util.Optional.ofNullable;
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 
 public class TableConfigDialog extends JDialog implements EventListener {
@@ -41,6 +40,7 @@ public class TableConfigDialog extends JDialog implements EventListener {
 	private final TableInfo tableInfo;
 	private final JBTable jbTable;
 	private final Project project;
+	private int index = 1;
 	
 	private synchronized void resetModelData() {
 		TableConfigDialog.this.tableModel.removeAllRow();
@@ -112,8 +112,7 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		jbTable.setSelectionMode(SINGLE_SELECTION);
 		jbTable.setModel((this.tableModel = new TableModel() {
 			protected boolean isExtColumn(int row) {
-				return TableConfigDialog.this //
-					.isExtColumn(row);
+				return row >= 0;
 			}
 		}));
 		// 创建底部面板并添加到当前窗体布局中
@@ -163,11 +162,16 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		// 新增事件
 		action.add(new AnAction(AllIcons.General.Add) {
 			public void actionPerformed(@NotNull AnActionEvent e) {
+				TableConfigDialog.this.saveCurrentData();
 				ColumnInfo columnInfo = new ColumnInfo();
-				columnInfo.setColumnName("ColumnName");
+				String name = "ColumnName" + index++;
+				while (tableInfo.hasColumn(name)) {
+					name = "ColumnName" + index++;
+				}
 				columnInfo.setFieldName("FieldName");
 				columnInfo.setComment("Comment");
 				columnInfo.setDbType("VARCHAR");
+				columnInfo.setColumnName(name);
 				columnInfo.setExt(true);
 				tableInfo.addColumn(columnInfo);
 				resetModelData();
@@ -195,9 +199,7 @@ public class TableConfigDialog extends JDialog implements EventListener {
 			
 			public final void update(@NotNull AnActionEvent e) {
 				Presentation pre = e.getPresentation();
-				int row = jbTable.getSelectedRow();
-				if (TableConfigDialog.this //
-					.isExtColumn(row)) {
+				if (jbTable.getSelectedRow() >= 0) {
 					pre.setEnabled(true);
 					return;
 				}
@@ -210,8 +212,7 @@ public class TableConfigDialog extends JDialog implements EventListener {
 			true).getComponent();
 	}
 	
-	// 保存操作
-	protected final void okHandler(ActionEvent event) {
+	protected synchronized final void saveCurrentData() {
 		tableInfo.setComment(tableCommentField.getText());
 		tableInfo.setEntityName(classNameField.getText());
 		tableInfo.setNamePrefix(namePrefixField.getText());
@@ -240,6 +241,11 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		}
 		// 重新设置列表数据
 		this.tableInfo.setColumns(map);
+	}
+	
+	// 保存操作
+	protected final void okHandler(ActionEvent event) {
+		TableConfigDialog.this.saveCurrentData();
 		TableUtil.saveTableInfo(project, tableInfo);
 		this.dispose();
 	}
@@ -249,16 +255,8 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		this.dispose();
 	}
 	
-	// 判断指定行是否为扩展行
-	protected final boolean isExtColumn(int row) {
-		if (row < 0 || row >= tableModel.getRowCount()) {
-			return false;
-		}
-		return ofNullable(tableModel.getValueAt(row, 0))
-			.map(object -> (String) object)
-			.filter(columnName -> !columnName.isEmpty())
-			.map(c -> tableInfo.getColumns().get(c))
-			.map(ColumnInfo::isExt)
-			.orElse(true);
-	}
+	//// 判断指定行是否为扩展行
+	//protected final boolean isExtColumn(int row) {
+	//	return row >= 0;
+	//}
 }

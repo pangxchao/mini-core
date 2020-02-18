@@ -27,7 +27,7 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 		}
 		return Part[].class == parameter.getType();
 	}
-
+	
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -41,7 +41,7 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 		}
 		return param.value();
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		try {
@@ -55,5 +55,5 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 		} catch (IOException | ServletException ignored) {}
 		return null;
 	}
-
+	
 }

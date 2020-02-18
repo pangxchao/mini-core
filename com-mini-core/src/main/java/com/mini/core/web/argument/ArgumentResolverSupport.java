@@ -1,5 +1,7 @@
 package com.mini.core.web.argument;
 
+import com.mini.core.web.support.config.Configures;
+
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -21,12 +23,10 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		throw new UnsupportedOperationException();
 	}
 	
-	private static String dateTimeFormat, dateFormat, timeFormat;
+	private static Configures configures;
 	
-	public static void init(String dateTimeFormat, String dateFormat, String timeFormat) {
-		ArgumentResolverSupport.dateTimeFormat = dateTimeFormat;
-		ArgumentResolverSupport.dateFormat     = dateFormat;
-		ArgumentResolverSupport.timeFormat     = timeFormat;
+	public static void init(Configures configures) {
+		ArgumentResolverSupport.configures = configures;
 	}
 	
 	private static final Map<Class<?>, Function<String, Object>> BASIC_MAP = new HashMap<>() {{
@@ -120,14 +120,14 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.util.Date.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					LocalDateTime date = LocalDateTime.parse(text, format);
 					return java.sql.Timestamp.valueOf(date);
 				} catch (DateTimeParseException ignored) {
 				}
 				
 				try {
-					DateTimeFormatter format = ofPattern(dateFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateFormat());
 					LocalDate date = LocalDate.parse(text, format);
 					return java.sql.Date.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -139,7 +139,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.time.LocalDateTime.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalDateTime.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -150,7 +150,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.time.LocalDate.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalDate.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -161,7 +161,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.time.LocalTime.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalTime.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -172,7 +172,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.sql.Timestamp.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					LocalDateTime date = LocalDateTime.parse(text, format);
 					return java.sql.Timestamp.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -184,7 +184,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.sql.Date.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateFormat());
 					LocalDate date = LocalDate.parse(text, format);
 					return java.sql.Date.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -196,7 +196,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.sql.Time.class, value -> Optional.ofNullable(value) //
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(timeFormat);
+					DateTimeFormatter format = ofPattern(configures.getTimeFormat());
 					LocalTime time = LocalTime.parse(text, format);
 					return java.sql.Time.valueOf(time);
 				} catch (DateTimeParseException ignored) {
@@ -329,14 +329,14 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.flatMap(Stream::of).filter(value -> !value.isBlank())  //
 			.map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					LocalDateTime date = LocalDateTime.parse(text, format);
 					return java.sql.Timestamp.valueOf(date);
 				} catch (DateTimeParseException ignored) {
 				}
 				
 				try {
-					DateTimeFormatter format = ofPattern(dateFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateFormat());
 					LocalDate date = LocalDate.parse(text, format);
 					return java.sql.Date.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -349,7 +349,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.flatMap(Stream::of).filter(value -> !value.isBlank())  //
 			.map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalDateTime.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -361,7 +361,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.flatMap(Stream::of).filter(value -> !value.isBlank()) //
 			.map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalDate.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -373,7 +373,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.flatMap(Stream::of).filter(value -> !value.isBlank()) //
 			.map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalTime.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -384,7 +384,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 		put(java.sql.Timestamp[].class, values -> Stream.ofNullable(values) //
 			.flatMap(Stream::of).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					LocalDateTime date = LocalDateTime.parse(text, format);
 					return java.sql.Timestamp.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -397,7 +397,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.flatMap(Stream::of).filter(value -> !value.isBlank()) //
 			.map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateFormat());
 					LocalDate date = LocalDate.parse(text, format);
 					return java.sql.Date.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -410,7 +410,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.flatMap(Stream::of).filter(value -> !value.isBlank()) //
 			.map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(timeFormat);
+					DateTimeFormatter format = ofPattern(configures.getTimeFormat());
 					LocalTime time = LocalTime.parse(text, format);
 					return java.sql.Time.valueOf(time);
 				} catch (DateTimeParseException ignored) {
@@ -447,7 +447,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.orElse(null));
 		
 		// int.class 处理
-		put(int.class, value -> (int) Optional.ofNullable(value)
+		put(int.class, value -> Optional.ofNullable(value)
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank())
 			.map(Integer::parseInt)
@@ -528,14 +528,14 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					LocalDateTime date = LocalDateTime.parse(text, format);
 					return java.sql.Timestamp.valueOf(date);
 				} catch (DateTimeParseException ignored) {
 				}
 				
 				try {
-					DateTimeFormatter format = ofPattern(dateFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateFormat());
 					LocalDate date = LocalDate.parse(text, format);
 					return java.sql.Date.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -548,7 +548,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalDateTime.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -560,7 +560,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalDate.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -572,7 +572,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					return LocalTime.parse(text, format);
 				} catch (DateTimeParseException ignored) {
 				}
@@ -584,7 +584,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateTimeFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 					LocalDateTime date = LocalDateTime.parse(text, format);
 					return java.sql.Timestamp.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -597,7 +597,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(dateFormat);
+					DateTimeFormatter format = ofPattern(configures.getDateFormat());
 					LocalDate date = LocalDate.parse(text, format);
 					return java.sql.Date.valueOf(date);
 				} catch (DateTimeParseException ignored) {
@@ -610,7 +610,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			.filter(v -> v.length > 0).map(v -> v[0])
 			.filter(v -> !v.isBlank()).map(text -> {
 				try {
-					DateTimeFormatter format = ofPattern(timeFormat);
+					DateTimeFormatter format = ofPattern(configures.getTimeFormat());
 					LocalTime time = LocalTime.parse(text, format);
 					return java.sql.Time.valueOf(time);
 				} catch (DateTimeParseException ignored) {

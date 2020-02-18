@@ -45,7 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author xchao
  */
 public abstract class AbstractDispatcherHttpServlet extends HttpServlet implements ResponseCode {
-	private static final Logger LOGGER = getLogger(AbstractDispatcherHttpServlet.class);
+	private static final Logger LOGGER = getLogger(AbstractDispatcherHttpServlet.class.getName());
 	private static final PathMatcher matcher = new PathMatcherAnt();
 	private static final long serialVersionUID = 1L;
 	private Configures configure;

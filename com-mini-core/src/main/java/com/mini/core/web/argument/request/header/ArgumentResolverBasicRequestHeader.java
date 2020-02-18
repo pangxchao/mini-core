@@ -5,20 +5,17 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolverBasic;
 import com.mini.core.web.argument.annotation.RequestHeader;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 public final class ArgumentResolverBasicRequestHeader extends ArgumentResolverBasic {
 	@Inject
-	public ArgumentResolverBasicRequestHeader(
-		@Named("DateTimeFormat") String dateTimeFormat,
-		@Named("DateFormat") String dateFormat,
-		@Named("TimeFormat") String timeFormat) {
-		super(dateTimeFormat, dateFormat, timeFormat);
+	public ArgumentResolverBasicRequestHeader(Configures configures) {
+		super(configures);
 	}
 	
 	@Override

@@ -1,10 +1,10 @@
 package com.mini.core.web.view;
 
+import com.mini.core.web.support.config.Configures;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -18,37 +18,33 @@ import java.util.Map;
 public class PageViewResolverFreemarker implements PageViewResolver, Serializable {
 	private static final long serialVersionUID = -1L;
 	private Configuration configuration;
-
-	@Inject
-	@Named("ViewPrefix")
-	private String prefix = "";
-
-	@Inject
-	@Named("ViewSuffix")
-	private String suffix;
-
+	
 	@Inject
 	private ServletContext context;
-
+	
+	@Inject
+	private Configures configures;
+	
 	@Override
 	public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, //
 		HttpServletResponse response) throws Exception {
-		String view = this.prefix + viewPath + this.suffix;
+		String view = configures.getViewPrefix() + viewPath //
+			+ configures.getViewSuffix();
 		try (PrintWriter out = response.getWriter()) {
 			getTemplate(view).process(data, out);
 		}
 	}
-
+	
 	/**
 	 * 获取  Template 对象
 	 * @param viewPath 模板路径
 	 * @return Template 对象
 	 */
-
+	
 	private Template getTemplate(String viewPath) throws IOException {
 		return getConfiguration(context).getTemplate(viewPath);
 	}
-
+	
 	/**
 	 * 获取 Configuration 对象
 	 * @param context ServletContext对象
@@ -59,12 +55,12 @@ public class PageViewResolverFreemarker implements PageViewResolver, Serializabl
 		configuration = new MiniConfiguration(context);
 		return this.configuration;
 	}
-
+	
 	private static class MiniConfiguration extends Configuration implements Cloneable {
 		void setServletContext(ServletContext context) {
 			setServletContextForTemplateLoading(context, null);
 		}
-
+		
 		MiniConfiguration(ServletContext context) {
 			super(Configuration.VERSION_2_3_28);
 			setServletContext(context);

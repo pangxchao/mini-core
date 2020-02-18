@@ -199,7 +199,7 @@ public final class GroovyUtil implements Serializable, EventListener {
 	}
 	
 	public static String daoBaseName(TableInfo table) {
-		return table.getEntityName() + "DaoBase";
+		return table.getEntityName() + "BaseDao";
 	}
 	
 	public static String daoBasePackage(TableInfo table) {

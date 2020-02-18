@@ -5,21 +5,18 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.argument.ArgumentResolverArray;
 import com.mini.core.web.argument.annotation.RequestParam;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArray {
 	
 	@Inject
-	public ArgumentResolverArrayRequestParam(
-		@Named("DateTimeFormat") String dateTimeFormat,
-		@Named("DateFormat") String dateFormat,
-		@Named("TimeFormat") String timeFormat) {
-		super(dateTimeFormat, dateFormat, timeFormat);
+	public ArgumentResolverArrayRequestParam(Configures configures) {
+		super(configures);
 	}
 	
 	@Override
@@ -27,7 +24,7 @@ public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArr
 		RequestParam param = parameter.getAnnotation(RequestParam.class);
 		return param != null && super.supportParameter(parameter);
 	}
-
+	
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
@@ -37,7 +34,7 @@ public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArr
 		}
 		return param.value();
 	}
-
+	
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterValues(name);

@@ -3,6 +3,7 @@ package com.mini.core.web.argument;
 import com.mini.core.util.Assert;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.support.config.Configures;
 
 import java.util.EventListener;
 import java.util.function.Function;
@@ -11,8 +12,8 @@ import static com.mini.core.web.argument.ArgumentResolverSupport.getArrayFunc;
 
 public abstract class ArgumentResolverArray implements ArgumentResolver, EventListener {
 	
-	protected ArgumentResolverArray(String dateTimeFormat, String dateFormat, String timeFormat) {
-		ArgumentResolverSupport.init(dateTimeFormat, dateFormat, timeFormat);
+	protected ArgumentResolverArray(Configures configures) {
+		ArgumentResolverSupport.init(configures);
 	}
 	
 	@Override
