@@ -28,10 +28,27 @@ public class Creations extends AnAction implements EventListener {
 		// 获取当前选中的项目并验证是否为空
 		Project project = getEventProject(event);
 		if (project == null) return;
-		
+
 		Optional.of(new FileSaverDescriptor(TITLE_INFO, CHOOSE_DIRECTORY))
-			.map(des -> chooseFile(des, project, null)).ifPresent(file -> {
+				.map(des -> chooseFile(des, project, null)).ifPresent(file -> {
 			List<DbTable> elements = Optional.of(event)
+					.map(e -> e.getData(LangDataKeys.PSI_ELEMENT))
+					.filter(element -> (element instanceof DbElement))
+					.map(element -> (DbElement) element)
+					.map(element -> element.getDasChildren(TABLE))
+					.map(JBIterable::toList)
+					.orElse(new ArrayList<>())
+					.stream()
+					.filter(element -> element instanceof DbTable)
+					.map(element -> (DbTable) element)
+					.collect(Collectors.toList());
+			generator(elements, file);
+		});
+	}
+
+	@Override
+	public synchronized void update(@NotNull AnActionEvent event) {
+		List<DbTable> elements = Optional.of(event)
 				.map(e -> e.getData(LangDataKeys.PSI_ELEMENT))
 				.filter(element -> (element instanceof DbElement))
 				.map(element -> (DbElement) element)
@@ -42,29 +59,12 @@ public class Creations extends AnAction implements EventListener {
 				.filter(element -> element instanceof DbTable)
 				.map(element -> (DbTable) element)
 				.collect(Collectors.toList());
-			generator(elements, file);
-		});
-	}
-	
-	@Override
-	public synchronized void update(@NotNull AnActionEvent event) {
-		List<DbTable> elements = Optional.of(event)
-			.map(e -> e.getData(LangDataKeys.PSI_ELEMENT))
-			.filter(element -> (element instanceof DbElement))
-			.map(element -> (DbElement) element)
-			.map(element -> element.getDasChildren(TABLE))
-			.map(JBIterable::toList)
-			.orElse(new ArrayList<>())
-			.stream()
-			.filter(element -> element instanceof DbTable)
-			.map(element -> (DbTable) element)
-			.collect(Collectors.toList());
 		Project project = Creations.getEventProject(event);
 		if (project == null || elements.isEmpty()) {
 			setDisabledAndHidden(event);
 		}
 	}
-	
+
 	private void setDisabledAndHidden(@NotNull AnActionEvent event) {
 		event.getPresentation().setEnabledAndVisible(false);
 	}

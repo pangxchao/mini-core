@@ -19,7 +19,7 @@ import static java.util.Optional.ofNullable;
 public final class SQLInterfaceDef implements SQLInterface, EventListener, Serializable {
 	private static final Map<Class<?>, SQLInterface> INTER_MAP = new ConcurrentHashMap<>();
 	private static final String $SQL$ = "_$$$SQL$$$";
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createReplace(SQLBuilder builder, @Nonnull T instance) {
@@ -32,7 +32,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			builder.params(h.getValue(instance));
 		}));
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createInsert(SQLBuilder builder, @Nonnull T instance) {
@@ -45,7 +45,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			builder.params(h.getValue(instance));
 		}));
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createDelete(SQLBuilder builder, @Nonnull T instance) {
@@ -61,48 +61,59 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		}
 		// 否则直接物理删除该数据
 		else table.delete(builder).from(builder);
-		
+
 		// 添加ID条件
 		table.columns().stream().filter(FieldHolder::hasId)
-			.forEach(holder -> holder.whereId(builder, h -> {
-				builder.params(h.getValue(instance));
-			}));
-		
+				.forEach(holder -> holder.whereId(builder, h -> {
+					builder.params(h.getValue(instance));
+				}));
+
 		// 添加 Lock 条件
 		table.columns().stream().filter(FieldHolder::hasLock)
-			.forEach(holder -> holder.whereLock(builder, h -> {
-				builder.params(h.getValue(instance));
-			}));
+				.forEach(holder -> holder.whereLock(builder, h -> {
+					builder.params(h.getValue(instance));
+				}));
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createUpdate(SQLBuilder builder, @Nonnull T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
 		var table = ClassHolder.create(type).verifyTable();
-		
+
 		// 添加除ID和CreateAt标注的所有字段
 		table.update(builder).columns().stream().filter(h -> {
 			return !h.hasId() && !h.hasCreate(); //
 		}).forEach(holder -> holder.set(builder, h -> {
 			var o = h.hasUpdate() ? new Date() //
-				: h.getValue(instance);
+					: h.getValue(instance);
 			builder.params(o);
 		}));
-		
+
 		// 添加ID条件
 		table.columns().stream().filter(FieldHolder::hasId)
-			.forEach(holder -> holder.whereId(builder, h -> {
-				builder.params(h.getValue(instance));
-			}));
-		
+				.forEach(holder -> holder.whereId(builder, h -> {
+					builder.params(h.getValue(instance));
+				}));
+
 		// 添加 Lock 条件
 		table.columns().stream().filter(FieldHolder::hasLock)
-			.forEach(holder -> holder.whereLock(builder, h -> {
-				builder.params(h.getValue(instance));
-			}));
+				.forEach(holder -> holder.whereLock(builder, h -> {
+					builder.params(h.getValue(instance));
+				}));
 	}
-	
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> void createInsertOrUpdate(SQLBuilder builder, T instance) {
+		Class<? extends T> type = (Class<T>) instance.getClass();
+		var table = ClassHolder.create(type).verifyTable();
+		// 添加或者修改所有字段
+		table.insertOrUpdate(builder).columns().forEach(holder ->
+				holder.values(builder, h -> builder.params( //
+						h.getValue(instance))));
+	}
+
 	@Override
 	public final <T> void createSelect(SQLBuilder builder, @Nonnull Class<T> type) {
 		var table = ClassHolder.create(type).verifyTable();
@@ -110,9 +121,9 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		table.select(builder).from(builder).join(builder);
 		// 排除标记删除的数据
 		table.columns().stream().filter(FieldHolder::hasDel)
-			.forEach(h -> h.whereDel(builder));
+				.forEach(h -> h.whereDel(builder));
 	}
-	
+
 	// 获取SQL创建的实现类
 	public static <T> SQLInterface getSQLInterface(Class<T> type) {
 		return SQLInterfaceDef.INTER_MAP.computeIfAbsent(type, key -> {
@@ -120,7 +131,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			try {
 				mType = forName(type.getCanonicalName() + SQLInterfaceDef.$SQL$);
 				ofNullable(mType).filter(SQLInterface.class::isAssignableFrom)
-					.orElseThrow(NoClassDefFoundError::new);
+						.orElseThrow(NoClassDefFoundError::new);
 			} catch (ReflectiveOperationException | NoClassDefFoundError e) {
 				mType = SQLInterfaceDef.class;
 			}

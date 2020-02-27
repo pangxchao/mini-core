@@ -1,5 +1,6 @@
 package com.mini.core.web.model;
 
+import com.alibaba.fastjson.JSON;
 import com.mini.core.jdbc.model.Paging;
 
 import javax.annotation.Nonnull;
@@ -9,8 +10,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.*;
 
-import static com.alibaba.fastjson.JSON.toJSON;
-import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 /**
  * JSON类型的数据实现
@@ -149,11 +149,27 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	}
 
 	@Override
+	protected void onError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+		String message = defaultIfEmpty(getMessage(), "Service Error");
+		try (PrintWriter writer = response.getWriter()) {
+			writer.write(JSON.toJSON(new HashMap<>() {{
+				put("error", getStatus());
+				put("message", message);
+			}}).toString());
+			response.setStatus(OK);
+			writer.flush();
+		}
+	}
+
+	@Override
 	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
 		try (PrintWriter writer = response.getWriter()) {
-			ofNullable(toJSON(data)).ifPresent(o -> {
-				writer.write(o.toString()); //
-			});
+			writer.write(JSON.toJSON(new HashMap<>() {{
+				put("message", "Success");
+				put("data", getData());
+				put("error", 0);
+			}}).toString());
+			response.setStatus(OK);
 			writer.flush();
 		}
 	}

@@ -49,14 +49,38 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		this.attachment = attachment;
 	}
 
+	public final StreamModel setContentLength(long contentLength) {
+		this.contentLength = contentLength;
+		return model();
+	}
+
 	public final StreamModel setFileName(@Nonnull String fileName) {
 		try {
-			this.fileName = new String(fileName.getBytes(), "ISO8859-1");
+			this.fileName = new String(fileName.getBytes(), //
+					"ISO8859-1");
 		} catch (UnsupportedEncodingException e) {
 			throw ThrowsUtil.hidden(e);
 		}
 		return model();
 	}
+
+	public final StreamModel setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+		return model();
+	}
+
+
+	public final StreamModel setWriteCallback(WriteCallback writeCallback) {
+		this.writeCallback = writeCallback;
+		return model();
+	}
+
+
+	public final StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
+		this.acceptRangesSupport = acceptRangesSupport;
+		return model();
+	}
+
 
 	public final StreamModel setFileName(@Nonnull String fileName, String charset) {
 		try {
@@ -73,27 +97,6 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		} catch (UnsupportedEncodingException e) {
 			throw ThrowsUtil.hidden(e);
 		}
-		return model();
-	}
-
-	public final StreamModel setContentLength(long contentLength) {
-		this.contentLength = contentLength;
-		return model();
-	}
-
-	public final StreamModel setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-		return model();
-	}
-
-	public final StreamModel setWriteCallback(WriteCallback writeCallback) {
-		this.writeCallback = writeCallback;
-		return model();
-	}
-
-
-	public final StreamModel setAcceptRangesSupport(boolean acceptRangesSupport) {
-		this.acceptRangesSupport = acceptRangesSupport;
 		return model();
 	}
 
@@ -211,7 +214,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 				int length, size = BUFFER_SIZE;
 				byte[] buffer = new byte[size];
 				for (; sendLength > 0; sendLength -= length) {
-					size   = min(size, (int) sendLength);
+					size = min(size, (int) sendLength);
 					length = source.read(buffer, 0, size);
 
 					if (length <= 0) break;

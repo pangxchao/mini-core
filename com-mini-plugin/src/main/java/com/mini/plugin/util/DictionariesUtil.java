@@ -166,6 +166,9 @@ public class DictionariesUtil {
 			
 			workBook.write(out);
 			out.flush();
+
+			// 刷新生成的文件
+			file.refresh(true, true);
 		} catch (Exception | Error e) {
 			ThrowsUtil.hidden(e);
 		}

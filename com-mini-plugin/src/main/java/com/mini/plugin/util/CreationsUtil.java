@@ -25,7 +25,7 @@ public final class CreationsUtil {
 		File outFile = new File(file.getPath(), "create-table.sql");
 		try (OutputStreamWriter writer = new FileWriter(outFile)) {
 			tableList.stream().map(DbElement::getParent).filter(Objects::nonNull)
-				.map(DasObject::getName).distinct().forEach(name -> {
+					.map(DasObject::getName).distinct().forEach(name -> {
 				try {
 					writer.write(String.format("CREATE DATABASE IF NOT EXISTS %s ", name));
 					writer.write("DEFAULT CHARACTER SET utf8mb4; \n");
@@ -36,22 +36,24 @@ public final class CreationsUtil {
 			});
 			tableList.stream().sorted((info, table) -> 0).forEach(table -> {
 				String name = ofNullable(table).map(DbElement::getParent)
-					.map(DasObject::getName).orElseThrow(NullPointerException::new);
+						.map(DasObject::getName).orElseThrow(NullPointerException::new);
 				try {
 					writer.write(String.format("USE %s; \n", name));
 					writer.write(String.format("CREATE TABLE %s.%s(\n", name, table.getName()));
 					int index = 0;
 					for (DasColumn column : DasUtil.getColumns(table)) {
 						if (index > 0) writer.write(", \n");
-						writer.write(String.format("\t%s %s %s COMMENT '%s'", column.getName(),
-							defaultIfEmpty(column.getDataType().typeName, "").toUpperCase(),
-							column.isNotNull() ? "NOT NULL" : "",
-							column.getComment()));
+						writer.write(String.format("\t%s %s%s %s COMMENT '%s'", column.getName(),
+								defaultIfEmpty(column.getDataType().typeName, "").toUpperCase(),
+								column.getDataType().getLength() > 0 ? "(" + column //
+										.getDataType().getLength() + ")" : "",
+								column.isNotNull() ? "NOT NULL" : "",
+								column.getComment()));
 						index++;
 					}
 					// 设置主键
 					ofNullable(DasUtil.getPrimaryKey(table)).map(DasConstraint::getColumnsRef)
-						.map(ref -> StringUtil.join(ref.names(), ",")).ifPresent(keys -> {
+							.map(ref -> StringUtil.join(ref.names(), ",")).ifPresent(keys -> {
 						try {
 							writer.write(String.format(", \n\tPRIMARY KEY (%s)", keys));
 						} catch (Exception | Error e) {
@@ -60,15 +62,15 @@ public final class CreationsUtil {
 					});
 					// 索引信息
 					ofNullable(DasUtil.getTableKeys(table)).ifPresent(keys -> keys.toList() //
-						.stream().filter(key -> !key.isPrimary()).forEach(key -> {
-							try {
-								writer.write(String.format(", \n\tKEY %s(%s)", key.getName(), //
-									StringUtil.join(key.getColumnsRef().names(), ", ")));
-							} catch (Exception | Error e) {
-								ThrowsUtil.hidden(e);
-							}
-						}));
-					
+							.stream().filter(key -> !key.isPrimary()).forEach(key -> {
+								try {
+									writer.write(String.format(", \n\tKEY %s(%s)", key.getName(), //
+											StringUtil.join(key.getColumnsRef().names(), ", ")));
+								} catch (Exception | Error e) {
+									ThrowsUtil.hidden(e);
+								}
+							}));
+
 					// 外键
 					ofNullable(getForeignKeys(table)).ifPresent(keys -> keys.toList().forEach(key -> {
 						try {
@@ -82,23 +84,24 @@ public final class CreationsUtil {
 								deleteRule = "ON DELETE SET NULL";
 							}
 							writer.write(String.format(", \n\tCONSTRAINT %s FOREIGN KEY(%s) REFERENCES " +
-									"%s(%s) %s", key.getName(), sourceName, key.getRefTableName(),
-								targetName, deleteRule));
+											"%s(%s) %s", key.getName(), sourceName, key.getRefTableName(),
+									targetName, deleteRule));
 						} catch (Exception | Error e) {
 							ThrowsUtil.hidden(e);
 						}
 					}));
-					
+
 					writer.write("\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ");
 					writer.write(String.format("COMMENT='%s';\n\n", table.getComment()));
 				} catch (Exception | Error e) {
 					ThrowsUtil.hidden(e);
 				}
 			});
-		} catch (Exception |
-			Error e) {
+			// 刷新生成的文件
+			file.refresh(true, true);
+		} catch (Exception | Error e) {
 			ThrowsUtil.hidden(e);
 		}
 	}
-	
+
 }
