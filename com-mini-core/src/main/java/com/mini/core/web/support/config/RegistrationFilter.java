@@ -55,15 +55,15 @@ public final class RegistrationFilter implements Registration, EventListener {
 		Dynamic register = context.addFilter(name, filter);
 		// 以 URL Pattern 方式 注册
 		of(urlPatterns).filter(v -> !v.isEmpty()).map(v -> //
-			v.toArray(EMPTY)).ifPresent(v -> { //
+				v.toArray(EMPTY)).ifPresent(v -> { //
 			register.addMappingForUrlPatterns( //
-				type, matchAfter, v);
+					type, matchAfter, v);
 		});
 		// 以Servlet Name 方式注册
 		of(servletNames).filter(v -> !v.isEmpty()).map(v -> //
-			v.toArray(EMPTY)).ifPresent(v -> { //
+				v.toArray(EMPTY)).ifPresent(v -> { //
 			register.addMappingForServletNames( //
-				type, matchAfter, v);
+					type, matchAfter, v);
 		});
 		register.setAsyncSupported(asyncSupported);
 	}

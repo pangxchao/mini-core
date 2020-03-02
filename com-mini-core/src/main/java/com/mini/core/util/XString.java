@@ -88,7 +88,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Case in-sensitive find of the first index within a CharSequence.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A negative start position is treated as zero. An empty ("") search CharSequence always matches. A start position greater than the
+	// * A negative start position is treated as zero. An empty ("") search CharSequence always matches. A start
+	// position greater than the
 	// * string length only matches an empty search CharSequence.</p>
 	// * <pre>
 	// * StringUtils.indexOfIgnoreCase(null, *)          = -1
@@ -102,7 +103,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param searchStr the CharSequence to find, may be null
 	// * @return the first index of the search CharSequence, -1 if no match or {@code null} string input
 	// * @since 2.5
-	// * @since 3.0 Changed signature from indexOfIgnoreCase(String, String) to indexOfIgnoreCase(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from indexOfIgnoreCase(String, String) to indexOfIgnoreCase(CharSequence,
+	// CharSequence)
 	// */
 	//public static int indexOfIgnoreCase(final CharSequence str, final CharSequence searchStr) {
 	//    return indexOfIgnoreCase(str, searchStr, 0);
@@ -112,7 +114,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Case in-sensitive find of the first index within a CharSequence
 	// * from the specified position.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A negative start position is treated as zero. An empty ("") search CharSequence always matches. A start position greater than the
+	// * A negative start position is treated as zero. An empty ("") search CharSequence always matches. A start
+	// position greater than the
 	// * string length only matches an empty search CharSequence.</p>
 	// * <pre>
 	// * StringUtils.indexOfIgnoreCase(null, *, *)          = -1
@@ -130,9 +133,11 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param str       the CharSequence to check, may be null
 	// * @param searchStr the CharSequence to find, may be null
 	// * @param startPos  the start position, negative treated as zero
-	// * @return the first index of the search CharSequence (always &ge; startPos), -1 if no match or {@code null} string input
+	// * @return the first index of the search CharSequence (always &ge; startPos), -1 if no match or {@code null}
+	// string input
 	// * @since 2.5
-	// * @since 3.0 Changed signature from indexOfIgnoreCase(String, String, int) to indexOfIgnoreCase(CharSequence, CharSequence, int)
+	// * @since 3.0 Changed signature from indexOfIgnoreCase(String, String, int) to indexOfIgnoreCase(CharSequence,
+	// CharSequence, int)
 	// */
 	//public static int indexOfIgnoreCase(final CharSequence str, final CharSequence searchStr, int startPos) {
 	//    if (str == null || searchStr == null) {
@@ -162,7 +167,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * Returns the index within <code>seq</code> of the last occurrence of the specified character. For values of
 	// <code>searchChar</code> in
-	// * the range from 0 to 0xFFFF (inclusive), the index (in Unicode code units) returned is the largest value <i>k</i> such that:
+	// * the range from 0 to 0xFFFF (inclusive), the index (in Unicode code units) returned is the largest value
+	// <i>k</i> such that:
 	// * <blockquote><pre>
 	// * this.charAt(<i>k</i>) == searchChar
 	// * </pre></blockquote>
@@ -170,7 +176,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <blockquote><pre>
 	// * this.codePointAt(<i>k</i>) == searchChar
 	// * </pre></blockquote>
-	// * is true.  In either case, if no such character occurs in this string, then <code>-1</code> is returned. Furthermore, a {@code null}
+	// * is true.  In either case, if no such character occurs in this string, then <code>-1</code> is returned.
+	// Furthermore, a {@code null}
 	// * or empty ("")
 	// * <code>CharSequence</code> will return {@code -1}. The
 	// * <code>seq</code> <code>CharSequence</code> object is searched backwards
@@ -196,8 +203,10 @@ public final class XString extends XAbstract<String, XString> {
 	//}
 	//
 	///**
-	// * Returns the index within <code>seq</code> of the last occurrence of the specified character, searching backward starting at the
-	// * specified index. For values of <code>searchChar</code> in the range from 0 to 0xFFFF (inclusive), the index returned is the largest
+	// * Returns the index within <code>seq</code> of the last occurrence of the specified character, searching
+	// backward starting at the
+	// * specified index. For values of <code>searchChar</code> in the range from 0 to 0xFFFF (inclusive), the index
+	// returned is the largest
 	// * value <i>k</i> such that:
 	// * <blockquote><pre>
 	// * (this.charAt(<i>k</i>) == searchChar) &amp;&amp; (<i>k</i> &lt;= startPos)
@@ -206,10 +215,12 @@ public final class XString extends XAbstract<String, XString> {
 	// * <blockquote><pre>
 	// * (this.codePointAt(<i>k</i>) == searchChar) &amp;&amp; (<i>k</i> &lt;= startPos)
 	// * </pre></blockquote>
-	// * is true. In either case, if no such character occurs in <code>seq</code> at or before position <code>startPos</code>, then
+	// * is true. In either case, if no such character occurs in <code>seq</code> at or before position
+	// <code>startPos</code>, then
 	// * <code>-1</code> is returned. Furthermore, a {@code null} or empty ("")
 	// * <code>CharSequence</code> will return {@code -1}. A start position greater
-	// * than the string length searches the whole string. The search starts at the <code>startPos</code> and works backwards; matches
+	// * than the string length searches the whole string. The search starts at the <code>startPos</code> and works
+	// backwards; matches
 	// * starting after the start position are ignored.
 	// * <p>All indices are specified in <code>char</code> values
 	// * (Unicode code units).
@@ -226,7 +237,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param seq        the CharSequence to check, may be null
 	// * @param searchChar the character to find
 	// * @param startPos   the start position
-	// * @return the last index of the search character (always &le; startPos), -1 if no match or {@code null} string input
+	// * @return the last index of the search character (always &le; startPos), -1 if no match or {@code null} string
+	// input
 	// * @since 2.0
 	// * @since 3.0 Changed signature from lastIndexOf(String, int, int) to lastIndexOf(CharSequence, int, int)
 	// */
@@ -287,10 +299,12 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param str       the CharSequence to check, may be null
 	// * @param searchStr the CharSequence to find, may be null
 	// * @param ordinal   the n-th last {@code searchStr} to find
-	// * @return the n-th last index of the search CharSequence, {@code -1} ({@code INDEX_NOT_FOUND}) if no match or {@code null} string
+	// * @return the n-th last index of the search CharSequence, {@code -1} ({@code INDEX_NOT_FOUND}) if no match or
+	// {@code null} string
 	// input
 	// * @since 2.5
-	// * @since 3.0 Changed signature from lastOrdinalIndexOf(String, String, int) to lastOrdinalIndexOf(CharSequence, CharSequence, int)
+	// * @since 3.0 Changed signature from lastOrdinalIndexOf(String, String, int) to lastOrdinalIndexOf(CharSequence,
+	// CharSequence, int)
 	// */
 	//public static int lastOrdinalIndexOf(final CharSequence str, final CharSequence searchStr, final int ordinal) {
 	//    return ordinalIndexOf(str, searchStr, ordinal, true);
@@ -300,9 +314,11 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Finds the last index within a CharSequence, handling {@code null}.
 	// * This method uses {@link String#lastIndexOf(String, int)} if possible.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A negative start position returns {@code -1}. An empty ("") search CharSequence always matches unless the start position is
+	// * A negative start position returns {@code -1}. An empty ("") search CharSequence always matches unless the
+	// start position is
 	// negative.
-	// * A start position greater than the string length searches the whole string. The search starts at the startPos and works backwards;
+	// * A start position greater than the string length searches the whole string. The search starts at the startPos
+	// and works backwards;
 	// * matches starting after the start position are ignored.
 	// * </p>
 	// * <pre>
@@ -322,9 +338,11 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param seq       the CharSequence to check, may be null
 	// * @param searchSeq the CharSequence to find, may be null
 	// * @param startPos  the start position, negative treated as zero
-	// * @return the last index of the search CharSequence (always &le; startPos), -1 if no match or {@code null} string input
+	// * @return the last index of the search CharSequence (always &le; startPos), -1 if no match or {@code null}
+	// string input
 	// * @since 2.0
-	// * @since 3.0 Changed signature from lastIndexOf(String, String, int) to lastIndexOf(CharSequence, CharSequence, int)
+	// * @since 3.0 Changed signature from lastIndexOf(String, String, int) to lastIndexOf(CharSequence, CharSequence,
+	// int)
 	// */
 	//public static int lastIndexOf(final CharSequence seq, final CharSequence searchSeq, final int startPos) {
 	//    if (seq == null || searchSeq == null) {
@@ -336,7 +354,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Case in-sensitive find of the last index within a CharSequence.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A negative start position returns {@code -1}. An empty ("") search CharSequence always matches unless the start position is
+	// * A negative start position returns {@code -1}. An empty ("") search CharSequence always matches unless the
+	// start position is
 	// negative.
 	// * A start position greater than the string length searches the whole string.</p>
 	// * <pre>
@@ -350,7 +369,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param searchStr the CharSequence to find, may be null
 	// * @return the first index of the search CharSequence, -1 if no match or {@code null} string input
 	// * @since 2.5
-	// * @since 3.0 Changed signature from lastIndexOfIgnoreCase(String, String) to lastIndexOfIgnoreCase(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from lastIndexOfIgnoreCase(String, String) to lastIndexOfIgnoreCase
+	// (CharSequence, CharSequence)
 	// */
 	//public static int lastIndexOfIgnoreCase(final CharSequence str, final CharSequence searchStr) {
 	//    if (str == null || searchStr == null) {
@@ -363,9 +383,11 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Case in-sensitive find of the last index within a CharSequence
 	// * from the specified position.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A negative start position returns {@code -1}. An empty ("") search CharSequence always matches unless the start position is
+	// * A negative start position returns {@code -1}. An empty ("") search CharSequence always matches unless the
+	// start position is
 	// negative.
-	// * A start position greater than the string length searches the whole string. The search starts at the startPos and works backwards;
+	// * A start position greater than the string length searches the whole string. The search starts at the startPos
+	// and works backwards;
 	// * matches starting after the start position are ignored.
 	// * </p>
 	// * <pre>
@@ -384,7 +406,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param startPos  the start position
 	// * @return the last index of the search CharSequence (always &le; startPos), -1 if no match or {@code null} input
 	// * @since 2.5
-	// * @since 3.0 Changed signature from lastIndexOfIgnoreCase(String, String, int) to lastIndexOfIgnoreCase(CharSequence, CharSequence,
+	// * @since 3.0 Changed signature from lastIndexOfIgnoreCase(String, String, int) to lastIndexOfIgnoreCase
+	// (CharSequence, CharSequence,
 	// * int)
 	// */
 	//public static int lastIndexOfIgnoreCase(final CharSequence str, final CharSequence searchStr, int startPos) {
@@ -476,8 +499,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param str       the CharSequence to check, may be null
 	// * @param searchStr the CharSequence to find, may be null
-	// * @return true if the CharSequence contains the search CharSequence irrespective of case or false if not or {@code null} string input
-	// * @since 3.0 Changed signature from containsIgnoreCase(String, String) to containsIgnoreCase(CharSequence, CharSequence)
+	// * @return true if the CharSequence contains the search CharSequence irrespective of case or false if not or
+	// {@code null} string input
+	// * @since 3.0 Changed signature from containsIgnoreCase(String, String) to containsIgnoreCase(CharSequence,
+	// CharSequence)
 	// */
 	//public static boolean containsIgnoreCase(final CharSequence str, final CharSequence searchStr) {
 	//    if (str == null || searchStr == null) {
@@ -649,7 +674,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Checks if the CharSequence contains any character in the given set of characters.
 	// * </p>
 	// * <p>
-	// * A {@code null} CharSequence will return {@code false}. A {@code null} search CharSequence will return {@code false}.
+	// * A {@code null} CharSequence will return {@code false}. A {@code null} search CharSequence will return {@code
+	// false}.
 	// * </p>
 	// * <pre>
 	// * StringUtils.containsAny(null, *)               = false
@@ -679,7 +705,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Checks if the CharSequence contains any of the CharSequences in the given array.</p>
 	// * <p>
-	// * A {@code null} {@code cs} CharSequence will return {@code false}. A {@code null} or zero length search array will return {@code
+	// * A {@code null} {@code cs} CharSequence will return {@code false}. A {@code null} or zero length search array
+	// will return {@code
 	// * false}.
 	// * </p>
 	// * <pre>
@@ -692,7 +719,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.containsAny("abc", "d", "abc")  = true
 	// * </pre>
 	// * @param cs                  The CharSequence to check, may be null
-	// * @param searchCharSequences The array of CharSequences to search for, may be null. Individual CharSequences may be null as well.
+	// * @param searchCharSequences The array of CharSequences to search for, may be null. Individual CharSequences
+	// may be null as well.
 	// * @return {@code true} if any of the search CharSequences are found, {@code false} otherwise
 	// * @since 3.4
 	// */
@@ -806,7 +834,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Checks if the CharSequence contains only certain characters.</p>
 	// * <p>A {@code null} CharSequence will return {@code false}.
-	// * A {@code null} valid character array will return {@code false}. An empty CharSequence (length()=0) always returns {@code true}.</p>
+	// * A {@code null} valid character array will return {@code false}. An empty CharSequence (length()=0) always
+	// returns {@code true}.</p>
 	// * <pre>
 	// * StringUtils.containsOnly(null, *)       = false
 	// * StringUtils.containsOnly(*, null)       = false
@@ -838,7 +867,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Checks if the CharSequence contains only certain characters.</p>
 	// * <p>A {@code null} CharSequence will return {@code false}.
-	// * A {@code null} valid character String will return {@code false}. An empty String (length()=0) always returns {@code true}.</p>
+	// * A {@code null} valid character String will return {@code false}. An empty String (length()=0) always returns
+	// {@code true}.</p>
 	// * <pre>
 	// * StringUtils.containsOnly(null, *)       = false
 	// * StringUtils.containsOnly(*, null)       = false
@@ -867,7 +897,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Checks that the CharSequence does not contain certain characters.</p>
 	// * <p>A {@code null} CharSequence will return {@code true}.
-	// * A {@code null} invalid character array will return {@code true}. An empty CharSequence (length()=0) always returns true.</p>
+	// * A {@code null} invalid character array will return {@code true}. An empty CharSequence (length()=0) always
+	// returns true.</p>
 	// * <pre>
 	// * StringUtils.containsNone(null, *)       = true
 	// * StringUtils.containsNone(*, null)       = true
@@ -945,8 +976,10 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Find the first index of any of a set of potential substrings.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A {@code null} or zero length search array will return {@code -1}. A {@code null} search array entry will be ignored, but a search
-	// * array containing "" will return {@code 0} if {@code str} is not null. This method uses {@link String#indexOf(String)} if
+	// * A {@code null} or zero length search array will return {@code -1}. A {@code null} search array entry will be
+	// ignored, but a search
+	// * array containing "" will return {@code 0} if {@code str} is not null. This method uses {@link String#indexOf
+	// (String)} if
 	// * possible.</p>
 	// * <pre>
 	// * StringUtils.indexOfAny(null, *)                      = -1
@@ -994,8 +1027,10 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Find the latest index of any of a set of potential substrings.</p>
 	// * <p>A {@code null} CharSequence will return {@code -1}.
-	// * A {@code null} search array will return {@code -1}. A {@code null} or zero length search array entry will be ignored, but a search
-	// * array containing "" will return the length of {@code str} if {@code str} is not null. This method uses {@link String#indexOf
+	// * A {@code null} search array will return {@code -1}. A {@code null} or zero length search array entry will be
+	// ignored, but a search
+	// * array containing "" will return the length of {@code str} if {@code str} is not null. This method uses {@link
+	// String#indexOf
 	// (String)}
 	// * if possible</p>
 	// * <pre>
@@ -1012,7 +1047,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param str        the CharSequence to check, may be null
 	// * @param searchStrs the CharSequences to search for, may be null
 	// * @return the last index of any of the CharSequences, -1 if no match
-	// * @since 3.0 Changed signature from lastIndexOfAny(String, String[]) to lastIndexOfAny(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from lastIndexOfAny(String, String[]) to lastIndexOfAny(CharSequence,
+	// CharSequence)
 	// */
 	//public static int lastIndexOfAny(final CharSequence str, final CharSequence... searchStrs) {
 	//    if (str == null || searchStrs == null) {
@@ -1051,7 +1087,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.substring("abc", -4) = "abc"
 	// * </pre>
 	// * @param str   the String to get the substring from, may be null
-	// * @param start the position to start from, negative means count back from the end of the String by this many characters
+	// * @param start the position to start from, negative means count back from the end of the String by this many
+	// characters
 	// * @return substring from start position, {@code null} if null String input
 	// */
 	//public static String substring(final String str, int start) {
@@ -1079,8 +1116,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>A negative start position can be used to start/end {@code n}
 	// * characters from the end of the String.</p>
 	// * <p>The returned substring starts with the character in the {@code start}
-	// * position and ends before the {@code end} position. All position counting is zero-based -- i.e., to start at the beginning of the
-	// * string use {@code start = 0}. Negative start and end positions can be used to specify offsets relative to the end of the String
+	// * position and ends before the {@code end} position. All position counting is zero-based -- i.e., to start at
+	// the beginning of the
+	// * string use {@code start = 0}. Negative start and end positions can be used to specify offsets relative to the
+	// end of the String
 	// .</p>
 	// * <p>If {@code start} is not strictly to the left of {@code end}, ""
 	// * is returned.</p>
@@ -1096,8 +1135,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.substring("abc", -4, 2)  = "ab"
 	// * </pre>
 	// * @param str   the String to get the substring from, may be null
-	// * @param start the position to start from, negative means count back from the end of the String by this many characters
-	// * @param end   the position to end at (exclusive), negative means count back from the end of the String by this many characters
+	// * @param start the position to start from, negative means count back from the end of the String by this many
+	// characters
+	// * @param end   the position to end at (exclusive), negative means count back from the end of the String by this
+	// many characters
 	// * @return substring from start position to end position, {@code null} if null String input
 	// */
 	//public static String substring(final String str, int start, int end) {
@@ -1139,7 +1180,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Gets the leftmost {@code len} characters of a String.</p>
 	// * <p>If {@code len} characters are not available, or the
-	// * String is {@code null}, the String will be returned without an exception. An empty String is returned if len is negative.</p>
+	// * String is {@code null}, the String will be returned without an exception. An empty String is returned if len
+	// is negative.</p>
 	// * <pre>
 	// * StringUtils.left(null, *)    = null
 	// * StringUtils.left(*, -ve)     = ""
@@ -1168,7 +1210,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Gets the rightmost {@code len} characters of a String.</p>
 	// * <p>If {@code len} characters are not available, or the String
-	// * is {@code null}, the String will be returned without an an exception. An empty String is returned if len is negative.</p>
+	// * is {@code null}, the String will be returned without an an exception. An empty String is returned if len is
+	// negative.</p>
 	// * <pre>
 	// * StringUtils.right(null, *)    = null
 	// * StringUtils.right(*, -ve)     = ""
@@ -1197,7 +1240,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Gets {@code len} characters from the middle of a String.</p>
 	// * <p>If {@code len} characters are not available, the remainder
-	// * of the String will be returned without an exception. If the String is {@code null}, {@code null} will be returned. An empty
+	// * of the String will be returned without an exception. If the String is {@code null}, {@code null} will be
+	// returned. An empty
 	// String is
 	// * returned if len is negative or exceeds the length of {@code str}.</p>
 	// * <pre>
@@ -1242,7 +1286,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Gets the substring before the first occurrence of a separator.
 	// * The separator is not returned.</p>
 	// * <p>A {@code null} string input will return {@code null}.
-	// * An empty ("") string input will return the empty string. A {@code null} separator will return the input string.</p>
+	// * An empty ("") string input will return the empty string. A {@code null} separator will return the input
+	// string.</p>
 	// * <p>If nothing is found, the string input is returned.</p>
 	// * <pre>
 	// * StringUtils.substringBefore(null, *)      = null
@@ -1277,7 +1322,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Gets the substring after the first occurrence of a separator.
 	// * The separator is not returned.</p>
 	// * <p>A {@code null} string input will return {@code null}.
-	// * An empty ("") string input will return the empty string. A {@code null} separator will return the empty string if the input
+	// * An empty ("") string input will return the empty string. A {@code null} separator will return the empty
+	// string if the input
 	// string is
 	// * not {@code null}.</p>
 	// * <p>If nothing is found, the empty string is returned.</p>
@@ -1314,7 +1360,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Gets the substring before the last occurrence of a separator.
 	// * The separator is not returned.</p>
 	// * <p>A {@code null} string input will return {@code null}.
-	// * An empty ("") string input will return the empty string. An empty or {@code null} separator will return the input string.</p>
+	// * An empty ("") string input will return the empty string. An empty or {@code null} separator will return the
+	// input string.</p>
 	// * <p>If nothing is found, the string input is returned.</p>
 	// * <pre>
 	// * StringUtils.substringBeforeLast(null, *)      = null
@@ -1346,7 +1393,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Gets the substring after the last occurrence of a separator.
 	// * The separator is not returned.</p>
 	// * <p>A {@code null} string input will return {@code null}.
-	// * An empty ("") string input will return the empty string. An empty or {@code null} separator will return the empty string if the
+	// * An empty ("") string input will return the empty string. An empty or {@code null} separator will return the
+	// empty string if the
 	// input
 	// * string is not {@code null}.</p>
 	// * <p>If nothing is found, the empty string is returned.</p>
@@ -1409,7 +1457,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Gets the String that is nested in between two Strings.
 	// * Only the first match is returned.</p>
 	// * <p>A {@code null} input String returns {@code null}.
-	// * A {@code null} open/close returns {@code null} (no match). An empty ("") open and close returns an empty string.</p>
+	// * A {@code null} open/close returns {@code null} (no match). An empty ("") open and close returns an empty
+	// string.</p>
 	// * <pre>
 	// * StringUtils.substringBetween("wx[b]yz", "[", "]") = "b"
 	// * StringUtils.substringBetween(null, *, *)          = null
@@ -1446,7 +1495,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Searches a String for substrings delimited by a start and end tag,
 	// * returning all matching substrings in an array.</p>
 	// * <p>A {@code null} input String returns {@code null}.
-	// * A {@code null} open/close returns {@code null} (no match). An empty ("") open/close returns {@code null} (no match).</p>
+	// * A {@code null} open/close returns {@code null} (no match). An empty ("") open/close returns {@code null} (no
+	// match).</p>
 	// * <pre>
 	// * StringUtils.substringsBetween("[a][b][c]", "[", "]") = ["a","b","c"]
 	// * StringUtils.substringsBetween(null, *, *)            = null
@@ -1501,7 +1551,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Splits the provided text into an array, using whitespace as the
 	// * separator. Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class
+	// .</p>
 	// * <p>A {@code null} input String returns {@code null}.</p>
 	// * <pre>
 	// * StringUtils.split(null)       = null
@@ -1521,7 +1572,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Splits the provided text into an array, separator specified.
 	// * This is an alternative to using StringTokenizer.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class
+	// .</p>
 	// * <p>A {@code null} input String returns {@code null}.</p>
 	// * <pre>
 	// * StringUtils.split(null, *)         = null
@@ -1544,7 +1596,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Splits the provided text into an array, separators specified.
 	// * This is an alternative to using StringTokenizer.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as one separator. For more control over the split use the StrTokenizer class
+	// .</p>
 	// * <p>A {@code null} input String returns {@code null}.
 	// * A {@code null} separatorChars splits on whitespace.</p>
 	// * <pre>
@@ -1571,7 +1624,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>A {@code null} input String returns {@code null}.
 	// * A {@code null} separatorChars splits on whitespace.</p>
 	// * <p>If more than {@code max} delimited substrings are found, the last
-	// * returned string includes all characters after the first {@code max - 1} returned strings (including separator characters).</p>
+	// * returned string includes all characters after the first {@code max - 1} returned strings (including separator
+	// characters).</p>
 	// * <pre>
 	// * StringUtils.split(null, *, *)            = null
 	// * StringUtils.split("", *, *)              = []
@@ -1582,7 +1636,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param str            the String to parse, may be null
 	// * @param separatorChars the characters used as the delimiters, {@code null} splits on whitespace
-	// * @param max            the maximum number of elements to include in the array. A zero or negative value implies no limit
+	// * @param max            the maximum number of elements to include in the array. A zero or negative value
+	// implies no limit
 	// * @return an array of parsed Strings, {@code null} if null String input
 	// */
 	//public static String[] split(final String str, final String separatorChars, final int max) {
@@ -1629,7 +1684,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param str       the String to parse, may be null
 	// * @param separator String containing the String to be used as a delimiter, {@code null} splits on whitespace
-	// * @param max       the maximum number of elements to include in the returned array. A zero or negative value implies no limit.
+	// * @param max       the maximum number of elements to include in the returned array. A zero or negative value
+	// implies no limit.
 	// * @return an array of parsed Strings, {@code null} if null String was input
 	// */
 	//public static String[] splitByWholeSeparator(final String str, final String separator, final int max) {
@@ -1639,7 +1695,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Splits the provided text into an array, separator string specified. </p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the
+	// StrTokenizer class.</p>
 	// * <p>A {@code null} input String returns {@code null}.
 	// * A {@code null} separator splits on whitespace.</p>
 	// * <pre>
@@ -1663,7 +1720,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Splits the provided text into an array, separator string specified.
 	// * Returns a maximum of {@code max} substrings.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the
+	// StrTokenizer class.</p>
 	// * <p>A {@code null} input String returns {@code null}.
 	// * A {@code null} separator splits on whitespace.</p>
 	// * <pre>
@@ -1677,21 +1735,26 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param str       the String to parse, may be null
 	// * @param separator String containing the String to be used as a delimiter, {@code null} splits on whitespace
-	// * @param max       the maximum number of elements to include in the returned array. A zero or negative value implies no limit.
+	// * @param max       the maximum number of elements to include in the returned array. A zero or negative value
+	// implies no limit.
 	// * @return an array of parsed Strings, {@code null} if null String was input
 	// * @since 2.4
 	// */
-	//public static String[] splitByWholeSeparatorPreserveAllTokens(final String str, final String separator, final int max) {
+	//public static String[] splitByWholeSeparatorPreserveAllTokens(final String str, final String separator, final
+	// int max) {
 	//    return splitByWholeSeparatorWorker(str, separator, max, true);
 	//}
 	//
 	///**
 	// * Performs the logic for the {@code splitByWholeSeparatorPreserveAllTokens} methods.
 	// * @param str               the String to parse, may be {@code null}
-	// * @param separator         String containing the String to be used as a delimiter, {@code null} splits on whitespace
-	// * @param max               the maximum number of elements to include in the returned array. A zero or negative value implies no
+	// * @param separator         String containing the String to be used as a delimiter, {@code null} splits on
+	// whitespace
+	// * @param max               the maximum number of elements to include in the returned array. A zero or negative
+	// value implies no
 	// limit.
-	// * @param preserveAllTokens if {@code true}, adjacent separators are treated as empty token separators; if {@code false}, adjacent
+	// * @param preserveAllTokens if {@code true}, adjacent separators are treated as empty token separators; if
+	// {@code false}, adjacent
 	// *                          separators are treated as one separator.
 	// * @return an array of parsed Strings, {@code null} if null String input
 	// * @since 2.4
@@ -1766,10 +1829,12 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Splits the provided text into an array, using whitespace as the
-	// * separator, preserving all tokens, including empty tokens created by adjacent separators. This is an alternative to using
+	// * separator, preserving all tokens, including empty tokens created by adjacent separators. This is an
+	// alternative to using
 	// * StringTokenizer. Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the
+	// StrTokenizer class.</p>
 	// * <p>A {@code null} input String returns {@code null}.</p>
 	// * <pre>
 	// * StringUtils.splitPreserveAllTokens(null)       = null
@@ -1788,9 +1853,11 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Splits the provided text into an array, separator specified,
-	// * preserving all tokens, including empty tokens created by adjacent separators. This is an alternative to using StringTokenizer.</p>
+	// * preserving all tokens, including empty tokens created by adjacent separators. This is an alternative to using
+	// StringTokenizer.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the
+	// StrTokenizer class.</p>
 	// * <p>A {@code null} input String returns {@code null}.</p>
 	// * <pre>
 	// * StringUtils.splitPreserveAllTokens(null, *)         = null
@@ -1816,14 +1883,17 @@ public final class XString extends XAbstract<String, XString> {
 	//}
 	//
 	///**
-	// * Performs the logic for the {@code split} and {@code splitPreserveAllTokens} methods that do not return a maximum array length.
+	// * Performs the logic for the {@code split} and {@code splitPreserveAllTokens} methods that do not return a
+	// maximum array length.
 	// * @param str               the String to parse, may be {@code null}
 	// * @param separatorChar     the separate character
-	// * @param preserveAllTokens if {@code true}, adjacent separators are treated as empty token separators; if {@code false}, adjacent
+	// * @param preserveAllTokens if {@code true}, adjacent separators are treated as empty token separators; if
+	// {@code false}, adjacent
 	// *                          separators are treated as one separator.
 	// * @return an array of parsed Strings, {@code null} if null String input
 	// */
-	//private static String[] splitWorker(final String str, final char separatorChar, final boolean preserveAllTokens) {
+	//private static String[] splitWorker(final String str, final char separatorChar, final boolean
+	// preserveAllTokens) {
 	//    // Performance tuned for 2.0 (JDK1.4)
 	//
 	//    if (str == null) {
@@ -1859,9 +1929,11 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Splits the provided text into an array, separators specified,
-	// * preserving all tokens, including empty tokens created by adjacent separators. This is an alternative to using StringTokenizer.</p>
+	// * preserving all tokens, including empty tokens created by adjacent separators. This is an alternative to using
+	// StringTokenizer.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the StrTokenizer class.</p>
+	// * Adjacent separators are treated as separators for empty tokens. For more control over the split use the
+	// StrTokenizer class.</p>
 	// * <p>A {@code null} input String returns {@code null}.
 	// * A {@code null} separatorChars splits on whitespace.</p>
 	// * <pre>
@@ -1891,11 +1963,13 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Splits the provided text into an array with a maximum length,
 	// * separators specified, preserving all tokens, including empty tokens created by adjacent separators.</p>
 	// * <p>The separator is not included in the returned String array.
-	// * Adjacent separators are treated as separators for empty tokens. Adjacent separators are treated as one separator.</p>
+	// * Adjacent separators are treated as separators for empty tokens. Adjacent separators are treated as one
+	// separator.</p>
 	// * <p>A {@code null} input String returns {@code null}.
 	// * A {@code null} separatorChars splits on whitespace.</p>
 	// * <p>If more than {@code max} delimited substrings are found, the last
-	// * returned string includes all characters after the first {@code max - 1} returned strings (including separator characters).</p>
+	// * returned string includes all characters after the first {@code max - 1} returned strings (including separator
+	// characters).</p>
 	// * <pre>
 	// * StringUtils.splitPreserveAllTokens(null, *, *)            = null
 	// * StringUtils.splitPreserveAllTokens("", *, *)              = []
@@ -1909,7 +1983,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param str            the String to parse, may be {@code null}
 	// * @param separatorChars the characters used as the delimiters, {@code null} splits on whitespace
-	// * @param max            the maximum number of elements to include in the array. A zero or negative value implies no limit
+	// * @param max            the maximum number of elements to include in the array. A zero or negative value
+	// implies no limit
 	// * @return an array of parsed Strings, {@code null} if null String input
 	// * @since 2.1
 	// */
@@ -1918,15 +1993,19 @@ public final class XString extends XAbstract<String, XString> {
 	//}
 	//
 	///**
-	// * Performs the logic for the {@code split} and {@code splitPreserveAllTokens} methods that return a maximum array length.
+	// * Performs the logic for the {@code split} and {@code splitPreserveAllTokens} methods that return a maximum
+	// array length.
 	// * @param str               the String to parse, may be {@code null}
 	// * @param separatorChars    the separate character
-	// * @param max               the maximum number of elements to include in the array. A zero or negative value implies no limit.
-	// * @param preserveAllTokens if {@code true}, adjacent separators are treated as empty token separators; if {@code false}, adjacent
+	// * @param max               the maximum number of elements to include in the array. A zero or negative value
+	// implies no limit.
+	// * @param preserveAllTokens if {@code true}, adjacent separators are treated as empty token separators; if
+	// {@code false}, adjacent
 	// *                          separators are treated as one separator.
 	// * @return an array of parsed Strings, {@code null} if null String input
 	// */
-	//private static String[] splitWorker(final String str, final String separatorChars, final int max, final boolean preserveAllTokens) {
+	//private static String[] splitWorker(final String str, final String separatorChars, final int max, final boolean
+	// preserveAllTokens) {
 	//    // Performance tuned for 2.0 (JDK1.4)
 	//    // Direct code is quicker than StringTokenizer.
 	//    // Also, StringTokenizer uses isSpace() not isWhitespace()
@@ -2013,7 +2092,8 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Splits a String by Character type as returned by
-	// * {@code java.lang.Character.getType(char)}. Groups of contiguous characters of the same type are returned as complete tokens.
+	// * {@code java.lang.Character.getType(char)}. Groups of contiguous characters of the same type are returned as
+	// complete tokens.
 	// * <pre>
 	// * StringUtils.splitByCharacterType(null)         = null
 	// * StringUtils.splitByCharacterType("")           = []
@@ -2035,9 +2115,11 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Splits a String by Character type as returned by
-	// * {@code java.lang.Character.getType(char)}. Groups of contiguous characters of the same type are returned as complete tokens,
+	// * {@code java.lang.Character.getType(char)}. Groups of contiguous characters of the same type are returned as
+	// complete tokens,
 	// with the
-	// * following exception: the character of type {@code Character.UPPERCASE_LETTER}, if any, immediately preceding a token of type {@code
+	// * following exception: the character of type {@code Character.UPPERCASE_LETTER}, if any, immediately preceding
+	// a token of type {@code
 	// * Character.LOWERCASE_LETTER} will belong to the following token rather than to the preceding, if any, {@code
 	// * Character.UPPERCASE_LETTER} token.
 	// * <pre>
@@ -2061,10 +2143,13 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Splits a String by Character type as returned by
-	// * {@code java.lang.Character.getType(char)}. Groups of contiguous characters of the same type are returned as complete tokens,
+	// * {@code java.lang.Character.getType(char)}. Groups of contiguous characters of the same type are returned as
+	// complete tokens,
 	// with the
-	// * following exception: if {@code camelCase} is {@code true}, the character of type {@code Character.UPPERCASE_LETTER}, if any,
-	// * immediately preceding a token of type {@code Character.LOWERCASE_LETTER} will belong to the following token rather than to the
+	// * following exception: if {@code camelCase} is {@code true}, the character of type {@code Character
+	// .UPPERCASE_LETTER}, if any,
+	// * immediately preceding a token of type {@code Character.LOWERCASE_LETTER} will belong to the following token
+	// rather than to the
 	// * preceding, if any, {@code Character.UPPERCASE_LETTER} token.
 	// * @param str       the String to split, may be {@code null}
 	// * @param camelCase whether to use so-called "camel-case" for letter types
@@ -2159,7 +2244,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2185,7 +2271,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2211,7 +2298,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2237,7 +2325,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2263,7 +2352,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2289,7 +2379,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2315,7 +2406,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2352,8 +2444,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from.  It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from.  It is an error to pass in a start index past the
+	// end of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 2.0
 	// */
@@ -2382,7 +2476,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2393,8 +2488,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2421,7 +2518,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2432,8 +2530,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2460,7 +2560,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2471,8 +2572,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2499,7 +2602,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2510,8 +2614,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2538,7 +2644,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2549,8 +2656,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2577,7 +2686,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2588,8 +2698,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2616,7 +2728,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Joins the elements of the provided array into a single String containing the provided list of elements.
 	// * </p>
 	// * <p>
-	// * No delimiter is added before or after the list. Null objects or empty strings within the array are represented by empty strings.
+	// * No delimiter is added before or after the list. Null objects or empty strings within the array are
+	// represented by empty strings.
 	// * </p>
 	// * <pre>
 	// * StringUtils.join(null, *)               = null
@@ -2627,8 +2740,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param array      the array of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end of the array
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the array
+	// * @param startIndex the first index to start joining from. It is an error to pass in a start index past the end
+	// of the array
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the array
 	// * @return the joined String, {@code null} if null array input
 	// * @since 3.2
 	// */
@@ -2655,7 +2770,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Joins the elements of the provided array into a single String
 	// * containing the provided list of elements.</p>
 	// * <p>No delimiter is added before or after the list.
-	// * A {@code null} separator is the same as an empty String (""). Null objects or empty strings within the array are represented by
+	// * A {@code null} separator is the same as an empty String (""). Null objects or empty strings within the array
+	// are represented by
 	// empty
 	// * strings.</p>
 	// * <pre>
@@ -2682,7 +2798,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Joins the elements of the provided array into a single String
 	// * containing the provided list of elements.</p>
 	// * <p>No delimiter is added before or after the list.
-	// * A {@code null} separator is the same as an empty String (""). Null objects or empty strings within the array are represented by
+	// * A {@code null} separator is the same as an empty String (""). Null objects or empty strings within the array
+	// are represented by
 	// empty
 	// * strings.</p>
 	// * <pre>
@@ -2701,10 +2818,12 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param separator  the separator character to use, null treated as ""
 	// * @param startIndex the first index to start joining from.
 	// * @param endIndex   the index to stop joining from (exclusive).
-	// * @return the joined String, {@code null} if null array input; or the empty string if {@code endIndex - startIndex <= 0}. The
+	// * @return the joined String, {@code null} if null array input; or the empty string if {@code endIndex -
+	// startIndex <= 0}. The
 	// number of
 	// * joined entries is given by {@code endIndex - startIndex}
-	// * @throws ArrayIndexOutOfBoundsException ife<br> {@code startIndex < 0} or <br> {@code startIndex >= array.length()} or <br> {@code
+	// * @throws ArrayIndexOutOfBoundsException ife<br> {@code startIndex < 0} or <br> {@code startIndex >= array
+	// .length()} or <br> {@code
 	// *                                        endIndex < 0} or <br> {@code endIndex > array.length()}
 	// */
 	//public static String join(final Object[] array, String separator, final int startIndex, final int endIndex) {
@@ -2870,8 +2989,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param list       the {@code List} of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from.  It is an error to pass in a start index past the end of the list
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the list
+	// * @param startIndex the first index to start joining from.  It is an error to pass in a start index past the
+	// end of the list
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the list
 	// * @return the joined String, {@code null} if null list input
 	// * @since 3.8
 	// */
@@ -2902,8 +3023,10 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param list       the {@code List} of values to join together, may be null
 	// * @param separator  the separator character to use
-	// * @param startIndex the first index to start joining from.  It is an error to pass in a start index past the end of the list
-	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the end of the list
+	// * @param startIndex the first index to start joining from.  It is an error to pass in a start index past the
+	// end of the list
+	// * @param endIndex   the index to stop joining from (exclusive). It is an error to pass in an end index past the
+	// end of the list
 	// * @return the joined String, {@code null} if null list input
 	// * @since 3.8
 	// */
@@ -2998,7 +3121,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Removes a substring only if it is at the beginning of a source string,
 	// * otherwise returns the source string.</p>
 	// * <p>A {@code null} source string will return {@code null}.
-	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source string.</p>
+	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source
+	// string.</p>
 	// * <pre>
 	// * StringUtils.removeStart(null, *)      = null
 	// * StringUtils.removeStart("", *)        = ""
@@ -3027,7 +3151,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Case insensitive removal of a substring if it is at the beginning of a source string,
 	// * otherwise returns the source string.</p>
 	// * <p>A {@code null} source string will return {@code null}.
-	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source string.</p>
+	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source
+	// string.</p>
 	// * <pre>
 	// * StringUtils.removeStartIgnoreCase(null, *)      = null
 	// * StringUtils.removeStartIgnoreCase("", *)        = ""
@@ -3057,7 +3182,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Removes a substring only if it is at the end of a source string,
 	// * otherwise returns the source string.</p>
 	// * <p>A {@code null} source string will return {@code null}.
-	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source string.</p>
+	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source
+	// string.</p>
 	// * <pre>
 	// * StringUtils.removeEnd(null, *)      = null
 	// * StringUtils.removeEnd("", *)        = ""
@@ -3086,7 +3212,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Case insensitive removal of a substring if it is at the end of a source string,
 	// * otherwise returns the source string.</p>
 	// * <p>A {@code null} source string will return {@code null}.
-	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source string.</p>
+	// * An empty ("") source string will return the empty string. A {@code null} search string will return the source
+	// string.</p>
 	// * <pre>
 	// * StringUtils.removeEndIgnoreCase(null, *)      = null
 	// * StringUtils.removeEndIgnoreCase("", *)        = ""
@@ -3116,7 +3243,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Removes all occurrences of a substring from within the source string.</p>
 	// * <p>A {@code null} source string will return {@code null}.
-	// * An empty ("") source string will return the empty string. A {@code null} remove string will return the source string. An empty ("")
+	// * An empty ("") source string will return the empty string. A {@code null} remove string will return the source
+	// string. An empty ("")
 	// * remove string will return the source string.</p>
 	// * <pre>
 	// * StringUtils.remove(null, *)        = null
@@ -3143,7 +3271,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Case insensitive removal of all occurrences of a substring from within the source string.
 	// * </p>
 	// * <p>
-	// * A {@code null} source string will return {@code null}. An empty ("") source string will return the empty string. A {@code null}
+	// * A {@code null} source string will return {@code null}. An empty ("") source string will return the empty
+	// string. A {@code null}
 	// * remove string will return the source string. An empty ("") remove string will return the source string.
 	// * </p>
 	// * <pre>
@@ -3323,13 +3452,15 @@ public final class XString extends XAbstract<String, XString> {
 	// * @see #replaceIgnoreCase(String text, String searchString, String replacement, int max)
 	// * @since 3.5
 	// */
-	//public static String replaceOnceIgnoreCase(final String text, final String searchString, final String replacement) {
+	//public static String replaceOnceIgnoreCase(final String text, final String searchString, final String
+	// replacement) {
 	//    return replaceIgnoreCase(text, searchString, replacement, 1);
 	//}
 	//
 	///**
 	// * <p>Replaces each substring of the source String that matches the given regular expression with the given
-	// * replacement using the {@link Pattern#DOTALL} option. DOTALL is also known as single-line mode in Perl.</p> This call is a {@code
+	// * replacement using the {@link Pattern#DOTALL} option. DOTALL is also known as single-line mode in Perl.</p>
+	// This call is a {@code
 	// * null} safe equivalent to:
 	// * <ul>
 	// * <li>{@code source.replaceAll(&quot;(?s)&quot; + regex, replacement)}</li>
@@ -3366,7 +3497,8 @@ public final class XString extends XAbstract<String, XString> {
 	//}
 	//
 	///**
-	// * <p>Removes each substring of the source String that matches the given regular expression using the DOTALL option.
+	// * <p>Removes each substring of the source String that matches the given regular expression using the DOTALL
+	// option.
 	// * </p>
 	// * This call is a {@code null} safe equivalent to:
 	// * <ul>
@@ -3552,13 +3684,15 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param max          maximum number of values to replace, or {@code -1} if no maximum
 	// * @return the text with any replacements processed, {@code null} if null String input
 	// */
-	//public static String replace(final String text, final String searchString, final String replacement, final int max) {
+	//public static String replace(final String text, final String searchString, final String replacement, final int
+	// max) {
 	//    return replace(text, searchString, replacement, max, false);
 	//}
 	//
 	///**
 	// * <p>Replaces a String with another String inside a larger String,
-	// * for the first {@code max} values of the search String, case sensitively/insensisitively based on {@code ignoreCase} value.</p>
+	// * for the first {@code max} values of the search String, case sensitively/insensisitively based on {@code
+	// ignoreCase} value.</p>
 	// * <p>A {@code null} reference passed to this method is a no-op.</p>
 	// * <pre>
 	// * StringUtils.replace(null, *, *, *, false)         = null
@@ -3582,7 +3716,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param ignoreCase   if true replace is case insensitive, otherwise case sensitive
 	// * @return the text with any replacements processed, {@code null} if null String input
 	// */
-	//private static String replace(final String text, String searchString, final String replacement, int max, final boolean ignoreCase) {
+	//private static String replace(final String text, String searchString, final String replacement, int max, final
+	// boolean ignoreCase) {
 	//    if (isEmpty(text) || isEmpty(searchString) || replacement == null || max == 0) {
 	//        return text;
 	//    }
@@ -3638,7 +3773,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return the text with any replacements processed, {@code null} if null String input
 	// * @since 3.5
 	// */
-	//public static String replaceIgnoreCase(final String text, final String searchString, final String replacement, final int max) {
+	//public static String replaceIgnoreCase(final String text, final String searchString, final String replacement,
+	// final int max) {
 	//    return replace(text, searchString, replacement, max, true);
 	//}
 	//
@@ -3647,7 +3783,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Replaces all occurrences of Strings within another String.
 	// * </p>
 	// * <p>
-	// * A {@code null} reference passed to this method is a no-op, or if any "search string" or "string to replace" is null, that replace
+	// * A {@code null} reference passed to this method is a no-op, or if any "search string" or "string to replace"
+	// is null, that replace
 	// * will be ignored. This will not repeat. For repeating replaces, call the overloaded method.
 	// * </p>
 	// * <pre>
@@ -3679,7 +3816,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * Replaces all occurrences of Strings within another String.
 	// * </p>
 	// * <p>
-	// * A {@code null} reference passed to this method is a no-op, or if any "search string" or "string to replace" is null, that replace
+	// * A {@code null} reference passed to this method is a no-op, or if any "search string" or "string to replace"
+	// is null, that replace
 	// * will be ignored.
 	// * </p>
 	// * <pre>
@@ -3694,18 +3832,21 @@ public final class XString extends XAbstract<String, XString> {
 	// *  StringUtils.replaceEachRepeatedly("abcde", new String[]{"ab", "d"}, new String[]{"w", "t"}) = "wcte"
 	// *  (example of how it repeats)
 	// *  StringUtils.replaceEachRepeatedly("abcde", new String[]{"ab", "d"}, new String[]{"d", "t"}) = "tcte"
-	// *  StringUtils.replaceEachRepeatedly("abcde", new String[]{"ab", "d"}, new String[]{"d", "ab"}) = IllegalStateException
+	// *  StringUtils.replaceEachRepeatedly("abcde", new String[]{"ab", "d"}, new String[]{"d", "ab"}) =
+	// IllegalStateException
 	// * </pre>
 	// * @param text            text to search and replace in, no-op if null
 	// * @param searchList      the Strings to search for, no-op if null
 	// * @param replacementList the Strings to replace them with, no-op if null
 	// * @return the text with any replacements processed, {@code null} if null String input
-	// * @throws IllegalStateException    if the search is repeating and there is an endless loop due to outputs of one being inputs to
+	// * @throws IllegalStateException    if the search is repeating and there is an endless loop due to outputs of
+	// one being inputs to
 	// *                                  another
 	// * @throws IllegalArgumentException if the lengths of the arrays are not the same (null is ok, and/or size 0)
 	// * @since 2.4
 	// */
-	//public static String replaceEachRepeatedly(final String text, final String[] searchList, final String[] replacementList) {
+	//public static String replaceEachRepeatedly(final String text, final String[] searchList, final String[]
+	// replacementList) {
 	//    // timeToLive should be 0 if not used or nothing to replace, else it's
 	//    // the length of the replace array
 	//    final int timeToLive = searchList == null ? 0 : searchList.length;
@@ -3718,7 +3859,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * #replaceEachRepeatedly(String, String[], String[])} and {@link #replaceEach(String, String[], String[])}
 	// * </p>
 	// * <p>
-	// * A {@code null} reference passed to this method is a no-op, or if any "search string" or "string to replace" is null, that replace
+	// * A {@code null} reference passed to this method is a no-op, or if any "search string" or "string to replace"
+	// is null, that replace
 	// * will be ignored.
 	// * </p>
 	// * <pre>
@@ -3734,21 +3876,25 @@ public final class XString extends XAbstract<String, XString> {
 	// *  (example of how it repeats)
 	// *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "t"}, false, >=0) = "dcte"
 	// *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "t"}, true, >=2) = "tcte"
-	// *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "ab"}, *, *) = IllegalStateException
+	// *  StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "ab"}, *, *) =
+	// IllegalStateException
 	// * </pre>
 	// * @param text            text to search and replace in, no-op if null
 	// * @param searchList      the Strings to search for, no-op if null
 	// * @param replacementList the Strings to replace them with, no-op if null
-	// * @param repeat          if true, then replace repeatedly until there are no more possible replacements or timeToLive < 0
+	// * @param repeat          if true, then replace repeatedly until there are no more possible replacements or
+	// timeToLive < 0
 	// * @param timeToLive      if less than 0 then there is a circular reference and endless loop
 	// * @return the text with any replacements processed, {@code null} if null String input
-	// * @throws IllegalStateException    if the search is repeating and there is an endless loop due to outputs of one being inputs to
+	// * @throws IllegalStateException    if the search is repeating and there is an endless loop due to outputs of
+	// one being inputs to
 	// *                                  another
 	// * @throws IllegalArgumentException if the lengths of the arrays are not the same (null is ok, and/or size 0)
 	// * @since 2.4
 	// */
 	//private static String replaceEach(
-	//        final String text, final String[] searchList, final String[] replacementList, final boolean repeat, final int timeToLive) {
+	//        final String text, final String[] searchList, final String[] replacementList, final boolean repeat,
+	//        final int timeToLive) {
 	//
 	//    // mchyzer Performance note: This creates very few new objects (one major goal)
 	//    // let me know if there are performance requests, we can create a harness to measure
@@ -3908,9 +4054,11 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>For example:<br>
 	// * <code>replaceChars(&quot;hello&quot;, &quot;ho&quot;, &quot;jy&quot;) = jelly</code>.</p>
 	// * <p>A {@code null} string input returns {@code null}.
-	// * An empty ("") string input returns an empty string. A null or empty set of search characters returns the input string.</p>
+	// * An empty ("") string input returns an empty string. A null or empty set of search characters returns the
+	// input string.</p>
 	// * <p>The length of the search characters should normally equal the length
-	// * of the replace characters. If the search characters is longer, then the extra search characters are deleted. If the search
+	// * of the replace characters. If the search characters is longer, then the extra search characters are deleted.
+	// If the search
 	// characters
 	// * is shorter, then the extra replace characters are ignored.</p>
 	// * <pre>
@@ -3965,7 +4113,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Overlays part of a String with another String.</p>
 	// * <p>A {@code null} string input returns {@code null}.
-	// * A negative index is treated as zero. An index greater than the string length is treated as the string length. The start index is
+	// * A negative index is treated as zero. An index greater than the string length is treated as the string length.
+	// The start index is
 	// * always the smaller of the two indices.</p>
 	// * <pre>
 	// * StringUtils.overlay(null, *, *, *)            = null
@@ -4022,7 +4171,8 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Removes one newline from end of a String if it's there,
-	// * otherwise leave it alone.  A newline is &quot;{@code \n}&quot;, &quot;{@code \r}&quot;, or &quot;{@code \r\n}&quot;.</p>
+	// * otherwise leave it alone.  A newline is &quot;{@code \n}&quot;, &quot;{@code \r}&quot;, or &quot;{@code
+	// \r\n}&quot;.</p>
 	// * <p>NOTE: This method changed in 2.0.
 	// * It now more closely matches Perl chomp.</p>
 	// * <pre>
@@ -4071,7 +4221,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Removes {@code separator} from the end of
 	// * {@code str} if it's there, otherwise leave it alone.</p>
 	// * <p>NOTE: This method changed in version 2.0.
-	// * It now more closely matches Perl chomp. For the previous behavior, use {@link #substringBeforeLast(String, String)}. This method
+	// * It now more closely matches Perl chomp. For the previous behavior, use {@link #substringBeforeLast(String,
+	// String)}. This method
 	// uses
 	// * {@link String#endsWith(String)}.</p>
 	// * <pre>
@@ -4089,7 +4240,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param str       the String to chomp from, may be null
 	// * @param separator separator String, may be null
 	// * @return String without trailing separator, {@code null} if null String input
-	// * @deprecated This feature will be removed in Lang 4.0, use {@link StringUtils#removeEnd(String, String)} instead
+	// * @deprecated This feature will be removed in Lang 4.0, use {@link StringUtils#removeEnd(String, String)}
+	// instead
 	// */
 	//@Deprecated
 	//public static String chomp(final String str, final String separator) {
@@ -4232,7 +4384,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * <p>Note: this method does not support padding with
 	// * <a href="http://www.unicode.org/glossary/#supplementary_character">Unicode Supplementary Characters</a>
-	// * as they require a pair of {@code char}s to be represented. If you are needing to support full I18N of your applications consider
+	// * as they require a pair of {@code char}s to be represented. If you are needing to support full I18N of your
+	// applications consider
 	// * using {@link #repeat(String, int)} instead.
 	// * </p>
 	// * @param ch     character to repeat
@@ -4572,7 +4725,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.upperCase("aBc") = "ABC"
 	// * </pre>
 	// * <p><strong>Note:</strong> As described in the documentation for {@link String#toUpperCase()},
-	// * the result of this method is affected by the current locale. For platform-independent case transformations, the method {@link
+	// * the result of this method is affected by the current locale. For platform-independent case transformations,
+	// the method {@link
 	// * #lowerCase(String, Locale)} should be used with a specific locale (e.g. {@link Locale#ENGLISH}).</p>
 	// * @param str the String to upper case, may be null
 	// * @return the upper cased String, {@code null} if null String input
@@ -4613,7 +4767,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.lowerCase("aBc") = "abc"
 	// * </pre>
 	// * <p><strong>Note:</strong> As described in the documentation for {@link String#toLowerCase()},
-	// * the result of this method is affected by the current locale. For platform-independent case transformations, the method {@link
+	// * the result of this method is affected by the current locale. For platform-independent case transformations,
+	// the method {@link
 	// * #lowerCase(String, Locale)} should be used with a specific locale (e.g. {@link Locale#ENGLISH}).</p>
 	// * @param str the String to lower case, may be null
 	// * @return the lower cased String, {@code null} if null String input
@@ -5007,7 +5162,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>{@code null} will return {@code false}.
 	// * An empty CharSequence (length()=0) will return {@code false}.</p>
 	// * <p>Note that the method does not allow for a leading sign, either positive or negative.
-	// * Also, if a String passes the numeric test, it may still generate a NumberFormatException when parsed by Integer.parseInt or
+	// * Also, if a String passes the numeric test, it may still generate a NumberFormatException when parsed by
+	// Integer.parseInt or
 	// * Long.parseLong, e.g. if the value is outside the range for int or long respectively.</p>
 	// * <pre>
 	// * StringUtils.isNumeric(null)   = false
@@ -5088,7 +5244,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.getDigits("\u0967\u0968\u0969") = "\u0967\u0968\u0969"
 	// * </pre>
 	// * @param str the String to extract digits from, may be null
-	// * @return String with only digits, or an empty ("") String if no digits found, or {@code null} String if {@code str} is null
+	// * @return String with only digits, or an empty ("") String if no digits found, or {@code null} String if {@code
+	// str} is null
 	// * @since 3.6
 	// */
 	//public static String getDigits(final String str) {
@@ -5294,7 +5451,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param <T>    the specific kind of CharSequence
 	// * @param values the values to test, may be {@code null} or empty
-	// * @return the first value from {@code values} which is not blank, or {@code null} if there are no non-blank values
+	// * @return the first value from {@code values} which is not blank, or {@code null} if there are no non-blank
+	// values
 	// * @since 3.8
 	// */
 	//@SafeVarargs
@@ -5325,7 +5483,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param <T>    the specific kind of CharSequence
 	// * @param values the values to test, may be {@code null} or empty
-	// * @return the first value from {@code values} which is not empty, or {@code null} if there are no non-empty values
+	// * @return the first value from {@code values} which is not empty, or {@code null} if there are no non-empty
+	// values
 	// * @since 3.8
 	// */
 	//@SafeVarargs
@@ -5353,7 +5512,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param <T>        the specific kind of CharSequence
 	// * @param str        the CharSequence to check, may be null
-	// * @param defaultStr the default CharSequence to return if the input is whitespace, empty ("") or {@code null}, may be null
+	// * @param defaultStr the default CharSequence to return if the input is whitespace, empty ("") or {@code null},
+	// may be null
 	// * @return the passed in CharSequence, or the default
 	// * @see StringUtils#defaultString(String, String)
 	// */
@@ -5510,7 +5670,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * <p>Abbreviates a String using ellipses. This will turn
 	// * "Now is the time for all good men" into "...is the time for..."</p>
 	// * <p>Works like {@code abbreviate(String, int)}, but allows you to specify
-	// * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost character in the result, or the first
+	// * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost character in the
+	// result, or the first
 	// * character following the ellipses, but it will appear somewhere in the result.
 	// * <p>In no case will it return a String of length greater than
 	// * {@code maxWidth}.</p>
@@ -5543,7 +5704,8 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Abbreviates a String using another given String as replacement marker. This will turn
-	// * "Now is the time for all good men" into "Now is the time for..." if "..." was defined as the replacement marker.</p>
+	// * "Now is the time for all good men" into "Now is the time for..." if "..." was defined as the replacement
+	// marker.</p>
 	// * <p>Specifically:</p>
 	// * <ul>
 	// *   <li>If the number of characters in {@code str} is less than or equal to
@@ -5579,9 +5741,11 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Abbreviates a String using a given replacement marker. This will turn
-	// * "Now is the time for all good men" into "...is the time for..." if "..." was defined as the replacement marker.</p>
+	// * "Now is the time for all good men" into "...is the time for..." if "..." was defined as the replacement
+	// marker.</p>
 	// * <p>Works like {@code abbreviate(String, String, int)}, but allows you to specify
-	// * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost character in the result, or the first
+	// * a "left edge" offset.  Note that this left edge is not necessarily going to be the leftmost character in the
+	// result, or the first
 	// * character following the replacement marker, but it will appear somewhere in the result.
 	// * <p>In no case will it return a String of length greater than {@code maxWidth}.</p>
 	// * <pre>
@@ -5633,7 +5797,8 @@ public final class XString extends XAbstract<String, XString> {
 	//        return str.substring(0, maxWidth - abbrevMarkerLength) + abbrevMarker;
 	//    }
 	//    if (maxWidth < minAbbrevWidthOffset) {
-	//        throw new IllegalArgumentException(String.format("Minimum abbreviation width with offset is %d", minAbbrevWidthOffset));
+	//        throw new IllegalArgumentException(String.format("Minimum abbreviation width with offset is %d",
+	//        minAbbrevWidthOffset));
 	//    }
 	//    if (offset + maxWidth - abbrevMarkerLength < str.length()) {
 	//        return abbrevMarker + abbreviate(str.substring(offset), abbrevMarker, maxWidth - abbrevMarkerLength);
@@ -5690,7 +5855,8 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Compares two Strings, and returns the portion where they differ.
-	// * More precisely, return the remainder of the second String, starting from where it's different from the first. This means that the
+	// * More precisely, return the remainder of the second String, starting from where it's different from the first.
+	// This means that the
 	// * difference between "abc" and "ab" is the empty String and not "c". </p>
 	// * <p>For example,
 	// * {@code difference("i am a machine", "i am a robot") -> "robot"}.</p>
@@ -5744,7 +5910,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param cs2 the second CharSequence, may be null
 	// * @return the index where cs1 and cs2 begin to differ; -1 if they are equal
 	// * @since 2.0
-	// * @since 3.0 Changed signature from indexOfDifference(String, String) to indexOfDifference(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from indexOfDifference(String, String) to indexOfDifference(CharSequence,
+	// CharSequence)
 	// */
 	//public static int indexOfDifference(final CharSequence cs1, final CharSequence cs2) {
 	//    if (cs1 == cs2) {
@@ -5877,7 +6044,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * StringUtils.getCommonPrefix(new String[] {"i am a machine", "i am a robot"}) = "i am a "
 	// * </pre>
 	// * @param strs array of String objects, entries may be null
-	// * @return the initial sequence of characters that are common to all Strings in the array; empty String if the array is null, the
+	// * @return the initial sequence of characters that are common to all Strings in the array; empty String if the
+	// array is null, the
 	// * elements are all null or if there is no common prefix.
 	// * @since 2.4
 	// */
@@ -5928,9 +6096,11 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param t the second String, must not be null
 	// * @return result distance
 	// * @throws IllegalArgumentException if either String input {@code null}
-	// * @since 3.0 Changed signature from getLevenshteinDistance(String, String) to getLevenshteinDistance(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from getLevenshteinDistance(String, String) to getLevenshteinDistance
+	// (CharSequence, CharSequence)
 	// * @deprecated as of 3.6, use commons-text
-	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/similarity
+	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text
+	// /similarity
 	// /LevenshteinDistance.html">
 	// * LevenshteinDistance</a> instead
 	// */
@@ -6013,10 +6183,12 @@ public final class XString extends XAbstract<String, XString> {
 	// * @param s         the first String, must not be null
 	// * @param t         the second String, must not be null
 	// * @param threshold the target threshold, must not be negative
-	// * @return result distance, or {@code -1} if the distance would be greater than the threshold rows IllegalArgumentException if either
+	// * @return result distance, or {@code -1} if the distance would be greater than the threshold rows
+	// IllegalArgumentException if either
 	// * String input {@code null} or negative threshold
 	// * @deprecated as of 3.6, use commons-text
-	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/similarity
+	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text
+	// /similarity
 	// /LevenshteinDistance.html">
 	// * LevenshteinDistance</a> instead
 	// */
@@ -6155,11 +6327,13 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>Find the Jaro Winkler Distance which indicates the similarity score between two Strings.</p>
-	// * <p>The Jaro measure is the weighted sum of percentage of matched characters from each file and transposed characters.
+	// * <p>The Jaro measure is the weighted sum of percentage of matched characters from each file and transposed
+	// characters.
 	// * Winkler increased this measure for matching initial characters.</p>
 	// * <p>This implementation is based on the Jaro Winkler similarity algorithm
 	// * from
-	// * <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance</a>
+	// * <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">http://en.wikipedia
+	// .org/wiki/Jaro%E2%80%93Winkler_distance</a>
 	// * .</p>
 	// * <pre>
 	// * StringUtils.getJaroWinklerDistance(null, null)          = IllegalArgumentException
@@ -6182,7 +6356,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return result distance     * @throws IllegalArgumentException if either String input {@code null}
 	// * @since 3.3
 	// * @deprecated as of 3.6, use commons-text
-	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/similarity
+	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text
+	// /similarity
 	// /JaroWinklerDistance.html">
 	// * JaroWinklerDistance</a> instead
 	// */
@@ -6263,7 +6438,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Find the Fuzzy Distance which indicates the similarity score between two Strings.</p>
 	// * <p>This string matching algorithm is similar to the algorithms of editors such as Sublime Text,
-	// * TextMate, Atom and others. One point is given for every matched character. Subsequent matches yield two bonus points. A higher
+	// * TextMate, Atom and others. One point is given for every matched character. Subsequent matches yield two bonus
+	// points. A higher
 	// score
 	// * indicates a higher similarity.</p>
 	// * <pre>
@@ -6278,12 +6454,14 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param term   a full term that should be matched against, must not be null
 	// * @param query  the query that will be matched against a term, must not be null
-	// * @param locale This string matching logic is case insensitive. A locale is necessary to normalize both Strings to lower case.
+	// * @param locale This string matching logic is case insensitive. A locale is necessary to normalize both Strings
+	// to lower case.
 	// * @return result score
 	// * @throws IllegalArgumentException if either String input {@code null} or Locale input {@code null}
 	// * @since 3.4
 	// * @deprecated as of 3.6, use commons-text
-	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/similarity/FuzzyScore.html">
+	// * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text
+	// /similarity/FuzzyScore.html">
 	// * FuzzyScore</a> instead
 	// */
 	//@Deprecated
@@ -6381,7 +6559,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return {@code true} if the CharSequence starts with the prefix, case insensitive, or both {@code null}
 	// * @see java.lang.String#startsWith(String)
 	// * @since 2.4
-	// * @since 3.0 Changed signature from startsWithIgnoreCase(String, String) to startsWithIgnoreCase(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from startsWithIgnoreCase(String, String) to startsWithIgnoreCase(CharSequence,
+	// CharSequence)
 	// */
 	//public static boolean startsWithIgnoreCase(final CharSequence str, final CharSequence prefix) {
 	//    return startsWith(str, prefix, true);
@@ -6419,11 +6598,13 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param sequence      the CharSequence to check, may be null
 	// * @param searchStrings the case-sensitive CharSequence prefixes, may be empty or contain {@code null}
-	// * @return {@code true} if the input {@code sequence} is {@code null} AND no {@code searchStrings} are provided, or the input {@code
+	// * @return {@code true} if the input {@code sequence} is {@code null} AND no {@code searchStrings} are provided,
+	// or the input {@code
 	// * sequence} begins with any of the provided case-sensitive {@code searchStrings}.
 	// * @see StringUtils#startsWith(CharSequence, CharSequence)
 	// * @since 2.5
-	// * @since 3.0 Changed signature from startsWithAny(String, String[]) to startsWithAny(CharSequence, CharSequence...)
+	// * @since 3.0 Changed signature from startsWithAny(String, String[]) to startsWithAny(CharSequence, CharSequence
+	// ...)
 	// */
 	//public static boolean startsWithAny(final CharSequence sequence, final CharSequence... searchStrings) {
 	//    if (isEmpty(sequence) || ArrayUtils.isEmpty(searchStrings)) {
@@ -6481,7 +6662,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return {@code true} if the CharSequence ends with the suffix, case insensitive, or both {@code null}
 	// * @see java.lang.String#endsWith(String)
 	// * @since 2.4
-	// * @since 3.0 Changed signature from endsWithIgnoreCase(String, String) to endsWithIgnoreCase(CharSequence, CharSequence)
+	// * @since 3.0 Changed signature from endsWithIgnoreCase(String, String) to endsWithIgnoreCase(CharSequence,
+	// CharSequence)
 	// */
 	//public static boolean endsWithIgnoreCase(final CharSequence str, final CharSequence suffix) {
 	//    return endsWith(str, suffix, true);
@@ -6508,14 +6690,16 @@ public final class XString extends XAbstract<String, XString> {
 	//
 	///**
 	// * <p>
-	// * Similar to <a href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize -space</a>
+	// * Similar to <a href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3
+	// .org/TR/xpath/#function-normalize -space</a>
 	// * </p>
 	// * <p>
 	// * The function returns the argument string with whitespace normalized by using
 	// * <code>{@link #trim(String)}</code> to remove leading and trailing whitespace
 	// * and then replacing sequences of whitespace characters by a single space.
 	// * </p>
-	// * In XML Whitespace characters are the same as those allowed by the <a href="http://www.w3.org/TR/REC-xml/#NT-S">S</a> production,
+	// * In XML Whitespace characters are the same as those allowed by the <a href="http://www.w3
+	// .org/TR/REC-xml/#NT-S">S</a> production,
 	// * which is S ::= (#x20 | #x9 | #xD | #xA)+
 	// * <p>
 	// * Java's regexp pattern \s defines whitespace as [ \t\n\x0B\f\r]
@@ -6530,14 +6714,16 @@ public final class XString extends XAbstract<String, XString> {
 	// * </ul>
 	// * <p>
 	// * The difference is that Java's whitespace includes vertical tab and form feed, which this functional will also
-	// * normalize. Additionally <code>{@link #trim(String)}</code> removes control characters (char &lt;= 32) from both
+	// * normalize. Additionally <code>{@link #trim(String)}</code> removes control characters (char &lt;= 32) from
+	// both
 	// * ends of this String.
 	// * </p>
 	// * @param str the source String to normalize whitespaces from, may be null
 	// * @return the modified string with whitespace normalized, {@code null} if null String input
 	// * @see Pattern
 	// * @see #trim(String)
-	// * @see <a href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize-space</a>
+	// * @see <a href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3
+	// .org/TR/xpath/#function-normalize-space</a>
 	// * @since 3.0
 	// */
 	//public static String normalizeSpace(final String str) {
@@ -6585,7 +6771,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * </pre>
 	// * @param sequence      the CharSequence to check, may be null
 	// * @param searchStrings the case-sensitive CharSequences to find, may be empty or contain {@code null}
-	// * @return {@code true} if the input {@code sequence} is {@code null} AND no {@code searchStrings} are provided, or the input {@code
+	// * @return {@code true} if the input {@code sequence} is {@code null} AND no {@code searchStrings} are provided,
+	// or the input {@code
 	// * sequence} ends in any of the provided case-sensitive {@code searchStrings}.
 	// * @see StringUtils#endsWith(CharSequence, CharSequence)
 	// * @since 3.0
@@ -6654,12 +6841,14 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return A new String if suffix was appended, the same string otherwise.
 	// * @since 3.2
 	// */
-	//public static String appendIfMissing(final String str, final CharSequence suffix, final CharSequence... suffixes) {
+	//public static String appendIfMissing(final String str, final CharSequence suffix, final CharSequence...
+	// suffixes) {
 	//    return appendIfMissing(str, suffix, false, suffixes);
 	//}
 	//
 	///**
-	// * Appends the suffix to the end of the string if the string does not already end, case insensitive, with any of the suffixes.
+	// * Appends the suffix to the end of the string if the string does not already end, case insensitive, with any of
+	// the suffixes.
 	// * <pre>
 	// * StringUtils.appendIfMissingIgnoreCase(null, null) = null
 	// * StringUtils.appendIfMissingIgnoreCase("abc", null) = "abc"
@@ -6687,7 +6876,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return A new String if suffix was appended, the same string otherwise.
 	// * @since 3.2
 	// */
-	//public static String appendIfMissingIgnoreCase(final String str, final CharSequence suffix, final CharSequence... suffixes) {
+	//public static String appendIfMissingIgnoreCase(final String str, final CharSequence suffix, final CharSequence..
+	// . suffixes) {
 	//    return appendIfMissing(str, suffix, true, suffixes);
 	//}
 	//
@@ -6743,12 +6933,14 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return A new String if prefix was prepended, the same string otherwise.
 	// * @since 3.2
 	// */
-	//public static String prependIfMissing(final String str, final CharSequence prefix, final CharSequence... prefixes) {
+	//public static String prependIfMissing(final String str, final CharSequence prefix, final CharSequence...
+	// prefixes) {
 	//    return prependIfMissing(str, prefix, false, prefixes);
 	//}
 	//
 	///**
-	// * Prepends the prefix to the start of the string if the string does not already start, case insensitive, with any of the prefixes.
+	// * Prepends the prefix to the start of the string if the string does not already start, case insensitive, with
+	// any of the prefixes.
 	// * <pre>
 	// * StringUtils.prependIfMissingIgnoreCase(null, null) = null
 	// * StringUtils.prependIfMissingIgnoreCase("abc", null) = "abc"
@@ -6776,7 +6968,8 @@ public final class XString extends XAbstract<String, XString> {
 	// * @return A new String if prefix was prepended, the same string otherwise.
 	// * @since 3.2
 	// */
-	//public static String prependIfMissingIgnoreCase(final String str, final CharSequence prefix, final CharSequence... prefixes) {
+	//public static String prependIfMissingIgnoreCase(final String str, final CharSequence prefix, final CharSequence.
+	// .. prefixes) {
 	//    return prependIfMissing(str, prefix, true, prefixes);
 	//}
 	//
@@ -7018,7 +7211,8 @@ public final class XString extends XAbstract<String, XString> {
 	///**
 	// * <p>Converts a {@code CharSequence} into an array of code points.</p>
 	// * <p>Valid pairs of surrogate code units will be converted into a single supplementary
-	// * code point. Isolated surrogate code units (i.e. a high surrogate not followed by a low surrogate or a low surrogate not preceded
+	// * code point. Isolated surrogate code units (i.e. a high surrogate not followed by a low surrogate or a low
+	// surrogate not preceded
 	// by a
 	// * high surrogate) will be returned as-is.</p>
 	// * <pre>

@@ -26,7 +26,8 @@ public final class ExceptionHandlerDefault implements ExceptionHandler {
 	}
 
 	@Override
-	public void handler(IModel<?> model, Throwable exception, HttpServletRequest request, HttpServletResponse response) {
+	public void handler(IModel<?> model, Throwable exception, HttpServletRequest request,
+			HttpServletResponse response) {
 		String message = StringUtils.defaultIfBlank(exception.getMessage(), "Service Error!");
 		model.setStatus(ResponseCode.INTERNAL_SERVER_ERROR).setMessage(message);
 		LOGGER.error(exception.getMessage(), exception);

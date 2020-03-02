@@ -27,7 +27,7 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 		}
 		return Part[].class == parameter.getType();
 	}
-	
+
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -41,19 +41,20 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 		}
 		return param.value();
 	}
-	
+
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		try {
 			String name = this.getParameterName(parameter);
 			return ofNullable(invocation.getRequest().getParts())
-				.stream()
-				.flatMap(Collection::stream)
-				.filter(Objects::nonNull)
-				.filter(p -> name.equals(p.getName()))
-				.toArray(Part[]::new);
-		} catch (IOException | ServletException ignored) {}
+					.stream()
+					.flatMap(Collection::stream)
+					.filter(Objects::nonNull)
+					.filter(p -> name.equals(p.getName()))
+					.toArray(Part[]::new);
+		} catch (IOException | ServletException ignored) {
+		}
 		return null;
 	}
-	
+
 }

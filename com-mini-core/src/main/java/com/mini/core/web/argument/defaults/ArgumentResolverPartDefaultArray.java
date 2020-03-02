@@ -23,13 +23,13 @@ public final class ArgumentResolverPartDefaultArray implements ArgumentResolver 
 	public boolean supportParameter(MiniParameter parameter) {
 		for (var annotation : parameter.getAnnotations()) {
 			if (annotation.getClass().getAnnotation( //
-				Associated.class) != null) {
+					Associated.class) != null) {
 				return false;
 			}
 		}
 		return Part[].class == parameter.getType();
 	}
-	
+
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -39,19 +39,20 @@ public final class ArgumentResolverPartDefaultArray implements ArgumentResolver 
 	private String getParameterName(MiniParameter parameter) {
 		return parameter.getName();
 	}
-	
+
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		try {
 			String name = this.getParameterName(parameter);
 			return ofNullable(invocation.getRequest().getParts())
-				.stream()
-				.flatMap(Collection::stream)
-				.filter(Objects::nonNull)
-				.filter(p -> name.equals(p.getName()))
-				.toArray(Part[]::new);
-		} catch (IOException | ServletException ignored) {}
+					.stream()
+					.flatMap(Collection::stream)
+					.filter(Objects::nonNull)
+					.filter(p -> name.equals(p.getName()))
+					.toArray(Part[]::new);
+		} catch (IOException | ServletException ignored) {
+		}
 		return null;
 	}
-	
+
 }

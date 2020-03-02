@@ -15,13 +15,13 @@ import static java.util.ResourceBundle.getBundle;
 @Singleton
 public final class I18nActionInterceptor implements ActionInterceptor {
 	private static final Map<Locale, ResourceBundle> BUNDLE  //
-		= new ConcurrentHashMap<>();
-	
+			= new ConcurrentHashMap<>();
+
 	public Object invoke(ActionInvocation invocation) throws Throwable {
 		var language = invocation.getRequest().getHeader("Accept-Language");
 		final Locale locale = Locale.forLanguageTag(language); //
 		var bundle = BUNDLE.computeIfAbsent(locale, key -> //
-			getBundle("i18n.message", key)); //
+				getBundle("i18n.message", key)); //
 		invocation.getModel().setResourceBundle(bundle);
 		return invocation.invoke();
 	}

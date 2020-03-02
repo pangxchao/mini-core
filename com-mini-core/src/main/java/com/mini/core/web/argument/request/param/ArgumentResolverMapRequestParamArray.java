@@ -14,7 +14,7 @@ import java.util.Map;
 @Named
 @Singleton
 public final class ArgumentResolverMapRequestParamArray implements ArgumentResolver {
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		if (Map.class != parameter.getType()) {
@@ -37,7 +37,7 @@ public final class ArgumentResolverMapRequestParamArray implements ArgumentResol
 		}
 		return false;
 	}
-	
+
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterMap();

@@ -10,9 +10,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Join {
 	String column();
-	
+
 	JoinType type() default JoinType.INNER;
-	
+
 	enum JoinType {
 		INNER {
 			public void execute(SQLBuilder builder, String format, Object... args) {
@@ -34,15 +34,15 @@ public @interface Join {
 				builder.outerJoin(format, args);
 			}
 		};
-		
+
 		public abstract void execute(SQLBuilder builder, String format, Object... args);
 	}
-	
+
 	@Documented
 	@Target({ElementType.TYPE})
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Joins {
 		Join[] value() default {};
 	}
-	
+
 }

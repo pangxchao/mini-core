@@ -12,21 +12,21 @@ import java.util.Optional;
 
 @Singleton
 public final class ArgumentResolverBeanRequestUri extends ArgumentResolverBean {
-	
+
 	@Inject
 	public ArgumentResolverBeanRequestUri(Configures configures) {
 		super(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestUri param = parameter.getAnnotation(RequestUri.class);
 		return param != null && super.supportParameter(parameter);
 	}
-	
+
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return Optional.ofNullable(invocation.getUriParameters().get(name))
-			.map(v -> new String[]{v}).orElse(null);
+				.map(v -> new String[]{v}).orElse(null);
 	}
 }

@@ -45,8 +45,8 @@ public final class XThrows extends XAbstract<Throwable, XThrows> {
 	@Nonnull
 	private Throwable getLastCause(@Nonnull Throwable throwable) {
 		return ofNullable(throwable.getCause())
-			.map(this::getLastCause)
-			.orElse(throwable);
+				.map(this::getLastCause)
+				.orElse(throwable);
 	}
 
 	@Nullable

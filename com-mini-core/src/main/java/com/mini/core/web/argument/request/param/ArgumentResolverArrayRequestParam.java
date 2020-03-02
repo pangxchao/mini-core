@@ -13,18 +13,18 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArray {
-	
+
 	@Inject
 	public ArgumentResolverArrayRequestParam(Configures configures) {
 		super(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestParam param = parameter.getAnnotation(RequestParam.class);
 		return param != null && super.supportParameter(parameter);
 	}
-	
+
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
@@ -34,7 +34,7 @@ public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArr
 		}
 		return param.value();
 	}
-	
+
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterValues(name);

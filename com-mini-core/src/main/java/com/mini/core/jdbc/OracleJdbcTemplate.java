@@ -23,7 +23,8 @@ public final class OracleJdbcTemplate extends JdbcTemplate {
 	@Override
 	public String paging(int start, int limit, String str) {
 		return StringUtils.join("select * from (", //
-			"   select max_count.*, rownum row_number from (", str, ") max_count where rownum <= ", (start + limit),
-			") max_count_rownum where row_number > ", limit);
+				"   select max_count.*, rownum row_number from (", str, ") max_count where rownum <= ",
+				(start + limit),
+				") max_count_rownum where row_number > ", limit);
 	}
 }

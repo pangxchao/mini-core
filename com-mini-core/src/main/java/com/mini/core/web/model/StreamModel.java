@@ -156,7 +156,8 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			if (rangeList.size() == 1) {
 				// 设置返回的数据范围
 				RangeParse.Range range = rangeList.get(0);
-				response.addHeader("Content-Range", format("bytes %d-%d/%d", range.getStart(), range.getEnd(), range.getLength()));
+				response.addHeader("Content-Range", format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
+						range.getLength()));
 
 				// 设置传回内容在大小和Buffer大小
 				long length = range.getEnd() - range.getStart() + 1;
@@ -177,7 +178,8 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 
 				// 文件类型和设置返回的数据范围
 				output.println("Content-Type: " + getContentType());
-				output.println(format("Content-Range: bytes %d-%d/%d", range.getStart(), range.getEnd(), range.getLength()));
+				output.println(format("Content-Range: bytes %d-%d/%d", range.getStart(), range.getEnd(),
+						range.getLength()));
 
 				// 输出一个空行,再定入数据
 				output.println();

@@ -18,5 +18,5 @@ public interface PageViewResolver extends Serializable {
 	 * @param response HttpServletResponse
 	 */
 	void generator(Map<String, Object> data, String viewPath, HttpServletRequest request,
-		HttpServletResponse response) throws Exception;
+			HttpServletResponse response) throws Exception;
 }

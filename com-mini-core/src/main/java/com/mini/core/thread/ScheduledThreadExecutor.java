@@ -18,7 +18,7 @@ import static java.util.Calendar.*;
 public final class ScheduledThreadExecutor {
 	private static final Map<String, ScheduledFuture<?>> futures = new HashMap<>();
 	private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(//
-		2 * Runtime.getRuntime().availableProcessors());
+			2 * Runtime.getRuntime().availableProcessors());
 
 	/**
 	 * 在后台线程执行一个任务
@@ -120,7 +120,8 @@ public final class ScheduledThreadExecutor {
 	 * @param delay        上次开始到下次开始的时间间隔
 	 * @param unit         时间单位
 	 */
-	public static void scheduleAtFixedRate(String id, Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
+	public static void scheduleAtFixedRate(String id, Runnable runnable, long initialDelay, long delay,
+			TimeUnit unit) {
 		futures.put(id, executor.scheduleAtFixedRate(runnable, initialDelay, delay, unit));
 	}
 
@@ -186,7 +187,8 @@ public final class ScheduledThreadExecutor {
 	 * @param delay        上次任务结束到下次任务开始的时间间隔
 	 * @param unit         时间单位
 	 */
-	public static void scheduleWithFixedDelay(String id, Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
+	public static void scheduleWithFixedDelay(String id, Runnable runnable, long initialDelay, long delay,
+			TimeUnit unit) {
 		futures.put(id, executor.scheduleWithFixedDelay(runnable, initialDelay, delay, unit));
 	}
 

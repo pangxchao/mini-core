@@ -77,10 +77,10 @@ public final class RegistrationServlet implements Registration {
 		// 文件上传配置
 		of(multipartEnabled).filter(v -> v).map(v -> {
 			return new MultipartConfigElement(
-				locationPath,
-				maxFileSize,
-				maxRequestSize,
-				fileSizeThreshold); //
+					locationPath,
+					maxFileSize,
+					maxRequestSize,
+					fileSizeThreshold); //
 		}).ifPresent(register::setMultipartConfig);
 	}
 }

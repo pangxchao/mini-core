@@ -12,26 +12,26 @@ import java.util.function.Function;
 import static com.mini.core.web.argument.ArgumentResolverSupport.getBasicFunc;
 
 public abstract class ArgumentResolverBasic implements ArgumentResolver, EventListener {
-	
+
 	protected ArgumentResolverBasic(Configures configures) {
 		ArgumentResolverSupport.init(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		return getBasicFunc(parameter.getType()) != null;
 	}
-	
+
 	@Override
 	public final Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		Function<String, ?> function = getBasicFunc(parameter.getType());
 		Assert.notNull(function, "Unsupported parameter type.");
-		
+
 		// 获取参数名称和参值，并处理
 		String value = getValue(getParameterName(parameter), invocation);
 		return function.apply(value);
 	}
-	
+
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -39,7 +39,7 @@ public abstract class ArgumentResolverBasic implements ArgumentResolver, EventLi
 	 */
 	@Nonnull
 	protected abstract String getParameterName(MiniParameter parameter);
-	
+
 	/**
 	 * 根据参数名称获取参数值
 	 * @param name       参数名称

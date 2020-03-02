@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class ClassScannerPath implements ClassScanner {
 	private static final FileFilter FILE_FILTER = file -> file.isDirectory()  //
-		|| StringUtils.endsWith(file.getName().toLowerCase(), ".class");
+			|| StringUtils.endsWith(file.getName().toLowerCase(), ".class");
 
 	@Override
 	public Set<Class<?>> scanner(String packageName, Class<? extends Annotation> annotation) {

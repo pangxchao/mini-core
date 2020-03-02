@@ -14,18 +14,18 @@ import static org.apache.commons.lang3.Validate.isTrue;
 public final class SingleMapper<T> implements Mapper<T>, EventListener, Serializable {
 	private static final Map<Class<?>, SingleMapper<?>> MAP = new ConcurrentHashMap<>();
 	private final Class<T> type;
-	
+
 	private SingleMapper(Class<T> type) {
 		this.type = type;
 	}
-	
+
 	@Nonnull
 	@Override
 	public T get(ResultSet rs, int number) throws SQLException {
 		isTrue(rs.getMetaData().getColumnCount() == 1);
 		return type.cast(getObject(rs, 1, type));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> Mapper<T> create(Class<T> type) {
 		return (Mapper<T>) MAP.computeIfAbsent(type, k -> {

@@ -18,13 +18,13 @@ public final class ArgumentResolverBeanRequestHeader extends ArgumentResolverBea
 	public ArgumentResolverBeanRequestHeader(Configures configures) {
 		super(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestHeader param = parameter.getAnnotation(RequestHeader.class);
 		return param != null && super.supportParameter(parameter);
 	}
-	
+
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return of(invocation.getRequest().getHeaders(name)).flatMap(v -> {

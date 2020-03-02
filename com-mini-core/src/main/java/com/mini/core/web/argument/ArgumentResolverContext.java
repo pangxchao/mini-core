@@ -31,12 +31,12 @@ public class ArgumentResolverContext implements ArgumentResolver {
 		// HttpSession.class 处理
 		put(HttpSession.class, ActionInvocation::getSession);
 	}};
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		return map.get(parameter.getType()) != null;
 	}
-	
+
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		Function<ActionInvocation, ?> function = map.get(parameter.getType());

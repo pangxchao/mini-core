@@ -18,7 +18,7 @@ import static java.util.Optional.ofNullable;
 @Named
 @Singleton
 public final class ArgumentResolverPartRequestParam implements ArgumentResolver {
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		if (parameter.getAnnotation(RequestParam.class) == null) {
@@ -26,7 +26,7 @@ public final class ArgumentResolverPartRequestParam implements ArgumentResolver 
 		}
 		return Part.class == parameter.getType();
 	}
-	
+
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -40,15 +40,16 @@ public final class ArgumentResolverPartRequestParam implements ArgumentResolver 
 		}
 		return param.value();
 	}
-	
+
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		try {
 			String name = this.getParameterName(parameter);
 			return ofNullable(invocation.getRequest().getPart(name))
-				.filter(part -> part.getSize() > 0)
-				.orElse(null);
-		} catch (IOException | ServletException ignored) {}
+					.filter(part -> part.getSize() > 0)
+					.orElse(null);
+		} catch (IOException | ServletException ignored) {
+		}
 		return null;
 	}
 }

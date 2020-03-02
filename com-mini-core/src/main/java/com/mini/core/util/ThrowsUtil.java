@@ -10,8 +10,8 @@ public class ThrowsUtil {
 	@Nonnull
 	public static Throwable getLastCause(@Nonnull Throwable throwable) {
 		return ofNullable(throwable.getCause())
-			.map(ThrowsUtil::getLastCause)
-			.orElse(throwable);
+				.map(ThrowsUtil::getLastCause)
+				.orElse(throwable);
 	}
 
 	@Nullable

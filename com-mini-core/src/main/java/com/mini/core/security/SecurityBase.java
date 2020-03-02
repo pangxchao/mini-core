@@ -7,7 +7,7 @@ import java.util.EventListener;
 public abstract class SecurityBase<T extends SecurityBase<T>> implements EventListener {
 	// 用来将字节转换成 16 进制表示的字符
 	private static final char[] DIGITS = {   //
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' //
+			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' //
 	};
 
 	public abstract T update(byte[] input, int offset, int len);

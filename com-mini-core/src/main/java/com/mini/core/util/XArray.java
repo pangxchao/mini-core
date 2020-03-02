@@ -1,7 +1,6 @@
 package com.mini.core.util;
 
 import javax.annotation.Nonnull;
-import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,8 +19,8 @@ public final class XArray<T> extends XAbstract<T[], XArray<T>> {
 
 	public final XCollection<T> toList() {
 		return XCollection.of(ofNullable(get())
-			.flatMap(Stream::of)
-			.collect(Collectors.toList()));
+				.flatMap(Stream::of)
+				.collect(Collectors.toList()));
 	}
 
 	public static <T> XArray<T> of(T[] array) {

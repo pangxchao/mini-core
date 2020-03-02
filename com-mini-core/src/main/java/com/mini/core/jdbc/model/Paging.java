@@ -20,7 +20,7 @@ public final class Paging<T> implements Serializable {
 	 */
 	public Paging(int page, int limit) {
 		this.limit = limit;
-		this.page  = page;
+		this.page = page;
 	}
 
 	/**

@@ -20,7 +20,8 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 	}
 
 	@Override
-	public void handler(IModel<?> model, Throwable exception, HttpServletRequest request, HttpServletResponse response) {
+	public void handler(IModel<?> model, Throwable exception, HttpServletRequest request,
+			HttpServletResponse response) {
 		ValidateException e = (ValidateException) exception;
 		model.setStatus(e.getStatus()).setMessage(e.getMessage());
 	}

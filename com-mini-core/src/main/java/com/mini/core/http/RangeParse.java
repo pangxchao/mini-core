@@ -18,7 +18,7 @@ public final class RangeParse {
 
 		Range(long start, long end) {
 			this.start = start;
-			this.end   = end;
+			this.end = end;
 		}
 
 		public final long getLength() {
@@ -36,7 +36,7 @@ public final class RangeParse {
 		// 判断数据合法性
 		public final boolean validate(long contentLength) {
 			length = contentLength;
-			end    = min(max(length, 0), length - 1);
+			end = min(max(length, 0), length - 1);
 			return start >= 0 & start <= end && length > 0;
 		}
 	}

@@ -163,7 +163,7 @@ public class StringUtil extends StringUtils {
 			return self;
 		}
 		return self.substring(0, 3) + "****" //
-			+ self.substring(7);
+				+ self.substring(7);
 
 	}
 }

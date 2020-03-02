@@ -17,12 +17,12 @@ import static java.util.Objects.requireNonNull;
 @Singleton
 public final class JtaTransManager implements TransManager {
 	private final Provider<UserTransaction> provider;
-	
+
 	@Inject
 	public JtaTransManager(@Nonnull Provider<UserTransaction> provider) {
 		this.provider = provider;
 	}
-	
+
 	@Override
 	public <T> T open(TransManagerCallback<T> callback) {
 		var userTrans = requireNonNull(provider.get());

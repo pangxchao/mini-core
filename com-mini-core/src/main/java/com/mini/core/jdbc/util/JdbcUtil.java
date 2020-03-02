@@ -320,4 +320,6 @@ public final class JdbcUtil {
 	public static <T> T getObject(ResultSet rs, String columnLabel, Class<T> type) throws SQLException {
 		return rs.getObject(columnLabel, type);
 	}
+
+
 }

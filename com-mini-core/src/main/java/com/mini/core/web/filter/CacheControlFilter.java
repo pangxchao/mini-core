@@ -27,7 +27,8 @@ public final class CacheControlFilter implements Filter {
 	private int cacheExpires;
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+			ServletException {
 		HttpServletResponse resp = (HttpServletResponse) response;
 		// 浏览器和缓存服务器都不应该缓存页面信息
 		resp.setHeader("Cache-Control", cacheControl);

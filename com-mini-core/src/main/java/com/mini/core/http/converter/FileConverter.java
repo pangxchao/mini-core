@@ -41,7 +41,7 @@ public class FileConverter implements Converter<File> {
 
 	public FileConverter(String outputDir, String fileName) {
 		this.outputDir = outputDir;
-		this.fileName  = fileName;
+		this.fileName = fileName;
 	}
 
 	public FileConverter setOutputDir(String outputDir) {
@@ -84,10 +84,10 @@ public class FileConverter implements Converter<File> {
 			// 总长度
 			long totalLength;
 			if (contentRange == null) {
-				length      = 0;
+				length = 0;
 				totalLength = HttpUtil.getContentLength(response);
 			} else {
-				length      = contentRange[0];
+				length = contentRange[0];
 				totalLength = contentRange[2];
 			}
 

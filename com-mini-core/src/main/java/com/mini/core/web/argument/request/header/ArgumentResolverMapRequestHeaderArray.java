@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 @Named
 @Singleton
 public final class ArgumentResolverMapRequestHeaderArray implements ArgumentResolver {
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		if (Map.class != parameter.getType()) {
@@ -39,7 +39,7 @@ public final class ArgumentResolverMapRequestHeaderArray implements ArgumentReso
 		}
 		return false;
 	}
-	
+
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		HashMap<String, String[]> result = new HashMap<>();

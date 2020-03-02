@@ -20,13 +20,13 @@ public final class ArgumentResolverArrayRequestHeader extends ArgumentResolverAr
 	public ArgumentResolverArrayRequestHeader(Configures configures) {
 		super(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestHeader param = parameter.getAnnotation(RequestHeader.class);
 		return param != null && super.supportParameter(parameter);
 	}
-	
+
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
@@ -36,7 +36,7 @@ public final class ArgumentResolverArrayRequestHeader extends ArgumentResolverAr
 		}
 		return param.value();
 	}
-	
+
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return of(invocation.getRequest().getHeaders(name)).flatMap(v -> {

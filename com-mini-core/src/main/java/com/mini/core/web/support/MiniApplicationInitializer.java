@@ -56,11 +56,11 @@ import static java.util.stream.Stream.of;
 @AutoService(ServletContainerInitializer.class)
 public final class MiniApplicationInitializer implements ServletContainerInitializer {
 	private static final String SEP = "/";
-	
+
 	// 反射获取所有配置类的实例
 	private List<WebApplicationInitializer> getWebMvcConfigureList(Set<Class<?>> initializer) {
 		return ofNullable(initializer).stream().flatMap(Collection::stream).filter( //
-			WebApplicationInitializer.class::isAssignableFrom).map(clazz -> {
+				WebApplicationInitializer.class::isAssignableFrom).map(clazz -> {
 			try {
 				Constructor<?> constructor = clazz.getConstructor();
 				Object instance = constructor.newInstance();
@@ -70,7 +70,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 			}
 		}).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public final void onStartup(Set<Class<?>> initializer, ServletContext context) {
 		// 获取所有配置信息
@@ -93,63 +93,63 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 				}
 			}
 		}), configs.stream()).collect(Collectors.toList()));
-		
+
 		// 获取配置信息
 		Configures configures = injector.getInstance(Configures.class);
 		requireNonNull(configures, "Configure can not be null.");
-		
+
 		// 系统配置注册
 		this.onStartupRegisterSystemDefault(configures);
 		for (WebApplicationInitializer config : configs) {
 			config.onStartupRegister(context, configures);
 			registerActionProxy(injector, configures, config);
 		}
-		
+
 		// 绑定 Servlet、Filter、listener
 		configures.getServlets().forEach(servlet -> servlet.register(context));
 		configures.getFilters().forEach(filter -> filter.register(context));
 		configures.getListeners().forEach(context::addListener);
 	}
-	
+
 	private void onStartupRegisterSystemDefault(Configures configure) {
 		// 配置默认视图实现类
 		configure.setPageViewResolver(PageViewResolverFreemarker.class);
 		// 设置国际化全局拦截器
 		configure.addInterceptor(I18nActionInterceptor.class);
-		
+
 		// 注册默认 HttpServlet
 		configure.addServlet(DispatcherHttpServlet.class, registration -> {
 			registration.addUrlPatterns(configure.getDefaultMapping());
 			registration.setName("DispatcherHttpServlet");
 		});
-		
+
 		// 编码统一管理过虑器
 		configure.addFilter(CharacterEncodingFilter.class, registration -> {
 			registration.setName("CharacterEncodingFilter");
 			registration.addUrlPatterns("/*");
 		});
-		
+
 		// 跨域请求过虑器
 		configure.addFilter(AccessControlAllowOriginFilter.class, registration -> {
 			registration.setName("AccessControlAllowOriginFilter");
 			registration.addUrlPatterns("/*");
 		});
-		
+
 		// 静态资源缓存过虑器
 		configure.addFilter(CacheControlFilter.class, registration -> {
 			registration.setName("CacheControlFilter");
 			registration.addUrlPatterns("/*");
 		});
-		
+
 		// 验证异常处理器/其它普通异常处理器
 		configure.addExceptionHandler(ExceptionHandlerValidate.class);
 		configure.addExceptionHandler(ExceptionHandlerDefault.class);
-		
+
 		// Servlet容器、数据模型渲染、登录Session相关参数
 		configure.addArgumentResolver(ArgumentResolverContext.class);
 		configure.addArgumentResolver(ArgumentResolverModel.class);
 		configure.addArgumentResolver(ArgumentResolverSession.class);
-		
+
 		// 默认方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
 		configure.addArgumentResolver(ArgumentResolverBasicDefault.class);
 		configure.addArgumentResolver(ArgumentResolverArrayDefault.class);
@@ -157,7 +157,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		configure.addArgumentResolver(ArgumentResolverMapDefault.class);
 		configure.addArgumentResolver(ArgumentResolverPartDefault.class);
 		configure.addArgumentResolver(ArgumentResolverPartDefaultArray.class);
-		
+
 		// Request Param 方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
 		configure.addArgumentResolver(ArgumentResolverBasicRequestParam.class);
 		configure.addArgumentResolver(ArgumentResolverArrayRequestParam.class);
@@ -166,14 +166,14 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		configure.addArgumentResolver(ArgumentResolverPartArrayRequestParam.class);
 		configure.addArgumentResolver(ArgumentResolverMapRequestParam.class);
 		configure.addArgumentResolver(ArgumentResolverMapRequestParamArray.class);
-		
+
 		// Request Uri 方式： 支持一般基础数据、一般基础数组、Map 类型的参数
 		configure.addArgumentResolver(ArgumentResolverBasicRequestUri.class);
 		configure.addArgumentResolver(ArgumentResolverArrayRequestUri.class);
 		configure.addArgumentResolver(ArgumentResolverBeanRequestUri.class);
 		configure.addArgumentResolver(ArgumentResolverMapRequestUri.class);
 		configure.addArgumentResolver(ArgumentResolverMapRequestUriArray.class);
-		
+
 		// Request Header 方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
 		configure.addArgumentResolver(ArgumentResolverBasicRequestHeader.class);
 		configure.addArgumentResolver(ArgumentResolverArrayRequestHeader.class);
@@ -181,87 +181,87 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		configure.addArgumentResolver(ArgumentResolverMapRequestHeader.class);
 		configure.addArgumentResolver(ArgumentResolverMapRequestHeaderArray.class);
 	}
-	
+
 	// 注册默认的 ActionInvocationProxy
 	private void registerActionProxy(Injector injector, Configures configure, //
-		WebApplicationInitializer config) {
+			WebApplicationInitializer config) {
 		// 获取需要扫描的所有包
 		Stream.concat(of(config.getClass().getPackageName()),
-			Optional.ofNullable(config.getClass()
-				.getAnnotation(ComponentScan.class))
-				.map(ComponentScan::value)
-				.stream()
-				.flatMap(Stream::of))
-			.map(name -> ClassUtil.scanner(name, Controller.class))
-			.flatMap(Collection::stream).distinct().forEach(clazz -> {
+				Optional.ofNullable(config.getClass()
+						.getAnnotation(ComponentScan.class))
+						.map(ComponentScan::value)
+						.stream()
+						.flatMap(Stream::of))
+				.map(name -> ClassUtil.scanner(name, Controller.class))
+				.flatMap(Collection::stream).distinct().forEach(clazz -> {
 			// 获取类上的注解信息
 			Controller controller = clazz.getAnnotation(Controller.class);
 			requireNonNull(controller, "@Controller can not be null");
-			
+
 			// 获取类上的拦截器信息
 			Clear controllerClear = clazz.getAnnotation(Clear.class);
 			Before controllerBefore = clazz.getAnnotation(Before.class);
-			
+
 			// 查找当前类下的所有公开方法并处理
 			Arrays.stream(clazz.getMethods()).forEach(method -> {
-				
+
 				// 获取方法上的Action注解信息
 				Action action = method.getAnnotation(Action.class);
 				if (action == null) return;
-				
+
 				// 获取方法上的拦截器信息
 				Clear methodClear = method.getAnnotation(Clear.class);
 				Before methodBefore = method.getAnnotation(Before.class);
-				
+
 				// 视图文件路径
 				String path = getViewPath(clazz, controller, method, action);
-				
+
 				// 获取方法参数信息
 				MiniParameter[] parameters = ClassUtil.getParameterByAsm(method);
-				
+
 				// 获取 请求 Action 的路径 并 注册Action
 				getRequestUriList(clazz, controller, method, action).stream() //
-					.distinct().forEach(requestUri -> {  //
+						.distinct().forEach(requestUri -> {  //
 					configure.addActionProxy(requestUri, new ActionSupportProxy() {
 						private List<ActionInterceptor> interceptors;
 						private ParameterHandler[] handlers;
-						
+
 						@Nonnull
 						@Override
 						public Class<?> getClazz() {
 							return clazz;
 						}
-						
+
 						@Nonnull
 						@Override
 						public Method getMethod() {
 							return method;
 						}
-						
+
 						@Nonnull
 						@Override
 						public IModel<?> getModel(PageViewResolver resolver) {
 							return action.value().getModel(resolver, getViewPath());
 						}
-						
+
 						@Nonnull
 						@Override
 						public Action.Method[] getSupportMethod() {
 							return action.method();
 						}
-						
+
 						@Nonnull
 						@Override
 						public List<ActionInterceptor> getInterceptors() {
 							return Optional.ofNullable(interceptors).orElseGet(() -> {
-								synchronized (this) {
+								synchronized(this) {
 									// 创建拦截器列表实例
 									interceptors = new ArrayList<>();
 									// 将方法上的拦截器添加到实例列表中
 									if (methodBefore != null && methodBefore.value().length > 0) {
 										interceptors.addAll(of(methodBefore.value())
-											.map(injector::getInstance)
-											.collect(Collectors.toList()));
+												.map(injector::getInstance)
+												.collect(Collectors.toList()));
 									}
 									// 方法上有清除注解时直接返回
 									if (methodClear != null) {
@@ -270,8 +270,8 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 									// 将类上的注解添加到拦截器实例列表之前
 									if (controllerBefore != null && controllerBefore.value().length > 0) {
 										interceptors.addAll(0, of(controllerBefore.value())
-											.map(injector::getInstance)
-											.collect(Collectors.toList()));
+												.map(injector::getInstance)
+												.collect(Collectors.toList()));
 									}
 									if (controllerClear != null) {
 										return interceptors;
@@ -282,35 +282,36 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 								}
 							});
 						}
-						
+
 						@Nonnull
 						@Override
 						public MiniParameter[] getParameters() {
 							return parameters;
 						}
-						
+
 						@Nonnull
 						@Override
 						public ParameterHandler[] getParameterHandlers() {
 							return Optional.ofNullable(handlers).orElseGet(() -> {
-								synchronized (this) {
+								synchronized(this) {
 									handlers = of(getParameters()).map(param ->
-										configure.getArgumentResolvers().stream()
-											.filter(r -> r.supportParameter(param))
-											.findAny()
-											.map(r -> new ParameterHandler(r, param))
-											.orElseThrow(() -> new NullPointerException("Unsupported parameter type: " + param)))
-										.toArray(ParameterHandler[]::new);
+											configure.getArgumentResolvers().stream()
+													.filter(r -> r.supportParameter(param))
+													.findAny()
+													.map(r -> new ParameterHandler(r, param))
+													.orElseThrow(() -> new NullPointerException( //
+															"Unsupported parameter:" + param)))
+											.toArray(ParameterHandler[]::new);
 									return handlers;
 								}
 							});
 						}
-						
+
 						@Override
 						public String getViewPath() {
 							return path;
 						}
-						
+
 						@Override
 						public String getRequestUri() {
 							return requestUri;
@@ -320,7 +321,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 			});
 		});
 	}
-	
+
 	@Nonnull
 	private String getViewPath(Class<?> clazz, Controller controller, Method method, Action action) {
 		// 处理文件路径
@@ -333,24 +334,24 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		typePath = StringUtils.strip(typePath, SEP);
 		// typePath 不能为空
 		Objects.requireNonNull(typePath);
-		
+
 		String methodPath = action.path();
 		if (StringUtils.isBlank(methodPath)) {
 			methodPath = method.getName();
 		}
-		
+
 		// 去掉方法上的路径和两边的空格
 		methodPath = StringUtils.strip(methodPath);
 		methodPath = StringUtils.strip(methodPath, SEP);
-		
+
 		// typePath 不能为空
 		Assert.notBlank(methodPath);
-		
+
 		// 获取完整的视图路径
 		return StringUtils.strip(typePath + SEP //
-			+ methodPath, SEP);
+				+ methodPath, SEP);
 	}
-	
+
 	@Nonnull
 	private List<String> getRequestUriList(Class<?> clazz, Controller controller, Method method, Action action) {
 		String typeUrl = controller.url();
@@ -360,14 +361,14 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		// 去掉类URL上的空格 “/”
 		typeUrl = StringUtils.strip(typeUrl);
 		typeUrl = StringUtils.strip(typeUrl, SEP);
-		
+
 		// 所有URL
 		List<String> urlList = new ArrayList<>();
 		if (ObjectUtils.isNotEmpty(action.url())) {
 			for (String methodUrl : action.url()) {
 				methodUrl = StringUtils.strip(methodUrl);
 				methodUrl = StringUtils.strip(methodUrl, SEP);
-				
+
 				// 组装成完整的URL
 				String url = typeUrl + SEP + methodUrl;
 				url = StringUtils.strip(url, SEP);

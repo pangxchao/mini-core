@@ -12,7 +12,7 @@ public final class RunnableLinkedBlockingQueue {
 	private static final Logger LOGGER = getLogger(RunnableLinkedBlockingQueue.class);
 	private static final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
 	private static boolean flag = false;
-	
+
 	// 队列监听启动
 	protected synchronized static void start() {
 		// 如果线程正在运行则不处理
@@ -35,7 +35,7 @@ public final class RunnableLinkedBlockingQueue {
 			}
 		});
 	}
-	
+
 	/**
 	 * 添加一个任务到队列
 	 * @param runnable 任务执行过程

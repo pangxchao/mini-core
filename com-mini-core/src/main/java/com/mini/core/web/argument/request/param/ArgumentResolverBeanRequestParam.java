@@ -15,13 +15,13 @@ public final class ArgumentResolverBeanRequestParam extends ArgumentResolverBean
 	public ArgumentResolverBeanRequestParam(Configures configures) {
 		super(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestParam param = parameter.getAnnotation(RequestParam.class);
 		return param != null && super.supportParameter(parameter);
 	}
-	
+
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterValues(name);

@@ -89,6 +89,6 @@ public abstract class XAbstract<V, T extends XAbstract<V, T>> {
 	@Override
 	public final String toString() {
 		return isNull() ? "Null" ://
-			value.toString();
+				value.toString();
 	}
 }

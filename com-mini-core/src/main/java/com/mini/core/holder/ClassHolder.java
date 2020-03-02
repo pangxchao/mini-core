@@ -58,6 +58,7 @@ public final class ClassHolder<T> implements Serializable, EventListener {
 	public final T createInstance() {
 		try {
 			var constructor = type.getConstructor();
+			constructor.setAccessible(true);
 			return constructor.newInstance();
 		} catch (ReflectiveOperationException e) {
 			throw ThrowsUtil.hidden(e);

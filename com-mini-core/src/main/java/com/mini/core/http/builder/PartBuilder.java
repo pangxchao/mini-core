@@ -105,7 +105,8 @@ public final class PartBuilder<T> extends AbstractBuilder<T> {
 		}));
 	}
 
-	public PartBuilder<T> addPart(String name, String fileName, String contentType, long contentLength, InputStream content) {
+	public PartBuilder<T> addPart(String name, String fileName, String contentType, long contentLength,
+			InputStream content) {
 		return addPart(MultipartBody.Part.createFormData(name, fileName, new RequestBody() {
 			public MediaType contentType() {
 				if (StringUtils.isNotBlank(contentType)) {

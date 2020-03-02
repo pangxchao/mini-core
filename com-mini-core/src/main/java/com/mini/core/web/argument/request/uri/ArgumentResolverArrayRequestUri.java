@@ -15,18 +15,18 @@ import static java.util.Optional.ofNullable;
 
 @Singleton
 public final class ArgumentResolverArrayRequestUri extends ArgumentResolverArray {
-	
+
 	@Inject
 	public ArgumentResolverArrayRequestUri(Configures configures) {
 		super(configures);
 	}
-	
+
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		RequestUri param = parameter.getAnnotation(RequestUri.class);
 		return param != null && super.supportParameter(parameter);
 	}
-	
+
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
@@ -36,10 +36,10 @@ public final class ArgumentResolverArrayRequestUri extends ArgumentResolverArray
 		}
 		return param.value();
 	}
-	
+
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return ofNullable(invocation.getUriParameters().get(name))
-			.stream().toArray(String[]::new);
+				.stream().toArray(String[]::new);
 	}
 }

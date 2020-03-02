@@ -152,8 +152,32 @@ public final class GroovyUtil implements Serializable, EventListener {
 		return get("javax.inject", "Named");
 	}
 
+	public static ClassName lombokEqualsAndHashCodeClass() {
+		return get("lombok", "EqualsAndHashCode");
+	}
+
+	public static ClassName lombokSuperBuilderClass() {
+		return get("lombok.experimental", "SuperBuilder");
+	}
+
+	public static ClassName lombokToStringClass() {
+		return get("lombok", "ToString");
+	}
+
+	public static ClassName lombokGetterClass() {
+		return get("lombok", "Getter");
+	}
+
+	public static ClassName lombokSetterClass() {
+		return get("lombok", "Setter");
+	}
+
 	public static ClassName lombokDataClass() {
 		return get("lombok", "Data");
+	}
+
+	public static ClassName lombokTolerateClass() {
+		return get("lombok.experimental", "Tolerate");
 	}
 
 	public static String beanName(TableInfo table) {

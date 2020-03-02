@@ -9,12 +9,12 @@ public final class ValidateUtil {
 	public static final String ID_CARD = "\\d{15}(\\d{2}[A-Za-z0-9])?";
 	public static final String EMAIL = "\\S+[@]\\S+[.]\\S+";
 	public static final String CHINESE = "[\u4E00-\u9FA5]+";
-	
+
 	public static final String REQUIRE = "[a-z_][a-z0-9_]*";
 	public static final String MOBILE = "1\\d{10}";
 	public static final String NUMBER = "\\d+";
 	public static final String LETTER = "\\w+";
-	
+
 	/**
 	 * 设置错误码和错误消息
 	 * @param error   错误码
@@ -23,7 +23,7 @@ public final class ValidateUtil {
 	public static void sendError(int error, String message) {
 		throw new ValidateException(error, message);
 	}
-	
+
 	/**
 	 * 设置错误码和错误消息
 	 * @param error 错误码
@@ -31,7 +31,7 @@ public final class ValidateUtil {
 	public static void sendError(int error) {
 		sendError(error, null);
 	}
-	
+
 	/**
 	 * 验证表达式/传入参数是否为true
 	 * @param validate 表达式/传入参
@@ -41,7 +41,7 @@ public final class ValidateUtil {
 	public static void is(boolean validate, int error, String message) {
 		if (!validate) sendError(error, message);
 	}
-	
+
 	/**
 	 * 验证表达式/传入参数是否为true
 	 * @param validate 表达式/传入参
@@ -50,7 +50,7 @@ public final class ValidateUtil {
 	public static void is(boolean validate, int error) {
 		is(validate, error, null);
 	}
-	
+
 	/**
 	 * 验证字符串与正则表达式是否匹配
 	 * @param string  字符串
@@ -61,7 +61,7 @@ public final class ValidateUtil {
 	public static void isRegex(String string, String regex, int error, String message) {
 		is(string != null && string.matches(regex), error, message);
 	}
-	
+
 	/**
 	 * 验证字符串与正则表达式是否匹配
 	 * @param string 字符串
@@ -71,7 +71,7 @@ public final class ValidateUtil {
 	public static void isRegex(String string, String regex, int error) {
 		isRegex(string, regex, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否有值
 	 * @param string  传入字符串
@@ -81,7 +81,7 @@ public final class ValidateUtil {
 	public static void isNotBlank(String string, int error, String message) {
 		is(StringUtils.isNotBlank(string), error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否有值
 	 * @param string 传入字符串
@@ -90,8 +90,8 @@ public final class ValidateUtil {
 	public static void isNotBlank(String string, int error) {
 		isNotBlank(string, error, null);
 	}
-	
-	
+
+
 	/**
 	 * 验证传入对象是否为空
 	 * @param object  传入对象
@@ -101,7 +101,7 @@ public final class ValidateUtil {
 	public static void isNotNull(Object object, int error, String message) {
 		is(object != null, error, message);
 	}
-	
+
 	/**
 	 * 验证传入对象是否为空
 	 * @param object 传入对象
@@ -110,7 +110,7 @@ public final class ValidateUtil {
 	public static void isNotNull(Object object, int error) {
 		isNotNull(object, error, null);
 	}
-	
+
 	/**
 	 * 验证传入对象是否为空
 	 * @param object  传入对象
@@ -120,7 +120,7 @@ public final class ValidateUtil {
 	public static void isNull(Object object, int error, String message) {
 		is(object == null, error, message);
 	}
-	
+
 	/**
 	 * 验证传入对象是否为空
 	 * @param object 传入对象
@@ -129,7 +129,7 @@ public final class ValidateUtil {
 	public static void isNull(Object object, int error) {
 		isNull(object, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为邮箱格式
 	 * @param string  传入字符串
@@ -139,7 +139,7 @@ public final class ValidateUtil {
 	public static void isEmail(String string, int error, String message) {
 		isRegex(string, EMAIL, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为邮箱格式
 	 * @param string 传入字符串
@@ -148,7 +148,7 @@ public final class ValidateUtil {
 	public static void isEmail(String string, int error) {
 		isEmail(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为电话号码
 	 * @param string  传入字符串
@@ -158,7 +158,7 @@ public final class ValidateUtil {
 	public static void isPhone(String string, int error, String message) {
 		isRegex(string, PHONE, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为电话号码
 	 * @param string 传入字符串
@@ -167,7 +167,7 @@ public final class ValidateUtil {
 	public static void isPhone(String string, int error) {
 		isPhone(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为手机号
 	 * @param string  传入字符串
@@ -177,7 +177,7 @@ public final class ValidateUtil {
 	public static void isMobile(String string, int error, String message) {
 		isRegex(string, MOBILE, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为手机号
 	 * @param string 传入字符串
@@ -186,7 +186,7 @@ public final class ValidateUtil {
 	public static void isMobile(String string, int error) {
 		isMobile(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为手机号或者电话号码
 	 * @param string  传入字符串
@@ -196,16 +196,16 @@ public final class ValidateUtil {
 	public static void isMobilePhone(String string, int error, String message) {
 		is(string != null && (string.matches(MOBILE) || string.matches(PHONE)), error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为手机号或者电话号码
 	 * @param string 传入字符串
 	 * @param error  错误码
 	 */
 	public static void isMobilePhone(String string, int error) {
-		isMobile(string, error, null);
+		isMobilePhone(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为纯英文字母
 	 * @param string  传入字符串
@@ -215,7 +215,7 @@ public final class ValidateUtil {
 	public static void isLetter(String string, int error, String message) {
 		isRegex(string, LETTER, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为纯英文字母
 	 * @param string 传入字符串
@@ -224,7 +224,7 @@ public final class ValidateUtil {
 	public static void isLetter(String string, int error) {
 		isLetter(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为纯数字
 	 * @param string  传入字符串
@@ -234,7 +234,7 @@ public final class ValidateUtil {
 	public static void isNumber(String string, int error, String message) {
 		isRegex(string, NUMBER, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为纯数字
 	 * @param string 传入字符串
@@ -243,7 +243,7 @@ public final class ValidateUtil {
 	public static void isNumber(String string, int error) {
 		isNull(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为纯中文
 	 * @param string  传入字符串
@@ -253,7 +253,7 @@ public final class ValidateUtil {
 	public static void isChinese(String string, int error, String message) {
 		isRegex(string, CHINESE, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为纯中文
 	 * @param string 传入字符串
@@ -262,7 +262,7 @@ public final class ValidateUtil {
 	public static void isChinese(String string, int error) {
 		isChinese(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为身份证号码
 	 * @param string  传入字符串
@@ -272,7 +272,7 @@ public final class ValidateUtil {
 	public static void isIdCard(String string, int error, String message) {
 		isRegex(string, ID_CARD, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为身份证号码
 	 * @param string 传入字符串
@@ -281,7 +281,7 @@ public final class ValidateUtil {
 	public static void isIdCard(String string, int error) {
 		isIdCard(string, error, null);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为字母、数字和下划线组成,数字不能开头
 	 * @param string  传入字符串
@@ -291,7 +291,7 @@ public final class ValidateUtil {
 	public static void isRequire(String string, int error, String message) {
 		isRegex(string, ID_CARD, error, message);
 	}
-	
+
 	/**
 	 * 验证传入字符串是否为字母、数字和下划线组成,数字不能开头
 	 * @param string 传入字符串

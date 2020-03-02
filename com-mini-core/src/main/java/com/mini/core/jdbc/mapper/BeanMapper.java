@@ -2,6 +2,7 @@ package com.mini.core.jdbc.mapper;
 
 import com.mini.core.holder.ClassHolder;
 import com.mini.core.holder.FieldHolder;
+import com.mini.core.jdbc.util.JdbcUtil;
 import com.mini.core.util.ThrowsUtil;
 
 import javax.annotation.Nonnull;
@@ -10,11 +11,15 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.mini.core.jdbc.util.JdbcUtil.getObject;
 import static com.mini.core.jdbc.util.JdbcUtil.lookupColumnName;
 import static java.lang.Class.forName;
 import static java.util.Optional.ofNullable;
@@ -27,14 +32,49 @@ import static org.apache.commons.lang3.Validate.isTrue;
 @Singleton
 public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializable {
 	private static final Map<Class<?>, Mapper<?>> MAP = new ConcurrentHashMap<>();
+	private static final Map<Class<?>, ResultSetCall> RES = new HashMap<>() {{
+		this.put(String.class, JdbcUtil::getString);
+		this.put(Long.class, JdbcUtil::getOLong);
+		this.put(long.class, JdbcUtil::getLong);
+		this.put(Integer.class, JdbcUtil::getInteger);
+		this.put(int.class, JdbcUtil::getInt);
+		this.put(Short.class, JdbcUtil::getOShort);
+		this.put(short.class, JdbcUtil::getShort);
+		this.put(Byte.class, JdbcUtil::getOByte);
+		this.put(byte.class, JdbcUtil::getByte);
+		this.put(Double.class, JdbcUtil::getODouble);
+		this.put(double.class, JdbcUtil::getDouble);
+		this.put(Float.class, JdbcUtil::getOFloat);
+		this.put(float.class, JdbcUtil::getFloat);
+		this.put(Boolean.class, JdbcUtil::getOBoolean);
+		this.put(boolean.class, JdbcUtil::getBoolean);
+		this.put(byte[].class, JdbcUtil::getBytes);
+		this.put(Date.class, JdbcUtil::getTimestamp);
+		this.put(java.sql.Timestamp.class, JdbcUtil::getTimestamp);
+		this.put(java.sql.Date.class, JdbcUtil::getDate);
+		this.put(java.sql.Time.class, JdbcUtil::getTime);
+		this.put(LocalDateTime.class, (rs, columnIndex) -> {
+			var value = JdbcUtil.getTimestamp(rs, columnIndex);
+			return value == null ? null : value.toLocalDateTime();
+		});
+		this.put(LocalDate.class, (rs, columnIndex) -> {
+			var value = JdbcUtil.getDate(rs, columnIndex);
+			return value == null ? null : value.toLocalDate();
+		});
+		this.put(LocalTime.class, (rs, columnIndex) -> {
+			var value = JdbcUtil.getTime(rs, columnIndex);
+			return value == null ? null : value.toLocalTime();
+		});
+	}};
+	private static final ResultSetCall DEF = JdbcUtil::getObject;
 	private static final String $MAPPER$ = "_$$$MAPPER$$$";
 	private final ClassHolder<T> holder;
-	
+
 	private BeanMapper(@Nonnull Class<T> type) {
 		holder = ClassHolder.create(type);
 		isTrue(holder != null && holder.hasTable());
 	}
-	
+
 	@Nonnull
 	@Override
 	public T get(ResultSet rs, int number) throws SQLException {
@@ -45,13 +85,15 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			try {
 				if (!holder.hasColumn(name)) continue;
 				FieldHolder<T> h = holder.getColumn(name);
-				var o = getObject(rs, i, h.getFieldType());
-				h.setValue(result, o);
-			} catch (Exception ignored) {}
+				// 获取数据库查询出来的值
+				var res = RES.getOrDefault(h.getFieldType(), DEF);
+				h.setValue(result, res.apply(rs, i));
+			} catch (Exception ignored) {
+			}
 		}
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> Mapper<T> create(Class<T> type) {
 		return (Mapper<T>) MAP.computeIfAbsent(type, key -> {
@@ -59,7 +101,7 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			try {
 				mType = forName(type.getCanonicalName() + BeanMapper.$MAPPER$);
 				ofNullable(mType).filter(Mapper.class::isAssignableFrom)
-					.orElseThrow(NoClassDefFoundError::new);
+						.orElseThrow(NoClassDefFoundError::new);
 			} catch (ReflectiveOperationException | NoClassDefFoundError e) {
 				mType = BeanMapper.class;
 			}
@@ -70,5 +112,9 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 				throw ThrowsUtil.hidden(e);
 			}
 		});
+	}
+
+	private interface ResultSetCall {
+		Object apply(ResultSet rs, int columnIndex) throws SQLException;
 	}
 }

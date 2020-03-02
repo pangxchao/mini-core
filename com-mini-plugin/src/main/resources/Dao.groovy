@@ -13,13 +13,13 @@ ClassName implementedByClass = ClassName.get('com.google.inject', 'ImplementedBy
 TableInfo info = tableInfo
 
 return JavaFile.builder(GroovyUtil.daoPackage(info),
-	TypeSpec.interfaceBuilder(GroovyUtil.daoName(info))
-		.addModifiers(PUBLIC)
-		.addSuperinterface(GroovyUtil.daoBaseClass(info))
-		.addJavadoc('$L Dao \n', info.getComment())
-		.addJavadoc('@author xchao \n')
-		.addAnnotation(AnnotationSpec.builder(implementedByClass)
-			.addMember('value', '$T.class', GroovyUtil.daoImplClass(info))
-			.build())
-		.build())
-	.build()
+		TypeSpec.interfaceBuilder(GroovyUtil.daoName(info))
+				.addModifiers(PUBLIC)
+				.addSuperinterface(GroovyUtil.daoBaseClass(info))
+				.addJavadoc('$L Dao \n', info.getComment())
+				.addJavadoc('@author xchao \n')
+				.addAnnotation(AnnotationSpec.builder(implementedByClass)
+						.addMember('value', '$T.class', GroovyUtil.daoImplClass(info))
+						.build())
+				.build())
+		.build()

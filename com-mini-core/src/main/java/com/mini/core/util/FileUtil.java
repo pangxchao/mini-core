@@ -55,7 +55,7 @@ public final class FileUtil {
 		// 循环检查文件是否存在，并返回第一个不存在文件对象
 		for (int i = 1; isDistinct && file.exists(); i++) {
 			file = new File(p, String.format("%s(%d).%s", //
-				nameWithoutExt, i, fileExt));
+					nameWithoutExt, i, fileExt));
 		}
 		return file;
 	}

@@ -92,7 +92,8 @@ public abstract class AbstractBuilder<T> {
 	}
 
 	/** 全局设置 */
-	public final AbstractBuilder<T> sslSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) {
+	public final AbstractBuilder<T> sslSocketFactory(SSLSocketFactory sslSocketFactory,
+			X509TrustManager trustManager) {
 		HTTP_CLIENT.sslSocketFactory(sslSocketFactory, trustManager);
 		return this;
 	}
@@ -337,7 +338,8 @@ public abstract class AbstractBuilder<T> {
 	}
 
 	/** Part Request */
-	public AbstractBuilder<T> addPart(String name, String fileName, String contentType, long contentLength, InputStream content) {
+	public AbstractBuilder<T> addPart(String name, String fileName, String contentType, long contentLength,
+			InputStream content) {
 		throw new UnsupportedOperationException();
 	}
 

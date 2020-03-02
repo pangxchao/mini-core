@@ -36,7 +36,7 @@ public class Size implements Serializable {
 	 */
 	public Size set(double width, double height) {
 		this.height = height;
-		this.width  = width;
+		this.width = width;
 		return this;
 	}
 

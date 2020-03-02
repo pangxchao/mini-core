@@ -235,7 +235,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		table.builder(builder);
 		columns.builder(builder);
 		values.builder(builder);
-		builder.append("ON DUPLICATE KEY UPDATE ");
+		builder.append(" ON DUPLICATE KEY UPDATE ");
 		for (int i = 0; i < columns.values.size(); i++) {
 			if (i > 0) builder.append(", ");
 			String column = columns.values.get(i);

@@ -111,7 +111,6 @@
 			<version>${guice.version}</version>
 		</dependency>
 		
-		
 		<!-- Freemarker 模板工具 -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -132,7 +131,13 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.3.0-alpha5</version>
 		</dependency>
-		
+
+		<!-- 自动生成 Getter Setter 依赖-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.10</version>
+		</dependency>
 		
 	</dependencies>
 	

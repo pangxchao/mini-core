@@ -15,7 +15,7 @@ public abstract class BaseMac extends SecurityBase<BaseMac> {
 	private final Mac mac;
 
 	public BaseMac(String algorithm) throws Exception {
-		this.mac       = getInstance(algorithm);
+		this.mac = getInstance(algorithm);
 		this.algorithm = algorithm;
 	}
 

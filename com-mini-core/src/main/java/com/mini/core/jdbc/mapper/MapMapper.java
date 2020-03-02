@@ -14,9 +14,9 @@ import java.util.HashMap;
  */
 public final class MapMapper implements Mapper<HashMap<String, Object>> {
 	private static final MapMapper INSTANCE = new MapMapper();
-	
+
 	private MapMapper() {}
-	
+
 	@Nonnull
 	@Override
 	public HashMap<String, Object> get(ResultSet rs, int number) throws SQLException {
@@ -28,11 +28,11 @@ public final class MapMapper implements Mapper<HashMap<String, Object>> {
 		}
 		return value;
 	}
-	
+
 	private Object getColumnValue(ResultSet rs, int index) throws SQLException {
 		return JdbcUtil.getObject(rs, index);
 	}
-	
+
 	public static Mapper<HashMap<String, Object>> create() {
 		return INSTANCE;
 	}

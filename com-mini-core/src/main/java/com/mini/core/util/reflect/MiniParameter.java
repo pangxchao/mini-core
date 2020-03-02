@@ -13,7 +13,7 @@ public class MiniParameter implements EventListener {
 
 	public MiniParameter(Parameter parameter, String name) {
 		this.parameter = parameter;
-		this.name      = name;
+		this.name = name;
 	}
 
 	public Parameter getParameter() {
