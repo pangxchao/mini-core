@@ -41,13 +41,15 @@ return JavaFile.builder(beanPackage(info),
 
 				// 生成字段常量
 				.forAdd(info.getColumnList(), { builder, column ->
-					builder.addField(FieldSpec.builder(String.class, column.getColumnName().toUpperCase())
-							.addModifiers(PUBLIC, STATIC, FINAL)
-							.initializer('$S ', column.getColumnName())
-							.addAnnotation(AnnotationSpec.builder(commentClass())
-									.addMember('value', '$S', column.getComment())
-									.build())
-							.build())
+					builder.ifAdd(!column.isExt(),{it->
+						builder.addField(FieldSpec.builder(String.class, column.getColumnName().toUpperCase())
+								.addModifiers(PUBLIC, STATIC, FINAL)
+								.initializer('$S ', column.getColumnName())
+								.addAnnotation(AnnotationSpec.builder(commentClass())
+										.addMember('value', '$S', column.getComment())
+										.build())
+								.build())
+					})
 				})
 
 				// 生成属性信息
@@ -68,7 +70,7 @@ return JavaFile.builder(beanPackage(info),
 									v.addAnnotation(lockClass())
 								})
 								// @Auto 注解
-								.ifAdd(column.isLock(), { v ->
+								.ifAdd(column.isAuto(), { v ->
 									v.addAnnotation(autoClass())
 								})
 								// @CreateAt 注解

@@ -8,13 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static java.lang.String.valueOf;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * 数据模型渲染器模板
@@ -47,9 +45,10 @@ public abstract class IModel<T extends IModel<T>> implements Serializable, Respo
 	 * @return 错误码
 	 */
 	public final int getStatus() {
-		return Optional.of(status)
-				.filter(v -> v >= 0)
-				.orElse(200);
+		if (this.status == 0) {
+			return OK;
+		}
+		return this.status;
 	}
 
 	/**
@@ -59,10 +58,9 @@ public abstract class IModel<T extends IModel<T>> implements Serializable, Respo
 	@Nonnull
 	public final String getMessage() {
 		return ofNullable(bundle).map(b -> {
-			String code = valueOf(status);
+			var code = valueOf(getStatus());
 			return b.getString(code);
-		}).orElse(message == null //
-				? "" : message);
+		}).orElse(defaultIfEmpty(message, ""));
 	}
 
 	/**
