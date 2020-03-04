@@ -40,6 +40,7 @@ return JavaFile.builder(voBeanPackage(info),
 					builder.ifAdd(column.isRef(), {
 						it.addAnnotation(AnnotationSpec.builder(joinClass())
 								.addMember('column', '$S', column.getColumnName())
+								.addMember('type', '$T.JoinType.LEFT', joinClass())
 								.build())
 					})
 				})
@@ -75,22 +76,31 @@ return JavaFile.builder(voBeanPackage(info),
 				// 生成日期格式化扩展方法
 				.forAdd(info.getColumnList(), { builder, column ->
 					builder.ifAdd(Date.class.isAssignableFrom(getColumnType(column)) && column.isExt(), {
-						builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(column.getFieldName()) + '_DT')
+						builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(
+								column.getFieldName()) + '_DT')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
-								.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(), column.getFieldName())
+								.addStatement('if($N == null) return null;', column.getFieldName())
+								.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(),
+										column.getFieldName())
 								.build())
 
-						builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(column.getFieldName()) + '_D')
+						builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(
+								column.getFieldName()) + '_D')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
-								.addStatement('return $T.formatDate($N)', dateFormatUtilClass(), column.getFieldName())
+								.addStatement('if($N == null) return null;', column.getFieldName())
+								.addStatement('return $T.formatDate($N)', dateFormatUtilClass(),
+										column.getFieldName())
 								.build())
 
-						builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(column.getFieldName()) + '_T')
+						builder.addMethod(MethodSpecBuilder.methodBuilder('get' + firstUpperCase(
+								column.getFieldName()) + '_T')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
-								.addStatement('return $T.formatTime($N)', dateFormatUtilClass(), column.getFieldName())
+								.addStatement('if($N == null) return null;', column.getFieldName())
+								.addStatement('return $T.formatTime($N)', dateFormatUtilClass(),
+										column.getFieldName())
 								.build())
 					})
 				})

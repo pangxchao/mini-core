@@ -110,6 +110,7 @@ return JavaFile.builder(beanPackage(info),
 								firstUpperCase(column.getFieldName()) + '_DT')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
+								.addStatement('if($N == null) return null;', column.getFieldName())
 								.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(),
 										column.getFieldName())
 								.build())
@@ -118,6 +119,7 @@ return JavaFile.builder(beanPackage(info),
 								firstUpperCase(column.getFieldName()) + '_D')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
+								.addStatement('if($N == null) return null;', column.getFieldName())
 								.addStatement('return $T.formatDate($N)', dateFormatUtilClass(),
 										column.getFieldName())
 								.build())
@@ -126,6 +128,7 @@ return JavaFile.builder(beanPackage(info),
 								firstUpperCase(column.getFieldName()) + '_T')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
+								.addStatement('if($N == null) return null;', column.getFieldName())
 								.addStatement('return $T.formatTime($N)', dateFormatUtilClass(),
 										column.getFieldName())
 								.build())
