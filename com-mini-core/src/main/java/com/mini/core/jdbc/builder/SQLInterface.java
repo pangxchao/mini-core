@@ -39,7 +39,7 @@ public interface SQLInterface extends Serializable, EventListener {
 	 * @param builder  {@link SQLBuilder}
 	 * @param instance 实例
 	 */
-	<T> void createInsertOrUpdate(SQLBuilder builder, T instance);
+	<T> void createInsertOnUpdate(SQLBuilder builder, T instance);
 
 	/**
 	 * 根据类型创建“SELECT”语句-不带ID条件

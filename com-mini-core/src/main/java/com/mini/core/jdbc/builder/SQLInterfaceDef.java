@@ -29,7 +29,9 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		table.replace(builder).columns().stream().filter(h -> {
 			return !h.hasAuto(); //
 		}).forEach(holder -> holder.values(builder, h -> {
-			builder.params(h.getValue(instance));
+			var o = h.hasUpdate() || h.hasCreate() ? //
+					new Date() : h.getValue(instance);
+			builder.params(o);
 		}));
 	}
 
@@ -42,7 +44,9 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		table.insert(builder).columns().stream().filter(h -> {
 			return !h.hasAuto(); //
 		}).forEach(holder -> holder.values(builder, h -> {
-			builder.params(h.getValue(instance));
+			var o = h.hasUpdate() || h.hasCreate() ? //
+					new Date() : h.getValue(instance);
+			builder.params(o);
 		}));
 	}
 
@@ -105,13 +109,21 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> void createInsertOrUpdate(SQLBuilder builder, T instance) {
+	public <T> void createInsertOnUpdate(SQLBuilder builder, T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
 		var table = ClassHolder.create(type).verifyTable();
-		// 添加或者修改所有字段
-		table.insertOrUpdate(builder).columns().forEach(holder ->
-				holder.values(builder, h -> builder.params( //
-						h.getValue(instance))));
+		// 添加除自增长的所有字段
+		table.insert(builder).columns().stream().filter(h -> {
+			return !h.hasAuto(); //
+		}).forEach(holder -> holder.values(builder, h -> {
+			var o = h.hasUpdate() || h.hasCreate() ? //
+					new Date() : h.getValue(instance);
+			builder.params(o);
+		}));
+		// 修改除ID和创建时间以外的所有字段
+		table.columns().stream().filter(h -> {
+			return !h.hasId() && !h.hasCreate(); //
+		}).forEach(h -> h.onDuplicateKeyUpdate(builder));
 	}
 
 	@Override

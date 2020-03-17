@@ -2,21 +2,25 @@ package com.mini.core.web.model;
 
 import com.alibaba.fastjson.JSON;
 import com.mini.core.jdbc.model.Paging;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * JSON类型的数据实现
  * @author xchao
  */
 public class JsonModel extends IModel<JsonModel> implements Serializable {
+	private static final Logger log = getLogger(JsonModel.class);
 	private final Map<String, Object> map = new HashMap<>();
 	private final List<Object> list = new ArrayList<>();
 	private static final long serialVersionUID = 1L;
@@ -158,6 +162,8 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 			}}).toString());
 			response.setStatus(OK);
 			writer.flush();
+		} catch (IOException | Error e) {
+			log.error(e.getMessage());
 		}
 	}
 
@@ -171,6 +177,8 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 			}}).toString());
 			response.setStatus(OK);
 			writer.flush();
+		} catch (IOException | Error e) {
+			log.error(e.getMessage());
 		}
 	}
 }

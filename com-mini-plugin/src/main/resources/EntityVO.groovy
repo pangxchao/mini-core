@@ -80,7 +80,7 @@ return JavaFile.builder(voBeanPackage(info),
 								column.getFieldName()) + '_DT')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
-								.addStatement('if($N == null) return null;', column.getFieldName())
+								.addStatement('if($N == null) return null', column.getFieldName())
 								.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(),
 										column.getFieldName())
 								.build())
@@ -89,7 +89,7 @@ return JavaFile.builder(voBeanPackage(info),
 								column.getFieldName()) + '_D')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
-								.addStatement('if($N == null) return null;', column.getFieldName())
+								.addStatement('if($N == null) return null', column.getFieldName())
 								.addStatement('return $T.formatDate($N)', dateFormatUtilClass(),
 										column.getFieldName())
 								.build())
@@ -98,7 +98,7 @@ return JavaFile.builder(voBeanPackage(info),
 								column.getFieldName()) + '_T')
 								.addModifiers(PUBLIC, FINAL)
 								.returns(String.class)
-								.addStatement('if($N == null) return null;', column.getFieldName())
+								.addStatement('if($N == null) return null', column.getFieldName())
 								.addStatement('return $T.formatTime($N)', dateFormatUtilClass(),
 										column.getFieldName())
 								.build())

@@ -11,8 +11,6 @@ import static org.apache.commons.lang3.StringUtils.*;
  * @author XChao
  */
 public final class WebUtil {
-	public static final String URL_REGEX = "http(s)?://([\\s\\S])+";
-
 	/**
 	 * 获取访问该项目的基础URL
 	 * @param req request 对象

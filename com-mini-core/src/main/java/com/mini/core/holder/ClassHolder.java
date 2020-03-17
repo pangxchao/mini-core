@@ -110,11 +110,6 @@ public final class ClassHolder<T> implements Serializable, EventListener {
 				.orElseThrow();
 	}
 
-	public final ClassHolder<T> insertOrUpdate(SQLBuilder builder) {
-		builder.insertOnDuplicateKeyUpdate(table.value());
-		return this;
-	}
-
 	public final ClassHolder<T> replace(SQLBuilder builder) {
 		builder.replaceInto(table.value());
 		return this;

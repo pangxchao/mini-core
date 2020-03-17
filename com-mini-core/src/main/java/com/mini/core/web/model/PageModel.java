@@ -3,13 +3,17 @@ package com.mini.core.web.model;
 import com.mini.core.jdbc.model.Paging;
 import com.mini.core.validate.ValidateUtil;
 import com.mini.core.web.view.PageViewResolver;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 
 /**
@@ -17,6 +21,7 @@ import java.util.Map;
  * @author xchao
  */
 public class PageModel extends IModel<PageModel> implements Serializable {
+	private static final Logger log = getLogger(PageModel.class);
 	private final Map<String, Object> data = new HashMap<>();
 	private static final long serialVersionUID = 1L;
 	private static final String TYPE = "text/html";
@@ -88,10 +93,14 @@ public class PageModel extends IModel<PageModel> implements Serializable {
 	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
 		ValidateUtil.isNotBlank(viewPath, INTERNAL_SERVER_ERROR, "View path can not be null");
 		// 生成页面
-		data.put("request", request);
-		data.put("response", response);
-		data.put("session", request.getSession());
-		data.put("context", request.getServletContext());
-		view.generator(data, viewPath, request, response);
+		try {
+			data.put("request", request);
+			data.put("response", response);
+			data.put("session", request.getSession());
+			data.put("context", request.getServletContext());
+			view.generator(data, viewPath, request, response);
+		} catch (IOException | Error exception) {
+			log.error(exception.getMessage());
+		}
 	}
 }

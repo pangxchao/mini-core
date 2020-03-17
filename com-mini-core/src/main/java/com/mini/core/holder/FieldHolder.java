@@ -525,7 +525,8 @@ public final class FieldHolder<T> implements Serializable {
 
 	/**
 	 * 添加相等条件限制
-	 * @param builder {@link SQLBuilder}
+	 * @param builder  {@link SQLBuilder}
+	 * @param consumer 获取字段值回调
 	 */
 	public final void whereId(SQLBuilder builder, Consumer<FieldHolder<T>> consumer) {
 		Optional.ofNullable(this.id).ifPresent(lock -> {
@@ -536,7 +537,8 @@ public final class FieldHolder<T> implements Serializable {
 
 	/**
 	 * 添加相等条件限制
-	 * @param builder {@link SQLBuilder}
+	 * @param builder  {@link SQLBuilder}
+	 * @param consumer 获取字段值回调
 	 */
 	public final void whereLock(SQLBuilder builder, Consumer<FieldHolder<T>> consumer) {
 		Optional.ofNullable(this.lock).ifPresent(lock -> {
@@ -547,7 +549,8 @@ public final class FieldHolder<T> implements Serializable {
 
 	/**
 	 * Insert Replace 添加修改字段键值
-	 * @param builder {@link SQLBuilder}
+	 * @param builder  {@link SQLBuilder}
+	 * @param consumer 获取字段值回调
 	 */
 	public final void values(SQLBuilder builder, Consumer<FieldHolder<T>> consumer) {
 		builder.values(this.getColumnName());
@@ -556,11 +559,21 @@ public final class FieldHolder<T> implements Serializable {
 
 	/**
 	 * Update Set 字段键值
-	 * @param builder {@link SQLBuilder}
+	 * @param builder  {@link SQLBuilder}
+	 * @param consumer 获取字段值回调
 	 */
 	public final void set(SQLBuilder builder, Consumer<FieldHolder<T>> consumer) {
 		builder.set("%s = ?", this.getColumnName());
 		consumer.accept(this);
+	}
+
+	/**
+	 * ON DUPLICATE KEY UPDATE 字段值
+	 * @param builder {@link SQLBuilder}
+	 */
+	public final void onDuplicateKeyUpdate(SQLBuilder builder) {
+		builder.onDuplicateKeyUpdate("%s = VALUES(%s)", //
+				getColumnName(), getColumnName());
 	}
 
 	/**

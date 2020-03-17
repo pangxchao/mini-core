@@ -138,11 +138,11 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <T> int insertOrUpdate(T instance) {
+	public final <T> int insertOnUpdate(T instance) {
 		return JdbcTemplate.this.execute(new SQLBuilder() {{
 			var type = (Class<? extends T>) instance.getClass();
 			var inter = SQLInterfaceDef.getSQLInterface(type);
-			inter.createInsertOrUpdate(this, instance);
+			inter.createInsertOnUpdate(this, instance);
 		}});
 	}
 

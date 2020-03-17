@@ -1,25 +1,25 @@
 package com.mini.core.util.tree;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ITree<T extends ITree> {
-	long getId();
+	default void addChild(@Nonnull T child) {
+		if (this.getChildren() == null) {
+			var c = new ArrayList<T>();
+			setChildren(c);
+		}
+		getChildren().add(child);
+	}
 
-	@Nonnull
-	String getName();
+	void setChildren(List<T> children);
+
+	List<T> getChildren();
 
 	Long getParentId();
 
-	@Nonnull
-	List<T> children();
+	String getName();
 
-	default void addChild(@Nonnull T item) {
-		children().add(item);
-	}
-
-	default void setChildren(@Nonnull List<T> children) {
-		ITree.this.children().clear();
-		children().addAll(children);
-	}
+	long getId();
 }

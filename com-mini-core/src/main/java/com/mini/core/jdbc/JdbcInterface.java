@@ -104,7 +104,7 @@ public interface JdbcInterface extends EventListener {
 	 * @param instance 实体信息
 	 * @return 执行结果
 	 */
-	<T> int insertOrUpdate(T instance);
+	<T> int insertOnUpdate(T instance);
 
 	/**
 	 * 查询结果

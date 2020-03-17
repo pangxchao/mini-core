@@ -51,6 +51,7 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 					.flatMap(Collection::stream)
 					.filter(Objects::nonNull)
 					.filter(p -> name.equals(p.getName()))
+					.filter(p -> p.getSize() > 0)
 					.toArray(Part[]::new);
 		} catch (IOException | ServletException ignored) {
 		}

@@ -7,6 +7,8 @@ import com.mini.core.util.StringUtil;
 import com.mini.core.util.ThrowsUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletOutputStream;
@@ -24,6 +26,7 @@ import static java.lang.String.format;
  * @author xchao
  */
 public class StreamModel extends IModel<StreamModel> implements Serializable {
+	private static final Logger log = LoggerFactory.getLogger(StreamModel.class);
 	private static final String MULTIPART_BOUNDARY = "MULTIPART_BOUNDARY";
 	private static final long serialVersionUID = -1731063292578685253L;
 	private static final String TYPE = "application/octet-stream";
@@ -190,6 +193,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			output.println();
 			output.print("--" + MULTIPART_BOUNDARY + "--");
 		} catch (Exception | Error exception) {
+			log.error(exception.getMessage());
 			response.setStatus(500);
 		}
 	}

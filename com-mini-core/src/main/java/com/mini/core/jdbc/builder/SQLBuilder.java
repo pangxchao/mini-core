@@ -14,6 +14,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.addAll;
 
 public class SQLBuilder implements EventListener, Serializable {
+	private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatement();
 	private final OuterJoinStatement outerJoin = new OuterJoinStatement();
 	private final RightJoinStatement rightJoin = new RightJoinStatement();
 	private final LeftJoinStatement leftJoin = new LeftJoinStatement();
@@ -79,11 +80,6 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 
-	public final SQLBuilder insertOnDuplicateKeyUpdate(String table) {
-		this.statement = StatementType.INSERT_UPDATE;
-		return this;
-	}
-
 	public final SQLBuilder select_distinct(String... columns) {
 		SQLBuilder.this.distinct = true;
 		this.select(columns);
@@ -127,6 +123,12 @@ public class SQLBuilder implements EventListener, Serializable {
 
 	public final SQLBuilder set(String format, Object... args) {
 		this.set.addValues(format(format, args));
+		return this;
+	}
+
+	public final SQLBuilder onDuplicateKeyUpdate(String format, Object... args) {
+		this.onDuplicateKeyUpdate.addValues(format(format, args));
+		this.statement = StatementType.INSERT_UPDATE;
 		return this;
 	}
 
@@ -229,19 +231,13 @@ public class SQLBuilder implements EventListener, Serializable {
 		return builder.toString(); //
 	}
 
-	private String insertOrUpdateString() throws Error {
+	private String insertOnUpdateString() throws Error {
 		StringBuilder builder = new StringBuilder();
 		builder.append("INSERT INTO ");
 		table.builder(builder);
 		columns.builder(builder);
 		values.builder(builder);
-		builder.append(" ON DUPLICATE KEY UPDATE ");
-		for (int i = 0; i < columns.values.size(); i++) {
-			if (i > 0) builder.append(", ");
-			String column = columns.values.get(i);
-			builder.append(format("%s = VALUES(%s)",
-					column, column));
-		}
+		onDuplicateKeyUpdate.builder(builder);
 		return builder.toString(); //
 	}
 
@@ -277,7 +273,7 @@ public class SQLBuilder implements EventListener, Serializable {
 
 		// INSERT INTO OR ON DUPLICATE KEY UPDATE
 		if (statement == StatementType.INSERT_UPDATE) {
-			return this.insertOrUpdateString();
+			return this.insertOnUpdateString();
 		}
 
 		// statement为空，语句错误
@@ -488,6 +484,22 @@ public class SQLBuilder implements EventListener, Serializable {
 
 		private SetStatement() {
 			super(SET, ", ");
+		}
+
+		@Nonnull
+		protected final String getOpen() {
+			return "";
+		}
+
+		@Nonnull
+		protected final String getClose() {
+			return " ";
+		}
+	}
+
+	private static class OnDuplicateKeyUpdateStatement extends BaseStatement {
+		protected OnDuplicateKeyUpdateStatement() {
+			super("\nON DUPLICATE KEY UPDATE ", ",");
 		}
 
 		@Nonnull

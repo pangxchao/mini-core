@@ -43,9 +43,12 @@ public @interface Action {
 	 */
 	Method[] method() default {
 			Method.GET,
+			Method.HEAD,
 			Method.POST,
 			Method.PUT,
-			Method.DELETE
+			Method.DELETE,
+			Method.OPTIONS,
+			Method.TRACE
 	};
 
 	/**

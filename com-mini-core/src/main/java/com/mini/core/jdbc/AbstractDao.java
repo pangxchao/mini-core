@@ -73,8 +73,8 @@ public abstract class AbstractDao implements JdbcInterface {
 	}
 
 	@Override
-	public final <T> int insertOrUpdate(T instance) {
-		return writeTemplate().insertOrUpdate(instance);
+	public final <T> int insertOnUpdate(T instance) {
+		return writeTemplate().insertOnUpdate(instance);
 	}
 
 	@Override

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>core</artifactId>
 	<groupId>com.mini</groupId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
-	
+
 	<!-- 项目名称自己说明 -->
 	<name>com-mini-core</name>
 	<description>com mini core</description>
-	
+
 	<!-- 基础属性配置 -->
 	<properties>
 		<java.version>11</java.version>
@@ -23,7 +23,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-	
+
 	<!-- 依赖配置 -->
 	<dependencies>
 		<!-- 公共工具包依赖 -->
@@ -32,14 +32,14 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.9</version>
 		</dependency>
-		
+
 		<!-- Google 自动初始化工具 -->
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
 			<version>1.0-rc6</version>
 		</dependency>
-		
+
 		<!-- servlet api -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -47,84 +47,90 @@
 			<version>4.0.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- 依赖注入实现标准 -->
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
 		</dependency>
-		
+
 		<!-- 切面编程 AOP 实现标准 -->
 		<dependency>
 			<groupId>aopalliance</groupId>
 			<artifactId>aopalliance</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
+
 		<!-- 事务管理 API 标准 -->
 		<dependency>
 			<groupId>javax.transaction</groupId>
 			<artifactId>transaction-api</artifactId>
 			<version>1.1</version>
 		</dependency>
-		
+
 		<!-- Json 处理工具 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.47</version>
 		</dependency>
-		
+
 		<!-- Http 处理工具 -->
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
 			<version>3.12.0</version>
 		</dependency>
-		
+
 		<!-- OkIo IO处理工具 -->
 		<dependency>
 			<groupId>com.squareup.okio</groupId>
 			<artifactId>okio</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-		
+
 		<!-- JAVA 字节码处理 -->
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-tree</artifactId>
 			<version>7.1</version>
 		</dependency>
-		
+
 		<!-- 谷歌依赖注入实现 -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>${guice.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		
+
 		<!-- 谷歌Set，Map 依赖注入实现 -->
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-multibindings</artifactId>
 			<version>${guice.version}</version>
 		</dependency>
-		
+
 		<!-- Freemarker 模板工具 -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.29</version>
 		</dependency>
-		
+
 		<!-- slf4j 日志框架 -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>2.0.0-alpha1</version>
 		</dependency>
-		
+
 		<!-- logback 日志框架 -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -138,9 +144,8 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.10</version>
 		</dependency>
-		
 	</dependencies>
-	
+
 	<!-- 插件配置 -->
 	<build>
 		<defaultGoal>compile</defaultGoal>
@@ -189,7 +194,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<!-- 私有仓库配置 -->
 	<distributionManagement>
 		<repository>
