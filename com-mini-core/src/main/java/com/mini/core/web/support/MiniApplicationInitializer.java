@@ -30,7 +30,6 @@ import com.mini.core.web.interceptor.I18nActionInterceptor;
 import com.mini.core.web.model.IModel;
 import com.mini.core.web.servlet.DispatcherHttpServlet;
 import com.mini.core.web.support.config.Configures;
-import com.mini.core.web.view.PageViewResolver;
 import com.mini.core.web.view.PageViewResolverFreemarker;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -187,7 +186,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 			WebApplicationInitializer config) {
 		// 获取需要扫描的所有包
 		Stream.concat(of(config.getClass().getPackageName()),
-				Optional.ofNullable(config.getClass()
+				ofNullable(config.getClass()
 						.getAnnotation(ComponentScan.class))
 						.map(ComponentScan::value)
 						.stream()
@@ -228,32 +227,34 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 
 						@Nonnull
 						@Override
-						public Class<?> getClazz() {
+						public final Class<?> getClazz() {
 							return clazz;
 						}
 
 						@Nonnull
 						@Override
-						public Method getMethod() {
+						public final Method getMethod() {
 							return method;
 						}
 
 						@Nonnull
 						@Override
-						public IModel<?> getModel(PageViewResolver resolver) {
-							return action.value().getModel(resolver, getViewPath());
+						public final IModel<?> getModel() {
+							return ofNullable(injector.getInstance(action.value()))
+									.map(v -> v.setViewPath(getViewPath()))
+									.orElseThrow();
 						}
 
 						@Nonnull
 						@Override
-						public Action.Method[] getSupportMethod() {
+						public final Action.Method[] getSupportMethod() {
 							return action.method();
 						}
 
 						@Nonnull
 						@Override
-						public List<ActionInterceptor> getInterceptors() {
-							return Optional.ofNullable(interceptors).orElseGet(() -> {
+						public final List<ActionInterceptor> getInterceptors() {
+							return ofNullable(interceptors).orElseGet(() -> {
 								synchronized(this) {
 									// 创建拦截器列表实例
 									interceptors = new ArrayList<>();
@@ -285,35 +286,32 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 
 						@Nonnull
 						@Override
-						public MiniParameter[] getParameters() {
+						public final MiniParameter[] getParameters() {
 							return parameters;
 						}
 
 						@Nonnull
 						@Override
-						public ParameterHandler[] getParameterHandlers() {
-							return Optional.ofNullable(handlers).orElseGet(() -> {
-								synchronized(this) {
-									handlers = of(getParameters()).map(param ->
-											configure.getArgumentResolvers().stream()
-													.filter(r -> r.supportParameter(param))
-													.findAny()
-													.map(r -> new ParameterHandler(r, param))
-													.orElseThrow(() -> new NullPointerException( //
-															"Unsupported parameter:" + param)))
-											.toArray(ParameterHandler[]::new);
-									return handlers;
-								}
-							});
+						public final ParameterHandler[] getParameterHandlers() {
+							return ofNullable(handlers).orElseGet(this::getHandlers);
+						}
+
+						private synchronized ParameterHandler[] getHandlers() {
+							handlers = Stream.of(getParameters()).map(param -> configure.getArgumentResolvers()
+									.stream().filter(r -> r.supportParameter(param)).findAny()
+									.map(r -> new ParameterHandler(injector, r, param))
+									.orElseThrow(() -> new NullPointerException("Unsupported parameter:" + param)))
+									.toArray(ParameterHandler[]::new);
+							return handlers;
 						}
 
 						@Override
-						public String getViewPath() {
+						public final String getViewPath() {
 							return path;
 						}
 
 						@Override
-						public String getRequestUri() {
+						public final String getRequestUri() {
 							return requestUri;
 						}
 					});

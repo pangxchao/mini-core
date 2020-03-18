@@ -1,6 +1,6 @@
 package com.mini.core.web.annotation;
 
-import com.mini.core.web.model.factory.ModelType;
+import com.mini.core.web.model.IModel;
 
 import java.lang.annotation.*;
 
@@ -17,7 +17,7 @@ public @interface Action {
 	 * 返回数据类型
 	 * @return 数据类型
 	 */
-	ModelType value() default ModelType.PAGE;
+	Class<? extends IModel<?>> value();
 
 	/**
 	 * 访问地址

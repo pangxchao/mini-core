@@ -1,11 +1,13 @@
 package com.mini.core.web.model;
 
+import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,13 +30,15 @@ public abstract class IModel<T extends IModel<T>> implements Serializable, Respo
 	private String contentType, viewPath, message;
 	private long lastModified = -1;
 	private ResourceBundle bundle;
+	private Configures configures;
 	private int status = OK;
 	private String eTag;
+
 
 	public IModel() {
 	}
 
-	public IModel(String contentType) {
+	protected IModel(String contentType) {
 		setContentType(contentType);
 	}
 
@@ -53,6 +57,14 @@ public abstract class IModel<T extends IModel<T>> implements Serializable, Respo
 			return OK;
 		}
 		return this.status;
+	}
+
+	/**
+	 * 全局配置信息
+	 * @return 全局配置信息
+	 */
+	public final Configures getConfigures() {
+		return configures;
 	}
 
 	/**
@@ -102,6 +114,17 @@ public abstract class IModel<T extends IModel<T>> implements Serializable, Respo
 	 */
 	public T setViewPath(@Nonnull String viewPath) {
 		this.viewPath = viewPath;
+		return model();
+	}
+
+	/**
+	 * 全局配置信息
+	 * @param configures 全局配置信息
+	 * @return @this
+	 */
+	@Inject
+	public final T setConfigures(Configures configures) {
+		this.configures = configures;
 		return model();
 	}
 

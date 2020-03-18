@@ -1,5 +1,6 @@
 package com.mini.core.web.support;
 
+import com.google.inject.Injector;
 import com.mini.core.holder.web.*;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.annotation.Action;
@@ -8,7 +9,6 @@ import com.mini.core.web.interceptor.ActionInterceptor;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.model.IModel;
 import com.mini.core.web.util.ResponseCode;
-import com.mini.core.web.view.PageViewResolver;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -35,11 +35,10 @@ public interface ActionSupportProxy {
 
 	/**
 	 * 获取数据模型实现类型
-	 * @param resolver 视图解析器
 	 * @return 数据模型实现类型
 	 */
 	@Nonnull
-	IModel<?> getModel(PageViewResolver resolver);
+	IModel<?> getModel();
 
 	/**
 	 * 获取控制器支持的方法
@@ -93,12 +92,13 @@ public interface ActionSupportProxy {
 		private final IsMobile isMobile;
 		private final IsNumber isNumber;
 		private final IsIdCard isIdCard;
+		private final Injector injector;
 		private final IsPhone isPhone;
 		private final IsEmail isEmail;
 		private final IsRegex isRegex;
 		private final Is $is;
 
-		public ParameterHandler(@Nonnull ArgumentResolver resolver,
+		public ParameterHandler(@Nonnull Injector injector, @Nonnull ArgumentResolver resolver,
 				@Nonnull MiniParameter parameter) {
 			isMobilePhone = parameter.getAnnotation(IsMobilePhone.class);
 			isNotBlank = parameter.getAnnotation(IsNotBlank.class);
@@ -115,6 +115,7 @@ public interface ActionSupportProxy {
 			$is = parameter.getAnnotation(Is.class);
 			this.parameter = parameter;
 			this.resolver = resolver;
+			this.injector = injector;
 		}
 
 		public final Object getValue(ActionInvocation invocation) {
@@ -167,7 +168,10 @@ public interface ActionSupportProxy {
 			}
 			// 自定义验证
 			if ($is != null && ($is.require() || value != null)) {
-				is(true, $is.error(), $is.message());
+				var o = injector.getInstance($is.validator());
+				if (o == null || !o.test(value, invocation)) {
+					sendError($is.error(), $is.message());
+				}
 			}
 			// 字符串非空验证
 			if (Objects.nonNull(ParameterHandler.this.isNotBlank)) {

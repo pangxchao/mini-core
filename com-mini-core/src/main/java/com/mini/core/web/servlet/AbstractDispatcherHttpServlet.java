@@ -12,7 +12,6 @@ import com.mini.core.web.model.IModel;
 import com.mini.core.web.support.ActionSupportProxy;
 import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;
-import com.mini.core.web.view.PageViewResolver;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -139,8 +138,7 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 			uriParam.putAll(matcher.extractVariables(path, uri));
 		}
 		// 获取数据模型实例并验证是否为空
-		PageViewResolver resolver = configure.getPageViewResolver();
-		final IModel<?> model = proxy.getModel(resolver);
+		final IModel<?> model = proxy.getModel();
 		try {
 			// 获取拦截器列表的迭代器对象
 			Iterator<ActionInterceptor> iterator = proxy.getInterceptors().iterator();

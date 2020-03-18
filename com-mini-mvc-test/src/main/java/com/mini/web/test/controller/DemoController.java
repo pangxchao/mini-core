@@ -10,7 +10,6 @@ import com.mini.core.web.annotation.Action;
 import com.mini.core.web.annotation.Controller;
 import com.mini.core.web.model.JsonModel;
 import com.mini.core.web.model.PageModel;
-import com.mini.core.web.model.factory.ModelType;
 import com.mini.web.test.dao.UserDao;
 import com.mini.web.test.entity.User;
 import com.mini.web.test.entity.extend.UserExt;
@@ -38,16 +37,16 @@ import static com.mini.core.validate.ValidateUtil.sendError;
 public class DemoController {
 	@Inject
 	private UserDao userDao;
-	
-	
+
+
 	/**
 	 * 实体列表首页
 	 * @param model 数据模型渲染器
 	 */
-	@Action(url = "index.htm")
+	@Action(value = PageModel.class, url = "index.htm")
 	public void index(PageModel model) {
 	}
-	
+
 	/**
 	 * 实体列表数据分页
 	 * @param model     数据模型渲染器
@@ -64,12 +63,13 @@ public class DemoController {
 	 * @param endTime   开始时间
 	 * @param request   HttpServletRequest
 	 */
-	@Action(value = ModelType.JSON, url = "pages.htm")
-	public void pages(JsonModel model, int page, int limit, String search, int sortType, int phone, int email, int province, int city,
-		int district, LocalDate startTime, LocalDate endTime, HttpServletRequest request) {
+	@Action(value = JsonModel.class, url = "pages.htm")
+	public void pages(JsonModel model, int page, int limit, String search, int sortType, int phone, int email,
+			int province, int city,
+			int district, LocalDate startTime, LocalDate endTime, HttpServletRequest request) {
 		System.out.println("===================back========================");
 		System.out.println(JSON.toJSONString(request.getParameterMap()));
-		
+
 		StringBuilder regionIdUri = new StringBuilder();
 		if (province > 0) {
 			regionIdUri.append(province);
@@ -83,7 +83,8 @@ public class DemoController {
 			regionIdUri.append(district);
 		}
 		System.out.println(regionIdUri.toString());
-		Paging<UserExt> paging = userDao.search(page, limit, search, sortType, phone, email, regionIdUri.toString(), startTime, endTime);
+		Paging<UserExt> paging = userDao.search(page, limit, search, sortType, phone, email, regionIdUri.toString(),
+				startTime, endTime);
 		model.addData("data", paging.getRows().stream().map(user -> {
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", String.valueOf(user.getId()));
@@ -104,13 +105,13 @@ public class DemoController {
 		model.addData("msg", "查询成功");
 		model.addData("code", 0);
 	}
-	
+
 	/**
 	 * 添加用户信息处理
 	 * @param model 数据模型渲染器
 	 * @param user  实体信息
 	 */
-	@Action(value = ModelType.JSON, url = "insert.htm")
+	@Action(value = JsonModel.class, url = "insert.htm")
 	public void insert(JsonModel model, User user) throws Exception {
 		ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
 		ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
@@ -128,18 +129,18 @@ public class DemoController {
 		// 返回用户信息到客户端
 		model.addData("id", String.valueOf(user.getId()));
 	}
-	
+
 	/**
 	 * 修改用户信息处理
 	 * @param model 数据模型渲染器
 	 * @param user  实体信息
 	 */
-	@Action(value = ModelType.JSON, url = "update.htm")
+	@Action(value = JsonModel.class, url = "update.htm")
 	public void update(JsonModel model, User user) {
 		ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
 		ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
 		ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
-		
+
 		User info = userDao.queryById(user.getId());
 		ValidateUtil.isNotNull(info, 600, "用户信息不存在");
 		user.setCreateTime(info.getCreateTime());
@@ -148,13 +149,13 @@ public class DemoController {
 			sendError(600, "修改用户信息失败");
 		}
 	}
-	
+
 	/**
 	 * 删除用户信息
 	 * @param model  数据模型渲染器
 	 * @param idList 要删除的数据ID List
 	 */
-	@Action(value = ModelType.JSON, url = "delete.htm")
+	@Action(value = JsonModel.class, url = "delete.htm")
 	public void delete(JsonModel model, long[] idList) {
 		if (idList == null || idList.length <= 0) {
 			ValidateUtil.sendError(600, "未选中数据");

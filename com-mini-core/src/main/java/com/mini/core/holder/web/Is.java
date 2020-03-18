@@ -1,16 +1,15 @@
 package com.mini.core.holder.web;
 
+import com.mini.core.web.interceptor.ActionInvocation;
+
 import javax.annotation.Nonnull;
 import java.lang.annotation.*;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 public @interface Is {
-	@Nonnull
-	String expression();
 
 	int error() default 0;
 
@@ -18,4 +17,6 @@ public @interface Is {
 	String message() default "";
 
 	boolean require() default true;
+
+	Class<? extends BiPredicate<Object, ActionInvocation>> validator();
 }
