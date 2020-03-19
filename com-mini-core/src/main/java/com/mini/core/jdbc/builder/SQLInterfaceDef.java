@@ -13,13 +13,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Class.forName;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Optional.ofNullable;
 
 @Singleton
 public final class SQLInterfaceDef implements SQLInterface, EventListener, Serializable {
 	private static final Map<Class<?>, SQLInterface> INTER_MAP = new ConcurrentHashMap<>();
 	private static final String $SQL$ = "_$$$SQL$$$";
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createReplace(SQLBuilder builder, @Nonnull T instance) {
@@ -34,7 +35,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			builder.params(o);
 		}));
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createInsert(SQLBuilder builder, @Nonnull T instance) {
@@ -49,7 +50,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			builder.params(o);
 		}));
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createDelete(SQLBuilder builder, @Nonnull T instance) {
@@ -57,34 +58,32 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		var table = ClassHolder.create(type).verifyTable();
 		// 有标识删除状态的字段时，逻辑删除
 		if (table.hasColumnsAnyMatchDel()) {
-			table.update(builder).columns().stream().filter(h -> {
-				return h.hasDel() || h.hasLock(); //
-			}).forEach(holder -> holder.set(builder, h -> {
-				builder.params(h.getValue(instance));
-			}));
+			table.update(builder).columns().stream().filter(FieldHolder::hasDel)
+					.forEach(holder -> holder.setDel(builder));
+			table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> { //
+				holder.set(builder, h -> builder.params(currentTimeMillis()));
+			});
 		}
 		// 否则直接物理删除该数据
 		else table.delete(builder).from(builder);
-
+		
 		// 添加ID条件
-		table.columns().stream().filter(FieldHolder::hasId)
-				.forEach(holder -> holder.whereId(builder, h -> {
-					builder.params(h.getValue(instance));
-				}));
-
+		table.columns().stream().filter(FieldHolder::hasId).forEach(holder -> { //
+			holder.whereId(builder, h -> builder.params(h.getValue(instance)));
+		});
+		
 		// 添加 Lock 条件
-		table.columns().stream().filter(FieldHolder::hasLock)
-				.forEach(holder -> holder.whereLock(builder, h -> {
-					builder.params(h.getValue(instance));
-				}));
+		table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> { //
+			holder.whereLock(builder, h -> builder.params(h.getValue(instance)));
+		});
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createUpdate(SQLBuilder builder, @Nonnull T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
 		var table = ClassHolder.create(type).verifyTable();
-
+		
 		// 添加除ID和CreateAt标注的所有字段
 		table.update(builder).columns().stream().filter(h -> {
 			return !h.hasId() && !h.hasCreate(); //
@@ -93,20 +92,20 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 					: h.getValue(instance);
 			builder.params(o);
 		}));
-
+		
 		// 添加ID条件
 		table.columns().stream().filter(FieldHolder::hasId)
 				.forEach(holder -> holder.whereId(builder, h -> {
 					builder.params(h.getValue(instance));
 				}));
-
+		
 		// 添加 Lock 条件
 		table.columns().stream().filter(FieldHolder::hasLock)
 				.forEach(holder -> holder.whereLock(builder, h -> {
 					builder.params(h.getValue(instance));
 				}));
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void createInsertOnUpdate(SQLBuilder builder, T instance) {
@@ -125,7 +124,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			return !h.hasId() && !h.hasCreate(); //
 		}).forEach(h -> h.onDuplicateKeyUpdate(builder));
 	}
-
+	
 	@Override
 	public final <T> void createSelect(SQLBuilder builder, @Nonnull Class<T> type) {
 		var table = ClassHolder.create(type).verifyTable();
@@ -135,7 +134,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		table.columns().stream().filter(FieldHolder::hasDel)
 				.forEach(h -> h.whereDel(builder));
 	}
-
+	
 	// 获取SQL创建的实现类
 	public static <T> SQLInterface getSQLInterface(Class<T> type) {
 		return SQLInterfaceDef.INTER_MAP.computeIfAbsent(type, key -> {
