@@ -257,8 +257,10 @@ public abstract class AbstractDispatcherHttpServlet extends HttpServlet implemen
 			
 			// 返回数据
 			model.onSubmit(request, response);
-		} catch (Exception | Error exception) {
-			log.error(exception.getMessage(), exception);
+		} catch (Exception | Error ex) {
+			log.error(ex.getMessage(), ex);
+			if (response.isCommitted()) return;
+			response.setStatus(INTERNAL_SERVER_ERROR);
 		}
 	}
 	

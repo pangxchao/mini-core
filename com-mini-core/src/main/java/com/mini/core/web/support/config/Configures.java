@@ -5,10 +5,12 @@ import com.mini.core.util.matcher.PathMatcher;
 import com.mini.core.util.matcher.PathMatcherAnt;
 import com.mini.core.web.annotation.Action.Method;
 import com.mini.core.web.argument.ArgumentResolver;
+import com.mini.core.web.factory.DefResourceBundleFactory;
 import com.mini.core.web.factory.ResourceBundleFactory;
 import com.mini.core.web.handler.ExceptionHandler;
 import com.mini.core.web.interceptor.ActionInterceptor;
 import com.mini.core.web.support.ActionSupportProxy;
+import com.mini.core.web.view.JspPageViewResolver;
 import com.mini.core.web.view.PageViewResolver;
 import org.slf4j.Logger;
 
@@ -527,7 +529,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 页面类型视图解析器
 	 */
-	private PageViewResolver pageViewResolver;
+	private PageViewResolver pageViewResolver = new JspPageViewResolver();
 	
 	public void setPageViewResolver(Class<? extends PageViewResolver> resolver) {
 		pageViewResolver = requireNonNull(injector.getInstance(resolver));
@@ -540,7 +542,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 国际化工厂
 	 */
-	private ResourceBundleFactory resourceBundleFactory;
+	private ResourceBundleFactory resourceBundleFactory = new DefResourceBundleFactory();
 	
 	public void setResourceBundleFactory(Class<? extends ResourceBundleFactory> factory) {
 		resourceBundleFactory = requireNonNull(injector.getInstance(factory));

@@ -40,7 +40,7 @@ public final class ExceptionHandlerDefault implements ExceptionHandler {
 			String message = bundle.containsKey(code) ? bundle.getString(code)
 					: defaultIfBlank(e.getMessage(), "Service Error");
 			invocation.getModel().setMessage(message);
-			log.error(message, e);
+			log.error(e.getMessage(), e);
 		} catch (Exception | Error ex) {
 			throw ThrowsUtil.hidden(ex);
 		}
