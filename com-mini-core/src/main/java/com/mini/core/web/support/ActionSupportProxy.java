@@ -8,7 +8,6 @@ import com.mini.core.web.argument.ArgumentResolver;
 import com.mini.core.web.interceptor.ActionInterceptor;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.model.IModel;
-import com.mini.core.web.util.ResponseCode;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -80,7 +79,7 @@ public interface ActionSupportProxy {
 	 */
 	String getRequestUri();
 
-	final class ParameterHandler implements EventListener, ResponseCode {
+	final class ParameterHandler implements EventListener {
 		private final IsMobilePhone isMobilePhone;
 		private final ArgumentResolver resolver;
 		private final MiniParameter parameter;

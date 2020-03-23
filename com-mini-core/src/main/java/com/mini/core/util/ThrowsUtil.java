@@ -13,7 +13,7 @@ public class ThrowsUtil {
 				.map(ThrowsUtil::getLastCause)
 				.orElse(throwable);
 	}
-
+	
 	@Nullable
 	public static Throwable getInvocationTarget(@Nonnull Throwable throwable) {
 		if (throwable instanceof InvocationTargetException) {
@@ -22,7 +22,7 @@ public class ThrowsUtil {
 		}
 		return null;
 	}
-
+	
 	@Nonnull
 	public static Throwable getLastInvocationTarget(@Nonnull Throwable throwable) {
 		if (throwable instanceof InvocationTargetException) {
@@ -32,11 +32,11 @@ public class ThrowsUtil {
 		}
 		return throwable;
 	}
-
+	
 	public static RuntimeException hidden(@Nonnull Throwable t) {
 		return ThrowsUtil.hidden_(t);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private static <T extends Throwable> T hidden_(Throwable t) throws T {
 		throw (T) t;

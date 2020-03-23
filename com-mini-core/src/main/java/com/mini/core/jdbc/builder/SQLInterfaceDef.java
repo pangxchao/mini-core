@@ -84,26 +84,28 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		Class<? extends T> type = (Class<T>) instance.getClass();
 		var table = ClassHolder.create(type).verifyTable();
 		
-		// 添加除ID和CreateAt标注的所有字段
+		// 添加除ID、CreateAt和Lock标注的所有字段
 		table.update(builder).columns().stream().filter(h -> {
-			return !h.hasId() && !h.hasCreate(); //
+			return !h.hasId() && !h.hasCreate() && !h.hasLock(); //
 		}).forEach(holder -> holder.set(builder, h -> {
 			var o = h.hasUpdate() ? new Date() //
 					: h.getValue(instance);
 			builder.params(o);
 		}));
+		// 添加 Lock 字段修改值
+		table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> { //
+			holder.set(builder, h -> builder.params(System.currentTimeMillis()));
+		});
 		
 		// 添加ID条件
-		table.columns().stream().filter(FieldHolder::hasId)
-				.forEach(holder -> holder.whereId(builder, h -> {
-					builder.params(h.getValue(instance));
-				}));
+		table.columns().stream().filter(FieldHolder::hasId).forEach(holder -> holder.whereId(builder, h -> {
+			builder.params(h.getValue(instance));
+		}));
 		
 		// 添加 Lock 条件
-		table.columns().stream().filter(FieldHolder::hasLock)
-				.forEach(holder -> holder.whereLock(builder, h -> {
-					builder.params(h.getValue(instance));
-				}));
+		table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> holder.whereLock(builder, h -> {
+			builder.params(h.getValue(instance));
+		}));
 	}
 	
 	@Override

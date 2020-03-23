@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.*;
 
+import static com.mini.core.web.util.ResponseCode.OK;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -26,16 +27,16 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String TYPE = "text/plain";
 	private Object data = map;
-
+	
 	public JsonModel() {
 		super(TYPE);
 	}
-
+	
 	@Override
 	protected JsonModel model() {
 		return this;
 	}
-
+	
 	/**
 	 * 获取所有的数据-有效的数据
 	 * @return 所有数据
@@ -43,7 +44,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	public final Object getData() {
 		return this.data;
 	}
-
+	
 	/**
 	 * 获取所有的数据-List结构的数据
 	 * @return 所有数据
@@ -51,7 +52,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	public final List<Object> getListData() {
 		return this.list;
 	}
-
+	
 	/**
 	 * 获取所有数据-Map结构的数据
 	 * @return 所有数据
@@ -59,7 +60,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	public final Map<String, Object> getMapData() {
 		return map;
 	}
-
+	
 	/**
 	 * 设置数据-自定义结构的数据
 	 * @param data 自定义数据
@@ -69,7 +70,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = data;
 		return model();
 	}
-
+	
 	/**
 	 * 添加数据-Map类型的数据
 	 * @param name  数据键名称
@@ -81,7 +82,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = this.map;
 		return model();
 	}
-
+	
 	/**
 	 * 添加所有数据-Map结构数据
 	 * @param map Map数据
@@ -92,7 +93,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		data = this.map;
 		return model();
 	}
-
+	
 	/**
 	 * 添加数据-List结构数据
 	 * @param value 数据值
@@ -103,7 +104,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = list;
 		return model();
 	}
-
+	
 	/**
 	 * 添加数据-List结构数据
 	 * @param values 数据值
@@ -114,7 +115,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = this.list;
 		return model();
 	}
-
+	
 	/**
 	 * 添加数据-List结构数据
 	 * @param index 数据索引
@@ -126,7 +127,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = this.list;
 		return model();
 	}
-
+	
 	/**
 	 * 添加数据-List结构数据
 	 * @param index  数据索引
@@ -138,7 +139,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = this.list;
 		return model();
 	}
-
+	
 	/**
 	 * 设置分页数据
 	 * @param paging 分页数据
@@ -151,9 +152,9 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 		this.data = this.map;
 		return model();
 	}
-
+	
 	@Override
-	protected void onError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+	protected void onError(HttpServletRequest request, HttpServletResponse response) {
 		String message = defaultIfEmpty(getMessage(), "Service Error");
 		try (PrintWriter writer = response.getWriter()) {
 			writer.write(JSON.toJSON(new HashMap<>() {{
@@ -164,11 +165,12 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 			writer.flush();
 		} catch (IOException | Error e) {
 			log.error(e.getMessage());
+			response.setStatus(500);
 		}
 	}
-
+	
 	@Override
-	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
+	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) {
 		try (PrintWriter writer = response.getWriter()) {
 			writer.write(JSON.toJSON(new HashMap<>() {{
 				put("message", "Success");
@@ -179,6 +181,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 			writer.flush();
 		} catch (IOException | Error e) {
 			log.error(e.getMessage());
+			response.setStatus(500);
 		}
 	}
 }

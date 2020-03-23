@@ -1,5 +1,6 @@
 package com.mini.core.util.reflect;
 
+import com.mini.core.thread.RunnableLinkedBlockingQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
@@ -21,40 +22,40 @@ import static org.objectweb.asm.ClassReader.EXPAND_FRAMES;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Serializable {
-	private static final Logger logger = getLogger(ParameterNameDiscovererAsm.class);
+	private static final Logger log = getLogger(ParameterNameDiscovererAsm.class);
 	private static final long serialVersionUID = 6718496659106769030L;
 	private static final String INIT_METHOD = "<init>";
-
+	
 	@Nonnull
 	@Override
 	public String[] getParameterNames(Method method) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		if (parameterTypes.length == 0) return new String[0];
-
+		
 		try (InputStream stream = getClassAsStream(method.getDeclaringClass())) {
 			String descriptor = Type.getMethodDescriptor(method);
 			return getParameterNames(stream, method.getName(), descriptor);
 		} catch (Exception | Error e) {
-			logger.error("ERROR!", e);
+			log.error("ERROR!", e);
 		}
 		return new String[0];
 	}
-
+	
 	@Nonnull
 	@Override
 	public String[] getParameterNames(Constructor<?> constructor) {
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
 		if (parameterTypes.length == 0) return new String[0];
-
+		
 		try (InputStream stream = getClassAsStream(constructor.getDeclaringClass())) {
 			String descriptor = Type.getConstructorDescriptor(constructor);
 			return getParameterNames(stream, INIT_METHOD, descriptor);
 		} catch (Exception | Error e) {
-			logger.error("ERROR!", e);
+			log.error("ERROR!", e);
 		}
 		return new String[0];
 	}
-
+	
 	/**
 	 * 根据方法的 declaringClass 获取该类的流信息
 	 * @param declaringClass declaringClass 类
@@ -66,7 +67,7 @@ public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Seri
 		classLoader = defaultIfNull(classLoader, getSystemClassLoader());
 		return getClassAsStream(classLoader, declaringClass.getName());
 	}
-
+	
 	/**
 	 * 根据方法的 declaringClass 的类名称获取该类流信息
 	 * @param classLoader 类加载器
@@ -79,7 +80,7 @@ public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Seri
 		InputStream stream = classLoader.getResourceAsStream(fileName);
 		return defaultIfNull(stream, getClass().getResourceAsStream(fileName));
 	}
-
+	
 	/**
 	 * 获取参数名列表辅助方法
 	 * @param stream   方法所在类的流信息
@@ -99,7 +100,7 @@ public class ParameterNameDiscovererAsm implements ParameterNameDiscoverer, Seri
 			return !StringUtils.equals("this", v.name);
 		}).map(v -> v.name).toArray(String[]::new);
 	}
-
+	
 	/**
 	 * 获取 ClassNode 对象
 	 * @param stream 类流信息

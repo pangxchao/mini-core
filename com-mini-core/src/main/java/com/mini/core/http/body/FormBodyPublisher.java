@@ -1,4 +1,4 @@
 package com.mini.core.http.body;
 
-public class FormBody {
+public class FormBodyPublisher {
 }

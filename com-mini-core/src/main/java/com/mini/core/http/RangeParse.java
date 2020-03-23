@@ -40,7 +40,7 @@ public final class RangeParse {
 			return start >= 0 & start <= end && length > 0;
 		}
 	}
-
+	
 	private final StringReader reader;
 
 	private RangeParse(StringReader reader) {

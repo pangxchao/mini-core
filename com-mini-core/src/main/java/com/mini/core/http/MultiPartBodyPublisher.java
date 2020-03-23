@@ -11,9 +11,10 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class MultiPartBodyPublisher {
+	
 	private List<PartsSpecification> partsSpecificationList = new ArrayList<>();
 	private String boundary = UUID.randomUUID().toString();
-
+	
 	public HttpRequest.BodyPublisher build() {
 		if (partsSpecificationList.size() == 0) {
 			throw new IllegalStateException("Must have at least one part to build multipart message.");
@@ -21,11 +22,11 @@ public class MultiPartBodyPublisher {
 		addFinalBoundaryPart();
 		return HttpRequest.BodyPublishers.ofByteArrays(PartsIterator::new);
 	}
-
+	
 	public String getBoundary() {
 		return boundary;
 	}
-
+	
 	public MultiPartBodyPublisher addPart(String name, String value) {
 		PartsSpecification newPart = new PartsSpecification();
 		newPart.type = PartsSpecification.TYPE.STRING;
@@ -34,7 +35,7 @@ public class MultiPartBodyPublisher {
 		partsSpecificationList.add(newPart);
 		return this;
 	}
-
+	
 	public MultiPartBodyPublisher addPart(String name, Path value) {
 		PartsSpecification newPart = new PartsSpecification();
 		newPart.type = PartsSpecification.TYPE.FILE;
@@ -43,7 +44,7 @@ public class MultiPartBodyPublisher {
 		partsSpecificationList.add(newPart);
 		return this;
 	}
-
+	
 	public MultiPartBodyPublisher addPart(String name, Supplier<InputStream> value, String filename,
 			String contentType) {
 		PartsSpecification newPart = new PartsSpecification();
@@ -55,20 +56,20 @@ public class MultiPartBodyPublisher {
 		partsSpecificationList.add(newPart);
 		return this;
 	}
-
+	
 	private void addFinalBoundaryPart() {
 		PartsSpecification newPart = new PartsSpecification();
 		newPart.type = PartsSpecification.TYPE.FINAL_BOUNDARY;
 		newPart.value = "--" + boundary + "--";
 		partsSpecificationList.add(newPart);
 	}
-
+	
 	static class PartsSpecification {
-
+		
 		public enum TYPE {
 			STRING, FILE, STREAM, FINAL_BOUNDARY
 		}
-
+		
 		PartsSpecification.TYPE type;
 		String name;
 		String value;
@@ -76,21 +77,21 @@ public class MultiPartBodyPublisher {
 		Supplier<InputStream> stream;
 		String filename;
 		String contentType;
-
+		
 	}
-
+	
 	class PartsIterator implements Iterator<byte[]> {
-
+		
 		private Iterator<PartsSpecification> iter;
 		private InputStream currentFileInput;
-
+		
 		private boolean done;
 		private byte[] next;
-
+		
 		PartsIterator() {
 			iter = partsSpecificationList.iterator();
 		}
-
+		
 		@Override
 		public boolean hasNext() {
 			if (done) return false;
@@ -106,7 +107,7 @@ public class MultiPartBodyPublisher {
 			}
 			return true;
 		}
-
+		
 		@Override
 		public byte[] next() {
 			if (!hasNext()) throw new NoSuchElementException();
@@ -114,7 +115,7 @@ public class MultiPartBodyPublisher {
 			next = null;
 			return res;
 		}
-
+		
 		private byte[] computeNext() throws IOException {
 			if (currentFileInput == null) {
 				if (!iter.hasNext()) return null;
@@ -122,7 +123,7 @@ public class MultiPartBodyPublisher {
 				if (PartsSpecification.TYPE.STRING.equals(nextPart.type)) {
 					String part =
 							"--" + boundary + "\r\n" + "Content-Disposition: form-data; name=" + nextPart.name + "\r\n"
-							+ "Content-Type: text/plain; charset=UTF-8\r\n\r\n" + nextPart.value + "\r\n";
+									+ "Content-Type: text/plain; charset=UTF-8\r\n\r\n" + nextPart.value + "\r\n";
 					return part.getBytes(StandardCharsets.UTF_8);
 				}
 				if (PartsSpecification.TYPE.FINAL_BOUNDARY.equals(nextPart.type)) {
@@ -145,7 +146,7 @@ public class MultiPartBodyPublisher {
 				String partHeader =
 						"--" + boundary + "\r\n" + "Content-Disposition: form-data; name=" + nextPart.name + "; " +
 								"filename="
-						+ filename + "\r\n" + "Content-Type: " + contentType + "\r\n\r\n";
+								+ filename + "\r\n" + "Content-Type: " + contentType + "\r\n\r\n";
 				return partHeader.getBytes(StandardCharsets.UTF_8);
 			} else {
 				byte[] buf = new byte[8192];

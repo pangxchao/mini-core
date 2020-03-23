@@ -12,43 +12,43 @@ import static java.util.Optional.of;
 
 @Singleton
 public final class RegistrationFilter implements Registration, EventListener {
+	private final Set<DispatcherType> types = new HashSet<>();
+	private final Set<String> servletNames = new HashSet<>();
+	private final Set<String> urlPatterns = new HashSet<>();
 	private static final String[] EMPTY = new String[0];
-	private Set<DispatcherType> types = new HashSet<>();
-	private Set<String> servletNames = new HashSet<>();
-	private Set<String> urlPatterns = new HashSet<>();
 	private boolean asyncSupported = true;
 	private boolean matchAfter = true;
-	private Filter filter;
+	private final Filter filter;
 	private String name;
-
+	
 	public RegistrationFilter(Filter filter) {
 		this.filter = filter;
 	}
-
+	
 	public void addDispatcherType(DispatcherType... types) {
 		Collections.addAll(this.types, types);
 	}
-
+	
 	public void addServletNames(String... names) {
 		Collections.addAll(servletNames, names);
 	}
-
+	
 	public void addUrlPatterns(String... patterns) {
 		Collections.addAll(urlPatterns, patterns);
 	}
-
+	
 	public void setAsyncSupported(boolean asyncSupported) {
 		this.asyncSupported = asyncSupported;
 	}
-
+	
 	public void setMatchAfter(boolean matchAfter) {
 		this.matchAfter = matchAfter;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	@Override
 	public synchronized void register(ServletContext context) {
 		EnumSet<DispatcherType> type = EnumSet.copyOf(types);

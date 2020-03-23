@@ -4,8 +4,10 @@ import com.mini.core.web.support.config.Configures;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -17,13 +19,13 @@ public class JspPageViewResolver implements PageViewResolver, Serializable {
 	private Configures configures;
 	
 	@Override
-	public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public void generator(Map<String, Object> data, String viewPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String view = configures.getViewPrefix() + viewPath + configures.getViewSuffix();
 		data.forEach(request::setAttribute);
 		forward(view, request, response);
 	}
 	
-	private void forward(String viewPath, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	private void forward(String viewPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher(viewPath).forward(request, response);
 	}
 }

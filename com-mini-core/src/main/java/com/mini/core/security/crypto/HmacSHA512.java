@@ -1,9 +1,7 @@
 package com.mini.core.security.crypto;
 
-import java.util.EventListener;
-
-public final class HmacSHA512 extends BaseMac implements EventListener {
-	public HmacSHA512() throws Exception {
+public final class HmacSHA512 extends BaseMac {
+	public HmacSHA512() {
 		super("HmacSHA512");
 	}
 }

@@ -9,44 +9,44 @@ public abstract class SecurityBase<T extends SecurityBase<T>> implements EventLi
 	private static final char[] DIGITS = {   //
 			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' //
 	};
-
+	
 	public abstract T update(byte[] input, int offset, int len);
-
+	
 	public abstract T update(byte[] input);
-
+	
 	public abstract T update(byte input);
-
+	
 	public final T update(String input, Charset charset) {
 		return update(input.getBytes(charset));
 	}
-
+	
 	public final T update(String input) {
 		return update(input.getBytes());
 	}
-
+	
 	public abstract byte[] digest(byte[] input);
-
+	
 	public abstract byte[] digest();
-
+	
 	public final byte[] digest(String data, Charset charset) {
 		return digest(data.getBytes(charset));
 	}
-
+	
 	public final byte[] digest(String data) {
 		return digest(data.getBytes());
 	}
-
+	
 	public final String encode() {
 		byte[] b = this.digest();
 		return toHexString(b);
 	}
-
+	
 	public final String base64() {
 		byte[] bytes = this.digest();
 		var code = Base64.getEncoder();
 		return code.encodeToString(bytes);
 	}
-
+	
 	/** 将byte数组转换成String */
 	private static String toHexString(byte[] bytes) {
 		char[] result = new char[bytes.length * 2];

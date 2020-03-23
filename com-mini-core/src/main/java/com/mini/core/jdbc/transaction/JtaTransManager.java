@@ -1,8 +1,7 @@
 package com.mini.core.jdbc.transaction;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.transaction.UserTransaction;
 
@@ -16,16 +15,16 @@ import static java.util.Objects.requireNonNull;
  */
 @Singleton
 public final class JtaTransManager implements TransManager {
-	private final Provider<UserTransaction> provider;
-
+	private final UserTransaction transaction;
+	
 	@Inject
-	public JtaTransManager(@Nonnull Provider<UserTransaction> provider) {
-		this.provider = provider;
+	public JtaTransManager(@Nullable UserTransaction transaction) {
+		this.transaction = transaction;
 	}
-
+	
 	@Override
 	public <T> T open(TransManagerCallback<T> callback) {
-		var userTrans = requireNonNull(provider.get());
+		var userTrans = requireNonNull(transaction);
 		return transaction(userTrans, trans -> {
 			try {
 				boolean commit = false;

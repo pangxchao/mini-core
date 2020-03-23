@@ -47,8 +47,8 @@ public final class FieldHolder<T> implements Serializable {
 	private final IsEmail isEmail;
 	private final IsRegex isRegex;
 	private final Is $is;
-
-
+	
+	
 	private FieldHolder(@Nonnull Class<T> type, @Nonnull PropertyDescriptor des) {
 		// 字段信息
 		Field field = Optional.ofNullable(findField(des, type)) //
@@ -85,7 +85,7 @@ public final class FieldHolder<T> implements Serializable {
 		id = Optional.ofNullable(field).map(f -> {
 			return f.getAnnotation(Id.class); //
 		}).orElse(null);
-
+		
 		// IsMobilePhone注解属性
 		isMobilePhone = Optional.ofNullable(field).map(f -> {
 			return f.getAnnotation(IsMobilePhone.class); //
@@ -145,7 +145,7 @@ public final class FieldHolder<T> implements Serializable {
 		// 属性描述
 		descriptor = des;
 	}
-
+	
 	/**
 	 * 是否有 Getter 方法
 	 * @return true-是
@@ -153,7 +153,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasGetter() {
 		return this.getter != null;
 	}
-
+	
 	/**
 	 * 是否有 Setter 方法
 	 * @return true-是
@@ -161,7 +161,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasSetter() {
 		return this.setter != null;
 	}
-
+	
 	/**
 	 * 是否有 CreateAt 注解
 	 * @return true-是
@@ -169,7 +169,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasCreate() {
 		return this.create != null;
 	}
-
+	
 	/**
 	 * 是否有 UpdateAt 注解
 	 * @return true-是
@@ -177,7 +177,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasUpdate() {
 		return this.update != null;
 	}
-
+	
 	/**
 	 * 是否有 Column 注解
 	 * @return true-是
@@ -185,7 +185,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasColumn() {
 		return this.column != null;
 	}
-
+	
 	/**
 	 * 是否有 Lock 注解
 	 * @return true-是
@@ -193,7 +193,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasLock() {
 		return this.lock != null;
 	}
-
+	
 	/**
 	 * 是否有 Auto 注解
 	 * @return true-是
@@ -202,7 +202,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasAuto() {
 		return this.auto != null;
 	}
-
+	
 	/**
 	 * 是否有 Ref 注解
 	 * @return true-是
@@ -210,7 +210,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasRef() {
 		return this.ref != null;
 	}
-
+	
 	/**
 	 * 是否有 Del 注解
 	 * @return true-是
@@ -218,7 +218,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasDel() {
 		return this.del != null;
 	}
-
+	
 	/**
 	 * 是否有 Id 注解
 	 * @return true-是
@@ -226,7 +226,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasId() {
 		return this.id != null;
 	}
-
+	
 	/**
 	 * 是否有 IsMobilePhone 注解
 	 * @return true-是
@@ -234,7 +234,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsMobilePhone() {
 		return isMobilePhone != null;
 	}
-
+	
 	/**
 	 * 是否有 IsNotBlank 注解
 	 * @return true-是
@@ -242,7 +242,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsNotBlank() {
 		return isNotBlank != null;
 	}
-
+	
 	/**
 	 * 是否有 IsNotNull 注解
 	 * @return true-是
@@ -250,7 +250,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsNotNull() {
 		return isNotNull != null;
 	}
-
+	
 	/**
 	 * 是否有 IsRequire 注解
 	 * @return true-是
@@ -258,7 +258,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsRequire() {
 		return isRequire != null;
 	}
-
+	
 	/**
 	 * 是否有 IsChinese 注解
 	 * @return true-是
@@ -266,7 +266,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsChinese() {
 		return isChinese != null;
 	}
-
+	
 	/**
 	 * 是否有 IsLetter 注解
 	 * @return true-是
@@ -274,7 +274,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsLetter() {
 		return isLetter != null;
 	}
-
+	
 	/**
 	 * 是否有 IsMobile 注解
 	 * @return true-是
@@ -282,7 +282,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsMobile() {
 		return isMobile != null;
 	}
-
+	
 	/**
 	 * 是否有 IsNumber 注解
 	 * @return true-是
@@ -290,7 +290,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsNumber() {
 		return isNumber != null;
 	}
-
+	
 	/**
 	 * 是否有 IsIdCard 注解
 	 * @return true-是
@@ -298,7 +298,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsIdCard() {
 		return isIdCard != null;
 	}
-
+	
 	/**
 	 * 是否有 IsPhone 注解
 	 * @return true-是
@@ -306,7 +306,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsPhone() {
 		return isPhone != null;
 	}
-
+	
 	/**
 	 * 是否有 IsEmail 注解
 	 * @return true-是
@@ -314,7 +314,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsEmail() {
 		return isEmail != null;
 	}
-
+	
 	/**
 	 * 是否有 IsRegex 注解
 	 * @return true-是
@@ -322,7 +322,7 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIsRegex() {
 		return isRegex != null;
 	}
-
+	
 	/**
 	 * 是否有 Is 注解
 	 * @return true-是
@@ -330,21 +330,21 @@ public final class FieldHolder<T> implements Serializable {
 	public final boolean hasIs() {
 		return $is != null;
 	}
-
+	
 	public final FieldHolder<T> checkIsNotBlank(Object value) {
 		if (!FieldHolder.this.hasIsNotBlank()) return this;
 		isNotBlank((String) value, isNotBlank.error(),
 				isNotBlank.message());
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsNotNull(Object value) {
 		if (!FieldHolder.this.hasIsNotNull()) return this;
 		ValidateUtil.isNotNull(value, isNotNull.error(),
 				isNotNull.message());
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsRequire(Object value) {
 		if (!FieldHolder.this.hasIsRequire()) return this;
 		if (this.isRequire.require() || value != null) {
@@ -353,7 +353,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsChinese(Object value) {
 		if (!FieldHolder.this.hasIsChinese()) return this;
 		if (this.isChinese.require() || value != null) {
@@ -362,7 +362,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsLetter(Object value) {
 		if (!FieldHolder.this.hasIsLetter()) return this;
 		if (this.isLetter.require() || value != null) {
@@ -371,7 +371,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsMobile(Object value) {
 		if (!FieldHolder.this.hasIsMobile()) return this;
 		if (this.isMobile.require() || value != null) {
@@ -380,7 +380,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsMobilePhone(Object value) {
 		if (!FieldHolder.this.hasIsMobilePhone()) return this;
 		if (this.isMobilePhone.require() || value != null) {
@@ -389,7 +389,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsNumber(Object value) {
 		if (!FieldHolder.this.hasIsNumber()) return this;
 		if (this.isNumber.require() || value != null) {
@@ -398,7 +398,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsIdCard(Object value) {
 		if (!FieldHolder.this.hasIsIdCard()) return this;
 		if (this.isIdCard.require() || value != null) {
@@ -407,7 +407,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsPhone(Object value) {
 		if (!FieldHolder.this.hasIsPhone()) return this;
 		if (this.isPhone.require() || value != null) {
@@ -416,7 +416,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsEmail(Object value) {
 		if (!FieldHolder.this.hasIsEmail()) return this;
 		if (this.isEmail.require() || value != null) {
@@ -425,7 +425,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIsRegex(Object value) {
 		if (!FieldHolder.this.hasIsRegex()) return this;
 		if (this.isRegex.require() || value != null) {
@@ -434,7 +434,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public final FieldHolder<T> checkIs(Object value) {
 		if (!FieldHolder.this.hasIs()) return this;
 		if (this.$is.require() || value != null) {
@@ -442,7 +442,7 @@ public final class FieldHolder<T> implements Serializable {
 		}
 		return this;
 	}
-
+	
 	/**
 	 * 调用属性的Setter方法
 	 * @param instance 属性对象
@@ -457,7 +457,7 @@ public final class FieldHolder<T> implements Serializable {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * 调用属性的 Getter 方法
 	 * @param instance 属性对象
@@ -473,46 +473,46 @@ public final class FieldHolder<T> implements Serializable {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	@Nonnull
 	public final String getColumnName() {
 		return Optional.ofNullable(column)
 				.map(Column::value)
 				.orElseThrow();
 	}
-
+	
 	@Nonnull
 	public final String getFieldName() {
 		return Optional.ofNullable(descriptor)
 				.map(PropertyDescriptor::getName)
 				.orElseThrow();
 	}
-
+	
 	@Nonnull
 	public final Class<?> getFieldType() {
 		return Optional.ofNullable(descriptor)
 				.map(PropertyDescriptor::getPropertyType)
 				.orElseThrow();
 	}
-
+	
 	@Nonnull
 	public final String getRefColumn() {
 		return Optional.ofNullable(ref)
 				.map(Ref::column)
 				.orElseThrow();
 	}
-
+	
 	@Nonnull
 	public final String getRefTable() {
 		return Optional.ofNullable(ref)
 				.map(Ref::table)
 				.orElseThrow();
 	}
-
+	
 	public final void select(SQLBuilder builder) {
 		builder.select(getColumnName());
 	}
-
+	
 	/**
 	 * 添加 JOIN 语句
 	 * @param builder {@link SQLBuilder}
@@ -522,7 +522,7 @@ public final class FieldHolder<T> implements Serializable {
 				getRefTable(), getColumnName(), //
 				getRefColumn()));
 	}
-
+	
 	/**
 	 * 添加相等条件限制
 	 * @param builder  {@link SQLBuilder}
@@ -534,7 +534,7 @@ public final class FieldHolder<T> implements Serializable {
 			consumer.accept(this);
 		});
 	}
-
+	
 	/**
 	 * 添加相等条件限制
 	 * @param builder  {@link SQLBuilder}
@@ -546,7 +546,7 @@ public final class FieldHolder<T> implements Serializable {
 			consumer.accept(this);
 		});
 	}
-
+	
 	/**
 	 * Insert Replace 添加修改字段键值
 	 * @param builder  {@link SQLBuilder}
@@ -556,7 +556,7 @@ public final class FieldHolder<T> implements Serializable {
 		builder.values(this.getColumnName());
 		consumer.accept(this);
 	}
-
+	
 	/**
 	 * Update Set 字段键值
 	 * @param builder  {@link SQLBuilder}
@@ -566,7 +566,7 @@ public final class FieldHolder<T> implements Serializable {
 		builder.set("%s = ?", this.getColumnName());
 		consumer.accept(this);
 	}
-
+	
 	/**
 	 * ON DUPLICATE KEY UPDATE 字段值
 	 * @param builder {@link SQLBuilder}
@@ -575,7 +575,7 @@ public final class FieldHolder<T> implements Serializable {
 		builder.onDuplicateKeyUpdate("%s = VALUES(%s)", //
 				getColumnName(), getColumnName());
 	}
-
+	
 	/**
 	 * 排除删除标识限制
 	 * @param builder {@link SQLBuilder}
@@ -586,7 +586,7 @@ public final class FieldHolder<T> implements Serializable {
 			builder.params(del.value());
 		});
 	}
-
+	
 	/**
 	 * Update Set 字段键值
 	 * @param builder {@link SQLBuilder}
@@ -595,7 +595,7 @@ public final class FieldHolder<T> implements Serializable {
 		builder.set("%s = ?", this.getColumnName());
 		builder.params(del.value());
 	}
-
+	
 	public static synchronized <T> void create(@Nonnull ClassHolder<T> h) {
 		try {
 			Optional.ofNullable(Introspector.getBeanInfo(h.getType()))
@@ -605,11 +605,10 @@ public final class FieldHolder<T> implements Serializable {
 					.map(d -> new FieldHolder<>(h.getType(), d))
 					.forEach(h::addColumnHolder);
 		} catch (IntrospectionException e) {
-			ThrowsUtil.hidden(e);
+			throw ThrowsUtil.hidden(e);
 		}
-
 	}
-
+	
 	private static Field findField(PropertyDescriptor des, Class<?> type) {
 		for (Class<?> t = type; t != null; t = t.getSuperclass()) {
 			try {

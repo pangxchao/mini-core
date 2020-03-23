@@ -1,18 +1,17 @@
 package com.mini.core.web.model;
 
 import com.mini.core.jdbc.model.Paging;
-import org.slf4j.Logger;
+import com.mini.core.web.view.PageViewResolver;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.mini.core.validate.ValidateUtil.isNotBlank;
-import static org.slf4j.LoggerFactory.getLogger;
+import static com.mini.core.web.util.ResponseCode.INTERNAL_SERVER_ERROR;
 
 
 /**
@@ -20,7 +19,6 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author xchao
  */
 public class PageModel extends IModel<PageModel> implements Serializable {
-	private static final Logger log = getLogger(PageModel.class);
 	private final Map<String, Object> data = new HashMap<>();
 	private static final long serialVersionUID = 1L;
 	private static final String TYPE = "text/html";
@@ -89,11 +87,7 @@ public class PageModel extends IModel<PageModel> implements Serializable {
 	@Override
 	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
 		isNotBlank(viewPath, INTERNAL_SERVER_ERROR, "View path can not be null");
-		try {
-			var view = getConfigures().getPageViewResolver();
-			view.generator(data, viewPath, request, response);
-		} catch (IOException | Error exception) {
-			log.error(exception.getMessage());
-		}
+		PageViewResolver view = getConfigures().getPageViewResolver();
+		view.generator(data, viewPath, request, response);
 	}
 }

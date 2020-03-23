@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class MiniProperties extends Properties {
-
+	
 	/**
 	 * 加载属性文件
 	 * @param reader Reader
@@ -22,11 +22,11 @@ public class MiniProperties extends Properties {
 		try {
 			super.load(reader);
 			return MiniProperties.this;
-		} catch (IOException | RuntimeException e) {
-			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * 加载属性文件
 	 * @param inStream 输入流
@@ -36,11 +36,11 @@ public class MiniProperties extends Properties {
 		try {
 			super.load(inStream);
 			return MiniProperties.this;
-		} catch (IOException | RuntimeException e) {
-			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * 设置属性，如果存在时跳过
 	 * @param key   属性key
@@ -51,7 +51,7 @@ public class MiniProperties extends Properties {
 		this.putIfAbsent(key, value);
 		return this;
 	}
-
+	
 	/**
 	 * 设置子属性文件的所有内容，子文件中存在的键会覆盖当前键
 	 * @param properties 属性文件内容
@@ -65,13 +65,13 @@ public class MiniProperties extends Properties {
 		}
 		return this;
 	}
-
+	
 	/**
 	 * 设置子属性文件的所有内容，当前文件中Key存在时跳过
 	 * @param properties 属性文件内容
 	 * @return {@link MiniProperties}
 	 */
-
+	
 	public synchronized MiniProperties setPropertyIfAbsent(Properties properties) {
 		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 			String value = String.valueOf(entry.getValue());
@@ -80,7 +80,7 @@ public class MiniProperties extends Properties {
 		}
 		return this;
 	}
-
+	
 	/**
 	 * 根据注解信息加载属性文件
 	 * @param sources 注解信息
@@ -95,7 +95,7 @@ public class MiniProperties extends Properties {
 		}
 		return properties;
 	}
-
+	
 	/**
 	 * 根据注解信息加载属性文件
 	 * @param source 注解信息
@@ -106,7 +106,7 @@ public class MiniProperties extends Properties {
 		if (source == null) return new MiniProperties();
 		return createProperties(source.value());
 	}
-
+	
 	/**
 	 * 根据注解信息加载属性文件
 	 * @param fileName 文件路径

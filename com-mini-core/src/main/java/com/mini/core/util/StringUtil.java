@@ -7,10 +7,10 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import static com.mini.core.validate.ValidateUtil.MOBILE;
+import static com.mini.core.validate.Validator.MOBILE;
 import static java.lang.Character.isUpperCase;
 
-public class StringUtil extends StringUtils {
+public final class StringUtil extends StringUtils {
 	/**
 	 * 自定义格式化字符串
 	 * @param self 字符串内容
@@ -26,7 +26,7 @@ public class StringUtil extends StringUtils {
 		}
 		return self;
 	}
-
+	
 	/**
 	 * 将字符串转换成URL
 	 * @param self 字符串内容
@@ -39,7 +39,7 @@ public class StringUtil extends StringUtils {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * 将字符串转换成URI
 	 * @param self 字符串内容
@@ -52,7 +52,7 @@ public class StringUtil extends StringUtils {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * 将字符串转成URL编码
 	 * @param self    字符串内容
@@ -65,7 +65,7 @@ public class StringUtil extends StringUtils {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * - 将字符串转成URL编码
 	 * @param self    字符串内容
@@ -74,7 +74,7 @@ public class StringUtil extends StringUtils {
 	public static String urlEncode(String self, Charset charset) {
 		return URLEncoder.encode(self, charset);
 	}
-
+	
 	/**
 	 * - 将URL编码还原成原来的字符串
 	 * @param self    字符串
@@ -87,7 +87,7 @@ public class StringUtil extends StringUtils {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	/**
 	 * - 将URL编码还原成原来的字符串
 	 * @param self    字符串
@@ -96,7 +96,7 @@ public class StringUtil extends StringUtils {
 	public static String urlDecode(String self, Charset charset) {
 		return URLDecoder.decode(self, charset);
 	}
-
+	
 	/**
 	 * 把传入字符串首字母大写
 	 * @param self 字符串如：first
@@ -105,7 +105,7 @@ public class StringUtil extends StringUtils {
 	public static String firstUpperCase(String self) {
 		return Character.toUpperCase(self.charAt(0)) + self.substring(1);
 	}
-
+	
 	/**
 	 * 把传入字符串首字母小写
 	 * @param self 字符串如：First
@@ -114,7 +114,7 @@ public class StringUtil extends StringUtils {
 	public static String firstLowerCase(String self) {
 		return Character.toLowerCase(self.charAt(0)) + self.substring(1);
 	}
-
+	
 	/**
 	 * 把字符串改写成java的驼峰命名法
 	 * @param self           字符串内容， 一般是将单词用"_"连接的字符串变成java命名
@@ -129,7 +129,7 @@ public class StringUtil extends StringUtils {
 		if (firstUpperCase) return result.toString();
 		return firstLowerCase(result.toString());
 	}
-
+	
 	/**
 	 * 把用java驼峰命名法的字符串字符串转换成 用"_"连接的数据库命名
 	 * @param self 字符串内容
@@ -146,7 +146,7 @@ public class StringUtil extends StringUtils {
 		}
 		return result.toString();
 	}
-
+	
 	/**
 	 * 手机号脱敏
 	 * @param self 标准手机号
@@ -162,8 +162,7 @@ public class StringUtil extends StringUtils {
 		if (self.length() < 11) {
 			return self;
 		}
-		return self.substring(0, 3) + "****" //
-				+ self.substring(7);
-
+		return self.substring(0, 3) + "****" + self.substring(7);
+		
 	}
 }

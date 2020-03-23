@@ -1,28 +1,34 @@
 package com.mini.core.validate;
 
-public class ValidateException extends RuntimeException {
-	private static final long serialVersionUID = 5797524882646866674L;
+import java.util.List;
 
+import static java.util.Arrays.asList;
+
+public final class ValidateException extends RuntimeException {
+	private static final long serialVersionUID = -1L;
+	private final List<Object> args;
 	private final int status;
-
-	public ValidateException(int status) {
-		this(status, (String) null);
-	}
-
-	public ValidateException(int status, String message) {
-		this(status, message, null);
-	}
-
-	public ValidateException(int status, Throwable cause) {
-		this(status, null, cause);
-	}
-
-	public ValidateException(int status, String message, Throwable cause) {
-		super(message, cause);
+	
+	public ValidateException(int status, String message, Object... args) {
+		super(message);
 		this.status = status;
+		this.args = asList(args);
 	}
-
-	public int getStatus() {
+	
+	public final List<Object> getArgs() {
+		return args;
+	}
+	
+	@Override
+	public final String getMessage() {
+		return super.getMessage();
+	}
+	
+	public final int getStatus() {
 		return status;
+	}
+	
+	public final String getKey() {
+		return "" + status;
 	}
 }

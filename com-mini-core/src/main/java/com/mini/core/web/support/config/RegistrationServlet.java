@@ -1,5 +1,6 @@
 package com.mini.core.web.support.config;
 
+
 import javax.inject.Singleton;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
@@ -13,8 +14,8 @@ import static java.util.Optional.of;
 
 @Singleton
 public final class RegistrationServlet implements Registration {
+	private final Set<String> urlPatterns = new HashSet<>();
 	private static final String[] EMPTY = new String[0];
-	private Set<String> urlPatterns = new HashSet<>();
 	private final HttpServlet servlet;
 	private boolean multipartEnabled;
 	private boolean asyncSupported;
@@ -24,47 +25,48 @@ public final class RegistrationServlet implements Registration {
 	private int loadOnStartup;
 	private long maxFileSize;
 	private String name;
-
+	
 	public RegistrationServlet(HttpServlet servlet) {
 		this.servlet = servlet;
 	}
-
+	
 	public void addUrlPatterns(String... patterns) {
 		Collections.addAll(urlPatterns, patterns);
 	}
-
+	
 	public void setMultipartEnabled(boolean multipartEnabled) {
 		this.multipartEnabled = multipartEnabled;
 	}
-
-	public void setAsyncSupported(boolean asyncSupported) {
-		this.asyncSupported = asyncSupported;
-	}
-
+	
+	
 	public void setFileSizeThreshold(int fileSizeThreshold) {
 		this.fileSizeThreshold = fileSizeThreshold;
 	}
-
+	
+	public void setAsyncSupported(boolean asyncSupported) {
+		this.asyncSupported = asyncSupported;
+	}
+	
 	public void setMaxRequestSize(long maxRequestSize) {
 		this.maxRequestSize = maxRequestSize;
 	}
-
+	
 	public void setLocationPath(String locationPath) {
 		this.locationPath = locationPath;
 	}
-
+	
 	public void setLoadOnStartup(int loadOnStartup) {
 		this.loadOnStartup = loadOnStartup;
 	}
-
+	
 	public void setMaxFileSize(long maxFileSize) {
 		this.maxFileSize = maxFileSize;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	@Override
 	public synchronized void register(ServletContext context) {
 		Dynamic register = context.addServlet(name, servlet);

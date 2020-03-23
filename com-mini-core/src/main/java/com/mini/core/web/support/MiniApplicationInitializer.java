@@ -26,11 +26,10 @@ import com.mini.core.web.filter.CharacterEncodingFilter;
 import com.mini.core.web.handler.ExceptionHandlerDefault;
 import com.mini.core.web.handler.ExceptionHandlerValidate;
 import com.mini.core.web.interceptor.ActionInterceptor;
-import com.mini.core.web.interceptor.I18nActionInterceptor;
 import com.mini.core.web.model.IModel;
 import com.mini.core.web.servlet.DispatcherHttpServlet;
 import com.mini.core.web.support.config.Configures;
-import com.mini.core.web.view.PageViewResolverFreemarker;
+import com.mini.core.web.view.JspPageViewResolver;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,10 +53,11 @@ import static java.util.stream.Stream.of;
 @HandlesTypes(WebApplicationInitializer.class)
 @AutoService(ServletContainerInitializer.class)
 public final class MiniApplicationInitializer implements ServletContainerInitializer {
+	private static final Configures CONFIGURES = new Configures();
 	private static final String SEP = "/";
-
+	
 	// 反射获取所有配置类的实例
-	private List<WebApplicationInitializer> getWebMvcConfigureList(Set<Class<?>> initializer) {
+	private List<WebApplicationInitializer> getConfigureList(Set<Class<?>> initializer) {
 		return ofNullable(initializer).stream().flatMap(Collection::stream).filter( //
 				WebApplicationInitializer.class::isAssignableFrom).map(clazz -> {
 			try {
@@ -69,174 +69,145 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 			}
 		}).collect(Collectors.toList());
 	}
-
+	
 	@Override
 	public final void onStartup(Set<Class<?>> initializer, ServletContext context) {
 		// 获取所有配置信息
-		List<WebApplicationInitializer> configs = getWebMvcConfigureList(initializer);
-		Assert.isTrue(!configs.isEmpty(), "WebMvcConfigure can not be empty.");
+		List<WebApplicationInitializer> configList = getConfigureList(initializer);
+		Assert.isTrue(!configList.isEmpty(), "WebMvcConfigure can not be empty.");
 		// 初始化绑定
-		Injector injector = Guice.createInjector(Stream.concat(of(new MiniModule() {
-			protected synchronized void onStartup(Binder binder) throws Error {
-				// 绑定初始化
+		Injector injector = Guice.createInjector(new MiniModule() {
+			protected final void onStartup(Binder binder) throws Error {
+				// 绑定 Configures 对象和 ServletContext 对象
 				binder.bind(ServletContext.class).toInstance(context);
-				Enumeration<String> names = context.getInitParameterNames();
+				binder.bind(Configures.class).toInstance(CONFIGURES);
+				// 绑定初始化参数
+				var names = context.getInitParameterNames();
 				names.asIterator().forEachRemaining(name -> { //
-					String value = context.getInitParameter(name);
-					bind(binder, name, value);
+					var val = context.getInitParameter(name);
+					this.bind(binder, name, val);
 				});
 				// 绑定配置信息
-				for (WebApplicationInitializer config : configs) {
+				for (WebApplicationInitializer config : configList) {
 					binder.requestInjection(config);
 					binder.install(config);
 				}
 			}
-		}), configs.stream()).collect(Collectors.toList()));
-
-		// 获取配置信息
-		Configures configures = injector.getInstance(Configures.class);
-		requireNonNull(configures, "Configure can not be null.");
-
-		// 系统配置注册
-		this.onStartupRegisterSystemDefault(configures);
-		for (WebApplicationInitializer config : configs) {
-			config.onStartupRegister(context, configures);
-			registerActionProxy(injector, configures, config);
-		}
-
-		// 绑定 Servlet、Filter、listener
-		configures.getServlets().forEach(servlet -> servlet.register(context));
-		configures.getFilters().forEach(filter -> filter.register(context));
-		configures.getListeners().forEach(context::addListener);
-	}
-
-	private void onStartupRegisterSystemDefault(Configures configure) {
+		});
 		// 配置默认视图实现类
-		configure.setPageViewResolver(PageViewResolverFreemarker.class);
-		// 设置国际化全局拦截器
-		configure.addInterceptor(I18nActionInterceptor.class);
-
+		CONFIGURES.setPageViewResolver(JspPageViewResolver.class);
 		// 注册默认 HttpServlet
-		configure.addServlet(DispatcherHttpServlet.class, registration -> {
-			registration.addUrlPatterns(configure.getDefaultMapping());
+		CONFIGURES.addServlet(DispatcherHttpServlet.class, registration -> {
+			registration.addUrlPatterns(CONFIGURES.getDefaultMapping());
 			registration.setName("DispatcherHttpServlet");
 		});
-
 		// 编码统一管理过虑器
-		configure.addFilter(CharacterEncodingFilter.class, registration -> {
+		CONFIGURES.addFilter(CharacterEncodingFilter.class, registration -> {
 			registration.setName("CharacterEncodingFilter");
 			registration.addUrlPatterns("/*");
 		});
-
 		// 跨域请求过虑器
-		configure.addFilter(AccessControlAllowOriginFilter.class, registration -> {
+		CONFIGURES.addFilter(AccessControlAllowOriginFilter.class, registration -> {
 			registration.setName("AccessControlAllowOriginFilter");
 			registration.addUrlPatterns("/*");
 		});
-
 		// 静态资源缓存过虑器
-		configure.addFilter(CacheControlFilter.class, registration -> {
+		CONFIGURES.addFilter(CacheControlFilter.class, registration -> {
 			registration.setName("CacheControlFilter");
 			registration.addUrlPatterns("/*");
 		});
-
 		// 验证异常处理器/其它普通异常处理器
-		configure.addExceptionHandler(ExceptionHandlerValidate.class);
-		configure.addExceptionHandler(ExceptionHandlerDefault.class);
-
+		CONFIGURES.addExceptionHandler(ExceptionHandlerValidate.class);
+		CONFIGURES.addExceptionHandler(ExceptionHandlerDefault.class);
 		// Servlet容器、数据模型渲染、登录Session相关参数
-		configure.addArgumentResolver(ArgumentResolverContext.class);
-		configure.addArgumentResolver(ArgumentResolverModel.class);
-		configure.addArgumentResolver(ArgumentResolverSession.class);
-
+		CONFIGURES.addArgumentResolver(ArgumentResolverContext.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverModel.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverSession.class);
 		// 默认方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
-		configure.addArgumentResolver(ArgumentResolverBasicDefault.class);
-		configure.addArgumentResolver(ArgumentResolverArrayDefault.class);
-		configure.addArgumentResolver(ArgumentResolverBeanDefault.class);
-		configure.addArgumentResolver(ArgumentResolverMapDefault.class);
-		configure.addArgumentResolver(ArgumentResolverPartDefault.class);
-		configure.addArgumentResolver(ArgumentResolverPartDefaultArray.class);
-
+		CONFIGURES.addArgumentResolver(ArgumentResolverBasicDefault.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverArrayDefault.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverBeanDefault.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapDefault.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverPartDefault.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverPartDefaultArray.class);
 		// Request Param 方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
-		configure.addArgumentResolver(ArgumentResolverBasicRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverArrayRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverBeanRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverPartRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverPartArrayRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverMapRequestParam.class);
-		configure.addArgumentResolver(ArgumentResolverMapRequestParamArray.class);
-
+		CONFIGURES.addArgumentResolver(ArgumentResolverBasicRequestParam.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverArrayRequestParam.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverBeanRequestParam.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverPartRequestParam.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverPartArrayRequestParam.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestParam.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestParamArray.class);
 		// Request Uri 方式： 支持一般基础数据、一般基础数组、Map 类型的参数
-		configure.addArgumentResolver(ArgumentResolverBasicRequestUri.class);
-		configure.addArgumentResolver(ArgumentResolverArrayRequestUri.class);
-		configure.addArgumentResolver(ArgumentResolverBeanRequestUri.class);
-		configure.addArgumentResolver(ArgumentResolverMapRequestUri.class);
-		configure.addArgumentResolver(ArgumentResolverMapRequestUriArray.class);
-
+		CONFIGURES.addArgumentResolver(ArgumentResolverBasicRequestUri.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverArrayRequestUri.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverBeanRequestUri.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestUri.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestUriArray.class);
 		// Request Header 方式： 支持一般基础数据、一般基础数组、文件、Map 类型的参数
-		configure.addArgumentResolver(ArgumentResolverBasicRequestHeader.class);
-		configure.addArgumentResolver(ArgumentResolverArrayRequestHeader.class);
-		configure.addArgumentResolver(ArgumentResolverBeanRequestHeader.class);
-		configure.addArgumentResolver(ArgumentResolverMapRequestHeader.class);
-		configure.addArgumentResolver(ArgumentResolverMapRequestHeaderArray.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverBasicRequestHeader.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverArrayRequestHeader.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverBeanRequestHeader.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestHeader.class);
+		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestHeaderArray.class);
+		// 初始化项目自定义配置信息
+		for (WebApplicationInitializer config : configList) {
+			config.onStartupRegister(context, CONFIGURES);
+			registerActionProxy(injector, config);
+		}
+		// 绑定 Servlet、Filter、listener
+		CONFIGURES.getServlets().forEach(servlet -> servlet.register(context));
+		CONFIGURES.getFilters().forEach(filter -> filter.register(context));
+		CONFIGURES.getListeners().forEach(context::addListener);
 	}
-
+	
 	// 注册默认的 ActionInvocationProxy
-	private void registerActionProxy(Injector injector, Configures configure, //
-			WebApplicationInitializer config) {
+	private void registerActionProxy(Injector injector, WebApplicationInitializer config) {
 		// 获取需要扫描的所有包
-		Stream.concat(of(config.getClass().getPackageName()),
-				ofNullable(config.getClass()
-						.getAnnotation(ComponentScan.class))
-						.map(ComponentScan::value)
-						.stream()
-						.flatMap(Stream::of))
+		Stream.concat(of(config.getClass().getPackageName()), ofNullable(config.getClass()
+				.getAnnotation(ComponentScan.class))
+				.map(ComponentScan::value)
+				.stream()
+				.flatMap(Stream::of))
 				.map(name -> ClassUtil.scanner(name, Controller.class))
 				.flatMap(Collection::stream).distinct().forEach(clazz -> {
 			// 获取类上的注解信息
 			Controller controller = clazz.getAnnotation(Controller.class);
 			requireNonNull(controller, "@Controller can not be null");
-
 			// 获取类上的拦截器信息
 			Clear controllerClear = clazz.getAnnotation(Clear.class);
 			Before controllerBefore = clazz.getAnnotation(Before.class);
-
 			// 查找当前类下的所有公开方法并处理
 			Arrays.stream(clazz.getMethods()).forEach(method -> {
-
 				// 获取方法上的Action注解信息
 				Action action = method.getAnnotation(Action.class);
 				if (action == null) return;
-
 				// 获取方法上的拦截器信息
 				Clear methodClear = method.getAnnotation(Clear.class);
 				Before methodBefore = method.getAnnotation(Before.class);
-
 				// 视图文件路径
 				String path = getViewPath(clazz, controller, method, action);
-
 				// 获取方法参数信息
 				MiniParameter[] parameters = ClassUtil.getParameterByAsm(method);
-
 				// 获取 请求 Action 的路径 并 注册Action
-				getRequestUriList(clazz, controller, method, action).stream() //
-						.distinct().forEach(requestUri -> {  //
-					configure.addActionProxy(requestUri, new ActionSupportProxy() {
+				getRequestUriList(clazz, controller, method, action).stream().distinct().forEach(requestUri -> {
+					// 根据扫描出来的 Action 对象创建 ActionProxy 并添加到配置信息中
+					CONFIGURES.addActionProxy(requestUri, new ActionSupportProxy() {
 						private List<ActionInterceptor> interceptors;
 						private ParameterHandler[] handlers;
-
+						
 						@Nonnull
 						@Override
 						public final Class<?> getClazz() {
 							return clazz;
 						}
-
+						
 						@Nonnull
 						@Override
 						public final Method getMethod() {
 							return method;
 						}
-
+						
 						@Nonnull
 						@Override
 						public final IModel<?> getModel() {
@@ -244,13 +215,13 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 									.map(v -> v.setViewPath(getViewPath()))
 									.orElseThrow();
 						}
-
+						
 						@Nonnull
 						@Override
 						public final Action.Method[] getSupportMethod() {
 							return action.method();
 						}
-
+						
 						@Nonnull
 						@Override
 						public final List<ActionInterceptor> getInterceptors() {
@@ -278,38 +249,38 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 										return interceptors;
 									}
 									// 添加全局拦截器到拦截器实例列表
-									interceptors.addAll(0, configure.getInterceptors());
+									interceptors.addAll(0, CONFIGURES.getInterceptorList());
 									return interceptors;
 								}
 							});
 						}
-
+						
 						@Nonnull
 						@Override
 						public final MiniParameter[] getParameters() {
 							return parameters;
 						}
-
+						
 						@Nonnull
 						@Override
 						public final ParameterHandler[] getParameterHandlers() {
 							return ofNullable(handlers).orElseGet(this::getHandlers);
 						}
-
+						
 						private synchronized ParameterHandler[] getHandlers() {
-							handlers = Stream.of(getParameters()).map(param -> configure.getArgumentResolvers()
+							handlers = Stream.of(getParameters()).map(param -> CONFIGURES.getArgumentResolverSet()
 									.stream().filter(r -> r.supportParameter(param)).findAny()
 									.map(r -> new ParameterHandler(injector, r, param))
 									.orElseThrow(() -> new NullPointerException("Unsupported parameter:" + param)))
 									.toArray(ParameterHandler[]::new);
 							return handlers;
 						}
-
+						
 						@Override
 						public final String getViewPath() {
 							return path;
 						}
-
+						
 						@Override
 						public final String getRequestUri() {
 							return requestUri;
@@ -319,7 +290,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 			});
 		});
 	}
-
+	
 	@Nonnull
 	private String getViewPath(Class<?> clazz, Controller controller, Method method, Action action) {
 		// 处理文件路径
@@ -332,24 +303,24 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		typePath = StringUtils.strip(typePath, SEP);
 		// typePath 不能为空
 		Objects.requireNonNull(typePath);
-
+		
 		String methodPath = action.path();
 		if (StringUtils.isBlank(methodPath)) {
 			methodPath = method.getName();
 		}
-
+		
 		// 去掉方法上的路径和两边的空格
 		methodPath = StringUtils.strip(methodPath);
 		methodPath = StringUtils.strip(methodPath, SEP);
-
+		
 		// typePath 不能为空
 		Assert.notBlank(methodPath);
-
+		
 		// 获取完整的视图路径
 		return StringUtils.strip(typePath + SEP //
 				+ methodPath, SEP);
 	}
-
+	
 	@Nonnull
 	private List<String> getRequestUriList(Class<?> clazz, Controller controller, Method method, Action action) {
 		String typeUrl = controller.url();
@@ -359,14 +330,14 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		// 去掉类URL上的空格 “/”
 		typeUrl = StringUtils.strip(typeUrl);
 		typeUrl = StringUtils.strip(typeUrl, SEP);
-
+		
 		// 所有URL
 		List<String> urlList = new ArrayList<>();
 		if (ObjectUtils.isNotEmpty(action.url())) {
 			for (String methodUrl : action.url()) {
 				methodUrl = StringUtils.strip(methodUrl);
 				methodUrl = StringUtils.strip(methodUrl, SEP);
-
+				
 				// 组装成完整的URL
 				String url = typeUrl + SEP + methodUrl;
 				url = StringUtils.strip(url, SEP);

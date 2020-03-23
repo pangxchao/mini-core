@@ -1,26 +1,22 @@
 package com.mini.core.web.filter;
 
+import com.mini.core.web.support.config.Configures;
+
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
+import java.io.IOException;
 
 @Singleton
 public final class CharacterEncodingFilter implements Filter {
-
+	
 	@Inject
-	@Named("CharsetEncoding")
-	private String encoding;
-
-
+	private Configures configures;
+	
 	@Override
-	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws java.io.IOException, javax.servlet.ServletException {
-		response.setCharacterEncoding(encoding);
-		request.setCharacterEncoding(encoding);
+	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		response.setCharacterEncoding(configures.getEncoding());
+		request.setCharacterEncoding(configures.getEncoding());
 		chain.doFilter(request, response);
 	}
 }
