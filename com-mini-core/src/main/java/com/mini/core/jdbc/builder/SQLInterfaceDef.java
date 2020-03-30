@@ -1,19 +1,19 @@
 package com.mini.core.jdbc.builder;
 
-import com.mini.core.holder.ClassHolder;
-import com.mini.core.holder.FieldHolder;
+import com.mini.core.jdbc.annotation.*;
 import com.mini.core.util.ThrowsUtil;
+import com.mini.core.util.holder.ClassHolder;
 
 import javax.annotation.Nonnull;
 import javax.inject.Singleton;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.EventListener;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Class.forName;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 @Singleton
@@ -25,56 +25,143 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 	@SuppressWarnings("unchecked")
 	public final <T> void createReplace(SQLBuilder builder, @Nonnull T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
-		var table = ClassHolder.create(type).verifyTable();
-		// 添加除自增长的所有字段
-		table.replace(builder).columns().stream().filter(h -> {
-			return !h.hasAuto(); //
-		}).forEach(holder -> holder.values(builder, h -> {
-			var o = h.hasUpdate() || h.hasCreate() ? //
-					new Date() : h.getValue(instance);
-			builder.params(o);
-		}));
+		ClassHolder<? extends T> table = ClassHolder.create(type);
+		Table aTable = table.getAnnotation(Table.class);
+		Objects.requireNonNull(aTable);
+		
+		builder.replaceInto(aTable.value());
+		table.fields().forEach(h -> {
+			// 带Auto注解的字段不处理
+			if (nonNull(h.getAnnotation(Auto.class))) {
+				return;
+			}
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (isNull(column)) return;
+			
+			// 带Lock注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.values(column.value());
+				builder.params(currentTimeMillis());
+				return;
+			}
+			
+			// 带CreateAt注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(CreateAt.class))) {
+				builder.values(column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 带UpdateAt注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(UpdateAt.class))) {
+				builder.values(column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 其它字段
+			builder.values(column.value());
+			builder.params(h.getValue(instance));
+		});
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createInsert(SQLBuilder builder, @Nonnull T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
-		var table = ClassHolder.create(type).verifyTable();
-		// 添加除自增长的所有字段
-		table.insert(builder).columns().stream().filter(h -> {
-			return !h.hasAuto(); //
-		}).forEach(holder -> holder.values(builder, h -> {
-			var o = h.hasUpdate() || h.hasCreate() ? //
-					new Date() : h.getValue(instance);
-			builder.params(o);
-		}));
+		ClassHolder<? extends T> table = ClassHolder.create(type);
+		Table aTable = table.getAnnotation(Table.class);
+		Objects.requireNonNull(aTable);
+		
+		builder.insertInto(aTable.value());
+		table.fields().forEach(h -> {
+			// 带Auto注解的字段不处理
+			if (nonNull(h.getAnnotation(Auto.class))) {
+				return;
+			}
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (isNull(column)) return;
+			
+			// 带Lock注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.values(column.value());
+				builder.params(currentTimeMillis());
+				return;
+			}
+			
+			// 带CreateAt注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(CreateAt.class))) {
+				builder.values(column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 带UpdateAt注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(UpdateAt.class))) {
+				builder.values(column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 其它字段
+			builder.values(column.value());
+			builder.params(h.getValue(instance));
+		});
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <T> void createDelete(SQLBuilder builder, @Nonnull T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
-		var table = ClassHolder.create(type).verifyTable();
-		// 有标识删除状态的字段时，逻辑删除
-		if (table.hasColumnsAnyMatchDel()) {
-			table.update(builder).columns().stream().filter(FieldHolder::hasDel)
-					.forEach(holder -> holder.setDel(builder));
-			table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> { //
-				holder.set(builder, h -> builder.params(currentTimeMillis()));
+		ClassHolder<? extends T> table = ClassHolder.create(type);
+		Table aTable = table.getAnnotation(Table.class);
+		Objects.requireNonNull(aTable);
+		
+		if (table.fields().stream().anyMatch(h -> {
+			Del del = h.getAnnotation(Del.class);
+			return nonNull(del);
+		})) {
+			// 有字段代表删除状态时，修改该字段为删除状态
+			builder.update(aTable.value());
+			table.fields().forEach(h -> {
+				// 获取表字段信息
+				Column column = h.getAnnotation(Column.class);
+				if (isNull(column)) return;
+				
+				// 修改字段的删除状态
+				Del del = h.getAnnotation(Del.class);
+				if (nonNull(del)) {
+					builder.set("%s = ?", column.value());
+					builder.params(del.value());
+				}
+				
+				// 修改字段的锁数据
+				if (nonNull(h.getAnnotation(Lock.class))) {
+					builder.set("%s = ?", column.value());
+					builder.params(currentTimeMillis());
+				}
 			});
-		}
-		// 否则直接物理删除该数据
-		else table.delete(builder).from(builder);
+		} else builder.delete(aTable.value());
 		
-		// 添加ID条件
-		table.columns().stream().filter(FieldHolder::hasId).forEach(holder -> { //
-			holder.whereId(builder, h -> builder.params(h.getValue(instance)));
-		});
-		
-		// 添加 Lock 条件
-		table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> { //
-			holder.whereLock(builder, h -> builder.params(h.getValue(instance)));
+		// 添加修改或者删除的条件
+		table.fields().forEach(h -> {
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (column == null) return;
+			
+			// 添加字段ID条件
+			if (nonNull(h.getAnnotation(Id.class))) {
+				builder.where("%s = ?", column.value());
+				builder.params(h.getValue(instance));
+			}
+			
+			// 添加字段锁条件
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.where("%s = ?", column.value());
+				builder.params(h.getValue(instance));
+			}
 		});
 	}
 	
@@ -82,59 +169,190 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 	@SuppressWarnings("unchecked")
 	public final <T> void createUpdate(SQLBuilder builder, @Nonnull T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
-		var table = ClassHolder.create(type).verifyTable();
+		ClassHolder<? extends T> table = ClassHolder.create(type);
+		Table aTable = table.getAnnotation(Table.class);
+		Objects.requireNonNull(aTable);
 		
-		// 添加除ID、CreateAt和Lock标注的所有字段
-		table.update(builder).columns().stream().filter(h -> {
-			return !h.hasId() && !h.hasCreate() && !h.hasLock(); //
-		}).forEach(holder -> holder.set(builder, h -> {
-			var o = h.hasUpdate() ? new Date() //
-					: h.getValue(instance);
-			builder.params(o);
-		}));
-		// 添加 Lock 字段修改值
-		table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> { //
-			holder.set(builder, h -> builder.params(System.currentTimeMillis()));
+		builder.update(aTable.value());
+		table.fields().forEach(h -> {
+			// 带ID注解的字段不修改
+			if (nonNull(h.getAnnotation(Id.class))) {
+				return;
+			}
+			
+			// 带CreateAt注解的字段不修改
+			if (nonNull(h.getAnnotation(CreateAt.class))) {
+				return;
+			}
+			
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (column == null) return;
+			
+			// 还UpdateAt注解的字段设置字段值为当前时间
+			if (nonNull(h.getAnnotation(UpdateAt.class))) {
+				builder.set("%s = ?", column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 带Lock注解的字段修改为当前时间戳值
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.set("%s = ?", column.value());
+				builder.params(currentTimeMillis());
+				return;
+			}
+			
+			// 其它所有的字段
+			builder.set("%s = ?", column.value());
+			builder.params(h.getValue(instance));
 		});
 		
-		// 添加ID条件
-		table.columns().stream().filter(FieldHolder::hasId).forEach(holder -> holder.whereId(builder, h -> {
-			builder.params(h.getValue(instance));
-		}));
-		
-		// 添加 Lock 条件
-		table.columns().stream().filter(FieldHolder::hasLock).forEach(holder -> holder.whereLock(builder, h -> {
-			builder.params(h.getValue(instance));
-		}));
+		table.fields().forEach(h -> {
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (column == null) return;
+			
+			// 添加字段ID条件
+			if (nonNull(h.getAnnotation(Id.class))) {
+				builder.where("%s = ?", column.value());
+				builder.params(h.getValue(instance));
+				return;
+			}
+			
+			// 带Lock注解的字段设置修改值和条件
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.where("%s = ?", column.value());
+				builder.params(h.getValue(instance));
+			}
+		});
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void createInsertOnUpdate(SQLBuilder builder, T instance) {
 		Class<? extends T> type = (Class<T>) instance.getClass();
-		var table = ClassHolder.create(type).verifyTable();
-		// 添加除自增长的所有字段
-		table.insert(builder).columns().stream().filter(h -> {
-			return !h.hasAuto(); //
-		}).forEach(holder -> holder.values(builder, h -> {
-			var o = h.hasUpdate() || h.hasCreate() ? //
-					new Date() : h.getValue(instance);
-			builder.params(o);
-		}));
-		// 修改除ID和创建时间以外的所有字段
-		table.columns().stream().filter(h -> {
-			return !h.hasId() && !h.hasCreate(); //
-		}).forEach(h -> h.onDuplicateKeyUpdate(builder));
+		ClassHolder<? extends T> table = ClassHolder.create(type);
+		Table aTable = table.getAnnotation(Table.class);
+		Objects.requireNonNull(aTable);
+		
+		builder.insertInto(aTable.value());
+		table.fields().forEach(h -> {
+			// 带Auto注解的字段不处理
+			if (nonNull(h.getAnnotation(Auto.class))) {
+				return;
+			}
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (isNull(column)) return;
+			
+			// 带Lock注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.values(column.value());
+				builder.params(currentTimeMillis());
+				return;
+			}
+			
+			// 带CreateAt注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(CreateAt.class))) {
+				builder.values(column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 带UpdateAt注解的字段设置值为当前时间
+			if (nonNull(h.getAnnotation(UpdateAt.class))) {
+				builder.values(column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 其它字段
+			builder.values(column.value());
+			builder.params(h.getValue(instance));
+		});
+		
+		table.fields().forEach(h -> {
+			// 带ID注解的字段不修改
+			if (nonNull(h.getAnnotation(Id.class))) {
+				return;
+			}
+			
+			// 带CreateAt注解的字段不修改
+			if (nonNull(h.getAnnotation(CreateAt.class))) {
+				return;
+			}
+			
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (column == null) return;
+			
+			// 还UpdateAt注解的字段设置字段值为当前时间
+			if (nonNull(h.getAnnotation(UpdateAt.class))) {
+				builder.onDuplicateKeyUpdate("%s = ?", column.value());
+				builder.params(new Date());
+				return;
+			}
+			
+			// 带Lock注解的字段修改为当前时间戳值
+			if (nonNull(h.getAnnotation(Lock.class))) {
+				builder.onDuplicateKeyUpdate("%s = ?", column.value());
+				builder.params(currentTimeMillis());
+				return;
+			}
+			
+			// 其它所有的字段
+			builder.onDuplicateKeyUpdate("%s = VALUES(%s)", column.value(), column.value());
+		});
 	}
 	
 	@Override
 	public final <T> void createSelect(SQLBuilder builder, @Nonnull Class<T> type) {
-		var table = ClassHolder.create(type).verifyTable();
-		// 验证@Table并生成查询语句
-		table.select(builder).from(builder).join(builder);
-		// 排除标记删除的数据
-		table.columns().stream().filter(FieldHolder::hasDel)
-				.forEach(h -> h.whereDel(builder));
+		ClassHolder<? extends T> table = ClassHolder.create(type);
+		Table aTable = table.getAnnotation(Table.class);
+		Objects.requireNonNull(aTable);
+		
+		// 关联表信息
+		Map<String, Ref> join_column = new HashMap<>();
+		
+		// 查询字段信息
+		table.fields().forEach(h -> {
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (column == null) return;
+			
+			// 添加查询字段
+			builder.select(column.value());
+			
+			// 获取关联表信息
+			Ref ref = h.getAnnotation(Ref.class);
+			if (nonNull(ref)) {
+				join_column.put(column.value(), ref);
+			}
+		});
+		// from 表名
+		builder.from(aTable.value());
+		
+		// 处理关联表信息
+		for (Join join : table.getAnnotationsByType(Join.class)) {
+			Ref ref = join_column.get(join.column());
+			if (isNull(ref)) continue;
+			builder.join("%s ON %s = %s", ref.table(), join.column(), ref.column());
+		}
+		
+		// 查询字段信息
+		table.fields().forEach(h -> {
+			// 获取表字段信息
+			Column column = h.getAnnotation(Column.class);
+			if (column == null) return;
+			
+			// 排除删除的数据
+			Del del = h.getAnnotation(Del.class);
+			if (nonNull(del)) {
+				builder.where("%s = ?", column.value());
+				builder.params(del.value());
+			}
+		});
 	}
 	
 	// 获取SQL创建的实现类

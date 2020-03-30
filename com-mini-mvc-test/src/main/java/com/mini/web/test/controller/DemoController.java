@@ -5,7 +5,8 @@ import com.mini.core.jdbc.model.Paging;
 import com.mini.core.security.digest.MD5;
 import com.mini.core.util.DateFormatUtil;
 import com.mini.core.util.PKGenerator;
-import com.mini.core.validate.ValidateUtil;
+import com.mini.core.validation.annotation.Length;
+import com.mini.core.validation.annotation.NotNull;
 import com.mini.core.web.annotation.Action;
 import com.mini.core.web.annotation.Controller;
 import com.mini.core.web.model.JsonModel;
@@ -23,7 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mini.core.validate.ValidateUtil.sendError;
+import static com.mini.core.validation.Validator.status;
 
 /**
  * 该组接口用于演示使用 Layui table 功能编写的后台管理功能
@@ -37,8 +38,8 @@ import static com.mini.core.validate.ValidateUtil.sendError;
 public class DemoController {
 	@Inject
 	private UserDao userDao;
-
-
+	
+	
 	/**
 	 * 实体列表首页
 	 * @param model 数据模型渲染器
@@ -46,7 +47,7 @@ public class DemoController {
 	@Action(value = PageModel.class, url = "index.htm")
 	public void index(PageModel model) {
 	}
-
+	
 	/**
 	 * 实体列表数据分页
 	 * @param model     数据模型渲染器
@@ -69,7 +70,7 @@ public class DemoController {
 			int district, LocalDate startTime, LocalDate endTime, HttpServletRequest request) {
 		System.out.println("===================back========================");
 		System.out.println(JSON.toJSONString(request.getParameterMap()));
-
+		
 		StringBuilder regionIdUri = new StringBuilder();
 		if (province > 0) {
 			regionIdUri.append(province);
@@ -105,61 +106,50 @@ public class DemoController {
 		model.addData("msg", "查询成功");
 		model.addData("code", 0);
 	}
-
+	
 	/**
 	 * 添加用户信息处理
 	 * @param model 数据模型渲染器
 	 * @param user  实体信息
 	 */
 	@Action(value = JsonModel.class, url = "insert.htm")
-	public void insert(JsonModel model, User user) throws Exception {
-		ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
-		ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
-		ValidateUtil.isNotBlank(user.getPassword(), 600, "用户密码不能为空");
-		ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
+	public void insert(JsonModel model, @NotNull(error = 600, message = "用户信息为空，处理失败") User user) {
+		status(600).message("用户名不能为空").isNotBlank(user.getName());
+		status(600).message("用户密码不能为空").isNotBlank(user.getPassword());
+		status(600).message("用户手机号不能为空").isNotBlank(user.getPhone());
 		// 加密密码和生成用户ID
 		user.setPassword(MD5.encode(user.getPassword()));
 		user.setCreateTime(new Date());
 		user.setId(PKGenerator.id());
-		// 添加用户信息到数据库
-		if (userDao.insert(user) != 1) {
-			sendError(600, "添加用户信息失败");
-			return;
-		}
-		// 返回用户信息到客户端
+		
+		status(600).message("添加用户信息失败").is(userDao.insert(user) == 1);
 		model.addData("id", String.valueOf(user.getId()));
 	}
-
+	
 	/**
 	 * 修改用户信息处理
 	 * @param model 数据模型渲染器
 	 * @param user  实体信息
 	 */
 	@Action(value = JsonModel.class, url = "update.htm")
-	public void update(JsonModel model, User user) {
-		ValidateUtil.isNotNull(user, 600, "用户信息为空，处理失败");
-		ValidateUtil.isNotBlank(user.getName(), 600, "用户名不能为空");
-		ValidateUtil.isNotBlank(user.getPhone(), 600, "用户手机号不能为空");
-
+	public void update(JsonModel model, @NotNull(error = 600, message = "用户信息为空，处理失败")  User user) {
+		status(600).message("用户名不能为空").isNotBlank(user.getName());
+		status(600).message("用户手机号不能为空").isNotBlank(user.getPhone());
+		
 		User info = userDao.queryById(user.getId());
-		ValidateUtil.isNotNull(info, 600, "用户信息不存在");
+		status(600).message("用户信息不存在").isNotNull(info);
 		user.setCreateTime(info.getCreateTime());
 		user.setPassword(info.getPassword());
-		if (userDao.update(user) != 1) {
-			sendError(600, "修改用户信息失败");
-		}
+		status(600).message("添加用户信息失败").is(userDao.insert(user) == 1);
 	}
-
+	
 	/**
 	 * 删除用户信息
 	 * @param model  数据模型渲染器
 	 * @param idList 要删除的数据ID List
 	 */
 	@Action(value = JsonModel.class, url = "delete.htm")
-	public void delete(JsonModel model, long[] idList) {
-		if (idList == null || idList.length <= 0) {
-			ValidateUtil.sendError(600, "未选中数据");
-		}
+	public void delete(JsonModel model, @Length(error = 600, message = "未选中数据", min = 1) long[] idList) {
 		userDao.delete(idList);
 	}
 }

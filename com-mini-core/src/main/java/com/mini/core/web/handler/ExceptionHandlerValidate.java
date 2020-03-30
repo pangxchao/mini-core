@@ -1,7 +1,7 @@
 package com.mini.core.web.handler;
 
 import com.mini.core.util.ThrowsUtil;
-import com.mini.core.validate.ValidateException;
+import com.mini.core.validation.ValidationException;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.support.config.Configures;
 
@@ -24,14 +24,14 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 	
 	@Override
 	public boolean supportException(Throwable throwable) {
-		return throwable instanceof ValidateException;
+		return throwable instanceof ValidationException;
 	}
 	
 	@Override
 	public void handler(ActionInvocation invocation, Throwable exception, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			ResourceBundle bundle = configures.getResourceBundleFactory().get(invocation);
-			ValidateException e = (ValidateException) exception;
+			ValidationException e = (ValidationException) exception;
 			// 获取消息内容
 			var message = bundle.containsKey(e.getKey())
 					? bundle.getString(e.getKey())

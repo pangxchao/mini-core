@@ -2,137 +2,142 @@ import com.mini.plugin.builder.javapoet.FieldSpecBuilder
 import com.mini.plugin.builder.javapoet.MethodSpecBuilder
 import com.mini.plugin.builder.javapoet.TypeSpecBuilder
 import com.mini.plugin.config.TableInfo
-import com.mini.plugin.util.ColumnUtil
 import com.squareup.javapoet.AnnotationSpec
-import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
 
+import static com.mini.plugin.util.ColumnUtil.getColumnType
 import static com.mini.plugin.util.GroovyUtil.*
 import static com.mini.plugin.util.StringUtil.firstUpperCase
 import static javax.lang.model.element.Modifier.*
 
+AnnotationSpec.Builder annotation
 //noinspection GrUnresolvedAccess
 TableInfo info = tableInfo
+MethodSpecBuilder method
+TypeSpecBuilder builder
+FieldSpecBuilder field
 
-//noinspection GrUnresolvedAccess
+// 定义类的声明
+builder = TypeSpecBuilder.classBuilder(beanName(info))
+builder.addModifiers(PUBLIC)
+builder.addSuperinterface(Serializable.class)
+builder.addAnnotation(lombokDataClass())
+builder.addAnnotation(paramClass())
+builder.addJavadoc('$L \n', info.getComment())
+builder.addJavadoc('@author xchao \n')
+
+// 添加 @SuperBuilder 注解
+annotation = AnnotationSpec.builder(lombokSuperBuilderClass())
+annotation.addMember('toBuilder', '$L', 'true')
+builder.addAnnotation(annotation.build())
+
+// 添加 @Table 注解
+annotation = AnnotationSpec.builder(tableClass())
+annotation.addMember('value', '$S', info.getTableName())
+builder.addAnnotation(annotation.build())
+
+// 生成常量表名称字段
+field = FieldSpecBuilder.builder(String.class, info.getTableName().toUpperCase())
+field.addModifiers(PUBLIC, STATIC, FINAL)
+field.initializer('$S', info.getTableName())
+annotation = AnnotationSpec.builder(commentClass())
+annotation.addMember('value', '$S', info.getComment())
+field.addAnnotation(annotation.build())
+builder.addField(field.build())
+
+// 生成字段常量
+info.getColumnList().forEach({ column ->
+	if (!column.isExt()) {
+		field = FieldSpecBuilder.builder(String.class, column.getColumnName().toUpperCase())
+		field.addModifiers(PUBLIC, STATIC, FINAL)
+		field.initializer('$S ', column.getColumnName())
+		annotation = AnnotationSpec.builder(commentClass())
+		annotation.addMember('value', '$S', column.getComment())
+		field.addAnnotation(annotation.build())
+		builder.addField(field.build())
+	}
+})
+
+// 生成属性信息
+info.getColumnList().forEach({ column ->
+	if (!column.isExt()) {
+		field = FieldSpecBuilder.builder(getColumnType(column), column.getFieldName())
+		field.addModifiers(PRIVATE)
+		// @Id 注解
+		if (column.isId()) {
+			field.addAnnotation(idClass())
+		}
+		// @Del 注解
+		if (column.isDel()) {
+			annotation = AnnotationSpec.builder(delClass())
+			annotation.addMember('value', '$L', column.delValue)
+			field.addAnnotation(annotation.build())
+		}
+		// @Lock 注解
+		if (column.isLock()) {
+			field.addAnnotation(lockClass())
+		}
+		// @Auto 注解
+		if (column.isAuto()) {
+			field.addAnnotation(autoClass())
+		}
+		// @CreateAt 注解
+		if (column.isCreateAt()) {
+			field.addAnnotation(createAtClass())
+		}
+		// @UpdateAt 注解
+		if (column.isUpdateAt()) {
+			field.addAnnotation(updateAtClass())
+		}
+		// @Column 注解
+		annotation = AnnotationSpec.builder(columnClass())
+		annotation.addMember('value', '$L', column.getColumnName().toUpperCase())
+		field.addAnnotation(annotation.build())
+		// @Ref 注解
+		if (column.isRef()) {
+			annotation = AnnotationSpec.builder(refClass())
+			annotation.addMember('table', '$S', column.getRefTable())
+			annotation.addMember('column', '$S', column.getRefColumn())
+			field.addAnnotation(annotation.build())
+		}
+		builder.addField(field.build())
+	}
+})
+
+// 添加默认无参构造方法
+method = MethodSpecBuilder.constructorBuilder()
+method.addAnnotation(lombokTolerateClass())
+method.addModifiers(PUBLIC)
+builder.addMethod(method.build())
+
+// 生成日期格式化扩展方法
+info.getColumnList().forEach({ column ->
+	if (!column.isExt() && Date.class.isAssignableFrom(getColumnType(column))) {
+		String n = firstUpperCase(column.getFieldName())
+		// 日期时间格式化
+		method = MethodSpecBuilder.methodBuilder('get' + n + '_DT')
+		method.addModifiers(PUBLIC, FINAL)
+		method.returns(String.class)
+		method.addStatement('if($N == null) return null', column.getFieldName())
+		method.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(), column.getFieldName())
+		builder.addMethod(method.build())
+		// 日期格式化
+		method = MethodSpecBuilder.methodBuilder('get' + n + '_D')
+		method.addModifiers(PUBLIC, FINAL)
+		method.returns(String.class)
+		method.addStatement('if($N == null) return null', column.getFieldName())
+		method.addStatement('return $T.formatDate($N)', dateFormatUtilClass(), column.getFieldName())
+		builder.addMethod(method.build())
+		// 时间格式化
+		method = MethodSpecBuilder.methodBuilder('get' + n + '_T')
+		method.addModifiers(PUBLIC, FINAL)
+		method.returns(String.class)
+		method.addStatement('if($N == null) return null', column.getFieldName())
+		method.addStatement('return $T.formatTime($N)', dateFormatUtilClass(), column.getFieldName())
+		builder.addMethod(method.build())
+	}
+})
+
+// 返回JavaFile信息
 return JavaFile.builder(beanPackage(info),
-		TypeSpecBuilder.classBuilder(beanName(info))
-				.addModifiers(PUBLIC)
-				.addSuperinterface(Serializable.class)
-				.addAnnotation(lombokDataClass())
-				.addAnnotation(paramClass())
-				.addAnnotation(AnnotationSpec.builder(lombokSuperBuilderClass())
-						.addMember('toBuilder', '$L', 'true')
-						.build())
-				.addAnnotation(AnnotationSpec.builder(tableClass())
-						.addMember('value', '$S', info.getTableName())
-						.build())
-				.addJavadoc('$L \n', info.getComment())
-				.addJavadoc('@author xchao \n')
-
-				// 生成常量 TABLE 字段
-				.addField(FieldSpec.builder(String.class, info.getTableName().toUpperCase())
-						.addModifiers(PUBLIC, STATIC, FINAL)
-						.initializer('$S', info.getTableName())
-						.addAnnotation(AnnotationSpec.builder(commentClass())
-								.addMember('value', '$S', info.getComment() + ':' + info.getTableName())
-								.build())
-						.build())
-
-				// 生成字段常量
-				.forAdd(info.getColumnList(), { builder, column ->
-					builder.ifAdd(!column.isExt(),{it->
-						builder.addField(FieldSpec.builder(String.class, column.getColumnName().toUpperCase())
-								.addModifiers(PUBLIC, STATIC, FINAL)
-								.initializer('$S ', column.getColumnName())
-								.addAnnotation(AnnotationSpec.builder(commentClass())
-										.addMember('value', '$S', column.getComment())
-										.build())
-								.build())
-					})
-				})
-
-				// 生成属性信息
-				.forAdd(info.getColumnList(), { builder, column ->
-					builder.ifAdd(!column.isExt(), {
-						builder.addField(FieldSpecBuilder.builder(ColumnUtil.getColumnType(column),
-								column.getFieldName()).addModifiers(PRIVATE)
-								// @Id 注解
-								.ifAdd(column.isId(), { v ->
-									v.addAnnotation(idClass())
-								})
-								// @Del 注解
-								.ifAdd(column.isDel(), { v ->
-									v.addAnnotation(delClass())
-								})
-								// @Lock 注解
-								.ifAdd(column.isLock(), { v ->
-									v.addAnnotation(lockClass())
-								})
-								// @Auto 注解
-								.ifAdd(column.isAuto(), { v ->
-									v.addAnnotation(autoClass())
-								})
-								// @CreateAt 注解
-								.ifAdd(column.isCreateAt(), { v ->
-									v.addAnnotation(createAtClass())
-								})
-								// @UpdateAt 注解
-								.ifAdd(column.isUpdateAt(), { v ->
-									v.addAnnotation(updateAtClass())
-								})
-								// @Column 注解
-								.addAnnotation(AnnotationSpec.builder(columnClass())
-										.addMember('value', '$L', column.getColumnName().toUpperCase())
-										.build())
-								// @Ref 注解
-								.ifAdd(column.isRef(), { v ->
-									v.addAnnotation(AnnotationSpec.builder(refClass())
-											.addMember('table', '$S', column.getRefTable())
-											.addMember('column', '$S', column.getRefColumn())
-											.build())
-								})
-								.build())
-					})
-				})
-
-				// 添加默认无参构造方法
-				.addMethod(MethodSpecBuilder.constructorBuilder()
-					.addAnnotation(lombokTolerateClass())
-					.addModifiers(PUBLIC)
-					.build())
-
-				// 生成日期格式化扩展方法
-				.forAdd(info.getColumnList(), { builder, column ->
-					builder.ifAdd(Date.class.isAssignableFrom(ColumnUtil.getColumnType(column))
-							&& !column.isExt(), {
-						builder.addMethod(MethodSpecBuilder.methodBuilder('get' +
-								firstUpperCase(column.getFieldName()) + '_DT')
-								.addModifiers(PUBLIC, FINAL)
-								.returns(String.class)
-								.addStatement('if($N == null) return null', column.getFieldName())
-								.addStatement('return $T.formatDateTime($N)', dateFormatUtilClass(),
-										column.getFieldName())
-								.build())
-
-						builder.addMethod(MethodSpecBuilder.methodBuilder('get' +
-								firstUpperCase(column.getFieldName()) + '_D')
-								.addModifiers(PUBLIC, FINAL)
-								.returns(String.class)
-								.addStatement('if($N == null) return null', column.getFieldName())
-								.addStatement('return $T.formatDate($N)', dateFormatUtilClass(),
-										column.getFieldName())
-								.build())
-
-						builder.addMethod(MethodSpecBuilder.methodBuilder('get' +
-								firstUpperCase(column.getFieldName()) + '_T')
-								.addModifiers(PUBLIC, FINAL)
-								.returns(String.class)
-								.addStatement('if($N == null) return null', column.getFieldName())
-								.addStatement('return $T.formatTime($N)', dateFormatUtilClass(),
-										column.getFieldName())
-								.build())
-					})
-				})
-				.build())
-		.build()
+		builder.build()).build()

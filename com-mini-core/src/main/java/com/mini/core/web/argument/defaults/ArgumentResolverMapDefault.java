@@ -1,7 +1,7 @@
 package com.mini.core.web.argument.defaults;
 
-import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
+import com.mini.core.web.annotation.Param;
 import com.mini.core.web.argument.ArgumentResolver;
 import com.mini.core.web.interceptor.ActionInvocation;
 
@@ -12,17 +12,16 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.nonNull;
+
 @Named
 @Singleton
 public final class ArgumentResolverMapDefault implements ArgumentResolver {
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
-		for (var annotation : parameter.getAnnotations()) {
-			if (annotation.getClass().getAnnotation( //
-					Associated.class) != null) {
-				return false;
-			}
+		if (nonNull(parameter.getAnnotation(Param.class))) {
+			return false;
 		}
 		if (Map.class != parameter.getType()) {
 			return false;
@@ -41,7 +40,7 @@ public final class ArgumentResolverMapDefault implements ArgumentResolver {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		HashMap<String, String> result = new HashMap<>();

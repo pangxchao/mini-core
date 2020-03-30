@@ -1,13 +1,14 @@
 package com.mini.web.test.entity;
 
-import com.mini.core.holder.jdbc.Column;
-import com.mini.core.holder.jdbc.Comment;
-import com.mini.core.holder.jdbc.Id;
-import com.mini.core.holder.jdbc.Table;
-import com.mini.core.holder.web.Param;
+import com.mini.core.jdbc.annotation.Column;
+import com.mini.core.jdbc.annotation.Comment;
+import com.mini.core.jdbc.annotation.Id;
+import com.mini.core.jdbc.annotation.Table;
+import com.mini.core.web.annotation.Param;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
+import lombok.experimental.Tolerate;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 
 /**
@@ -17,6 +18,7 @@ import java.io.Serializable;
 @Data
 @Param
 @Table("common_region")
+@SuperBuilder(toBuilder = true)
 public class Region implements Serializable {
 	@Comment("表名称common_region")
 	public static final String TABLE = "common_region";
@@ -52,54 +54,6 @@ public class Region implements Serializable {
 	@Column(REGION_REGION_ID)
 	private Integer regionId;
 	
-	public static Builder builder() {
-		return new Builder(new Region());
-	}
-	
-	public static Builder builder(Region copy) {
-		return Region.builder()
-			.id(copy.getId())
-			.name(copy.getName())
-			.idUri(copy.getIdUri())
-			.nameUri(copy.getNameUri())
-			.regionId(copy.getRegionId());
-	}
-	
-	public static class Builder {
-		private final Region Region;
-		
-		protected Builder(Region Region) {
-			this.Region = Region;
-		}
-		
-		public Builder id(int id) {
-			Region.setId(id);
-			return this;
-		}
-		
-		public Builder name(String name) {
-			Region.setName(name);
-			return this;
-		}
-		
-		public Builder idUri(String idUri) {
-			Region.setIdUri(idUri);
-			return this;
-		}
-		
-		public Builder nameUri(String nameUri) {
-			Region.setNameUri(nameUri);
-			return this;
-		}
-		
-		public Builder regionId(Integer regionId) {
-			Region.setRegionId(regionId);
-			return this;
-		}
-		
-		@Nonnull
-		public Region build() {
-			return Region;
-		}
-	}
+	@Tolerate
+	public Region() {}
 }

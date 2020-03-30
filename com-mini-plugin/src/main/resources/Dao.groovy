@@ -1,25 +1,31 @@
+import com.mini.plugin.builder.javapoet.TypeSpecBuilder
 import com.mini.plugin.config.TableInfo
-import com.mini.plugin.util.GroovyUtil
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.TypeSpec
 
+import static com.mini.plugin.util.GroovyUtil.*
 import static javax.lang.model.element.Modifier.PUBLIC
 
 ClassName implementedByClass = ClassName.get('com.google.inject', 'ImplementedBy')
 
+AnnotationSpec.Builder annotation
 //noinspection GrUnresolvedAccess
 TableInfo info = tableInfo
+TypeSpecBuilder builder
 
-return JavaFile.builder(GroovyUtil.daoPackage(info),
-		TypeSpec.interfaceBuilder(GroovyUtil.daoName(info))
-				.addModifiers(PUBLIC)
-				.addSuperinterface(GroovyUtil.daoBaseClass(info))
-				.addJavadoc('$L Dao \n', info.getComment())
-				.addJavadoc('@author xchao \n')
-				.addAnnotation(AnnotationSpec.builder(implementedByClass)
-						.addMember('value', '$T.class', GroovyUtil.daoImplClass(info))
-						.build())
-				.build())
-		.build()
+// 定义类的声明
+builder = TypeSpecBuilder.interfaceBuilder(daoName(info))
+builder.addModifiers(PUBLIC)
+builder.addSuperinterface(daoBaseClass(info))
+builder.addJavadoc('$L Dao \n', info.getComment())
+builder.addJavadoc('@author xchao \n')
+
+// 生成 ImplementedBy 注解
+annotation = AnnotationSpec.builder(implementedByClass)
+annotation.addMember('value', '$T.class', daoImplClass(info))
+builder.addAnnotation(annotation.build())
+
+// 返回JavaFile信息
+return JavaFile.builder(daoPackage(info),
+		builder.build()).build()

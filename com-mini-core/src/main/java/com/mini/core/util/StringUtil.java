@@ -7,10 +7,113 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import static com.mini.core.validate.Validator.MOBILE;
 import static java.lang.Character.isUpperCase;
 
 public final class StringUtil extends StringUtils {
+	// *: 0 次或者多次, +: 一次或者多次, ?: 0次或者1次, {n}:刚刚n次, {n,m}: n到m次
+	// \d: [0-9], \D: [^0-9], \w:[a-zA-Z_0-9], \W:[^a-zA-Z_0-9], \s: [\t\n\r\f], \S: [^\t\n\r\f]
+	public static final String PHONE = "((010|02[0-9]|0[3-9]{2,3})[-])?[0-9]{6,8}";
+	public static final String ID_CARD = "\\d{15}(\\d{2}[A-Za-z0-9])?";
+	public static final String EMAIL = "\\S+[@]\\S+[.]\\S+";
+	public static final String CHINESE = "[\u4E00-\u9FA5]+";
+	
+	public static final String REQUIRE = "[a-z_][a-z0-9_]*";
+	public static final String MOBILE = "1\\d{10}";
+	public static final String NUMBER = "\\d+";
+	public static final String LETTER = "\\w+";
+	
+	/**
+	 * 验证字符串与正则表达式是否匹配
+	 * @param string 字符串
+	 * @param regex  正则表达式
+	 * @return true-是
+	 */
+	public static boolean isPattern(String string, String regex) {
+		return (string != null && string.matches(regex));
+	}
+	
+	
+	/**
+	 * 验证传入字符串是否为邮箱格式
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isEmail(String string) {
+		return isPattern(string, EMAIL);
+	}
+	
+	/**
+	 * 验证传入字符串是否为电话号码
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isPhone(String string) {
+		return isPattern(string, PHONE);
+	}
+	
+	/**
+	 * 验证传入字符串是否为手机号
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isMobile(String string) {
+		return isPattern(string, MOBILE);
+	}
+	
+	/**
+	 * 验证传入字符串是否为手机号或者电话号码
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isMobilePhone(String string) {
+		return isPattern(string, MOBILE) || isPattern(string, PHONE);
+	}
+	
+	/**
+	 * 验证传入字符串是否为纯英文字母
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isLetter(String string) {
+		return isPattern(string, LETTER);
+	}
+	
+	/**
+	 * 验证传入字符串是否为纯数字
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isNumber(String string) {
+		return isPattern(string, NUMBER);
+	}
+	
+	/**
+	 * 验证传入字符串是否为纯中文
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isChinese(String string) {
+		return isPattern(string, CHINESE);
+	}
+	
+	/**
+	 * 验证传入字符串是否为身份证号码
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isIdCard(String string) {
+		return isPattern(string, ID_CARD);
+	}
+	
+	/**
+	 * 验证传入字符串是否为字母、数字和下划线组成，数字不能开头
+	 * @param string 传入字符串
+	 * @return true-是
+	 */
+	public static boolean isRequire(String string) {
+		return isPattern(string, REQUIRE);
+	}
+	
 	/**
 	 * 自定义格式化字符串
 	 * @param self 字符串内容

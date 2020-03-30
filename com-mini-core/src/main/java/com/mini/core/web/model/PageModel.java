@@ -10,8 +10,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mini.core.validate.ValidateUtil.isNotBlank;
+import static com.mini.core.validation.Validator.status;
 import static com.mini.core.web.util.ResponseCode.INTERNAL_SERVER_ERROR;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 
 /**
@@ -86,7 +87,7 @@ public class PageModel extends IModel<PageModel> implements Serializable {
 	
 	@Override
 	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
-		isNotBlank(viewPath, INTERNAL_SERVER_ERROR, "View path can not be null");
+		status(INTERNAL_SERVER_ERROR).message("View path can not be null").is(isNotBlank(viewPath));
 		PageViewResolver view = getConfigures().getPageViewResolver();
 		view.generator(data, viewPath, request, response);
 	}

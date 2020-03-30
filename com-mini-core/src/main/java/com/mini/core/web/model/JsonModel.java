@@ -147,6 +147,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	 */
 	public JsonModel setData(Paging<?> paging) {
 		this.map.put("total", paging.getTotal());
+		this.map.put("limit", paging.getLimit());
 		this.map.put("rows", paging.getRows());
 		this.map.put("page", paging.getPage());
 		this.data = this.map;

@@ -1,14 +1,15 @@
 package com.mini.web.test.entity;
 
-import com.mini.core.holder.jdbc.Column;
-import com.mini.core.holder.jdbc.Comment;
-import com.mini.core.holder.jdbc.Id;
-import com.mini.core.holder.jdbc.Table;
-import com.mini.core.holder.web.Param;
+import com.mini.core.jdbc.annotation.Column;
+import com.mini.core.jdbc.annotation.Comment;
+import com.mini.core.jdbc.annotation.Id;
+import com.mini.core.jdbc.annotation.Table;
 import com.mini.core.util.DateFormatUtil;
+import com.mini.core.web.annotation.Param;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
+import lombok.experimental.Tolerate;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -19,6 +20,7 @@ import java.util.Date;
 @Data
 @Param
 @Table("user_info")
+@SuperBuilder(toBuilder = true)
 public class User implements Serializable {
 	@Comment("表名称user_info")
 	public static final String TABLE = "user_info";
@@ -90,6 +92,9 @@ public class User implements Serializable {
 	@Column(USER_CREATE_TIME)
 	private Date createTime;
 	
+	@Tolerate
+	public User() {}
+	
 	public final String getCreateTime_DT() {
 		return DateFormatUtil.formatDateTime(createTime);
 	}
@@ -102,90 +107,4 @@ public class User implements Serializable {
 		return DateFormatUtil.formatTime(createTime);
 	}
 	
-	
-	public static Builder builder() {
-		return new Builder(new User());
-	}
-	
-	public static Builder builder(User copy) {
-		Builder builder = new Builder(new User());
-		builder.id(copy.getId());
-		builder.name(copy.getName());
-		builder.password(copy.getPassword());
-		builder.phone(copy.getPhone());
-		builder.phoneAuth(copy.getPhoneAuth());
-		builder.fullName(copy.getFullName());
-		builder.email(copy.getEmail());
-		builder.emailAuth(copy.getEmailAuth());
-		builder.headUrl(copy.getHeadUrl());
-		builder.regionId(copy.getRegionId());
-		builder.createTime(copy.getCreateTime());
-		return builder;
-	}
-	
-	public static class Builder {
-		private final User user;
-		
-		protected Builder(User user) {this.user = user;}
-		
-		public Builder id(long id) {
-			user.setId(id);
-			return this;
-		}
-		
-		public Builder name(String name) {
-			user.setName(name);
-			return this;
-		}
-		
-		public Builder password(String password) {
-			user.setPassword(password);
-			return this;
-		}
-		
-		public Builder phone(String phone) {
-			user.setPhone(phone);
-			return this;
-		}
-		
-		public Builder phoneAuth(int phoneAuth) {
-			user.setPhoneAuth(phoneAuth);
-			return this;
-		}
-		
-		public Builder fullName(String fullName) {
-			user.setFullName(fullName);
-			return this;
-		}
-		
-		public Builder email(String email) {
-			user.setEmail(email);
-			return this;
-		}
-		
-		public Builder emailAuth(int emailAuth) {
-			user.setEmailAuth(emailAuth);
-			return this;
-		}
-		
-		public Builder headUrl(String headUrl) {
-			user.setHeadUrl(headUrl);
-			return this;
-		}
-		
-		public Builder regionId(Integer regionId) {
-			user.setRegionId(regionId);
-			return this;
-		}
-		
-		public Builder createTime(Date createTime) {
-			user.setCreateTime(createTime);
-			return this;
-		}
-		
-		@Nonnull
-		public User build() {
-			return user;
-		}
-	}
 }

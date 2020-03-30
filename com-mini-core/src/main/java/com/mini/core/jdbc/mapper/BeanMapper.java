@@ -1,9 +1,10 @@
 package com.mini.core.jdbc.mapper;
 
-import com.mini.core.holder.ClassHolder;
-import com.mini.core.holder.FieldHolder;
+import com.mini.core.jdbc.annotation.Column;
 import com.mini.core.jdbc.util.JdbcUtil;
 import com.mini.core.util.ThrowsUtil;
+import com.mini.core.util.holder.ClassHolder;
+import com.mini.core.util.holder.FieldHolder;
 
 import javax.annotation.Nonnull;
 import javax.inject.Singleton;
@@ -14,16 +15,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mini.core.jdbc.util.JdbcUtil.lookupColumnName;
 import static java.lang.Class.forName;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.Validate.isTrue;
 
 /**
  * BeanMapper.java
@@ -66,34 +63,43 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			return value == null ? null : value.toLocalTime();
 		});
 	}};
+	private final Map<String, FieldHolder<T>> columns = new HashMap<>();
 	private static final ResultSetCall DEF = JdbcUtil::getObject;
 	private static final String $MAPPER$ = "_$$$MAPPER$$$";
 	private final ClassHolder<T> holder;
-
+	
 	private BeanMapper(@Nonnull Class<T> type) {
-		holder = ClassHolder.create(type);
-		isTrue(holder != null && holder.hasTable());
+		this.holder = ClassHolder.create(type);
+		Objects.requireNonNull(this.holder);
+		this.holder.fields().forEach(h -> {
+			var column = h.getAnnotation(Column.class);
+			if (Objects.nonNull(column)) {
+				columns.put(column.value(), h);
+			}
+		});
 	}
-
+	
 	@Nonnull
 	@Override
 	public T get(ResultSet rs, int number) throws SQLException {
 		var result = holder.createInstance();
 		ResultSetMetaData metaData = rs.getMetaData();
 		for (int i = 1; i <= metaData.getColumnCount(); i++) {
-			var name = lookupColumnName(metaData, i);
 			try {
-				if (!holder.hasColumn(name)) continue;
-				FieldHolder<T> h = holder.getColumn(name);
-				// 获取数据库查询出来的值
-				var res = RES.getOrDefault(h.getFieldType(), DEF);
-				h.setValue(result, res.apply(rs, i));
+				var name = lookupColumnName(metaData, i);
+				FieldHolder<T> h = columns.get(name);
+				if (h != null) {
+					var res = RES.get(h.getType());
+					res = res == null ? DEF : res;
+					var o = res.apply(rs, i);
+					h.setValue(result, o);
+				}
 			} catch (Exception ignored) {
 			}
 		}
 		return result;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static <T> Mapper<T> create(Class<T> type) {
 		return (Mapper<T>) MAP.computeIfAbsent(type, key -> {
@@ -113,7 +119,7 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			}
 		});
 	}
-
+	
 	private interface ResultSetCall {
 		Object apply(ResultSet rs, int columnIndex) throws SQLException;
 	}

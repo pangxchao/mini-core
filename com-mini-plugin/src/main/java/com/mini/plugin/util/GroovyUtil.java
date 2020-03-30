@@ -35,7 +35,7 @@ public final class GroovyUtil implements Serializable, EventListener {
 		//}
 		return null;
 	}
-
+	
 	public static void generate(String template, TableInfo tableInfo, VirtualFile file) {
 		try {
 			ClassLoader parentLoader = GroovyUtil.class.getClassLoader();
@@ -51,209 +51,209 @@ public final class GroovyUtil implements Serializable, EventListener {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	public static <T> TypeName getParameterizedTypeName(Class<T> clazz, TypeName... typeNames) {
 		return ParameterizedTypeName.get(ClassName.get(List.class), typeNames);
 	}
-
+	
 	public static TypeName getParameterizedTypeName(ClassName className, TypeName... typeNames) {
 		return ParameterizedTypeName.get(className, typeNames);
 	}
-
+	
 	public static ClassName dateFormatUtilClass() {
 		return get("com.mini.core.util", "DateFormatUtil");
 	}
-
+	
 	public static ClassName columnClass() {
-		return get("com.mini.core.holder.jdbc", "Column");
+		return get("com.mini.core.jdbc.annotation", "Column");
 	}
-
+	
 	public static ClassName commentClass() {
-		return get("com.mini.core.holder.jdbc", "Comment");
+		return get("com.mini.core.jdbc.annotation", "Comment");
 	}
-
+	
 	public static ClassName autoClass() {
-		return get("com.mini.core.holder.jdbc", "Auto");
+		return get("com.mini.core.jdbc.annotation", "Auto");
 	}
-
+	
 	public static ClassName createAtClass() {
-		return get("com.mini.core.holder.jdbc", "CreateAt");
+		return get("com.mini.core.jdbc.annotation", "CreateAt");
 	}
-
+	
 	public static ClassName updateAtClass() {
-		return get("com.mini.core.holder.jdbc", "UpdateAt");
+		return get("com.mini.core.jdbc.annotation", "UpdateAt");
 	}
-
+	
 	public static ClassName delClass() {
-		return get("com.mini.core.holder.jdbc", "Del");
+		return get("com.mini.core.jdbc.annotation", "Del");
 	}
-
+	
 	public static ClassName idClass() {
-		return get("com.mini.core.holder.jdbc", "Id");
+		return get("com.mini.core.jdbc.annotation", "Id");
 	}
-
+	
 	public static ClassName joinClass() {
-		return get("com.mini.core.holder.jdbc", "Join");
+		return get("com.mini.core.jdbc.annotation", "Join");
 	}
-
+	
 	public static ClassName lockClass() {
-		return get("com.mini.core.holder.jdbc", "Lock");
+		return get("com.mini.core.jdbc.annotation", "Lock");
 	}
-
+	
 	public static ClassName refClass() {
-		return get("com.mini.core.holder.jdbc", "Ref");
+		return get("com.mini.core.jdbc.annotation", "Ref");
 	}
-
+	
 	public static ClassName tableClass() {
-		return get("com.mini.core.holder.jdbc", "Table");
+		return get("com.mini.core.jdbc.annotation", "Table");
 	}
-
-	public static ClassName paramClass() {
-		return get("com.mini.core.holder.web", "Param");
-	}
-
+	
 	public static ClassName jdbcInterfaceClass() {
 		return get("com.mini.core.jdbc", "JdbcInterface");
 	}
-
+	
 	public static ClassName jdbcTemplateClass() {
 		return get("com.mini.core.jdbc", "JdbcTemplate");
 	}
-
+	
 	public static ClassName abstractDaoClass() {
 		return get("com.mini.core.jdbc", "AbstractDao");
 	}
-
+	
 	public static ClassName sqlBuilderClass() {
 		return get("com.mini.core.jdbc.builder", "SQLBuilder");
 	}
-
+	
 	public static ClassName beanMapperClass() {
 		return get("com.mini.core.jdbc.mapper", "BeanMapper");
 	}
-
+	
 	public static ClassName pagingClass() {
 		return get("com.mini.core.jdbc.model", "Paging");
 	}
-
+	
+	public static ClassName paramClass() {
+		return get("com.mini.core.web.annotation", "Param");
+	}
+	
 	public static ClassName nonnullClass() {
 		return get("javax.annotation", "Nonnull");
 	}
-
+	
 	public static ClassName singletonClass() {
 		return get("javax.inject", "Singleton");
 	}
-
+	
 	public static ClassName injectClass() {
 		return get("javax.inject", "Inject");
 	}
-
+	
 	public static ClassName namedClass() {
 		return get("javax.inject", "Named");
 	}
-
+	
 	public static ClassName lombokEqualsAndHashCodeClass() {
 		return get("lombok", "EqualsAndHashCode");
 	}
-
-	public static ClassName lombokSuperBuilderClass() {
-		return get("lombok.experimental", "SuperBuilder");
-	}
-
+	
 	public static ClassName lombokToStringClass() {
 		return get("lombok", "ToString");
 	}
-
+	
 	public static ClassName lombokGetterClass() {
 		return get("lombok", "Getter");
 	}
-
+	
 	public static ClassName lombokSetterClass() {
 		return get("lombok", "Setter");
 	}
-
+	
 	public static ClassName lombokDataClass() {
 		return get("lombok", "Data");
 	}
-
+	
+	public static ClassName lombokSuperBuilderClass() {
+		return get("lombok.experimental", "SuperBuilder");
+	}
+	
 	public static ClassName lombokTolerateClass() {
 		return get("lombok.experimental", "Tolerate");
 	}
-
+	
 	public static String beanName(TableInfo table) {
 		return table.getEntityName();
 	}
-
+	
 	public static String beanPackage(TableInfo table) {
 		return table.getPackageName() + ".entity";
 	}
-
+	
 	public static ClassName beanClass(TableInfo table) {
 		return get(beanPackage(table), beanName(table));
 	}
-
+	
 	public static String builderName(TableInfo table) {
 		return "Builder";
 	}
-
+	
 	public static ClassName builderClass(TableInfo table) {
 		return get(beanPackage(table), beanName(table),
 				builderName(table));
 	}
-
+	
 	public static String voBeanName(TableInfo table) {
 		return table.getEntityName() + "VO";
 	}
-
+	
 	public static String voBeanPackage(TableInfo table) {
 		return table.getPackageName() + ".entity.vo";
 	}
-
+	
 	public static ClassName voBeanClass(TableInfo table) {
 		return get(voBeanPackage(table), voBeanName(table));
 	}
-
+	
 	public static String voBuilderName(TableInfo table) {
 		return "Builder";
 	}
-
+	
 	public static ClassName voBuilderClass(TableInfo table) {
 		return get(voBeanPackage(table), voBeanName(table),
 				voBuilderName(table));
 	}
-
+	
 	public static String daoBaseName(TableInfo table) {
 		return table.getEntityName() + "BaseDao";
 	}
-
+	
 	public static String daoBasePackage(TableInfo table) {
 		return table.getPackageName() + ".dao.base";
 	}
-
+	
 	public static ClassName daoBaseClass(TableInfo table) {
 		return get(daoBasePackage(table), daoBaseName(table));
 	}
-
+	
 	public static String daoName(TableInfo table) {
 		return table.getEntityName() + "Dao";
 	}
-
+	
 	public static String daoPackage(TableInfo table) {
 		return table.getPackageName() + ".dao";
 	}
-
+	
 	public static ClassName daoClass(TableInfo table) {
 		return get(daoPackage(table), daoName(table));
 	}
-
+	
 	public static String daoImplName(TableInfo table) {
 		return table.getEntityName() + "DaoImpl";
 	}
-
+	
 	public static String daoImplPackage(TableInfo table) {
 		return table.getPackageName() + ".dao.impl";
 	}
-
+	
 	public static ClassName daoImplClass(TableInfo table) {
 		return get(daoImplPackage(table), daoImplName(table));
 	}

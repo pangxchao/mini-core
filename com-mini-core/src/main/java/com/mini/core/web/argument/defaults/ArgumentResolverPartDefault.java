@@ -1,7 +1,7 @@
 package com.mini.core.web.argument.defaults;
 
-import com.mini.core.inject.annotation.Associated;
 import com.mini.core.util.reflect.MiniParameter;
+import com.mini.core.web.annotation.Param;
 import com.mini.core.web.argument.ArgumentResolver;
 import com.mini.core.web.interceptor.ActionInvocation;
 
@@ -12,23 +12,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 @Named
 @Singleton
 public final class ArgumentResolverPartDefault implements ArgumentResolver {
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
-		for (var annotation : parameter.getAnnotations()) {
-			if (annotation.getClass().getAnnotation( //
-					Associated.class) != null) {
-				return false;
-			}
+		if (nonNull(parameter.getAnnotation(Param.class))) {
+			return false;
 		}
 		return Part.class == parameter.getType();
 	}
-
+	
 	/**
 	 * 获取参数名称
 	 * @param parameter 参数对象
@@ -38,7 +36,7 @@ public final class ArgumentResolverPartDefault implements ArgumentResolver {
 	private String getParameterName(MiniParameter parameter) {
 		return parameter.getName();
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		try {

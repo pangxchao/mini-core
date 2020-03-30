@@ -1,0 +1,176 @@
+package com.mini.core.validation;
+
+import com.mini.core.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.EventListener;
+import java.util.List;
+import java.util.Objects;
+
+public final class Validator implements EventListener {
+	private List<Object> args;
+	private final int status;
+	private String message;
+	
+	private Validator(int status) {
+		this.status = status;
+	}
+	
+	private ValidationException getValidationException() {
+		return new ValidationException(status, message, args);
+	}
+	
+	public static Validator status(int status) {
+		return new Validator(status);
+	}
+	
+	public Validator message(String message) {
+		this.message = message;
+		return this;
+	}
+	
+	public Validator args(Object... args) {
+		this.args = Arrays.asList(args);
+		return this;
+	}
+	
+	public final List<Object> getArgs() {
+		return args;
+	}
+	
+	public final String getMessage() {
+		return message;
+	}
+	
+	public final int getStatus() {
+		return status;
+	}
+	
+	public final String getKey() {
+		return "" + status;
+	}
+	
+	/**
+	 * 直接发送错误消息
+	 */
+	public final ValidationException send() {
+		throw getValidationException();
+	}
+	
+	/**
+	 * 当表达式不为 True 是发送错误消息
+	 * @param expression 条件表达式
+	 */
+	public final void is(boolean expression) {
+		if (!expression) {
+			send();
+		}
+	}
+	
+	/**
+	 * 验证字符串与正则表达式是否匹配
+	 * @param string 字符串
+	 * @param regex  正则表达式
+	 */
+	public final void isPattern(String string, String regex) {
+		is(StringUtil.isPattern(string, regex));
+	}
+	
+	/**
+	 * 验证传入字符串是否有值
+	 * @param string 传入字符串
+	 */
+	public final void isNotBlank(String string) {
+		is(StringUtils.isNotBlank(string));
+	}
+	
+	/**
+	 * 验证传入对象是否为空
+	 * @param object 传入对象
+	 */
+	public final void isNotNull(Object object) {
+		is(Objects.nonNull(object));
+	}
+	
+	/**
+	 * 验证传入对象是否为空
+	 * @param object 传入对象
+	 */
+	public final void isNull(Object object) {
+		is(Objects.isNull(object));
+	}
+	
+	/**
+	 * 验证传入字符串是否为邮箱格式
+	 * @param string 传入字符串
+	 */
+	public final void isEmail(String string) {
+		is(StringUtil.isEmpty(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为电话号码
+	 * @param string 传入字符串
+	 */
+	public final void isPhone(String string) {
+		is(StringUtil.isPhone(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为手机号
+	 * @param string 传入字符串
+	 */
+	public final void isMobile(String string) {
+		is(StringUtil.isMobile(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为手机号或者电话号码
+	 * @param string 传入字符串
+	 */
+	public final void isMobilePhone(String string) {
+		is(StringUtil.isMobilePhone(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为纯英文字母
+	 * @param string 传入字符串
+	 */
+	public final void isLetter(String string) {
+		is(StringUtil.isLetter(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为纯数字
+	 * @param string 传入字符串
+	 */
+	public final void isNumber(String string) {
+		is(StringUtil.isNumber(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为纯中文
+	 * @param string 传入字符串
+	 */
+	public final void isChinese(String string) {
+		is(StringUtil.isChinese(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为身份证号码
+	 * @param string 传入字符串
+	 */
+	public final void isIdCard(String string) {
+		is(StringUtil.isIdCard(string));
+	}
+	
+	/**
+	 * 验证传入字符串是否为字母、数字和下划线组成，数字不能开头
+	 * @param string 传入字符串
+	 */
+	public final void isRequire(String string) {
+		is(StringUtil.isRequire(string));
+	}
+	
+}

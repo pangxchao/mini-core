@@ -1,5 +1,8 @@
 package com.mini.core.validate;
 
+import com.mini.core.util.StringUtil;
+import com.mini.core.validation.Validator;
+
 import java.util.EventListener;
 
 public final class ValidateUtil implements EventListener {
@@ -9,6 +12,7 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void sendError(int error, String message, Object... args) {
 		Validator.status(error).message(message).args(args).send();
 	}
@@ -18,6 +22,7 @@ public final class ValidateUtil implements EventListener {
 	 * @param error 错误码
 	 * @param args  消息参数
 	 */
+	@Deprecated
 	public static void sendError(int error, Object... args) {
 		Validator.status(error).args(args).send();
 	}
@@ -29,6 +34,7 @@ public final class ValidateUtil implements EventListener {
 	 * @param message  静态式为 false 的提示错误消息
 	 * @param args     消息参数
 	 */
+	@Deprecated
 	public static void is(boolean validate, int error, String message, Object... args) {
 		Validator.status(error).message(message).args(args).is(validate);
 	}
@@ -39,6 +45,7 @@ public final class ValidateUtil implements EventListener {
 	 * @param error    表达式为 false 的提示错误码
 	 * @param args     消息参数
 	 */
+	@Deprecated
 	public static void is(boolean validate, int error, Object... args) {
 		Validator.status(error).args(args).is(validate);
 	}
@@ -51,8 +58,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isRegex(String string, String regex, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isRegex(string, regex);
+		Validator.status(error).message(message).args(args).is(StringUtil.isPattern(string, regex));
 	}
 	
 	/**
@@ -62,8 +70,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isRegex(String string, String regex, int error, Object... args) {
-		Validator.status(error).args(args).isRegex(string, regex);
+		Validator.status(error).args(args).is(StringUtil.isPattern(string, regex));
 	}
 	
 	/**
@@ -73,8 +82,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isNotBlank(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isNotBlank(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isNotBlank(string));
 	}
 	
 	/**
@@ -83,8 +93,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isNotBlank(String string, int error, Object... args) {
-		Validator.status(error).args(args).isNotBlank(string);
+		Validator.status(error).args(args).is(StringUtil.isNotBlank(string));
 	}
 	
 	
@@ -95,8 +106,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isNotNull(Object object, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isNotNull(object);
+		Validator.status(error).message(message).args(args).is(object != null);
 	}
 	
 	/**
@@ -105,8 +117,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isNotNull(Object object, int error, Object... args) {
-		Validator.status(error).args(args).isNotNull(object);
+		Validator.status(error).args(args).is(object != null);
 	}
 	
 	/**
@@ -116,8 +129,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isNull(Object object, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isNull(object);
+		Validator.status(error).message(message).args(args).is(object == null);
 	}
 	
 	/**
@@ -126,8 +140,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isNull(Object object, int error, Object... args) {
-		Validator.status(error).args(args).isNull(object);
+		Validator.status(error).args(args).is(object == null);
 	}
 	
 	/**
@@ -137,8 +152,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isEmail(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isEmail(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isEmail(string));
 	}
 	
 	/**
@@ -147,8 +163,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isEmail(String string, int error, Object... args) {
-		Validator.status(error).args(args).isEmail(string);
+		Validator.status(error).args(args).is(StringUtil.isEmail(string));
 	}
 	
 	/**
@@ -158,8 +175,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isPhone(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isPhone(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isPhone(string));
 	}
 	
 	/**
@@ -168,8 +186,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isPhone(String string, int error, Object... args) {
-		Validator.status(error).args(args).isPhone(string);
+		Validator.status(error).args(args).is(StringUtil.isPhone(string));
 	}
 	
 	/**
@@ -179,8 +198,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isMobile(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isMobile(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isMobile(string));
 	}
 	
 	/**
@@ -189,8 +209,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isMobile(String string, int error, Object... args) {
-		Validator.status(error).args(args).isMobile(string);
+		Validator.status(error).args(args).is(StringUtil.isMobile(string));
 	}
 	
 	/**
@@ -200,8 +221,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isMobilePhone(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isMobilePhone(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isMobilePhone(string));
 	}
 	
 	/**
@@ -210,8 +232,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isMobilePhone(String string, int error, Object... args) {
-		Validator.status(error).args(args).isMobilePhone(string);
+		Validator.status(error).args(args).is(StringUtil.isMobilePhone(string));
 	}
 	
 	/**
@@ -221,8 +244,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isLetter(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isLetter(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isLetter(string));
 	}
 	
 	/**
@@ -231,8 +255,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isLetter(String string, int error, Object... args) {
-		Validator.status(error).args(args).isLetter(string);
+		Validator.status(error).args(args).is(StringUtil.isLetter(string));
 	}
 	
 	/**
@@ -242,8 +267,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isNumber(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isNumber(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isNumber(string));
 	}
 	
 	/**
@@ -252,8 +278,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isNumber(String string, int error, Object... args) {
-		Validator.status(error).args(args).isNumber(string);
+		Validator.status(error).args(args).is(StringUtil.isNumber(string));
 	}
 	
 	/**
@@ -263,8 +290,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isChinese(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isChinese(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isChinese(string));
 	}
 	
 	/**
@@ -273,8 +301,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isChinese(String string, int error, Object... args) {
-		Validator.status(error).args(args).isChinese(string);
+		Validator.status(error).args(args).is(StringUtil.isChinese(string));
 	}
 	
 	/**
@@ -284,8 +313,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isIdCard(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isIdCard(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isIdCard(string));
 	}
 	
 	/**
@@ -294,8 +324,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isIdCard(String string, int error, Object... args) {
-		Validator.status(error).args(args).isIdCard(string);
+		Validator.status(error).args(args).is(StringUtil.isIdCard(string));
 	}
 	
 	/**
@@ -305,8 +336,9 @@ public final class ValidateUtil implements EventListener {
 	 * @param message 错误消息
 	 * @param args    消息参数
 	 */
+	@Deprecated
 	public static void isRequire(String string, int error, String message, Object... args) {
-		Validator.status(error).message(message).args(args).isRequire(string);
+		Validator.status(error).message(message).args(args).is(StringUtil.isRequire(string));
 	}
 	
 	/**
@@ -315,7 +347,8 @@ public final class ValidateUtil implements EventListener {
 	 * @param error  错误码
 	 * @param args   消息参数
 	 */
+	@Deprecated
 	public static void isRequire(String string, int error, Object... args) {
-		Validator.status(error).args(args).isRequire(string);
+		Validator.status(error).args(args).is(StringUtil.isRequire(string));
 	}
 }
