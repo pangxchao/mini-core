@@ -349,7 +349,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			// 排除删除的数据
 			Del del = h.getAnnotation(Del.class);
 			if (nonNull(del)) {
-				builder.where("%s = ?", column.value());
+				builder.where("%s <> ?", column.value());
 				builder.params(del.value());
 			}
 		});
