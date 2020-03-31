@@ -337,7 +337,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 		for (Join join : table.getAnnotationsByType(Join.class)) {
 			Ref ref = join_column.get(join.column());
 			if (isNull(ref)) continue;
-			builder.join("%s ON %s = %s", ref.table(), join.column(), ref.column());
+			join.type().execute(builder, "%s ON %s = %s", ref.table(), join.column(), ref.column());
 		}
 		
 		// 查询字段信息

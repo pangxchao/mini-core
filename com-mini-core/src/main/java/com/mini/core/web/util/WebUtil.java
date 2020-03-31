@@ -1,7 +1,5 @@
 package com.mini.core.web.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import javax.servlet.http.HttpServletRequest;
 
 import static org.apache.commons.lang3.StringUtils.*;
@@ -27,19 +25,17 @@ public final class WebUtil {
 		builder.append(":").append(req.getServerPort());
 		return builder.toString();
 	}
-
+	
 	/**
 	 * 获取访问当前项目请求的路径
 	 * @param req request 对象
 	 * @return 路径
 	 */
 	public static String getRequestPath(HttpServletRequest req) {
-		if (StringUtils.isBlank(req.getContextPath())) {
-			return req.getRequestURI();
-		}
+		if (isBlank(req.getContextPath())) return req.getRequestURI();
 		return replace(req.getRequestURI(), req.getContextPath(), "", 1);
 	}
-
+	
 	/**
 	 * 根据 Request 获取当前请求的绝对路径
 	 * @param request HttpServletRequest 对象
@@ -48,32 +44,29 @@ public final class WebUtil {
 	public static String getAbsoluteUrl(HttpServletRequest request) {
 		return getDomain(request) + request.getRequestURI();
 	}
-
+	
 	/**
 	 * 获取客户端IP地址
 	 * @param request 请求数据
 	 * @return IP地址
 	 */
 	public static String getIpAddress(HttpServletRequest request) {
-		String ip = request.getHeader("X-FORWARDED-FOR");
-		if (isBlank(ip) || equalsIgnoreCase(ip, "unknown")) {
+		String ip = request.getHeader("x-forwarded-for");
+		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
-		if (isBlank(ip) || equalsIgnoreCase(ip, "unknown")) {
+		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("WL-Proxy-Client-IP");
 		}
-		if (isBlank(ip) || equalsIgnoreCase(ip, "unknown")) {
+		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getHeader("HTTP_CLIENT_IP");
 		}
-		if (isBlank(ip) || equalsIgnoreCase(ip, "unknown")) {
-			ip = request.getHeader("X-Real-IP");
+		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
 		}
-		if (equalsIgnoreCase(ip, "unknown")) {
+		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
-		if ("0:0:0:0:0:0:0:1".equals(ip)) {
-			ip = "127.0.0.1";
-		}
-		return ip == null ? "127.0.0.1" : ip;
+		return defaultIfBlank(ip, "127.0.0.1");
 	}
 }
