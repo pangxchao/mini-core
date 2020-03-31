@@ -1,6 +1,5 @@
 package com.mini.core.web.handler;
 
-import com.mini.core.util.ThrowsUtil;
 import com.mini.core.validation.ValidationException;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.support.config.Configures;
@@ -11,9 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ResourceBundle;
 
+import static com.mini.core.util.ThrowsUtil.hidden;
+import static java.lang.String.format;
+
 @Singleton
 public final class ExceptionHandlerValidate implements ExceptionHandler {
-	
 	@Inject
 	private Configures configures;
 	
@@ -37,11 +38,11 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 					? bundle.getString(e.getKey())
 					: e.getMessage();
 			// 格式化消息参数
-			message = String.format(message, e.getArgs().toArray());
+			message = format(message, e.getArgs().toArray());
 			invocation.getModel().setStatus(e.getStatus());
 			invocation.getModel().setMessage(message);
 		} catch (Exception | Error e) {
-			throw ThrowsUtil.hidden(e);
+			throw hidden(e);
 		}
 	}
 }

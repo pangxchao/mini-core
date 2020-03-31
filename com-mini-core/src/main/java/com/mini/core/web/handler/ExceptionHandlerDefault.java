@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ResourceBundle;
 
+import static com.mini.core.util.ThrowsUtil.hidden;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -42,7 +43,7 @@ public final class ExceptionHandlerDefault implements ExceptionHandler {
 			invocation.getModel().setMessage(message);
 			log.error(e.getMessage(), e);
 		} catch (Exception | Error ex) {
-			throw ThrowsUtil.hidden(ex);
+			throw hidden(ex);
 		}
 	}
 }
