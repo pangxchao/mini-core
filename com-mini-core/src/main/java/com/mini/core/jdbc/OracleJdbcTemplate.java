@@ -8,17 +8,17 @@ import javax.sql.DataSource;
 
 @Singleton
 public final class OracleJdbcTemplate extends JdbcTemplate {
-
+	
 	public OracleJdbcTemplate(@Nonnull DataSource dataSource) {
 		super(dataSource);
 	}
-
+	
 	@Nonnull
 	@Override
 	public String totals(String str) {
 		return StringUtils.join("select count(*) from (", str, ") t");
 	}
-
+	
 	@Nonnull
 	@Override
 	public String paging(int start, int limit, String str) {

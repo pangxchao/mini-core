@@ -17,12 +17,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Singleton
 public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArray {
-
+	
 	@Inject
 	public ArgumentResolverArrayRequestParam(Configures configures) {
 		super(configures);
 	}
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
@@ -31,7 +31,7 @@ public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArr
 		}
 		return super.supportParameter(parameter);
 	}
-
+	
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
@@ -41,7 +41,7 @@ public final class ArgumentResolverArrayRequestParam extends ArgumentResolverArr
 		}
 		return parameter.getName();
 	}
-
+	
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterValues(name);

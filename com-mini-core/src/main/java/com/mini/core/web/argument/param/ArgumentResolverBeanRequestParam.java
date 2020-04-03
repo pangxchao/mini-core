@@ -18,7 +18,7 @@ public final class ArgumentResolverBeanRequestParam extends ArgumentResolverBean
 	public ArgumentResolverBeanRequestParam(Configures configures) {
 		super(configures);
 	}
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
@@ -27,7 +27,7 @@ public final class ArgumentResolverBeanRequestParam extends ArgumentResolverBean
 		}
 		return super.supportParameter(parameter);
 	}
-
+	
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterValues(name);

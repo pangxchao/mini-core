@@ -17,7 +17,7 @@ import static java.util.Objects.isNull;
 @Named
 @Singleton
 public final class ArgumentResolverMapRequestParamArray implements ArgumentResolver {
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
@@ -41,7 +41,7 @@ public final class ArgumentResolverMapRequestParamArray implements ArgumentResol
 		}
 		return false;
 	}
-
+	
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		return invocation.getRequest().getParameterMap();

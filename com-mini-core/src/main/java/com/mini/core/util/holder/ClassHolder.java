@@ -20,7 +20,7 @@ public final class ClassHolder<T> implements Serializable, EventListener {
 	private ClassHolder(@Nonnull Class<T> type) {
 		this.type = type;
 	}
-
+	
 	public final <A extends Annotation> A[] getAnnotationsByType(Class<A> clazz) {
 		return this.type.getAnnotationsByType(clazz);
 	}

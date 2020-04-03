@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 public interface ClassScanner {
-
+	
 	/**
 	 * 扫描指定包下的所有Class对象
 	 * @param packageName 指定包名
@@ -13,7 +13,7 @@ public interface ClassScanner {
 	 * @return 扫描结果
 	 */
 	Set<Class<?>> scanner(String packageName, Class<? extends Annotation> annotation);
-
+	
 	/**
 	 * 将包名转换成包路径
 	 * @param packageName 包名

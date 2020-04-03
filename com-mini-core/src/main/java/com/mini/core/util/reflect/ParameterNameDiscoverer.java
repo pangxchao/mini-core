@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 public interface ParameterNameDiscoverer {
-
+	
 	/**
 	 * 获取普通方法 的参数名称
 	 * @param method 普通方法
@@ -13,7 +13,7 @@ public interface ParameterNameDiscoverer {
 	 */
 	@Nonnull
 	String[] getParameterNames(Method method);
-
+	
 	/**
 	 * 获取构造方法的参数名称
 	 * @param constructor 构造方法

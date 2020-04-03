@@ -14,18 +14,18 @@ import java.util.Set;
 public class ClassScannerPath implements ClassScanner {
 	private static final FileFilter FILE_FILTER = file -> file.isDirectory()  //
 			|| StringUtils.endsWith(file.getName().toLowerCase(), ".class");
-
+	
 	@Override
 	public Set<Class<?>> scanner(String packageName, Class<? extends Annotation> annotation) {
 		HashSet<Class<?>> set = new HashSet<>();
 		scanner(set, packageName, annotation);
 		return set;
 	}
-
+	
 	private void scanner(Set<Class<?>> set, String packageName, Class<? extends Annotation> annotation) {
 		try {
 			if (StringUtils.isBlank(packageName)) return;
-
+			
 			ClassLoader classLoader = ClassScannerPath.class.getClassLoader();
 			String packagePath = ClassScanner.packageNameToFilePath(packageName);
 			for (Enumeration<URL> urls = classLoader.getResources(packagePath); urls.hasMoreElements(); ) {
@@ -63,7 +63,7 @@ public class ClassScannerPath implements ClassScanner {
 		} catch (Exception | Error ignored) {
 		}
 	}
-
+	
 	/**
 	 * 根据包名和 .class 文件名获取当前 .class 文件所在类的全名
 	 * @param packageName 包名

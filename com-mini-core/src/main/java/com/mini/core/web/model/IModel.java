@@ -1,6 +1,5 @@
 package com.mini.core.web.model;
 
-import com.mini.core.web.handler.ExceptionHandlerDefault;
 import com.mini.core.web.support.config.Configures;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

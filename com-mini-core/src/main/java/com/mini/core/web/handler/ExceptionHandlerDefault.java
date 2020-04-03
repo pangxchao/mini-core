@@ -1,6 +1,5 @@
 package com.mini.core.web.handler;
 
-import com.mini.core.util.ThrowsUtil;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;

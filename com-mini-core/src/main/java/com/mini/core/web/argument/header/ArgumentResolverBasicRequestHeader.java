@@ -21,7 +21,7 @@ public final class ArgumentResolverBasicRequestHeader extends ArgumentResolverBa
 	public ArgumentResolverBasicRequestHeader(Configures configures) {
 		super(configures);
 	}
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
@@ -40,7 +40,7 @@ public final class ArgumentResolverBasicRequestHeader extends ArgumentResolverBa
 		}
 		return parameter.getName();
 	}
-
+	
 	@Override
 	protected String getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getHeader(name);

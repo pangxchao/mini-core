@@ -5,6 +5,6 @@ package com.mini.core.web.interceptor;
  * @author xchao
  */
 public interface ActionInterceptor {
-
+	
 	Object invoke(ActionInvocation invocation) throws Throwable;
 }

@@ -12,14 +12,14 @@ public interface ITree<T extends ITree> {
 		}
 		getChildren().add(child);
 	}
-
+	
 	void setChildren(List<T> children);
-
+	
 	List<T> getChildren();
-
+	
 	Long getParentId();
-
+	
 	String getName();
-
+	
 	long getId();
 }

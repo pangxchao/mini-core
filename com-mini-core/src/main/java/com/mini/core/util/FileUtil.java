@@ -20,7 +20,7 @@ public final class FileUtil {
 	public static File distinct(File file) {
 		return distinct(file, true);
 	}
-
+	
 	/**
 	 * 处理相同文件夹下同名文件
 	 * @param filePath 文件路径
@@ -28,9 +28,9 @@ public final class FileUtil {
 	 */
 	public static File distinct(String filePath) {
 		return distinct(filePath, true);
-
+		
 	}
-
+	
 	/**
 	 * 获取文件名
 	 * @param file       文件对象
@@ -40,7 +40,7 @@ public final class FileUtil {
 	public static File distinct(File file, boolean isDistinct) {
 		return distinct(file.getAbsolutePath(), isDistinct);
 	}
-
+	
 	/**
 	 * 获取文件名
 	 * @param path       文件路径
@@ -51,7 +51,7 @@ public final class FileUtil {
 		File file = new File(path), p = file.getParentFile();
 		String nameWithoutExt = getNameWithoutExt(path);
 		String fileExt = FileUtil.getFileExt(path);
-
+		
 		// 循环检查文件是否存在，并返回第一个不存在文件对象
 		for (int i = 1; isDistinct && file.exists(); i++) {
 			file = new File(p, String.format("%s(%d).%s", //
@@ -59,7 +59,7 @@ public final class FileUtil {
 		}
 		return file;
 	}
-
+	
 	/**
 	 * 获取文件名称(不包括扩展名)
 	 * @param file 文件对象
@@ -69,7 +69,7 @@ public final class FileUtil {
 	public static String getNameWithoutExt(File file) {
 		return getNameWithoutExtension(file.getName());
 	}
-
+	
 	/**
 	 * 获取文件名称(不包括扩展名)
 	 * @param file 文件路径
@@ -79,7 +79,7 @@ public final class FileUtil {
 	public static String getNameWithoutExt(String file) {
 		return getNameWithoutExtension(file);
 	}
-
+	
 	/**
 	 * 获取文件名称(不包括扩展名)
 	 * @param file 文件路径
@@ -88,7 +88,7 @@ public final class FileUtil {
 	public static String getNameWithoutExt(Path file) {
 		return getNameWithoutExt(file.toFile());
 	}
-
+	
 	/**
 	 * 获取文件扩展名
 	 * @param file 文件对象
@@ -98,7 +98,7 @@ public final class FileUtil {
 	public static String getFileExt(File file) {
 		return getFileExtension(file.getName());
 	}
-
+	
 	/**
 	 * 获取文件扩展名
 	 * @param file 文件路径
@@ -108,7 +108,7 @@ public final class FileUtil {
 	public static String getFileExt(String file) {
 		return getFileExtension(file);
 	}
-
+	
 	/**
 	 * 获取文件扩展名
 	 * @param file 文件路径
@@ -117,7 +117,7 @@ public final class FileUtil {
 	public static String getFileExt(Path file) {
 		return getFileExt(file.toFile());
 	}
-
+	
 	/**
 	 * 获取路径中的文件名
 	 * @param pathName 文件路径
@@ -126,7 +126,7 @@ public final class FileUtil {
 	public static String getFileName(String pathName) {
 		return new File(pathName).getName();
 	}
-
+	
 	/**
 	 * 根据文件名称，生成一个服务器文件名
 	 * @param fileName 本地文件名
@@ -135,7 +135,7 @@ public final class FileUtil {
 	public static String createFile(String fileName) {
 		return uuid() + "." + getFileExt(fileName);
 	}
-
+	
 	/**
 	 * 根据文件名称，生成一个服务器文件名
 	 * @param fileName 本地文件名
@@ -144,7 +144,7 @@ public final class FileUtil {
 	public static String createFile(File fileName) {
 		return uuid() + "." + getFileExt(fileName);
 	}
-
+	
 	/**
 	 * 获取文件类型
 	 * @param path 文件路径
@@ -158,7 +158,7 @@ public final class FileUtil {
 		}
 		return "application/octet-stream";
 	}
-
+	
 	/**
 	 * 获取文件类型
 	 * @param path 文件路径
@@ -167,7 +167,7 @@ public final class FileUtil {
 	public static String getMiniType(String path) {
 		return getMiniType(Path.of(path));
 	}
-
+	
 	/**
 	 * 获取文件类型
 	 * @param file 文件对象
@@ -176,7 +176,7 @@ public final class FileUtil {
 	public static String getMiniType(File file) {
 		return getMiniType(file.toPath());
 	}
-
+	
 	/**
 	 * 文件大小单位转换
 	 * @param fileLength 文件大小

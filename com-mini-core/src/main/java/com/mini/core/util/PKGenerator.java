@@ -17,18 +17,18 @@ public final class PKGenerator {
 			'u', 'v', 'w', 'x', 'y', 'z'};
 	private static WorkerId workerId;
 	private static long workId = 0;
-
+	
 	public static void setWorkerId(long workId) {
 		PKGenerator.workId = workId;
 	}
-
+	
 	public static synchronized long nextId() {
 		if (PKGenerator.workerId == null) {
 			workerId = new WorkerId(workId);
 		}
 		return workerId.nextId();
 	}
-
+	
 	/**
 	 * 生成主键
 	 * @return 主键
@@ -36,17 +36,17 @@ public final class PKGenerator {
 	public static synchronized long id() {
 		return PKGenerator.nextId();
 	}
-
+	
 	/**
 	 * 根据主键获取ID中的时间戳
 	 * @param id 主键
 	 * @return 时间戳
 	 */
-
+	
 	public static long millis(long id) {
 		return WorkerId.millis(id);
 	}
-
+	
 	/**
 	 * 生成一个UUID 替换掉"-"
 	 * @return UUID
@@ -55,7 +55,7 @@ public final class PKGenerator {
 		String uuid = randomUUID().toString();
 		return uuid.replace("-", "");
 	}
-
+	
 	/**
 	 * 获取一个随机数
 	 * @param bound 最大限制
@@ -64,7 +64,7 @@ public final class PKGenerator {
 	public static int nextInt(int bound) {
 		return RANDOM.nextInt(bound);
 	}
-
+	
 	/**
 	 * 获取一个随机字符
 	 * @return 随机数
@@ -72,7 +72,7 @@ public final class PKGenerator {
 	public static char nextNum() {
 		return DIGITS[nextInt(10)];
 	}
-
+	
 	/**
 	 * 获取一个随机字符
 	 * @return 随机字符
@@ -81,7 +81,7 @@ public final class PKGenerator {
 		int length = DIGITS.length;
 		return DIGITS[nextInt(length)];
 	}
-
+	
 	/**
 	 * 生成length位长度的纯数字的随机字符串
 	 * @param length 长度
@@ -94,7 +94,7 @@ public final class PKGenerator {
 		}
 		return new String(result);
 	}
-
+	
 	/**
 	 * 生成length位长度的字母加数据的随机字符串
 	 * @param length 长度

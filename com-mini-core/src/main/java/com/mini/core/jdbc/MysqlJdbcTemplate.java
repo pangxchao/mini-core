@@ -8,17 +8,17 @@ import javax.sql.DataSource;
 
 @Singleton
 public final class MysqlJdbcTemplate extends JdbcTemplate {
-
+	
 	public MysqlJdbcTemplate(@Nonnull DataSource dataSource) {
 		super(dataSource);
 	}
-
+	
 	@Nonnull
 	@Override
 	public final String totals(String str) {
 		return StringUtils.join("select count(*) from (", str, ") t");
 	}
-
+	
 	@Nonnull
 	@Override
 	protected String paging(int start, int limit, String str) {

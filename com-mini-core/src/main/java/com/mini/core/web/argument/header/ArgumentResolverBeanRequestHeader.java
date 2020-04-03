@@ -29,7 +29,7 @@ public final class ArgumentResolverBeanRequestHeader extends ArgumentResolverBea
 		}
 		return super.supportParameter(parameter);
 	}
-
+	
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return of(invocation.getRequest().getHeaders(name)).flatMap(v -> {

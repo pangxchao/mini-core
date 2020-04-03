@@ -20,12 +20,12 @@ public final class WorkerId implements Serializable, EventListener {
 	private long sequence = 0;
 	// 集群编号
 	private long workerId;
-
+	
 	public WorkerId(long workerId) {
 		isTrue(workerId <= MAX_WORK);
 		this.workerId = workerId;
 	}
-
+	
 	public final synchronized long nextId() {
 		long now = System.currentTimeMillis();
 		while (sequence > MAX_SEQUENCE) {
@@ -39,7 +39,7 @@ public final class WorkerId implements Serializable, EventListener {
 		var seq = (sequence++ & MAX_SEQUENCE) << 8;
 		return time | seq | (workerId & MAX_WORK);
 	}
-
+	
 	/**
 	 * 根据主键获取生成主键时的时间缀
 	 * @param id 主键

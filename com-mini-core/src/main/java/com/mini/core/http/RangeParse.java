@@ -11,28 +11,28 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public final class RangeParse {
-
+	
 	// 下载分片数据
 	public static final class Range {
 		private long length, start, end;
-
+		
 		Range(long start, long end) {
 			this.start = start;
 			this.end = end;
 		}
-
+		
 		public final long getLength() {
 			return length;
 		}
-
+		
 		public final long getStart() {
 			return start;
 		}
-
+		
 		public final long getEnd() {
 			return min(end, length - 1);
 		}
-
+		
 		// 判断数据合法性
 		public final boolean validate(long contentLength) {
 			length = contentLength;
@@ -42,11 +42,11 @@ public final class RangeParse {
 	}
 	
 	private final StringReader reader;
-
+	
 	private RangeParse(StringReader reader) {
 		this.reader = reader;
 	}
-
+	
 	private boolean skipConstant(String constant) throws IOException {
 		int length = constant.length();
 		this.reader.mark(length);
@@ -59,7 +59,7 @@ public final class RangeParse {
 		}
 		return true;
 	}
-
+	
 	private long readLong() throws IOException {
 		String number = this.readNumber();
 		if (number.length() <= 0) {
@@ -67,7 +67,7 @@ public final class RangeParse {
 		}
 		return parseLong(number);
 	}
-
+	
 	@Nonnull
 	private String readNumber() throws IOException {
 		StringBuilder result = new StringBuilder();
@@ -81,7 +81,7 @@ public final class RangeParse {
 		reader.reset();
 		return result.toString();
 	}
-
+	
 	private void skipBlankCharacter() throws IOException {
 		this.reader.mark(1);
 		int c = reader.read(); // 32, 9, 10, 13
@@ -91,19 +91,19 @@ public final class RangeParse {
 		}
 		reader.reset();
 	}
-
+	
 	// 解析Range数据
 	public static List<Range> parseRange(@Nonnull String rangeText) throws IOException {
 		// 读取器
 		StringReader reader = new StringReader(rangeText);
 		RangeParse parse = new RangeParse(reader);
-
+		
 		// Range固定格式以"bytes="开头
 		parse.skipBlankCharacter();
 		if (!parse.skipConstant("bytes=")) {
 			return null;
 		}
-
+		
 		// 数据容器
 		List<Range> result = new ArrayList<>();
 		do {
@@ -111,21 +111,21 @@ public final class RangeParse {
 			parse.skipBlankCharacter();
 			long start = parse.readLong();
 			if (start == -1) start = 0;
-
+			
 			// 读取开始与结束之间的“-”
 			parse.skipBlankCharacter();
 			if (!parse.skipConstant("-")) {
 				return null;
 			}
-
+			
 			// 读取范围的结束字节
 			parse.skipBlankCharacter();
 			long end = parse.readLong();
-
+			
 			// 创建Range并添加到列表中
 			Range range = new Range(start, end);
 			result.add(range);
-
+			
 			// 跳过空白字符
 			parse.skipBlankCharacter();
 		} while (parse.skipConstant(","));

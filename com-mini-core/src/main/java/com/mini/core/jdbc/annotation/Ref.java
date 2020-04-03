@@ -11,7 +11,7 @@ public @interface Ref {
 	 * @return 表名称
 	 */
 	String table();
-
+	
 	/**
 	 * 指向的字段
 	 * @return 字段名称

@@ -13,18 +13,18 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 
 public class ClassScannerJar implements ClassScanner {
-
+	
 	@Override
 	public Set<Class<?>> scanner(String packageName, Class<? extends Annotation> annotation) {
 		HashSet<Class<?>> set = new HashSet<>();
 		scanner(set, packageName, annotation);
 		return set;
 	}
-
+	
 	private void scanner(Set<Class<?>> set, String packageName, Class<? extends Annotation> annotation) {
 		try {
 			if (StringUtils.isBlank(packageName)) return;
-
+			
 			String packagePath = ClassScanner.packageNameToFilePath(packageName);
 			ClassLoader classLoader = ClassScannerPath.class.getClassLoader();
 			for (Enumeration<URL> urls = classLoader.getResources(packagePath); urls.hasMoreElements(); ) {
@@ -40,7 +40,7 @@ public class ClassScannerJar implements ClassScanner {
 				for (Enumeration<JarEntry> jar = conn.getJarFile().entries(); jar.hasMoreElements(); ) {
 					try {
 						JarEntry entry = jar.nextElement();
-
+						
 						if (entry.getName() == null) continue;
 						if (!entry.getName().toLowerCase().endsWith(".class")) {
 							continue;
@@ -49,7 +49,7 @@ public class ClassScannerJar implements ClassScanner {
 						String className = entry.getName().replaceAll("([/\\\\])", ".");
 						className = className.substring(0, className.length() - 6);
 						if (StringUtils.isBlank(className)) continue;
-
+						
 						//noinspection DuplicatedCode
 						Class<?> clazz = Class.forName(className);
 						// 加载类为空时，不处理
@@ -63,11 +63,11 @@ public class ClassScannerJar implements ClassScanner {
 							continue;
 						}
 						set.add(clazz);
-
+						
 					} catch (Exception | Error ignored) {
 					}
 				}
-
+				
 			}
 		} catch (Exception | Error ignored) {
 		}

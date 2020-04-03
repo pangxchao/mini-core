@@ -15,21 +15,21 @@ import static java.util.Objects.isNull;
 
 @Singleton
 public final class ArgumentResolverBeanRequestUri extends ArgumentResolverBean {
-
+	
 	@Inject
 	public ArgumentResolverBeanRequestUri(Configures configures) {
 		super(configures);
 	}
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
 		if (isNull(param) || param.value() != URI) {
 			return false;
 		}
-		return  super.supportParameter(parameter);
+		return super.supportParameter(parameter);
 	}
-
+	
 	@Override
 	protected String[] getValue(String name, ActionInvocation invocation) {
 		return Optional.ofNullable(invocation.getUriParameters().get(name))

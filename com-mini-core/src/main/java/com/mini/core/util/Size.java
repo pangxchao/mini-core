@@ -7,27 +7,27 @@ import static java.lang.Math.min;
 public class Size implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public double width, height;
-
+	
 	public Size(double width, double height) {
 		set(width, height);
 	}
-
+	
 	public int width() {
 		return (int) width;
 	}
-
+	
 	public int height() {
 		return (int) height;
 	}
-
+	
 	public float floatWidth() {
 		return (float) width;
 	}
-
+	
 	public float floatHeight() {
 		return (float) height;
 	}
-
+	
 	/**
 	 * 重新设置宽高
 	 * @param width  宽度
@@ -39,7 +39,7 @@ public class Size implements Serializable {
 		this.width = width;
 		return this;
 	}
-
+	
 	/**
 	 * 按原始比例放大或者缩小
 	 * @param width 最大宽度
@@ -48,7 +48,7 @@ public class Size implements Serializable {
 	public Size resizeByWidth(double width) {
 		return set(width, width * height / this.width);
 	}
-
+	
 	/**
 	 * 按原始比例放大或者缩小
 	 * @param height 最大高度
@@ -57,7 +57,7 @@ public class Size implements Serializable {
 	public Size resizeByHeight(double height) {
 		return set(height * width / this.height, height);
 	}
-
+	
 	/**
 	 * 按原始比例放大或者缩小，宽度与高度不能超过最大宽度与高度
 	 * @param max  最大尺寸
@@ -73,11 +73,11 @@ public class Size implements Serializable {
 		}
 		return this;
 	}
-
+	
 	public String toString() {
 		return "Size(" + width + ", " + height + ")";
 	}
-
+	
 	public boolean equals(final Object obj) {
 		if (obj == null) {
 			return false;

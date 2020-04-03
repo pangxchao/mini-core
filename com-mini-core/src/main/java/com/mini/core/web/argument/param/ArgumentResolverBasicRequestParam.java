@@ -21,7 +21,7 @@ public final class ArgumentResolverBasicRequestParam extends ArgumentResolverBas
 	public ArgumentResolverBasicRequestParam(Configures configures) {
 		super(configures);
 	}
-
+	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
@@ -30,7 +30,7 @@ public final class ArgumentResolverBasicRequestParam extends ArgumentResolverBas
 		}
 		return super.supportParameter(parameter);
 	}
-
+	
 	@Nonnull
 	@Override
 	protected String getParameterName(MiniParameter parameter) {
@@ -40,7 +40,7 @@ public final class ArgumentResolverBasicRequestParam extends ArgumentResolverBas
 		}
 		return parameter.getName();
 	}
-
+	
 	@Override
 	protected String getValue(String name, ActionInvocation invocation) {
 		return invocation.getRequest().getParameter(name);

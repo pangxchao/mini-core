@@ -18,7 +18,7 @@ public class DateUtil extends DateUtils {
 	public static final long DAY = HOUR * 24;
 	// 一周的时间戳
 	public static final long WEEK = DAY * 7;
-
+	
 	/**
 	 * 将日期转换成时间戳
 	 * @param date 日期
@@ -27,7 +27,7 @@ public class DateUtil extends DateUtils {
 	public static long getTime(Date date) {
 		return date == null ? 0 : date.getTime();
 	}
-
+	
 	/**
 	 * 判断日期d是否在date之后
 	 * @param date 日期
@@ -38,7 +38,7 @@ public class DateUtil extends DateUtils {
 		if (date == null || when == null) return false;
 		return date.getTime() > when.getTime();
 	}
-
+	
 	/**
 	 * 判断日期d是否在date之后
 	 * @param date 日期
@@ -49,7 +49,7 @@ public class DateUtil extends DateUtils {
 		if (date == null || when == null) return true;
 		return date.getTime() > when.getTime();
 	}
-
+	
 	/**
 	 * 判断日期d是否在date之前
 	 * @param date 日期
@@ -60,7 +60,7 @@ public class DateUtil extends DateUtils {
 		if (date == null || when == null) return false;
 		return date.getTime() < when.getTime();
 	}
-
+	
 	/**
 	 * 判断日期d是否在date之前
 	 * @param date 日期
@@ -71,7 +71,7 @@ public class DateUtil extends DateUtils {
 		if (date == null || when == null) return true;
 		return date.getTime() < when.getTime();
 	}
-
+	
 	/**
 	 * 判断日期d是否在date之前
 	 * @param date  日期
@@ -82,7 +82,7 @@ public class DateUtil extends DateUtils {
 	public static boolean between(Date date, Date start, Date end) {
 		return after(date, start) && before(date, end);
 	}
-
+	
 	/**
 	 * 判断日期d是否在date之前
 	 * @param date  日期
@@ -93,7 +93,7 @@ public class DateUtil extends DateUtils {
 	public static boolean betweenOrNull(Date date, Date start, Date end) {
 		return afterOrNull(date, start) && beforeOrNull(date, end);
 	}
-
+	
 	/**
 	 * 根据指定日期创建Calendar对象
 	 * @param date 指定日期
@@ -104,7 +104,7 @@ public class DateUtil extends DateUtils {
 		calendar.setTime(date);
 		return calendar;
 	}
-
+	
 	/**
 	 * 根据指定日期创建Calendar对象
 	 * @param date 指定日期
@@ -115,7 +115,7 @@ public class DateUtil extends DateUtils {
 		calendar.setTimeInMillis(date);
 		return calendar;
 	}
-
+	
 	/**
 	 * 获取一天中最早的时刻
 	 * @param date 指定日期
@@ -128,7 +128,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一天中最早的时刻
 	 * @param date 指定日期
@@ -137,7 +137,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfDay(Date date) {
 		return getStartOfDay(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一天中最早的时刻
 	 * @param date 指定日期
@@ -146,7 +146,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfDay(long date) {
 		return getStartOfDay(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一天中最晚时刻
 	 * @param date 指定日期
@@ -159,7 +159,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一天中最晚时刻
 	 * @param date 指定日期
@@ -168,7 +168,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfDay(Date date) {
 		return getEndOfDay(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一天中最晚时刻
 	 * @param date 指定日期
@@ -177,7 +177,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfDay(long date) {
 		return getEndOfDay(createCalendar(date));
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -188,7 +188,7 @@ public class DateUtil extends DateUtils {
 		date.set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH) + offset);
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -198,7 +198,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfDay(Date date, int offset) {
 		return getDateOfDay(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -208,7 +208,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfDay(long date, int offset) {
 		return getDateOfDay(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一天中最早的时刻
 	 * @param date   指定日期
@@ -223,7 +223,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一天中最早的时刻
 	 * @param date   指定日期
@@ -233,7 +233,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfDay(Date date, int offset) {
 		return getStartOfDay(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一天中最早的时刻
 	 * @param date   指定日期
@@ -243,7 +243,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfDay(long date, int offset) {
 		return getStartOfDay(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一天中最晚时刻
 	 * @param date   指定日期
@@ -258,7 +258,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一天中最晚时刻
 	 * @param date   指定日期
@@ -268,7 +268,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfDay(Date date, int offset) {
 		return getEndOfDay(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一天中最晚时刻
 	 * @param date   指定日期
@@ -278,7 +278,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfDay(long date, int offset) {
 		return getEndOfDay(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一周中最早的时刻
 	 * @param date 指定日期
@@ -292,7 +292,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一周中最早的时刻
 	 * @param date 指定日期
@@ -301,7 +301,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfWeek(Date date) {
 		return getStartOfWeek(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一周中最早的时刻
 	 * @param date 指定日期
@@ -310,7 +310,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfWeek(long date) {
 		return getStartOfWeek(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一周中最晚时刻
 	 * @param date 指定日期
@@ -324,7 +324,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一周中最晚时刻
 	 * @param date 指定日期
@@ -333,7 +333,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfWeek(Date date) {
 		return getEndOfWeek(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一周中最晚时刻
 	 * @param date 指定日期
@@ -342,7 +342,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfWeek(long date) {
 		return getEndOfWeek(createCalendar(date));
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -353,7 +353,7 @@ public class DateUtil extends DateUtils {
 		date.set(Calendar.WEEK_OF_YEAR, date.get(Calendar.WEEK_OF_YEAR) + offset);
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -363,7 +363,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfWeek(Date date, int offset) {
 		return getDateOfWeek(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -373,7 +373,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfWeek(long date, int offset) {
 		return getDateOfWeek(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一周中最早的时刻
 	 * @param date   指定日期
@@ -389,7 +389,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一周中最早的时刻
 	 * @param date   指定日期
@@ -399,7 +399,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfWeek(Date date, int offset) {
 		return getStartOfWeek(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一周中最早的时刻
 	 * @param date   指定日期
@@ -409,7 +409,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfWeek(long date, int offset) {
 		return getStartOfWeek(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一周中最晚时刻
 	 * @param date   指定日期
@@ -425,7 +425,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一周中最晚时刻
 	 * @param date   指定日期
@@ -435,7 +435,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfWeek(Date date, int offset) {
 		return getEndOfWeek(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一周中最晚时刻
 	 * @param date   指定日期
@@ -445,7 +445,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfWeek(long date, int offset) {
 		return getEndOfWeek(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一月中最早的时刻
 	 * @param date 指定日期
@@ -459,7 +459,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一月中最早的时刻
 	 * @param date 指定日期
@@ -468,7 +468,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfMonth(Date date) {
 		return getStartOfMonth(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一月中最早的时刻
 	 * @param date 指定日期
@@ -477,7 +477,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfMonth(long date) {
 		return getStartOfMonth(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一月中最晚时刻
 	 * @param date 指定日期
@@ -491,7 +491,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一月中最晚时刻
 	 * @param date 指定日期
@@ -500,7 +500,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfMonth(Date date) {
 		return getEndOfMonth(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一月中最晚时刻
 	 * @param date 指定日期
@@ -509,7 +509,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfMonth(long date) {
 		return getEndOfMonth(createCalendar(date));
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -520,7 +520,7 @@ public class DateUtil extends DateUtils {
 		date.set(Calendar.MONTH, date.get(Calendar.MONTH) + offset);
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -530,7 +530,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfMonth(Date date, int offset) {
 		return getDateOfMonth(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -540,7 +540,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfMonth(long date, int offset) {
 		return getDateOfMonth(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一月中最早的时刻
 	 * @param date   指定日期
@@ -556,7 +556,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一月中最早的时刻
 	 * @param date   指定日期
@@ -566,7 +566,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfMonth(Date date, int offset) {
 		return getStartOfMonth(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一月中最早的时刻
 	 * @param date   指定日期
@@ -576,7 +576,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfMonth(long date, int offset) {
 		return getStartOfMonth(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一月中最晚时刻
 	 * @param date   指定日期
@@ -592,7 +592,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一月中最晚时刻
 	 * @param date   指定日期
@@ -602,7 +602,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfMonth(Date date, int offset) {
 		return getEndOfMonth(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一月中最晚时刻
 	 * @param date   指定日期
@@ -612,7 +612,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfMonth(long date, int offset) {
 		return getEndOfMonth(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一年中最早的时刻
 	 * @param date 指定日期
@@ -627,7 +627,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一年中最早的时刻
 	 * @param date 指定日期
@@ -636,7 +636,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfYear(Date date) {
 		return getStartOfYear(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一年中最早的时刻
 	 * @param date 指定日期
@@ -645,7 +645,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfYear(long date) {
 		return getStartOfYear(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一年中最晚时刻
 	 * @param date 指定日期
@@ -660,7 +660,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一年中最晚时刻
 	 * @param date 指定日期
@@ -669,7 +669,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfYear(Date date) {
 		return getEndOfYear(createCalendar(date));
 	}
-
+	
 	/**
 	 * 获取一年中最晚时刻
 	 * @param date 指定日期
@@ -678,7 +678,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfYear(long date) {
 		return getEndOfYear(createCalendar(date));
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -689,7 +689,7 @@ public class DateUtil extends DateUtils {
 		date.set(Calendar.YEAR, date.get(Calendar.YEAR) + offset);
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -699,7 +699,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfYear(Date date, int offset) {
 		return getDateOfYear(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 根据偏移量获取日期
 	 * @param date   指定日期
@@ -709,7 +709,7 @@ public class DateUtil extends DateUtils {
 	public static Date getDateOfYear(long date, int offset) {
 		return getDateOfYear(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一年中最早的时刻
 	 * @param date   指定日期
@@ -726,7 +726,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMinimum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一年中最早的时刻
 	 * @param date   指定日期
@@ -736,7 +736,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfYear(Date date, int offset) {
 		return getStartOfYear(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一年中最早的时刻
 	 * @param date   指定日期
@@ -746,7 +746,7 @@ public class DateUtil extends DateUtils {
 	public static Date getStartOfYear(long date, int offset) {
 		return getStartOfYear(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一年中最晚时刻
 	 * @param date   指定日期
@@ -763,7 +763,7 @@ public class DateUtil extends DateUtils {
 		date.set(MILLISECOND, date.getActualMaximum(MILLISECOND));
 		return date.getTime();
 	}
-
+	
 	/**
 	 * 获取一年中最晚时刻
 	 * @param date   指定日期
@@ -773,7 +773,7 @@ public class DateUtil extends DateUtils {
 	public static Date getEndOfYear(Date date, int offset) {
 		return getEndOfYear(createCalendar(date), offset);
 	}
-
+	
 	/**
 	 * 获取一年中最晚时刻
 	 * @param date   指定日期

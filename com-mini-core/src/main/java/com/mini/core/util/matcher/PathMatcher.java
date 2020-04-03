@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 public interface PathMatcher {
-
+	
 	/**
 	 * Does the given {@code path} represent a pattern that can be matched by an implementation of this interface?
 	 * <p>If the return value is {@code false}, then the {@link #match}
@@ -14,7 +14,7 @@ public interface PathMatcher {
 	 * @return {@code true} if the given {@code path} represents a pattern
 	 */
 	boolean isPattern(String path);
-
+	
 	/**
 	 * Match the given {@code path} against the given {@code pattern}, according to this PathMatcher's matching
 	 * strategy.
@@ -23,7 +23,7 @@ public interface PathMatcher {
 	 * @return {@code true} if the supplied {@code path} matched, {@code false} if it didn't
 	 */
 	boolean match(String pattern, String path);
-
+	
 	/**
 	 * Match the given {@code path} against the corresponding part of the given {@code pattern}, according to this
 	 * PathMatcher's matching strategy.
@@ -34,7 +34,7 @@ public interface PathMatcher {
 	 * @return {@code true} if the supplied {@code path} matched, {@code false} if it didn't
 	 */
 	boolean matchStart(String pattern, String path);
-
+	
 	/**
 	 * Given a pattern and a full path, determine the pattern-mapped part.
 	 * <p>This method is supposed to find out which part of the path is matched
@@ -55,7 +55,7 @@ public interface PathMatcher {
 	 * @return the pattern-mapped part of the given {@code path} (never {@code null})
 	 */
 	String extractPathWithinPattern(String pattern, String path);
-
+	
 	/**
 	 * Given a pattern and a full path, extract the URI template variables. URI template variables are expressed
 	 * through curly brackets ('{' and '}').
@@ -66,11 +66,11 @@ public interface PathMatcher {
 	 * @return a map, containing variable names as keys; variables values as values
 	 */
 	Map<String, String> extractUriTemplateVariables(String pattern, String path);
-
+	
 	default Map<String, String> extractVariables(String pattern, String path) {
 		return extractUriTemplateVariables(pattern, path);
 	}
-
+	
 	/**
 	 * Given a full path, returns a {@link Comparator} suitable for sorting patterns in order of explicitness for that
 	 * path.
@@ -82,7 +82,7 @@ public interface PathMatcher {
 	 * @return a comparator capable of sorting patterns in order of explicitness
 	 */
 	Comparator<String> getPatternComparator(String path);
-
+	
 	/**
 	 * Combines two patterns into a new pattern that is returned.
 	 * <p>The full algorithm used for combining the two pattern depends on the underlying implementation.

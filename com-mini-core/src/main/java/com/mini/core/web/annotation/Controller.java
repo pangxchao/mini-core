@@ -17,7 +17,7 @@ public @interface Controller {
 	 */
 	@Nonnull
 	String url() default "";
-
+	
 	/**
 	 * 视图路径
 	 * @return 视图路径
