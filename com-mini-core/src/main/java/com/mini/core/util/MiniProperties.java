@@ -1,7 +1,6 @@
 package com.mini.core.util;
 
 import com.mini.core.inject.annotation.PropertySource;
-import com.mini.core.inject.annotation.PropertySources;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -79,21 +78,6 @@ public class MiniProperties extends Properties {
 			setPropertyIfAbsent(key, value);
 		}
 		return this;
-	}
-	
-	/**
-	 * 根据注解信息加载属性文件
-	 * @param sources 注解信息
-	 * @return {@link MiniProperties}
-	 */
-	@Nonnull
-	public static MiniProperties createProperties(PropertySources sources) {
-		if (sources == null) return new MiniProperties();
-		MiniProperties properties = new MiniProperties();
-		for (PropertySource source : sources.value()) {
-			properties.putAll(createProperties(source));
-		}
-		return properties;
 	}
 	
 	/**

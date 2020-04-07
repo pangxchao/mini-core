@@ -5,14 +5,13 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import com.mini.core.inject.annotation.ComponentScan;
 import com.mini.core.inject.annotation.PropertySource;
-import com.mini.core.inject.annotation.PropertySources;
 import com.mini.core.jdbc.transaction.TransInterceptor;
 import com.mini.core.jdbc.transaction.TransactionEnable;
 import com.mini.core.jdbc.transaction.Transactional;
+import com.mini.core.util.MiniProperties;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
-import java.util.Properties;
 
 import static com.google.inject.Key.get;
 import static com.google.inject.matcher.Matchers.annotatedWith;
@@ -24,10 +23,11 @@ public abstract class MiniModule implements Module {
 	
 	@Override
 	public synchronized final void configure(Binder binder) {
-		PropertySources sources = this.getPropertySources();
-		Properties properties = createProperties(sources);
-		PropertySource source = this.getPropertySource();
-		properties.putAll(createProperties(source));
+		MiniProperties properties = new MiniProperties();
+		for (var source : this.getPropertySources()) {
+			var p = createProperties(source);
+			properties.putAll(p);
+		}
 		Names.bindProperties(binder, properties);
 		binder.requestInjection(this);
 		this.onStartup(binder);
@@ -137,6 +137,11 @@ public abstract class MiniModule implements Module {
 	}
 	
 	// 获取当前类指定注解信息
+	public final <T extends Annotation> T[] getAnnotationsByType(Class<T> clazz) {
+		return this.getClass().getAnnotationsByType(clazz);
+	}
+	
+	// 获取当前类指定注解信息
 	public final <T extends Annotation> T getAnnotation(Class<T> clazz) {
 		return this.getClass().getAnnotation(clazz);
 	}
@@ -157,13 +162,8 @@ public abstract class MiniModule implements Module {
 		return scan.value();
 	}
 	
-	// 获取当前类PropertySources注解信息
-	public final PropertySources getPropertySources() {
-		return getAnnotation(PropertySources.class);
-	}
-	
 	// 获取当前类PropertySource注解信息
-	public final PropertySource getPropertySource() {
-		return getAnnotation(PropertySource.class);
+	public final PropertySource[] getPropertySources() {
+		return getAnnotationsByType(PropertySource.class);
 	}
 }

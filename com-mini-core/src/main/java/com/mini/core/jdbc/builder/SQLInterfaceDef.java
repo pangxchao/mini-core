@@ -143,7 +143,7 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 					builder.params(currentTimeMillis());
 				}
 			});
-		} else builder.delete(aTable.value());
+		} else builder.delete(aTable.value()).from(aTable.value());
 		
 		// 添加修改或者删除的条件
 		table.fields().forEach(h -> {
