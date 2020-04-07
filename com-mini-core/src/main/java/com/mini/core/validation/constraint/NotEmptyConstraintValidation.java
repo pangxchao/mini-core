@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.NotEmpty;
 
@@ -35,19 +36,24 @@ public final class NotEmptyConstraintValidation implements ConstraintValidation<
 			if (val instanceof CharSequence) {
 				var v = (CharSequence) val;
 				validator.is(isNotEmpty(v));
+				return;
 			}
 			if (val instanceof Collection) {
 				var v = (Collection<?>) val;
 				validator.is(!v.isEmpty());
+				return;
 			}
 			if (val.getClass().isArray()) {
 				var v = Array.getLength(val);
 				validator.is(v > 0);
+				return;
 			}
 			if (val instanceof Map) {
 				var v = (Map<?, ?>) val;
 				validator.is(!v.isEmpty());
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, validator::send);
 	}
 }

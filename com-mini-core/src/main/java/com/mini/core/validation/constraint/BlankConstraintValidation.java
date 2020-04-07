@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Blank;
 
@@ -29,7 +30,9 @@ public final class BlankConstraintValidation implements ConstraintValidation<Bla
 			if (val instanceof CharSequence) {
 				var v = (CharSequence) val;
 				validator.is(isBlank(v));
+				return;
 			}
+			Assert.error("Unsupported type");
 		});
 	}
 }

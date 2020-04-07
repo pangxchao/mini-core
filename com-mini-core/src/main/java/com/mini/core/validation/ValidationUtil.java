@@ -16,7 +16,7 @@ public final class ValidationUtil implements EventListener {
 	
 	@SuppressWarnings("unchecked")
 	public static <A extends Annotation, T> void validate(Injector injector, A annotation, T value) {
-		ofNullable(annotation).map(A::getClass).map(clazz -> { //
+		ofNullable(annotation).map(A::annotationType).map(clazz -> { //
 			return clazz.getAnnotation(Constraint.class);
 		}).ifPresent(constraint -> {
 			var v = injector.getInstance(constraint.value());

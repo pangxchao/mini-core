@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.Validator;
 import com.mini.core.validation.annotation.Negative;
@@ -41,43 +42,52 @@ public final class NegativeConstraintValidation implements ConstraintValidation<
 				var v = (BigDecimal) val;
 				var r = v.compareTo(n);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof BigInteger) {
 				var n = BigInteger.valueOf(0);
 				var v = (BigInteger) val;
 				var r = v.compareTo(n);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof java.lang.Long) {
 				var v = (java.lang.Long) val;
 				var r = v.compareTo(0L);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof java.lang.Integer) {
 				var v = (java.lang.Integer) val;
 				var r = v.compareTo(0);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof java.lang.Short) {
 				var v = (java.lang.Short) val;
 				var r = v.compareTo((short) 0);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof java.lang.Byte) {
 				var v = (java.lang.Byte) val;
 				var r = v.compareTo((byte) 0);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof java.lang.Double) {
 				var v = (java.lang.Double) val;
 				var r = v.compareTo(0D);
 				validate(validator, r, annotation);
+				return;
 			}
 			if (val instanceof java.lang.Float) {
 				var v = (java.lang.Float) val;
 				var r = v.compareTo(0F);
 				validate(validator, r, annotation);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 	

@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Pattern;
 
@@ -30,7 +31,9 @@ public final class PatternConstraintValidation implements ConstraintValidation<P
 				String v = (String) val;
 				var r = annotation.regex();
 				validator.is(isPattern(v, r));
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

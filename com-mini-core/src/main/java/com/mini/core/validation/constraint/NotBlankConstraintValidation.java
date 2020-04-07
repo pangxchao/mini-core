@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.NotBlank;
 
@@ -29,7 +30,9 @@ public final class NotBlankConstraintValidation implements ConstraintValidation<
 			if (val instanceof String) {
 				String v = (String) val;
 				validator.is(isNotBlank(v));
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, validator::send);
 	}
 }

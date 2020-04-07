@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.Validator;
 import com.mini.core.validation.annotation.Digits;
@@ -42,41 +43,51 @@ public final class DigitsConstraintValidation implements ConstraintValidation<Di
 			if (val instanceof String) {
 				var v = new BigDecimal((String) val);
 				validate(validator, v, f, i);
+				return;
 			}
 			if (val instanceof BigDecimal) {
 				var v = (BigDecimal) val;
 				validate(validator, v, f, i);
+				return;
 			}
 			if (val instanceof BigInteger) {
 				var v = (BigInteger) val;
 				validate(validator, v, i);
+				return;
 			}
 			if (val instanceof Long) {
 				long v = (Long) val;
 				validate(validator, v, i);
+				return;
 			}
 			if (val instanceof Integer) {
 				var v = (Integer) val;
 				validate(validator, v, i);
+				return;
 			}
 			if (val instanceof Short) {
 				short v = (Short) val;
 				validate(validator, v, i);
+				return;
 			}
 			if (val instanceof Byte) {
 				byte v = (Byte) val;
 				validate(validator, v, i);
+				return;
 			}
 			if (val instanceof Double) {
 				double v = (Double) val;
 				var b = BigDecimal.valueOf(v);
 				validate(validator, b, f, i);
+				return;
 			}
 			if (val instanceof Float) {
 				float v = (Float) val;
 				var b = BigDecimal.valueOf(v);
 				validate(validator, b, f, i);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 	

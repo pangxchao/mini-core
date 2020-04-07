@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Min;
 
@@ -51,43 +52,52 @@ public final class MinConstraintValidation implements ConstraintValidation<Min> 
 				var v = (BigDecimal) val;
 				var r = v.compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof BigInteger) {
 				var n = new BigInteger(annotation.value());
 				var v = (BigInteger) val;
 				var r = v.compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Long) {
 				var n = parseLong(annotation.value());
 				var r = ((Long) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Integer) {
 				var n = parseInt(annotation.value());
 				var r = ((Integer) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Short) {
 				var n = parseShort(annotation.value());
 				var r = ((Short) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Byte) {
 				var n = parseByte(annotation.value());
 				var r = ((Byte) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Double) {
 				var n = parseDouble(annotation.value());
 				var r = ((Double) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Float) {
 				var n = parseFloat(annotation.value());
 				var r = ((Float) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

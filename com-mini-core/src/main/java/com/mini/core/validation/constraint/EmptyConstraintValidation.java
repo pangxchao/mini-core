@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Empty;
 
@@ -33,15 +34,19 @@ public final class EmptyConstraintValidation implements ConstraintValidation<Emp
 			if (val instanceof CharSequence) {
 				var v = (CharSequence) val;
 				validator.is(isEmpty(v));
+				return;
 			}
 			if (val instanceof Collection) {
 				var v = (Collection<?>) val;
 				validator.is(v.isEmpty());
+				return;
 			}
 			if (val instanceof Map) {
 				var v = (Map<?, ?>) val;
 				validator.is(v.isEmpty());
+				return;
 			}
+			Assert.error("Unsupported type");
 		});
 	}
 }

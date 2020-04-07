@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Size;
 
@@ -32,11 +33,14 @@ public final class SizeConstraintValidation implements ConstraintValidation<Size
 			if (val instanceof List) {
 				var size = ((List<?>) val).size();
 				validator.is(min <= size && size <= max);
+				return;
 			}
 			if (val instanceof Map) {
 				var size = ((Map<?, ?>) val).size();
 				validator.is(min <= size && size <= max);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

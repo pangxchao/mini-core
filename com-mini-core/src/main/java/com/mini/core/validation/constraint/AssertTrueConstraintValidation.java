@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.AssertTrue;
 
@@ -29,7 +30,9 @@ public final class AssertTrueConstraintValidation implements ConstraintValidatio
 			if (val instanceof Boolean) {
 				Boolean v = (Boolean) val;
 				validator.is(v);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

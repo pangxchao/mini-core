@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Range;
 
@@ -55,6 +56,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = new BigDecimal(annotation.min());
 				r = v.compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof BigInteger) {
 				var n = new BigInteger(annotation.max());
@@ -65,6 +67,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = new BigInteger(annotation.min());
 				r = v.compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Long) {
 				var n = parseLong(annotation.max());
@@ -74,6 +77,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = parseLong(annotation.min());
 				r = ((Long) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Integer) {
 				var n = parseInt(annotation.max());
@@ -83,6 +87,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = parseInt(annotation.min());
 				r = ((Integer) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Short) {
 				var n = parseShort(annotation.max());
@@ -92,6 +97,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = parseShort(annotation.min());
 				r = ((Short) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Byte) {
 				var n = parseByte(annotation.max());
@@ -101,6 +107,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = parseByte(annotation.min());
 				r = ((Byte) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Double) {
 				var n = parseDouble(annotation.max());
@@ -110,6 +117,7 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = parseDouble(annotation.min());
 				r = ((Double) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
 			if (val instanceof java.lang.Float) {
 				var n = parseFloat(annotation.max());
@@ -119,7 +127,9 @@ public final class RangeConstraintValidation implements ConstraintValidation<Ran
 				n = parseFloat(annotation.min());
 				r = ((Float) val).compareTo(n);
 				validator.is(r >= 0);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Length;
 
@@ -32,11 +33,14 @@ public final class LengthConstraintValidation implements ConstraintValidation<Le
 			if (val.getClass().isArray()) {
 				int length = Array.getLength(val);
 				validator.is(min <= length && length <= max);
+				return;
 			}
 			if (val instanceof CharSequence) {
 				int length = ((CharSequence) val).length();
 				validator.is(min <= length && length <= max);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

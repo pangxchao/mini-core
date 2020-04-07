@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.IdCard;
 
@@ -30,7 +31,9 @@ public final class IdCardConstraintValidation implements ConstraintValidation<Id
 			if (value instanceof String) {
 				String v = (String) val;
 				validator.is(isIdCard(v));
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }

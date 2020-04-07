@@ -1,5 +1,6 @@
 package com.mini.core.validation.constraint;
 
+import com.mini.core.util.Assert;
 import com.mini.core.validation.ConstraintValidation;
 import com.mini.core.validation.annotation.Include;
 
@@ -48,6 +49,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.filter(Objects::nonNull)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof BigDecimal) {
 				validator.is(stream(annotation.value())
@@ -55,6 +57,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(BigDecimal::new)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof BigInteger) {
 				validator.is(stream(annotation.value())
@@ -62,6 +65,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(BigInteger::new)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof java.lang.Long) {
 				validator.is(stream(annotation.value())
@@ -69,6 +73,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(Long::parseLong)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof java.lang.Integer) {
 				validator.is(stream(annotation.value())
@@ -76,6 +81,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(Integer::parseInt)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof java.lang.Short) {
 				validator.is(stream(annotation.value())
@@ -83,6 +89,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(Short::parseShort)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof java.lang.Byte) {
 				validator.is(stream(annotation.value())
@@ -90,6 +97,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(Byte::parseByte)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof java.lang.Double) {
 				validator.is(stream(annotation.value())
@@ -97,6 +105,7 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(Double::parseDouble)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
 			if (val instanceof java.lang.Float) {
 				validator.is(stream(annotation.value())
@@ -104,7 +113,9 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 						.map(Float::parseFloat)
 						.anyMatch(n -> n.equals(val))
 				);
+				return;
 			}
+			Assert.error("Unsupported type");
 		}, () -> validator.is(annotation.require()));
 	}
 }
