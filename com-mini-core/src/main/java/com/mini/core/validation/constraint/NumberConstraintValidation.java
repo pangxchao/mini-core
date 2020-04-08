@@ -33,6 +33,6 @@ public final class NumberConstraintValidation implements ConstraintValidation<Nu
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 }

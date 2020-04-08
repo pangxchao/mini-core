@@ -116,6 +116,6 @@ public final class IncludeConstraintValidation implements ConstraintValidation<I
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 }

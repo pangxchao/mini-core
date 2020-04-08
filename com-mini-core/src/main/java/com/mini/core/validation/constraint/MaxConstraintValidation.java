@@ -98,7 +98,7 @@ public final class MaxConstraintValidation implements ConstraintValidation<Max> 
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 	
 }

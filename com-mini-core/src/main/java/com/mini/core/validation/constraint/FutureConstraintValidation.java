@@ -103,7 +103,7 @@ public final class FutureConstraintValidation implements ConstraintValidation<Fu
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 	
 	private static void validate(Validator validator, Date v, Future annotation) {

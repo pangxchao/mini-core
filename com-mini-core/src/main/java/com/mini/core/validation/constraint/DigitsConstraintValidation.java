@@ -88,7 +88,7 @@ public final class DigitsConstraintValidation implements ConstraintValidation<Di
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 	
 	private static void validate(Validator validator, BigDecimal v, int f, int i) {

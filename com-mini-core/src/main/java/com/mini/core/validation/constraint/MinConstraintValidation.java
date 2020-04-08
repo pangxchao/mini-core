@@ -98,6 +98,6 @@ public final class MinConstraintValidation implements ConstraintValidation<Min> 
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 }

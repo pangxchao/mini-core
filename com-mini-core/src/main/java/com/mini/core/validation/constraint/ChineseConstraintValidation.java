@@ -33,6 +33,6 @@ public final class ChineseConstraintValidation implements ConstraintValidation<C
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 }

@@ -88,7 +88,7 @@ public final class PositiveConstraintValidation implements ConstraintValidation<
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 	
 	private static void validate(Validator validator, int v, Positive annotation) {

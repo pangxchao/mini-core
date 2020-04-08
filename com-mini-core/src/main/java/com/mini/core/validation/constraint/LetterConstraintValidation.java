@@ -33,6 +33,6 @@ public final class LetterConstraintValidation implements ConstraintValidation<Le
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 }

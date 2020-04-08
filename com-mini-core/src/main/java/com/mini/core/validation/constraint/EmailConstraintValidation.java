@@ -33,6 +33,6 @@ public final class EmailConstraintValidation implements ConstraintValidation<Ema
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 }

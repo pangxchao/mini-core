@@ -103,7 +103,7 @@ public final class PastConstraintValidation implements ConstraintValidation<Past
 				return;
 			}
 			Assert.error("Unsupported type");
-		}, () -> validator.is(annotation.require()));
+		}, () -> validator.is(!annotation.require()));
 	}
 	
 	private static void validate(Validator validator, Date v, Past annotation) {
