@@ -20,7 +20,7 @@ public interface RegionDao extends RegionBaseDao {
 		return queryList(new SQLBuilder() {{
 			select("*").from(Region.TABLE);
 			where("%s = ?", REGION_ID);
-			params(parentId);
+			args(parentId);
 		}}, Region.class);
 	}
 }

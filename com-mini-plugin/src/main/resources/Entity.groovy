@@ -47,61 +47,51 @@ builder.addField(field.build())
 
 // 生成字段常量
 info.getColumnList().forEach({ column ->
-	if (!column.isExt()) {
-		field = FieldSpecBuilder.builder(String.class, column.getColumnName().toUpperCase())
-		field.addModifiers(PUBLIC, STATIC, FINAL)
-		field.initializer('$S ', column.getColumnName())
-		annotation = AnnotationSpec.builder(commentClass())
-		annotation.addMember('value', '$S', column.getComment())
-		field.addAnnotation(annotation.build())
-		builder.addField(field.build())
-	}
+	field = FieldSpecBuilder.builder(String.class, column.getColumnName().toUpperCase())
+	field.addModifiers(PUBLIC, STATIC, FINAL)
+	field.initializer('$S ', column.getColumnName())
+	annotation = AnnotationSpec.builder(commentClass())
+	annotation.addMember('value', '$S', column.getComment())
+	field.addAnnotation(annotation.build())
+	builder.addField(field.build())
 })
 
 // 生成属性信息
 info.getColumnList().forEach({ column ->
-	if (!column.isExt()) {
-		field = FieldSpecBuilder.builder(getColumnType(column), column.getFieldName())
-		field.addModifiers(PRIVATE)
-		// @Id 注解
-		if (column.isId()) {
-			field.addAnnotation(idClass())
-		}
-		// @Del 注解
-		if (column.isDel()) {
-			annotation = AnnotationSpec.builder(delClass())
-			annotation.addMember('value', '$L', column.delValue)
-			field.addAnnotation(annotation.build())
-		}
-		// @Lock 注解
-		if (column.isLock()) {
-			field.addAnnotation(lockClass())
-		}
-		// @Auto 注解
-		if (column.isAuto()) {
-			field.addAnnotation(autoClass())
-		}
-		// @CreateAt 注解
-		if (column.isCreateAt()) {
-			field.addAnnotation(createAtClass())
-		}
-		// @UpdateAt 注解
-		if (column.isUpdateAt()) {
-			field.addAnnotation(updateAtClass())
-		}
-		// @Column 注解
-		annotation = AnnotationSpec.builder(columnClass())
-		annotation.addMember('value', '$L', column.getColumnName().toUpperCase())
-		field.addAnnotation(annotation.build())
-		// @Ref 注解
-		if (column.isRef()) {
-			annotation = AnnotationSpec.builder(refClass())
-			annotation.addMember('table', '$S', column.getRefTable())
-			annotation.addMember('column', '$S', column.getRefColumn())
-			field.addAnnotation(annotation.build())
-		}
-		builder.addField(field.build())
+	field = FieldSpecBuilder.builder(getColumnType(column), column.getFieldName())
+	field.addModifiers(PRIVATE)
+	// @Id 注解
+	if (column.isId()) {
+		field.addAnnotation(idClass())
 	}
+	// @Del 注解
+	if (column.isDel()) {
+		annotation = AnnotationSpec.builder(delClass())
+		annotation.addMember('value', '$L', column.delValue)
+		field.addAnnotation(annotation.build())
+	}
+	// @Lock 注解
+	if (column.isLock()) {
+		field.addAnnotation(lockClass())
+	}
+	// @Auto 注解
+	if (column.isAuto()) {
+		field.addAnnotation(autoClass())
+	}
+	// @CreateAt 注解
+	if (column.isCreateAt()) {
+		field.addAnnotation(createAtClass())
+	}
+	// @UpdateAt 注解
+	if (column.isUpdateAt()) {
+		field.addAnnotation(updateAtClass())
+	}
+	// @Column 注解
+	annotation = AnnotationSpec.builder(columnClass())
+	annotation.addMember('value', '$L', column.getColumnName().toUpperCase())
+	field.addAnnotation(annotation.build())
+	// 添加字段信息
+	builder.addField(field.build())
 })
 
 // 添加默认无参构造方法

@@ -23,7 +23,7 @@ public interface RegionBaseDao extends JdbcInterface {
 			delete().from(Region.TABLE);
 			// 地区码/地区ID
 			where("%s = ?", Region.REGION_ID);
-			params(id);
+			args(id);
 		}});
 	}
 	
@@ -36,7 +36,7 @@ public interface RegionBaseDao extends JdbcInterface {
 		return queryObject(new SQLBuilder(Region.class) {{
 			// 地区码/地区ID
 			where("%s = ?", Region.REGION_ID);
-			params(id);
+			args(id);
 		}}, BeanMapper.create(Region.class));
 	}
 	

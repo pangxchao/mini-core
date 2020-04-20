@@ -20,21 +20,21 @@ import static com.mini.plugin.util.Constants.GENERATED_ERROR;
 import static com.squareup.javapoet.ClassName.get;
 
 public final class GroovyUtil implements Serializable, EventListener {
-	public static String generate(StringWriter writer, String template, TableInfo tableInfo) {
-		GroovyClassLoader loader = new GroovyClassLoader(GroovyUtil.class.getClassLoader());
-		//Map<String, TypeMapper> mapper = SettingUtil.getTypeMapperMap(Settings.getInstance());
-		//try (java.io.PrintWriter out = new java.io.PrintWriter(writer)) {
-		//	return (String) new GroovyShell(loader, new Binding() {{
-		//		setVariable("tableInfo", tableInfo);
-		//		setVariable("mapperMap", mapper);
-		//		setVariable("printWriter", out);
-		//	}}).evaluate(template);
-		//} catch (GroovyRuntimeException e) {
-		//	e.printStackTrace();
-		//	throw ThrowsUtil.hidden(e);
-		//}
-		return null;
-	}
+//	public static String generate(StringWriter writer, String template, TableInfo tableInfo) {
+//		GroovyClassLoader loader = new GroovyClassLoader(GroovyUtil.class.getClassLoader());
+//		//Map<String, TypeMapper> mapper = SettingUtil.getTypeMapperMap(Settings.getInstance());
+//		//try (java.io.PrintWriter out = new java.io.PrintWriter(writer)) {
+//		//	return (String) new GroovyShell(loader, new Binding() {{
+//		//		setVariable("tableInfo", tableInfo);
+//		//		setVariable("mapperMap", mapper);
+//		//		setVariable("printWriter", out);
+//		//	}}).evaluate(template);
+//		//} catch (GroovyRuntimeException e) {
+//		//	e.printStackTrace();
+//		//	throw ThrowsUtil.hidden(e);
+//		//}
+//		return null;
+//	}
 	
 	public static void generate(String template, TableInfo tableInfo, VirtualFile file) {
 		try {
@@ -98,10 +98,6 @@ public final class GroovyUtil implements Serializable, EventListener {
 	
 	public static ClassName lockClass() {
 		return get("com.mini.core.jdbc.annotation", "Lock");
-	}
-	
-	public static ClassName refClass() {
-		return get("com.mini.core.jdbc.annotation", "Ref");
 	}
 	
 	public static ClassName tableClass() {
@@ -193,33 +189,12 @@ public final class GroovyUtil implements Serializable, EventListener {
 	}
 	
 	public static String builderName(TableInfo table) {
-		return "Builder";
+		return table.getEntityName() + "Builder";
 	}
 	
 	public static ClassName builderClass(TableInfo table) {
 		return get(beanPackage(table), beanName(table),
 				builderName(table));
-	}
-	
-	public static String voBeanName(TableInfo table) {
-		return table.getEntityName() + "VO";
-	}
-	
-	public static String voBeanPackage(TableInfo table) {
-		return table.getPackageName() + ".entity.vo";
-	}
-	
-	public static ClassName voBeanClass(TableInfo table) {
-		return get(voBeanPackage(table), voBeanName(table));
-	}
-	
-	public static String voBuilderName(TableInfo table) {
-		return "Builder";
-	}
-	
-	public static ClassName voBuilderClass(TableInfo table) {
-		return get(voBeanPackage(table), voBeanName(table),
-				voBuilderName(table));
 	}
 	
 	public static String daoBaseName(TableInfo table) {

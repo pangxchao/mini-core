@@ -3,6 +3,7 @@ package com.mini.core.web.handler;
 import com.mini.core.validation.ValidationException;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.support.config.Configures;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,9 +13,12 @@ import java.util.ResourceBundle;
 
 import static com.mini.core.util.ThrowsUtil.hidden;
 import static java.lang.String.format;
+import static org.slf4j.LoggerFactory.getLogger;
+
 
 @Singleton
 public final class ExceptionHandlerValidate implements ExceptionHandler {
+	private static final Logger log = getLogger(ExceptionHandlerDefault.class);
 	@Inject
 	private Configures configures;
 	
@@ -41,6 +45,7 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 			message = format(message, e.getArgs().toArray());
 			invocation.getModel().setStatus(e.getStatus());
 			invocation.getModel().setMessage(message);
+			log.debug(exception.getMessage());
 		} catch (Exception | Error e) {
 			throw hidden(e);
 		}

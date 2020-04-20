@@ -1,8 +1,6 @@
 package com.mini.plugin.ui;
 
 import com.intellij.database.psi.DbTable;
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBScrollPane;
@@ -13,9 +11,7 @@ import com.intellij.util.ui.JBUI;
 import com.mini.plugin.config.ColumnInfo;
 import com.mini.plugin.config.TableInfo;
 import com.mini.plugin.config.TableModel;
-import com.mini.plugin.util.StringUtil;
 import com.mini.plugin.util.TableUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,9 +34,8 @@ public class TableConfigDialog extends JDialog implements EventListener {
 	private final JTextField classNameField;
 	private final TableModel tableModel;
 	private final TableInfo tableInfo;
-	private final JBTable jbTable;
 	private final Project project;
-	private int index = 1;
+	//private int index = 1;
 	
 	private synchronized void resetModelData() {
 		TableConfigDialog.this.tableModel.removeAllRow();
@@ -65,49 +60,48 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		// 创建表名标签并添加到顶部布局
 		final JLabel tableNameLabel = new JLabel("Table Name");
 		headPanel.add(tableNameLabel, new GridConstraints(0, 0, 1, 1, ANCHOR_WEST, FILL_NONE, SIZEPOLICY_FIXED,
-			SIZEPOLICY_FIXED, null, null, null, 0, false));
+				SIZEPOLICY_FIXED, null, null, null, 0, false));
 		// 创建表格名称输入器并添加到顶部布局
 		JTextField tableNameField = new JTextField(tableInfo.getTableName());
 		headPanel.add(tableNameField, new GridConstraints(0, 1, 1, 1, ANCHOR_WEST, FILL_HORIZONTAL,
-			SIZEPOLICY_WANT_GROW, SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+				SIZEPOLICY_WANT_GROW, SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		tableNameField.setEnabled(false);
 		// 创建类名标签并添加到顶部布局
 		final JLabel classNameLabel = new JLabel("Class Name");
 		headPanel.add(classNameLabel, new GridConstraints(0, 2, 1, 1, ANCHOR_WEST, FILL_NONE, SIZEPOLICY_FIXED,
-			SIZEPOLICY_FIXED, null, null, null, 0, false));
+				SIZEPOLICY_FIXED, null, null, null, 0, false));
 		// 创建类名输入框并添加到顶部布局
 		this.classNameField = new JTextField(tableInfo.getEntityName());
 		headPanel.add(classNameField, new GridConstraints(0, 3, 1, 1, ANCHOR_WEST, FILL_HORIZONTAL,
-			SIZEPOLICY_WANT_GROW, SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+				SIZEPOLICY_WANT_GROW, SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		// 创建表字段名前缀标签并添加到顶部布局
 		JLabel namePrefixLabel = new JLabel("Column Name Prefix");
 		headPanel.add(namePrefixLabel, new GridConstraints(0, 4, 1, 1, ANCHOR_WEST, FILL_NONE, SIZEPOLICY_FIXED,
-			SIZEPOLICY_FIXED, null, null, null, 0, false));
+				SIZEPOLICY_FIXED, null, null, null, 0, false));
 		// 创建表字段前缀输入框并添加到项部布局
 		this.namePrefixField = new JTextField(tableInfo.getNamePrefix());
 		headPanel.add(namePrefixField, new GridConstraints(0, 5, 1, 1, ANCHOR_WEST, FILL_HORIZONTAL,
-			SIZEPOLICY_WANT_GROW, SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+				SIZEPOLICY_WANT_GROW, SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		// 创建表说明标签并添加到顶部布局
 		JLabel tableCommentLabel = new JLabel("Table Comment");
 		headPanel.add(tableCommentLabel, new GridConstraints(1, 0, 1, 1, ANCHOR_NORTHWEST, FILL_NONE, SIZEPOLICY_FIXED,
-			SIZEPOLICY_FIXED, null, null, null, 0, false));
+				SIZEPOLICY_FIXED, null, null, null, 0, false));
 		// 创建表说明标签到项部布局
 		this.tableCommentField = new JTextArea(tableInfo.getComment());
 		tableCommentField.setBorder(new CustomLineBorder(1, 1, 1, 1));
 		headPanel.add(tableCommentField, new GridConstraints(1, 1, 1, 5, ANCHOR_NORTHWEST, FILL_BOTH, SIZEPOLICY_WANT_GROW,
-			SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+				SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
 		// 创建中心布局并添加到窗体布局中
 		JPanel centerPanel = new JPanel(new BorderLayout(0, 0));
 		centerPanel.setBorder(new CustomLineBorder(1, 0, 1, 0));
 		this.add(centerPanel, BorderLayout.CENTER);
-		// 创建添加删除按钮布局并添加到中心布局右边
-		final JComponent actions = createActionGroupToolBar();
-		centerPanel.add(actions, BorderLayout.SOUTH);
 		// 创建滚动面板并添加到中心布局中心
 		final JBScrollPane scrollPane1 = new JBScrollPane();
 		scrollPane1.setBorder(new CustomLineBorder(0, 0, 1, 0));
 		centerPanel.add(scrollPane1, BorderLayout.CENTER);
-		scrollPane1.setViewportView((jbTable = new JBTable()));
+		// 创建表格
+		final JBTable jbTable = new JBTable();
+		scrollPane1.setViewportView(jbTable);
 		jbTable.setBorder(new CustomLineBorder(0, 0, 0, 0));
 		jbTable.setSelectionMode(SINGLE_SELECTION);
 		jbTable.setModel((this.tableModel = new TableModel() {
@@ -138,7 +132,6 @@ public class TableConfigDialog extends JDialog implements EventListener {
 				String prefix = namePrefixField.getText();
 				tableInfo.setNamePrefix(prefix);
 				tableInfo.getColumns().forEach((name, info) -> { //
-					if (info.isExt()) return;
 					String n = toFieldName(info.getColumnName(), prefix);
 					info.setFieldName(toJavaName(n, false));
 				});
@@ -156,62 +149,6 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		resetModelData();
 	}
 	
-	// 创建事件按钮
-	private JComponent createActionGroupToolBar() {
-		DefaultActionGroup action = new DefaultActionGroup();
-		// 新增事件
-		action.add(new AnAction(AllIcons.General.Add) {
-			public void actionPerformed(@NotNull AnActionEvent e) {
-				TableConfigDialog.this.saveCurrentData();
-				ColumnInfo columnInfo = new ColumnInfo();
-				String name = "ColumnName" + index++;
-				while (tableInfo.hasColumn(name)) {
-					name = "ColumnName" + index++;
-				}
-				columnInfo.setFieldName("FieldName");
-				columnInfo.setComment("Comment");
-				columnInfo.setDbType("VARCHAR");
-				columnInfo.setColumnName(name);
-				columnInfo.setExt(true);
-				tableInfo.addColumn(columnInfo);
-				resetModelData();
-			}
-		});
-		// 删除事件
-		action.add(new AnAction(AllIcons.General.Remove) {
-			public void actionPerformed(@NotNull AnActionEvent e) {
-				int row = jbTable.getSelectedRow();
-				int size = tableModel.getRowCount();
-				if (row < 0 || row >= size) {
-					return;
-				}
-				// 获取字段信息
-				String name = (String) tableModel.getValueAt(row, 0);
-				if (StringUtil.isEmpty(name)) return;
-				ColumnInfo column = tableInfo.getColumns().get(name);
-				if (column == null || !column.isExt()) {
-					return;
-				}
-				// 删除操作
-				tableInfo.getColumns().remove(name);
-				resetModelData();
-			}
-			
-			public final void update(@NotNull AnActionEvent e) {
-				Presentation pre = e.getPresentation();
-				if (jbTable.getSelectedRow() >= 0) {
-					pre.setEnabled(true);
-					return;
-				}
-				pre.setEnabled(false);
-			}
-		});
-		String title = "Mapper Toolbar";
-		ActionManager m = ActionManager.getInstance();
-		return m.createActionToolbar(title, action, //
-			true).getComponent();
-	}
-	
 	protected synchronized final void saveCurrentData() {
 		tableInfo.setComment(tableCommentField.getText());
 		tableInfo.setEntityName(classNameField.getText());
@@ -224,19 +161,12 @@ public class TableConfigDialog extends JDialog implements EventListener {
 			columnInfo.setFieldName((String) getValueAt(i, 2));
 			columnInfo.setComment((String) getValueAt(i, 3));
 			columnInfo.setId((Boolean) getValueAt(i, 4));
-			columnInfo.setRef((Boolean) getValueAt(i, 5));
-			columnInfo.setRefTable((String) getValueAt(i, 6));
-			columnInfo.setRefColumn((String) getValueAt(i, 7));
-			columnInfo.setAuto((Boolean) getValueAt(i, 8));
-			columnInfo.setCreateAt((Boolean) getValueAt(i, 9));
-			columnInfo.setUpdateAt((Boolean) getValueAt(i, 10));
-			columnInfo.setDel((Boolean) getValueAt(i, 11));
-			columnInfo.setDelValue((Integer) getValueAt(i, 12));
-			columnInfo.setLock((Boolean) getValueAt(i, 13));
-			columnInfo.setExt(Optional.of(tableInfo.getColumns())
-				.map(m -> m.get(columnInfo.getColumnName()))
-				.map(ColumnInfo::isExt)
-				.orElse(true));
+			columnInfo.setAuto((Boolean) getValueAt(i, 5));
+			columnInfo.setCreateAt((Boolean) getValueAt(i, 6));
+			columnInfo.setUpdateAt((Boolean) getValueAt(i, 7));
+			columnInfo.setDel((Boolean) getValueAt(i, 8));
+			columnInfo.setDelValue((Integer) getValueAt(i, 9));
+			columnInfo.setLock((Boolean) getValueAt(i, 10));
 			map.put(columnInfo.getColumnName(), columnInfo);
 		}
 		// 重新设置列表数据
@@ -254,9 +184,4 @@ public class TableConfigDialog extends JDialog implements EventListener {
 	protected final void cancelHandler(ActionEvent event) {
 		this.dispose();
 	}
-	
-	//// 判断指定行是否为扩展行
-	//protected final boolean isExtColumn(int row) {
-	//	return row >= 0;
-	//}
 }

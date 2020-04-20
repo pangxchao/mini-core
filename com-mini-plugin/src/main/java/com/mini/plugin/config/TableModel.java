@@ -8,20 +8,17 @@ import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
 
 public class TableModel extends DefaultTableModel implements EventListener {
 	private static final Class<?>[] TYPES = {
-		String.class,
-		String.class,
-		String.class,
-		String.class,
-		Boolean.class,
-		Boolean.class,
-		String.class,
-		String.class,
-		Boolean.class,
-		Boolean.class,
-		Boolean.class,
-		Boolean.class,
-		Integer.class,
-		Boolean.class
+			String.class,
+			String.class,
+			String.class,
+			String.class,
+			Boolean.class,
+			Boolean.class,
+			Boolean.class,
+			Boolean.class,
+			Boolean.class,
+			Integer.class,
+			Boolean.class
 	};
 	
 	public TableModel() {
@@ -30,9 +27,6 @@ public class TableModel extends DefaultTableModel implements EventListener {
 		addColumn("Field Name");
 		addColumn("Comment");
 		addColumn("Id");
-		addColumn("Ref");
-		addColumn("Ref Table");
-		addColumn("Ref Column");
 		addColumn("Auto");
 		addColumn("CreateAt");
 		addColumn("UpdateAt");
@@ -47,24 +41,19 @@ public class TableModel extends DefaultTableModel implements EventListener {
 	}
 	
 	public synchronized final void addRow(ColumnInfo info) {
-		Optional.ofNullable(info).ifPresent(m -> { //
-			TableModel.this.addRow(new Object[]{
+		Optional.ofNullable(info).ifPresent(m -> TableModel.this.addRow(new Object[]{
 				defaultIfEmpty(m.getColumnName(), ""),
 				defaultIfEmpty(m.getDbType(), "VARCHAR").toUpperCase(),
 				defaultIfEmpty(m.getFieldName(), ""),
 				defaultIfEmpty(m.getComment(), ""),
 				m.isId(),
-				m.isRef(),
-				defaultIfEmpty(m.getRefTable(), ""),
-				defaultIfEmpty(m.getRefColumn(), ""),
 				m.isAuto(),
 				m.isCreateAt(),
 				m.isUpdateAt(),
 				m.isDel(),
 				m.getDelValue(),
 				m.isLock()
-			});
-		});
+		}));
 	}
 	
 	public final void removeAllRow() {

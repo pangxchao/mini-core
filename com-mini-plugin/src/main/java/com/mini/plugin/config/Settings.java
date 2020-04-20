@@ -429,11 +429,6 @@ public final class Settings implements Serializable, PersistentStateComponent<Se
 				.code(loadTemplateText("Entity"))
 				.name("Entity")
 				.build())
-			// 扩展信息
-			.element(Template.builder()
-				.code(loadTemplateText("EntityVO"))
-				.name("EntityVO")
-				.build())
 			// DaoBase
 			.element(Template.builder()
 				.code(loadTemplateText("BaseDao"))

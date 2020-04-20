@@ -15,7 +15,7 @@
 	<!-- 基础属性配置 -->
 	<properties>
 		<java.version>11</java.version>
-		<guice.version>4.2.2</guice.version>
+		<guice.version>4.2.3</guice.version>
 		<junit.version>4.13-beta-2</junit.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
@@ -33,11 +33,44 @@
 			<version>3.9</version>
 		</dependency>
 
+		<!-- Google 公共工具包依赖  -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>28.2-jre</version>
+		</dependency>
+
 		<!-- Google 自动初始化工具 -->
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
 			<version>1.0-rc6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- 谷歌依赖注入实现 -->
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>${guice.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- 谷歌Set，Map 依赖注入实现 -->
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-multibindings</artifactId>
+			<version>${guice.version}</version>
 		</dependency>
 
 		<!-- servlet api -->
@@ -81,26 +114,6 @@
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-tree</artifactId>
 			<version>7.1</version>
-		</dependency>
-
-		<!-- 谷歌依赖注入实现 -->
-		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
-			<version>${guice.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<!-- 谷歌Set，Map 依赖注入实现 -->
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-multibindings</artifactId>
-			<version>${guice.version}</version>
 		</dependency>
 
 		<!-- slf4j 日志框架 -->

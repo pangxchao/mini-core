@@ -23,7 +23,7 @@ public interface UserBaseDao extends JdbcInterface {
 			delete().from(User.TABLE);
 			// 用户ID
 			where("%s = ?", User.USER_ID);
-			params(id);
+			args(id);
 		}});
 	}
 	
@@ -36,7 +36,7 @@ public interface UserBaseDao extends JdbcInterface {
 		return queryObject(new SQLBuilder(User.class) {{
 			// 用户ID
 			where("%s = ?", User.USER_ID);
-			params(id);
+			args(id);
 		}}, BeanMapper.create(User.class));
 	}
 	

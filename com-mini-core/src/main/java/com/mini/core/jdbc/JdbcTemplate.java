@@ -56,7 +56,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final int execute(SQLBuilder builder) {
-		return execute(builder.toString(), builder.toArray());
+		return execute(builder.toString(), builder.args());
 	}
 	
 	@Override
@@ -73,7 +73,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final int execute(HolderGenerated holder, SQLBuilder builder) {
-		return execute(holder, builder.toString(), builder.toArray());
+		return execute(holder, builder.toString(), builder.args());
 	}
 	
 	@Override
@@ -158,7 +158,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final <T> T query(SQLBuilder builder, ResultSetCallback<T> callback) {
-		return query(builder.toString(), callback, builder.toArray());
+		return query(builder.toString(), callback, builder.args());
 	}
 	
 	@Nonnull
@@ -176,7 +176,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Nonnull
 	@Override
 	public final <T> List<T> queryList(SQLBuilder builder, Mapper<T> m) {
-		return queryList(builder.toString(), m, builder.toArray());
+		return queryList(builder.toString(), m, builder.args());
 	}
 	
 	@Nonnull
@@ -230,7 +230,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Nonnull
 	@Override
 	public final <T> List<T> queryList(int start, int limit, SQLBuilder builder, Mapper<T> m) {
-		return queryList(start, limit, builder.toString(), m, builder.toArray());
+		return queryList(start, limit, builder.toString(), m, builder.args());
 	}
 	
 	@Nonnull
@@ -266,7 +266,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Nonnull
 	@Override
 	public final <T> List<T> queryList(int limit, SQLBuilder builder, Mapper<T> m) {
-		return queryList(0, limit, builder.toString(), m, builder.toArray());
+		return queryList(0, limit, builder.toString(), m, builder.args());
 	}
 	
 	@Nonnull
@@ -305,7 +305,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Nonnull
 	@Override
 	public final <T> Paging<T> queryPaging(int page, int limit, SQLBuilder builder, Mapper<T> m) {
-		return queryPaging(page, limit, builder.toString(), m, builder.toArray());
+		return queryPaging(page, limit, builder.toString(), m, builder.args());
 	}
 	
 	@Nonnull
@@ -342,7 +342,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Nullable
 	@Override
 	public final <T> T queryObject(SQLBuilder builder, Mapper<T> m) {
-		return queryObject(builder.toString(), m, builder.toArray());
+		return queryObject(builder.toString(), m, builder.args());
 	}
 	
 	@Nullable

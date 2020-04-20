@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
+import static com.mini.core.jdbc.annotation.Join.JoinType.LEFT;
 import static com.mini.web.test.entity.Region.*;
 import static com.mini.web.test.entity.User.USER_REGION_ID;
 import static com.mini.web.test.util.FileGenerator.getPublicFullUrl;
@@ -26,9 +27,9 @@ import static com.mini.web.test.util.FileGenerator.getPublicFullUrl;
 @Setter
 @Table("user_info")
 @ToString(callSuper = true)
-@Join(column = USER_REGION_ID)
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
+@Join(value = "%s ON %s = %s", args = {TABLE, USER_REGION_ID, REGION_ID}, type = LEFT)
 public class UserExt extends User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

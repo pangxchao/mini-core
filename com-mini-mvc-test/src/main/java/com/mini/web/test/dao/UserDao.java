@@ -23,42 +23,42 @@ import static com.mini.web.test.entity.User.*;
 public interface UserDao extends UserBaseDao {
 	
 	default Paging<UserExt> search(int page, int limit, String search, int sortType, int phoneAuto, int emailAuto, String regionIdUri,
-		LocalDate startTime, LocalDate endTime) {
+			LocalDate startTime, LocalDate endTime) {
 		return queryPaging(page, limit, new SQLBuilder(UserExt.class) {{
 			// 搜索关键字条件
 			if (!StringUtils.isBlank(search)) {
 				where("(%s LIKE ? OR %s LIKE ? OR %s LIKE ?)", USER_NAME, USER_FULL_NAME, USER_PHONE);
-				params(search + "%", search + "%", search + "%");
+				args(search + "%", search + "%", search + "%");
 			}
 			
 			// 手机号已认证
 			if (phoneAuto == 1) {
 				where("%s = ?", USER_PHONE_AUTH);
-				params(phoneAuto);
+				args(phoneAuto);
 			}
 			
 			// 油箱已认证
 			if (emailAuto == 1) {
 				where("%s = ?", USER_EMAIL_AUTH);
-				params(emailAuto);
+				args(emailAuto);
 			}
 			
 			// 地区条件
 			if (!StringUtils.isBlank(regionIdUri)) {
 				where("%s LIKE ?", REGION_ID_URI);
-				params(regionIdUri + "%");
+				args(regionIdUri + "%");
 			}
 			
 			// 开始时间
 			if (startTime != null) {
 				where("%s >= ? ", USER_CREATE_TIME);
-				params(DateFormatUtil.formatDate(startTime));
+				args(DateFormatUtil.formatDate(startTime));
 			}
 			
 			// 结束时间
 			if (endTime != null) {
 				where("%s < ? ", USER_CREATE_TIME);
-				params(DateFormatUtil.formatDate(endTime.plusDays(1)));
+				args(DateFormatUtil.formatDate(endTime.plusDays(1)));
 			}
 			// 排序
 			orderBy("%s %s", USER_CREATE_TIME, (sortType == 1 ? "DESC" : "ASC"));
@@ -71,7 +71,7 @@ public interface UserDao extends UserBaseDao {
 			for (long id : idList) {
 				or();
 				where("%s = ?", USER_ID);
-				params(id);
+				args(id);
 			}
 		}});
 	}
