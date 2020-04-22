@@ -35,7 +35,7 @@ import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
  * 模板选择面板
  * @author xchao
  */
-public abstract class BaseTemplatePanel extends JPanel implements Serializable, EventListener {
+public abstract class TemplatePanel extends JPanel implements Serializable, EventListener {
 	private final CollectionComboBoxModel<String> jbListModel;
 	private final JBList<String> jbList;
 	
@@ -43,8 +43,7 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 	private synchronized String inputItemName(String initValue) {
 		InputValidator inputValidator = new InputValidator() {
 			public final boolean checkInput(String text) {
-				return StringUtil.isNotEmpty(text) && //
-					getTemplate(text) == null;
+				return StringUtil.isNotEmpty(text) && getTemplate(text) == null;
 			}
 			
 			@Override
@@ -52,13 +51,12 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 				return this.checkInput(inputString);
 			}
 		};
-		return showInputDialog("Template Name", TITLE_INFO, //
-			null, initValue, inputValidator);
+		return showInputDialog("Template Name", TITLE_INFO, null, initValue, inputValidator);
 	}
 	
 	protected synchronized void resetModelData(String name) {
-		BaseTemplatePanel.this.jbListModel.removeAll();
-		this.jbListModel.add(getTemplateData());
+		TemplatePanel.this.jbListModel.removeAll();
+		this.jbListModel.add(getTemplateNames());
 		this.jbListModel.update();
 		
 		// 设置选中项
@@ -67,9 +65,8 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 		} else jbList.setSelectedIndex(0);
 	}
 	
-	protected BaseTemplatePanel(Project project) {
+	protected TemplatePanel(Project project) {
 		super(new BorderLayout());
-		
 		// 创建左侧和右侧的面板、设置分割并添加到主面板
 		JPanel leftPanel = new JPanel(new BorderLayout());
 		JPanel rightPanel = new JPanel(new BorderLayout());
@@ -78,38 +75,42 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 		splitter.setSecondComponent(rightPanel);
 		this.add(splitter, BorderLayout.CENTER);
 		setPreferredSize(JBUI.size(400, 300));
-		
 		// 创建编辑按钮并添加到左侧面板上面
 		JComponent headToolBar = createActionGroupToolBar();
 		headToolBar.setBorder(new CustomLineBorder(1, 1, 1, 1));
 		leftPanel.add(headToolBar, BorderLayout.NORTH);
-		
 		// 创建左侧列表面板、添加到左侧面板中心并设置数据
 		this.jbListModel = new CollectionComboBoxModel<>();
-		this.jbList      = new JBList<>(this.jbListModel);
+		this.jbList = new JBList<>(this.jbListModel);
 		jbList.setBorder(new CustomLineBorder(0, 1, 1, 1));
 		leftPanel.add(this.jbList, BorderLayout.CENTER);
 		jbList.setSelectionMode(SINGLE_SELECTION);
-		
 		// 创建编辑器对象并添加到右侧面板
 		Editor editor = EditorUtil.createEditor(project);
 		rightPanel.add(editor.getComponent(), BorderLayout.CENTER);
-		
 		// 表格列表选中事件
-		BaseTemplatePanel.this.jbList.addListSelectionListener(event -> {
+		TemplatePanel.this.jbList.addListSelectionListener(event -> {
 			if (event.getValueIsAdjusting()) return;
-			Template t = ofNullable(jbList.getSelectedValue()).map(this::getTemplate)
-				.orElse(Template.builder().name("newFile").code("").build());
+			// 获取选中后的模板内容
+			Template t = ofNullable(jbList.getSelectedValue())
+					.map(this::getTemplate).orElseGet(() -> {
+						Template temp = new Template();
+						temp.setName("newFile");
+						temp.setContent("");
+						return temp;
+					});
+			// 设置编辑器可编辑
 			editor.getDocument().setReadOnly(false);
+			// 转换编辑器的换行符
 			WriteCommandAction.runWriteCommandAction(project, () -> {
-				String content = defaultIfEmpty(t.getCode(), "");
+				String content = defaultIfEmpty(t.getContent(), "");
 				content = content.replaceAll("(\r\n|\n)", "\n");
 				editor.getDocument().setText(content);
 			});
 		});
 		
+		// 设置编辑回调
 		editor.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
 			public void documentChanged(@NotNull DocumentEvent event) {
 				String text = editor.getDocument().getText();
 				String name = jbList.getSelectedValue();
@@ -187,63 +188,11 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 				pre.setEnabled(false);
 			}
 		});
-		//// 上移事件
-		//action.add(new AnAction(AllIcons.Actions.MoveUp) {
-		//	@Override
-		//	public void actionPerformed(@NotNull AnActionEvent event) {
-		//		int index = jbList.getSelectedIndex();
-		//		int length = jbListModel.getSize();
-		//		if (length <= 1 || index <= 0) {
-		//			return;
-		//		}
-		//		String name = jbList.getSelectedValue();
-		//		moveUpHandler(name, index);
-		//		resetModelData(name);
-		//	}
-		//
-		//	@Override
-		//	public void update(@NotNull AnActionEvent event) {
-		//		Presentation pre = event.getPresentation();
-		//		int index = jbList.getSelectedIndex();
-		//		int length = jbListModel.getSize();
-		//		if (length <= 1 || index <= 0) {
-		//			pre.setEnabled(false);
-		//			return;
-		//		}
-		//		pre.setEnabled(true);
-		//	}
-		//});
-		//// 下移事件
-		//action.add(new AnAction(AllIcons.Actions.MoveDown) {
-		//	@Override
-		//	public void actionPerformed(@NotNull AnActionEvent event) {
-		//		int index = jbList.getSelectedIndex();
-		//		int length = jbListModel.getSize();
-		//		if (length <= 1 || index >= (length - 1)) {
-		//			return;
-		//		}
-		//		String name = jbList.getSelectedValue();
-		//		moveDownHandler(name, index);
-		//		resetModelData(name);
-		//	}
-		//
-		//	@Override
-		//	public void update(@NotNull AnActionEvent event) {
-		//		Presentation pre = event.getPresentation();
-		//		int index = jbList.getSelectedIndex();
-		//		int length = jbListModel.getSize();
-		//		if (length <= 1 || index >= (length - 1)) {
-		//			pre.setEnabled(false);
-		//			return;
-		//		}
-		//		pre.setEnabled(true);
-		//	}
-		//});
 		
 		String title = "Head Toolbar";
 		ActionManager m = ActionManager.getInstance();
 		return m.createActionToolbar(title, action, //
-			true).getComponent();
+				true).getComponent();
 	}
 	
 	protected abstract void renameHandler(String name, String newName);
@@ -251,10 +200,6 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 	protected abstract void modifiedHandler(String name, String text);
 	
 	protected abstract void copyHandler(String name, String newName);
-	//
-	//protected abstract void moveDownHandler(String name, int index);
-	//
-	//protected abstract void moveUpHandler(String name, int index);
 	
 	@Nullable
 	protected abstract Template getTemplate(String name);
@@ -262,7 +207,7 @@ public abstract class BaseTemplatePanel extends JPanel implements Serializable, 
 	protected abstract void deleteHandler(String name);
 	
 	@NotNull
-	protected abstract List<String> getTemplateData();
+	protected abstract List<String> getTemplateNames();
 	
 	protected abstract void addHandler(String name);
 	

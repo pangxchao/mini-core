@@ -1,5 +1,6 @@
 package com.mini.core.jdbc.builder;
 
+import com.mini.core.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -12,6 +13,7 @@ import static com.mini.core.jdbc.builder.SQLInterfaceDef.getSQLInterface;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.addAll;
+import static java.util.stream.Stream.of;
 
 public class SQLBuilder implements EventListener, Serializable {
 	private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatement();
@@ -28,7 +30,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	private final WhereStatement where = new WhereStatement();
 	private final FromStatement from = new FromStatement();
 	private final JoinStatement join = new JoinStatement();
-	private final List<Object> params = new ArrayList<>();
+	private final List<Object> args = new ArrayList<>();
 	private final SetStatement set = new SetStatement();
 	private WhereStatement last = null;
 	private StatementType statement;
@@ -41,13 +43,13 @@ public class SQLBuilder implements EventListener, Serializable {
 		inter.createSelect(this, type);
 	}
 	
-	public final SQLBuilder params(Object... param) {
-		params.addAll(asList(param));
+	public final SQLBuilder args(Object... args) {
+		this.args.addAll(asList(args));
 		return this;
 	}
 	
-	public final Object[] toArray() {
-		return params.toArray();
+	public final Object[] args() {
+		return args.toArray();
 	}
 	
 	public final SQLBuilder insertInto(String table) {
@@ -80,10 +82,124 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
-	public final SQLBuilder select_distinct(String... columns) {
+	/**
+	 * {@code select(format("COUNT(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectCount(String column) {
+		return select(format("COUNT(%s) AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code select(format("COUNT(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectCount(String column, String alias) {
+		return select(format("COUNT(%s) AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code select(format("SUM(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectSum(String column) {
+		return select(format("SUM(%s) AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code select(format("SUM(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectSum(String column, String alias) {
+		return select(format("SUM(%s) AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code select(format("AVG(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectAvg(String column) {
+		return select(format("AVG(%s)  AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code select(format("AVG(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectAvg(String column, String alias) {
+		return select(format("AVG(%s)  AS `%s`", column, alias));
+	}
+	
+	public final SQLBuilder selectDistinct(String... columns) {
 		SQLBuilder.this.distinct = true;
 		this.select(columns);
 		return this;
+	}
+	
+	/**
+	 * {@code selectDistinct(format("COUNT(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctCount(String column) {
+		return selectDistinct(format("COUNT(%s) AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("COUNT(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctCount(String column, String alias) {
+		return selectDistinct(format("COUNT(%s) AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("SUM(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctSum(String column) {
+		return selectDistinct(format("SUM(%s)  AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("SUM(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctSum(String column, String alias) {
+		return selectDistinct(format("SUM(%s)  AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("AVG(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctAvg(String column) {
+		return selectDistinct(format("AVG(%s)  AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("AVG(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctAvg(String column, String alias) {
+		return selectDistinct(format("AVG(%s)  AS `%s`", column, alias));
 	}
 	
 	public final SQLBuilder values(String column, String value) {
@@ -101,9 +217,30 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
+	/**
+	 * {@code from(builder.toString());}
+	 * <p>子查询的SQL中参数无效</p>
+	 * @param builder 子查询SQL
+	 * @return {@code this}
+	 */
+	public final SQLBuilder from(SQLBuilder builder) {
+		return from(builder.toString());
+	}
+	
 	public final SQLBuilder join(String format, Object... args) {
 		join.addValues(format(format, args));
 		return this;
+	}
+	
+	/**
+	 * {@code join("%s ON %s = %s", table, column, joinColumn); }
+	 * @param table      联合表名称
+	 * @param column     当前表字段
+	 * @param joinColumn 联合表字段
+	 * @return {@code this}
+	 */
+	public final SQLBuilder joinSingle(String table, String column, String joinColumn) {
+		return join("%s ON %s = %s", table, column, joinColumn);
 	}
 	
 	public final SQLBuilder leftJoin(String format, Object... args) {
@@ -111,9 +248,31 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
+	/**
+	 * {@code leftJoin("%s ON %s = %s", table, column, joinColumn); }
+	 * @param table      联合表名称
+	 * @param column     当前表字段
+	 * @param joinColumn 联合表字段
+	 * @return {@code this}
+	 */
+	public final SQLBuilder leftJoinSingle(String table, String column, String joinColumn) {
+		return leftJoin("%s ON %s = %s", table, column, joinColumn);
+	}
+	
 	public final SQLBuilder rightJoin(String format, Object... args) {
 		rightJoin.addValues(format(format, args));
 		return this;
+	}
+	
+	/**
+	 * {@code rightJoin("%s ON %s = %s", table, column, joinColumn); }
+	 * @param table      联合表名称
+	 * @param column     当前表字段
+	 * @param joinColumn 联合表字段
+	 * @return {@code this}
+	 */
+	public final SQLBuilder rightJoinSingle(String table, String column, String joinColumn) {
+		return rightJoin("%s ON %s = %s", table, column, joinColumn);
 	}
 	
 	public final SQLBuilder outerJoin(String format, Object... args) {
@@ -121,9 +280,40 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
+	/**
+	 * {@code outerJoin("%s ON %s = %s", table, column, joinColumn); }
+	 * @param table      联合表名称
+	 * @param column     当前表字段
+	 * @param joinColumn 联合表字段
+	 * @return {@code this}
+	 */
+	public final SQLBuilder outerJoinSingle(String table, String column, String joinColumn) {
+		return outerJoin("%s ON %s = %s", table, column, joinColumn);
+	}
+	
 	public final SQLBuilder set(String format, Object... args) {
 		this.set.addValues(format(format, args));
 		return this;
+	}
+	
+	/**
+	 * {@code set("%s = ?", column).args(arg); }
+	 * @param column 修改字段名
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder setEquals(String column, Object arg) {
+		return set("%s = ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code set("%s = %s + ?", column, column).args(arg); }
+	 * @param column 修改字段名
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder setIncrease(String column, Object arg) {
+		return set("%s = %s + ?", column, column).args(arg);
 	}
 	
 	public final SQLBuilder onDuplicateKeyUpdate(String format, Object... args) {
@@ -132,10 +322,235 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
+	/**
+	 * {@code onDuplicateKeyUpdate("%s = VALUES(%)", column, column); }
+	 * @param column 修改字段名
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder onDuplicateKeyUpdateFromInsert(String column) {
+		return onDuplicateKeyUpdate("%s = VALUES(%)", column, column);
+	}
+	
+	/**
+	 * {@code onDuplicateKeyUpdateEquals("%s = ?", column).args(arg); }
+	 * @param column 修改字段名
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder onDuplicateKeyUpdateEquals(String column, Object arg) {
+		return onDuplicateKeyUpdate("%s = ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code onDuplicateKeyUpdate("%s = %s + ?", column, column).args(arg); }
+	 * @param column 修改字段名
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder onDuplicateKeyUpdateIncrease(String column, Object arg) {
+		return onDuplicateKeyUpdate("%s = %s + ?", column, column).args(arg);
+	}
+	
 	public final SQLBuilder where(String format, Object... args) {
 		this.where.addValues(format(format, args));
 		this.last = this.where;
 		return this;
+	}
+	
+	/**
+	 * {@code where("%s = ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereEquals(String column, Object arg) {
+		return where("%s = ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code where("%s <> ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereNotEqual(String column, Object arg) {
+		return where("%s <> ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code where("%s > ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereGreaterThan(String column, Object arg) {
+		return where("%s > ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code where("%s <=> ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereLessThan(String column, Object arg) {
+		return where("%s < ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code where("%s >= ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereGreaterThanOrEquals(String column, Object arg) {
+		return where("%s >= ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code where("%s <= ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereLessThanOrEquals(String column, Object arg) {
+		return where("%s <= ?", column).args(arg);
+	}
+	
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final <T> SQLBuilder whereIn(String column, T[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, boolean[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, double[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, float[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, long[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, short[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, byte[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, char[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, int[] args) {
+		return where("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code where("%s LIKE ?").args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereLike(String column, String arg) {
+		return where("%s LIKE ?").args(arg);
+	}
+	
+	/**
+	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(arg); }
+	 * @param columns 搜索的字段
+	 * @param arg     参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereMatchInBooleanMode(String[] columns, Object arg) {
+		return where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
+				StringUtil.join(columns, ',')) //
+				.args(arg);
+	}
+	
+	/**
+	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(arg); }
+	 * @param columns 搜索的字段
+	 * @param arg     参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereMatch(String[] columns, Object arg) {
+		String string = StringUtil.join(columns, ',');
+		return where("MATCH(%s) AGAINST(?)", string)//
+				.args(arg);
+	}
+	
+	/**
+	 * {@code where("%s BETWEEN ? AND ?", column).args(min, max); }
+	 * @param column 条件字段
+	 * @param min    参数最小值
+	 * @param max    参数最大值
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereBetweenAnd(String column, Object min, Object max) {
+		return where("%s BETWEEN ? AND ?", column).args(min, max);
 	}
 	
 	public final SQLBuilder and() {
@@ -163,8 +578,222 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
+	/**
+	 * {@code having("%s = ?", column).args(param); }
+	 * @param column 条件字段
+	 * @param arg    参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingEquals(String column, Object arg) {
+		return having("%s = ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code having("%s <> ?", column).args(param); }
+	 * @param column 条件字段
+	 * @param param  参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingNotEqual(String column, Object param) {
+		return having("%s <> ?", column).args(param);
+	}
+	
+	/**
+	 * {@code having("%s > ?", column).args(param); }
+	 * @param column 条件字段
+	 * @param param  参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingGreaterThan(String column, Object param) {
+		return having("%s > ?", column).args(param);
+	}
+	
+	/**
+	 * {@code having("%s <=> ?", column).args(param); }
+	 * @param column 条件字段
+	 * @param param  参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingLess(String column, Object param) {
+		return having("%s < ?", column).args(param);
+	}
+	
+	/**
+	 * {@code having("%s >= ?", column).args(param); }
+	 * @param column 条件字段
+	 * @param param  参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingGreaterThanOrEquals(String column, Object param) {
+		return having("%s >= ?", column).args(param);
+	}
+	
+	/**
+	 * {@code having("%s <= ?", column).args(param); }
+	 * @param column 条件字段
+	 * @param param  参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingLessOrEquals(String column, Object param) {
+		return having("%s <= ?", column).args(param);
+	}
+	
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final <T> SQLBuilder havingIn(String column, T[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, boolean[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, double[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, float[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, long[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, short[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, byte[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, char[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, int[] args) {
+		return having("%s IN (%s)", StringUtil.join(args, ','));
+	}
+	
+	/**
+	 * {@code having("%s LIKE ?").args(param); }
+	 * @param column 条件字段
+	 * @param param  参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingLike(String column, String param) {
+		return having("%s LIKE ?").args(param);
+	}
+	
+	/**
+	 * {@code having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(param); }
+	 * @param columns 搜索的字段
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingMatchInBooleanMode(String[] columns, Object param) {
+		return having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
+				StringUtil.join(columns, ',')) //
+				.args(param);
+	}
+	
+	/**
+	 * {@code having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(param); }
+	 * @param columns 搜索的字段
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingMatch(String[] columns, Object param) {
+		String string = StringUtil.join(columns, ',');
+		return having("MATCH(%s) AGAINST(?)", string)//
+				.args(param);
+	}
+	
+	/**
+	 * {@code where("%s BETWEEN ? AND ?", column).args(min, max); }
+	 * @param column 条件字段
+	 * @param min    参数最小值
+	 * @param max    参数最大值
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingBetweenAnd(String column, Object min, Object max) {
+		return having("%s BETWEEN ? AND ?", column).args(min, max);
+	}
+	
 	public final SQLBuilder orderBy(String format, Object... args) {
 		orderBy.addValues(format(format, args));
+		return this;
+	}
+	
+	/**
+	 * {@code of(columns).forEach(column -> orderBy("%s ASC", column)); }
+	 * @param columns 排序字段
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder orderByAsc(String... columns) {
+		of(columns).forEach(column -> orderBy("%s ASC", column));
+		return this;
+	}
+	
+	/**
+	 * {@code of(columns).forEach(column -> orderBy("%s DESC", column)); }
+	 * @param columns 排序字段
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder orderByDesc(String... columns) {
+		of(columns).forEach(column -> orderBy("%s DESC", column));
 		return this;
 	}
 	

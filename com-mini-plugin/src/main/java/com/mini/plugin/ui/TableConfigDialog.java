@@ -14,14 +14,14 @@ import com.mini.plugin.config.TableModel;
 import com.mini.plugin.util.TableUtil;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.EventListener;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static com.mini.plugin.util.StringUtil.toFieldName;
@@ -39,9 +39,7 @@ public class TableConfigDialog extends JDialog implements EventListener {
 	
 	private synchronized void resetModelData() {
 		TableConfigDialog.this.tableModel.removeAllRow();
-		tableInfo.getColumns().forEach((name, info) -> { //
-			tableModel.addRow(info);
-		});
+		tableInfo.getColumnMap().forEach((name, info) -> tableModel.addRow(info));
 	}
 	
 	private Object getValueAt(int row, int column) {
@@ -97,18 +95,25 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		this.add(centerPanel, BorderLayout.CENTER);
 		// 创建滚动面板并添加到中心布局中心
 		final JBScrollPane scrollPane1 = new JBScrollPane();
-		scrollPane1.setBorder(new CustomLineBorder(0, 0, 1, 0));
+		scrollPane1.setBorder(new CustomLineBorder(0, 0, 0, 0));
 		centerPanel.add(scrollPane1, BorderLayout.CENTER);
 		// 创建表格
 		final JBTable jbTable = new JBTable();
 		scrollPane1.setViewportView(jbTable);
 		jbTable.setBorder(new CustomLineBorder(0, 0, 0, 0));
 		jbTable.setSelectionMode(SINGLE_SELECTION);
-		jbTable.setModel((this.tableModel = new TableModel() {
-			protected boolean isExtColumn(int row) {
-				return row >= 0;
-			}
-		}));
+		jbTable.setModel((this.tableModel = new TableModel()));
+		TableColumnModel columnModel = jbTable.getColumnModel();
+		// 字段名、类型、属性名、说明列宽度
+		for (int i = 0; i < 4; i++) {
+			TableColumn cm = columnModel.getColumn(i);
+			cm.setPreferredWidth(240);
+		}
+		// 复选框列的宽度
+		for (int i = 4; i < tableModel.getColumnCount(); i++) {
+			TableColumn cm = columnModel.getColumn(i);
+			cm.setPreferredWidth(40);
+		}
 		// 创建底部面板并添加到当前窗体布局中
 		JPanel footPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		this.add(footPanel, BorderLayout.SOUTH);
@@ -131,7 +136,7 @@ public class TableConfigDialog extends JDialog implements EventListener {
 			public final void focusLost(FocusEvent e) {
 				String prefix = namePrefixField.getText();
 				tableInfo.setNamePrefix(prefix);
-				tableInfo.getColumns().forEach((name, info) -> { //
+				tableInfo.getColumnMap().forEach((name, info) -> {
 					String n = toFieldName(info.getColumnName(), prefix);
 					info.setFieldName(toJavaName(n, false));
 				});
@@ -139,9 +144,9 @@ public class TableConfigDialog extends JDialog implements EventListener {
 				resetModelData();
 			}
 		});
-		
 		// 设置标题
 		this.setTitle("Table Config " + tableInfo.getTableName());
+		setPreferredSize(JBUI.size(1440, 700));
 		// 计算大小
 		this.pack();
 		setLocationRelativeTo(null);
@@ -153,24 +158,36 @@ public class TableConfigDialog extends JDialog implements EventListener {
 		tableInfo.setComment(tableCommentField.getText());
 		tableInfo.setEntityName(classNameField.getText());
 		tableInfo.setNamePrefix(namePrefixField.getText());
-		Map<String, ColumnInfo> map = new LinkedHashMap<>();
+		LinkedHashMap<String, ColumnInfo> map = new LinkedHashMap<>();
 		for (int i = 0, size = tableModel.getRowCount(); i < size; i++) {
 			final ColumnInfo columnInfo = new ColumnInfo();
+			// 0-数据库字段名称
 			columnInfo.setColumnName((String) getValueAt(i, 0));
-			columnInfo.setDbType((String) getValueAt(i, 1));
+			// 1-数据库字段类型
+			columnInfo.setDatabaseType((String) getValueAt(i, 1));
+			// 2-java字段名称
 			columnInfo.setFieldName((String) getValueAt(i, 2));
+			// 3-字段说明
 			columnInfo.setComment((String) getValueAt(i, 3));
+			// 4-是否为主键
 			columnInfo.setId((Boolean) getValueAt(i, 4));
+			// 5-是否为自增长字段
 			columnInfo.setAuto((Boolean) getValueAt(i, 5));
+			// 6-是否为创建时间字段
 			columnInfo.setCreateAt((Boolean) getValueAt(i, 6));
+			// 7-是否为修改时间字段
 			columnInfo.setUpdateAt((Boolean) getValueAt(i, 7));
+			// 8-是否为标识删除突
 			columnInfo.setDel((Boolean) getValueAt(i, 8));
+			// 9-标识删除的值
 			columnInfo.setDelValue((Integer) getValueAt(i, 9));
+			// 10-是否为锁字段
 			columnInfo.setLock((Boolean) getValueAt(i, 10));
+			// 添加数据到字段列表
 			map.put(columnInfo.getColumnName(), columnInfo);
 		}
 		// 重新设置列表数据
-		this.tableInfo.setColumns(map);
+		this.tableInfo.setColumnMap(map);
 	}
 	
 	// 保存操作

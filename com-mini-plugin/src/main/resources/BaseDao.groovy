@@ -26,7 +26,7 @@ method.methodBuilder('deleteById')
 method.addModifiers(DEFAULT, PUBLIC)
 method.returns(int.class)
 method.addJavadoc('删除$L \n', info.getComment())
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({ key, column ->
 	if (column.isId()) {
 		method.addParameter(ColumnUtil.getColumnType(column), column.getFieldName())
 		method.addJavadoc('@param $N $N \n', column.getFieldName(), column.getComment())
@@ -34,25 +34,25 @@ info.getColumnList().forEach({ column ->
 })
 method.addJavadoc('@return 执行结果 \n')
 method.addCode('return execute(new $T() {{ \n ', sqlBuilderClass())
-if (info.getColumnList().stream().anyMatch({ return it.isDel() })) {
+if (info.getColumnMap().values().stream().anyMatch({ return it.isDel() })) {
 	method.addStatement('update($T.$L)', beanClass(info), info.getTableName().toUpperCase())
-	info.getColumnList().forEach({ column ->
+	info.getColumnMap().forEach({ key, column ->
 		if (column.isDel()) {
 			method.addStatement('set("%s = ?", $T.$L)', beanClass(info), column.getColumnName().toUpperCase())
-			method.addStatement('params($S)', column.getDelValue())
+			method.addStatement('args($S)', column.getDelValue())
 		}
 		if (column.isLock()) {
 			method.addStatement('set("%s = ?", $T.$L)', beanClass(info), column.getColumnName().toUpperCase())
-			method.addStatement('params($T.currentTimeMillis())', System.class)
+			method.addStatement('args($T.currentTimeMillis())', System.class)
 		}
 	})
 } else {
 	method.addStatement('delete().from($T.$L)', beanClass(info), info.getTableName().toUpperCase())
 }
-info.getColumnList().forEach({ column ->
-	if (column.isId() || column.isLock()) {
+info.getColumnMap().forEach({ key, column ->
+	if (column.isId()) {
 		method.addStatement('\twhere($S, $T.$L)', '%s = ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\tparams($N)', column.getFieldName())
+		method.addStatement('\targs($N)', column.getFieldName())
 	}
 })
 method.addStatement('}})')
@@ -63,7 +63,7 @@ method = MethodSpecBuilder.methodBuilder('queryById')
 method.addModifiers(DEFAULT, PUBLIC)
 method.returns(beanClass(info))
 method.addJavadoc('根据ID查询实体信息 \n')
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({ key, column ->
 	if (column.isId()) {
 		method.addParameter(ColumnUtil.getColumnType(column), column.getFieldName())
 		method.addJavadoc('@param $N $N \n', column.getFieldName(), column.getComment())
@@ -71,14 +71,14 @@ info.getColumnList().forEach({ column ->
 })
 method.addJavadoc('@return 实体信息 \n')
 method.addCode('return queryObject(new $T($T.class) {{ \n', sqlBuilderClass(), beanClass(info))
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({ key, column ->
 	if (column.isId()) {
 		method.addStatement('\twhere($S, $T.$L)', '%s = ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\tparams($N)', column.getFieldName())
+		method.addStatement('\targs($N)', column.getFieldName())
 	}
 	if (column.isDel()) {
 		method.addStatement('\twhere($S, $T.$L)', '%s <> ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\tparams($S)', column.getDelValue())
+		method.addStatement('\targs($S)', column.getDelValue())
 	}
 })
 method.addStatement('}}, $T.class)', beanClass(info))
@@ -92,10 +92,10 @@ method.returns(getParameterizedTypeName(List.class, beanClass(info))) //
 method.addJavadoc('查询所有实体信息 \n') //
 method.addJavadoc('@return 实体信息列表 \n') //
 method.addCode('return queryList(new $T($T.class) {{ \n', sqlBuilderClass(), beanClass(info))
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({ key, column ->
 	if (column.isDel()) {
 		method.addStatement('\twhere($S, $T.$L)', '%s <> ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\tparams($S)', column.getDelValue())
+		method.addStatement('\targs($S)', column.getDelValue())
 	}
 })
 method.addStatement('}},  $T.class)', beanClass(info))
@@ -112,10 +112,10 @@ method.addJavadoc('@param $N 分页-页码数\n', 'page')
 method.addJavadoc('@param $N 分页- 每页条数\n', 'limit')
 method.addJavadoc('@return 实体信息列表 \n')
 method.addCode('return queryPaging(page, limit, new $T($T.class)  {{ \n', sqlBuilderClass(), beanClass(info))
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({ key, column ->
 	if (column.isDel()) {
 		method.addStatement('\twhere($S, $T.$L)', '%s <> ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\tparams($S)', column.getDelValue())
+		method.addStatement('\targs($S)', column.getDelValue())
 	}
 })
 method.addStatement('}},  $T.class)', beanClass(info))

@@ -1,6 +1,7 @@
 package com.mini.plugin.util;
 
 import com.intellij.database.model.DasColumn;
+import com.intellij.database.model.DasObject;
 import com.intellij.database.psi.DbTable;
 import com.intellij.database.util.DasUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -13,7 +14,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DictionariesUtil {
 	
@@ -67,6 +71,10 @@ public class DictionariesUtil {
 			String[] cellTitle = new String[]{"序号", "名称", "类型", "长度", "主键", "非空", "自增", "默认值", "说明"};
 			
 			int rowNum = 0;
+			tableList = tableList.stream().filter(Objects::nonNull)
+					.sorted(Comparator.comparing(DasObject::getName))
+					.collect(Collectors.toList());
+			tableList.sort(Comparator.comparing(DasObject::getName));
 			for (DbTable table : tableList) {
 				// 合并单元格
 				sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 8));
@@ -85,7 +93,7 @@ public class DictionariesUtil {
 				}
 				
 				rowNum = rowNum + 1;
-				row    = sheet.createRow(rowNum);
+				row = sheet.createRow(rowNum);
 				row.setHeightInPoints(20);
 				
 				// 标题行
@@ -98,7 +106,7 @@ public class DictionariesUtil {
 				int index = 1;
 				for (DasColumn column : DasUtil.getColumns(table)) {
 					rowNum = rowNum + 1;
-					row    = sheet.createRow(rowNum);
+					row = sheet.createRow(rowNum);
 					row.setHeightInPoints(15);
 					
 					// 序号
@@ -115,8 +123,8 @@ public class DictionariesUtil {
 					cell = row.createCell(2);
 					cell.setCellStyle(style);
 					cell.setCellValue(StringUtil.defaultIfEmpty(
-						column.getDataType().typeName, "")
-						.toUpperCase());
+							column.getDataType().typeName, "")
+							.toUpperCase());
 					
 					// 字段长度
 					cell = row.createCell(3);
@@ -153,12 +161,12 @@ public class DictionariesUtil {
 				
 				// 每个表结束之后有一个空白行
 				rowNum = rowNum + 1;
-				row    = sheet.createRow(rowNum);
+				row = sheet.createRow(rowNum);
 				row.setHeightInPoints(20);
 				
 				// 准备下一个表格
 				rowNum = rowNum + 1;
-				row    = sheet.createRow(rowNum);
+				row = sheet.createRow(rowNum);
 				row.setHeightInPoints(20);
 				
 				rowNum++;
@@ -166,7 +174,7 @@ public class DictionariesUtil {
 			
 			workBook.write(out);
 			out.flush();
-
+			
 			// 刷新生成的文件
 			file.refresh(true, true);
 		} catch (Exception | Error e) {

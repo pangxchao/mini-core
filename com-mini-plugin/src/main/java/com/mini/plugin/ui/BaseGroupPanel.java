@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.InputValidator;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.util.ui.JBUI;
-import com.mini.plugin.config.AbstractGroup;
 import com.mini.plugin.config.Settings;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,16 +29,16 @@ import static java.util.Optional.ofNullable;
  * 分组面板-负责抽象出创建分组、删除分组、复制分组
  * @author xchao
  */
-public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends JPanel {
+public abstract class BaseGroupPanel<T> extends JPanel implements EventListener {
 	private final CollectionComboBoxModel<String> comboBoxModel;
 	private final ComboBox<String> comboBox = new ComboBox<>();
 	
 	@NotNull
 	private synchronized List<String> getNameList() {
 		return Optional.of(getGroupData())
-			.map(Map::keySet)
-			.map(ArrayList::new)
-			.orElse(new ArrayList<>());
+				.map(Map::keySet)
+				.map(ArrayList::new)
+				.orElse(new ArrayList<>());
 	}
 	
 	// 输入元素名称
@@ -47,7 +46,7 @@ public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends J
 		InputValidator inputValidator = new InputValidator() {
 			public final boolean checkInput(String text) {
 				return StringUtil.isNotEmpty(text) && //
-					!getNameList().contains(text);
+						!getNameList().contains(text);
 			}
 			
 			@Override
@@ -56,13 +55,13 @@ public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends J
 			}
 		};
 		return showInputDialog("Group Name", TITLE_INFO, //
-			null, value, inputValidator);
+				null, value, inputValidator);
 	}
 	
 	private synchronized T getGroupItem(String name) {
 		return Optional.of(getGroupData())
-			.map(data -> data.get(name))
-			.orElse(null);
+				.map(data -> data.get(name))
+				.orElse(null);
 	}
 	
 	private synchronized void resetModelData(String name) {
@@ -84,8 +83,7 @@ public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends J
 		// 添加分组下拉框
 		panel.add(this.comboBox);
 		// 添加分组选中事件
-		this.comboBox.addItemListener(event -> //
-			Optional.ofNullable(event)
+		this.comboBox.addItemListener(event -> ofNullable(event)
 				.filter(e -> e.getStateChange() == SELECTED)
 				.map(ItemEvent::getItem)
 				.map(o -> (String) o)
@@ -183,8 +181,7 @@ public abstract class BaseGroupPanel<E, T extends AbstractGroup<E, T>> extends J
 		});
 		String title = "Group Toolbar";
 		ActionManager m = ActionManager.getInstance();
-		return m.createActionToolbar(title, action, //
-			true).getComponent();
+		return m.createActionToolbar(title, action, true).getComponent();
 	}
 	
 	

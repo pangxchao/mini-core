@@ -2,95 +2,127 @@ package com.mini.plugin.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.intellij.database.model.DasColumn;
+import com.mini.plugin.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
-import java.util.EventListener;
 
-import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
-
-public final class ColumnInfo implements Serializable, EventListener {
-	private boolean auto, id, createAt, updateAt, del, lock;
-	private String columnName, fieldName, comment, dbType;
-	private boolean notNull;
+/**
+ * 数据库连接信息-字段
+ * @author xchao
+ */
+public final class ColumnInfo extends AbstractClone<ColumnInfo> implements Serializable {
+	private String databaseType;
+	private String columnName;
+	private String fieldName;
+	private boolean createAt;
+	private boolean updateAt;
 	@JsonIgnore
 	private DasColumn column;
+	private boolean notNull;
+	private String comment;
 	private int delValue;
+	private boolean auto;
+	private boolean lock;
+	private boolean del;
+	private boolean id;
 	
-	public void setColumnName(String columnName) {
+	public ColumnInfo setDatabaseType(String databaseType) {
+		this.databaseType = databaseType;
+		return this;
+	}
+	
+	public ColumnInfo setColumnName(String columnName) {
 		this.columnName = columnName;
+		return this;
 	}
 	
-	public void setFieldName(String fieldName) {
+	public ColumnInfo setFieldName(String fieldName) {
 		this.fieldName = fieldName;
+		return this;
 	}
 	
-	public void setCreateAt(boolean createAt) {
+	public ColumnInfo setCreateAt(boolean createAt) {
 		this.createAt = createAt;
+		return this;
 	}
 	
-	public void setUpdateAt(boolean updateAt) {
+	public ColumnInfo setUpdateAt(boolean updateAt) {
 		this.updateAt = updateAt;
+		return this;
 	}
 	
-	public void setNotNull(boolean notNull) {
-		this.notNull = notNull;
-	}
-	
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-	
-	public void setColumn(DasColumn column) {
+	public ColumnInfo setColumn(DasColumn column) {
 		this.column = column;
+		return this;
 	}
 	
-	public void setDbType(String dbType) {
-		this.dbType = dbType;
+	public ColumnInfo setNotNull(boolean notNull) {
+		this.notNull = notNull;
+		return this;
 	}
 	
-	public void setDelValue(int delValue) {
+	public ColumnInfo setComment(String comment) {
+		this.comment = comment;
+		return this;
+	}
+	
+	public ColumnInfo setDelValue(int delValue) {
 		this.delValue = delValue;
+		return this;
 	}
 	
-	public void setAuto(boolean auto) {
+	public ColumnInfo setAuto(boolean auto) {
 		this.auto = auto;
+		return this;
 	}
 	
-	public void setLock(boolean lock) {
+	public ColumnInfo setLock(boolean lock) {
 		this.lock = lock;
+		return this;
 	}
 	
-	public void setDel(boolean del) {
+	public ColumnInfo setDel(boolean del) {
 		this.del = del;
+		return this;
 	}
 	
-	public void setId(boolean id) {
+	public ColumnInfo setId(boolean id) {
 		this.id = id;
+		return this;
 	}
 	
 	@NotNull
-	public String getColumnName() {
-		return defaultIfEmpty(columnName, "");
+	public final synchronized String getDatabaseType() {
+		if (StringUtil.isEmpty(databaseType)) {
+			databaseType = "VARCHAR";
+		}
+		return databaseType.toUpperCase();
 	}
 	
 	@NotNull
-	public String getFieldName() {
-		return defaultIfEmpty(fieldName, "");
-	}
-	
-	public boolean isNotNull() {
-		return notNull;
-	}
-	
-	@NotNull
-	public String getComment() {
-		return defaultIfEmpty(comment, "");
+	public final synchronized String getColumnName() {
+		if (StringUtil.isEmpty(columnName)) {
+			columnName = "ColumnName";
+		}
+		return columnName;
 	}
 	
 	@NotNull
-	public String getDbType() {
-		return defaultIfEmpty(dbType, "");
+	public final synchronized String getFieldName() {
+		if (StringUtil.isEmpty(fieldName)) {
+			fieldName = "fieldName";
+		}
+		return fieldName;
+	}
+	
+	@NotNull
+	public final synchronized String getComment() {
+		if (StringUtil.isEmpty(comment)) {
+			comment = "Comment";
+		}
+		return comment;
 	}
 	
 	public boolean isCreateAt() {
@@ -101,9 +133,13 @@ public final class ColumnInfo implements Serializable, EventListener {
 		return updateAt;
 	}
 	
-	@NotNull
+	@Nullable
 	public DasColumn getColumn() {
 		return column;
+	}
+	
+	public boolean isNotNull() {
+		return notNull;
 	}
 	
 	public int getDelValue() {
@@ -124,5 +160,25 @@ public final class ColumnInfo implements Serializable, EventListener {
 	
 	public boolean isId() {
 		return id;
+	}
+	
+	@NotNull
+	@Override
+	public final synchronized ColumnInfo clone() {
+		final ColumnInfo info = new ColumnInfo();
+		info.setDatabaseType(databaseType);
+		info.setColumnName(columnName);
+		info.setFieldName(fieldName);
+		info.setCreateAt(createAt);
+		info.setUpdateAt(updateAt);
+		info.setDelValue(delValue);
+		info.setComment(comment);
+		info.setNotNull(notNull);
+		info.setColumn(column);
+		info.setAuto(auto);
+		info.setLock(lock);
+		info.setDel(del);
+		info.setId(id);
+		return info;
 	}
 }

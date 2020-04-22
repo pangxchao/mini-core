@@ -10,11 +10,10 @@ import com.intellij.psi.PsiPackage;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.util.ui.JBUI;
-import com.mini.plugin.config.GroupDB;
 import com.mini.plugin.config.Settings;
 import com.mini.plugin.config.TableInfo;
 import com.mini.plugin.config.Template;
-import com.mini.plugin.util.ModuleUtil;
+import com.mini.plugin.config.TemplateGroup;
 import com.mini.plugin.util.PackageUtil;
 
 import javax.swing.*;
@@ -23,7 +22,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.intellij.ide.util.PackageUtil.findOrCreateDirectoryForPackage;
 import static com.intellij.openapi.ui.Messages.showWarningDialog;
@@ -40,16 +39,17 @@ import static java.util.Optional.ofNullable;
 
 public class GenerateCodeDialog extends JDialog implements EventListener {
 	private final List<JCheckBox> checkBoxList = new ArrayList<>();
-	private final TableInfo tableInfo;
+	private final List<TableInfo> tableInfoList;
 	private PsiDirectory sourceDir;
 	private PsiPackage psiPackage;
-	private final Project project;
+	//private final Project project;
 	private PsiDirectory packageDir;
 	private Module module;
-
-	public GenerateCodeDialog(Project project, DbTable table) {
-		this.tableInfo = createTableInfo(project, table);
-		this.project = project;
+	
+	public GenerateCodeDialog(Project project, List<DbTable> tableList) {
+		tableInfoList = tableList.stream().map(table -> createTableInfo(project, table))
+				.collect(Collectors.toList());
+		//this.project = project;
 		// 设置当前弹出窗口布局
 		this.setModal(true);
 		this.setLayout(new BorderLayout(0, 0));
@@ -109,75 +109,69 @@ public class GenerateCodeDialog extends JDialog implements EventListener {
 		buttonPanel.add(cancelButton);
 		// 默认选中的按钮
 		getRootPane().setDefaultButton(okButton);
-
+		
 		// 获取所有模板
-		Optional.ofNullable(getInstance().getCurrentGroupDB())
-				.map(GroupDB::getElements).ifPresent(elements ->
+		ofNullable(getInstance().getTemplateGroup())
+				.map(TemplateGroup::getTemplateMap).ifPresent(elements ->
 				elements.forEach((key, value) -> {
 					JCheckBox box = new JCheckBox(key);
 					templatePanel.add(box);
 					checkBoxList.add(box);
-					box.setSelected(true);
+					box.setSelected(false);
 				}));
-
+		
 		//监听module选择事件
 		moduleField.addActionListener(event ->
 				ofNullable(moduleField.getSelectedItem())
 						.map(o -> (String) o)
 						.map(n -> getModuleByName(project, n))
 						.ifPresent(m -> this.module = m));
-
+		
 		// 包选择按钮点击事件
-		packageButton.addActionListener(event -> ofNullable(module)
-				.map(PackageUtil::selectPackage).ifPresent(p -> {
-					tableInfo.setPackageName(p.getQualifiedName());
-					packageField.setText(p.getQualifiedName());
-					ofNullable(findOrCreateDirectoryForPackage(module, p.getQualifiedName(), null, false)).ifPresent(dir -> {
-						String[] packages = p.getQualifiedName().split("[.]");
-						GenerateCodeDialog.this.packageDir = dir;
-						GenerateCodeDialog.this.sourceDir = dir;
-						for (int i = 0; sourceDir != null && i < packages.length; i++) {
-							sourceDir = sourceDir.getParent();
-						}
-						// 显示路径
-						of(dir).map(PsiDirectory::getVirtualFile).map(VirtualFile::getPath)
-								.ifPresent(sourceField::setText);
-						psiPackage = p;
-					});
-				}));
-
+		packageButton.addActionListener(event -> ofNullable(module).map(PackageUtil::selectPackage).ifPresent(p -> {
+			packageField.setText(p.getQualifiedName());
+			ofNullable(findOrCreateDirectoryForPackage(module, p.getQualifiedName(), null, false)).ifPresent(dir -> {
+				String[] packages = p.getQualifiedName().split("[.]");
+				GenerateCodeDialog.this.packageDir = dir;
+				GenerateCodeDialog.this.sourceDir = dir;
+				for (int i = 0; sourceDir != null && i < packages.length; i++) {
+					sourceDir = sourceDir.getParent();
+				}
+				// 显示路径
+				of(dir).map(PsiDirectory::getVirtualFile).map(VirtualFile::getPath).ifPresent(sourceField::setText);
+				psiPackage = p;
+			});
+		}));
+		
 		// 默认选择 Module
-		Optional.ofNullable(moduleField.getSelectedItem()).ifPresent(name ->
-				module = ModuleUtil.getModuleByName(project, (String) name));
-
+		ofNullable(moduleField.getSelectedItem()).ifPresent(name -> module = getModuleByName(project, (String) name));
+		
 		// 设置标题
 		this.setTitle("Mini Code Generate Dialog");
 		this.pack();
 		this.setLocationRelativeTo(null);
 	}
-
+	
 	// 确定按钮点击事件
 	protected synchronized void okButton(ActionEvent event) {
 		if (sourceDir == null || psiPackage == null) {
 			showWarningDialog(CHOOSE_PACKAGE, TITLE_INFO);
 			return;
 		}
-		checkBoxList.stream().filter(AbstractButton::isSelected)
-				.map(AbstractButton::getText).forEach(name -> {
-			Settings settings = Settings.getInstance();
-			GroupDB db = settings.getCurrentGroupDB();
-			Optional.ofNullable(db).map(v -> v.get(name))
-					.map(Template::getCode).ifPresent(code -> {
-				tableInfo.setPackageName(psiPackage.getQualifiedName());
-				generate(code, tableInfo, sourceDir.getVirtualFile());
-
-				// 刷新并格式化代码
-				packageDir.getVirtualFile().refresh(true, true);
+		checkBoxList.stream().filter(AbstractButton::isSelected).map(AbstractButton::getText).forEach(name -> {
+			TemplateGroup templateGroup = Settings.getInstance().getTemplateGroup();
+			ofNullable(templateGroup).map(TemplateGroup::getTemplateMap).map(map -> map.get(name)).map(Template::getContent).ifPresent(content -> {
+				tableInfoList.stream().peek(tableInfo -> tableInfo.setPackageName(psiPackage.getQualifiedName())).forEach(tableInfo -> {
+					generate(content, tableInfo, sourceDir.getVirtualFile());
+					// 刷新并格式化代码
+					packageDir.getVirtualFile().refresh(true, true);
+				});
+				// 关闭窗口
 				this.dispose();
 			});
 		});
 	}
-
+	
 	// 取消按钮点击事件
 	protected synchronized void cancelButton(ActionEvent event) {
 		this.dispose();

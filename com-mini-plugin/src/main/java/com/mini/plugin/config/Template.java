@@ -1,63 +1,50 @@
 package com.mini.plugin.config;
 
+import com.mini.plugin.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 
-import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
-
 /**
- *
+ * 模板信息
  * @author xchao
  */
-public final class Template implements Serializable {
-	private String name, code;
+public final class Template extends AbstractClone<Template> implements Serializable {
+	private String content;
+	private String name;
 	
-	public synchronized final String getName() {
-		return defaultIfEmpty(name, "");
+	public Template setContent(String content) {
+		this.content = content;
+		return this;
 	}
 	
-	public synchronized final String getCode() {
-		return defaultIfEmpty(code, "");
-	}
-	
-	public void setName(String name) {
+	public Template setName(String name) {
 		this.name = name;
+		return this;
 	}
 	
-	public void setCode(String code) {
-		this.code = code;
-	}
-	
-	public static Builder builder() {
-		return new Builder(new Template());
-	}
-	
-	public static Builder builder(Template copy) {
-		return new Builder(new Template())
-			.name(copy.getName())
-			.code(copy.getCode());
-	}
-	
-	public static class Builder implements Serializable {
-		private final Template template;
-		
-		protected Builder(Template t) {
-			this.template = t;
+	@NotNull
+	public synchronized String getContent() {
+		if (StringUtil.isEmpty(content)) {
+			content = "";
 		}
-		
-		public Builder name(String name) {
-			template.setName(name);
-			return this;
-		}
-		
-		public Builder code(String code) {
-			template.setCode(code);
-			return this;
-		}
-		
-		public Template build() {
-			return template;
-		}
+		return content;
 	}
 	
+	@NotNull
+	public synchronized String getName() {
+		if (StringUtil.isEmpty(name)) {
+			name = "";
+		}
+		return name;
+	}
 	
+	@NotNull
+	@Override
+	public final synchronized Template clone() {
+		final Template info = new Template();
+		info.setContent(content);
+		info.setName(name);
+		return info;
+	}
 }

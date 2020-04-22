@@ -12,10 +12,10 @@ public final class ColumnUtil implements EventListener, Serializable {
 	@SuppressWarnings("unchecked")
 	public static Class<?> getColumnType(ColumnInfo column) {
 		return Optional.of(Settings.getInstance())
-			.map(Settings::getCurrentGroupMapper)
-			.map(group -> group.get(column.getDbType()))
-			.map(m -> column.isNotNull() ? m.getJavaType() : m.getNullJavaType())
-			.map(ClassUtil::forName)
-			.orElse((Class) Object.class);
+				.map(Settings::getDataTypeGroup)
+				.map(group -> group.getDataType(column.getDatabaseType()))
+				.map(m -> column.isNotNull() ? m.getJavaType() : m.getNullJavaType())
+				.map(ClassUtil::forName)
+				.orElse((Class) Object.class);
 	}
 }

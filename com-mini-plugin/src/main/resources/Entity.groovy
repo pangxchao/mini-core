@@ -46,7 +46,7 @@ field.addAnnotation(annotation.build())
 builder.addField(field.build())
 
 // 生成字段常量
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({key, column ->
 	field = FieldSpecBuilder.builder(String.class, column.getColumnName().toUpperCase())
 	field.addModifiers(PUBLIC, STATIC, FINAL)
 	field.initializer('$S ', column.getColumnName())
@@ -57,7 +57,7 @@ info.getColumnList().forEach({ column ->
 })
 
 // 生成属性信息
-info.getColumnList().forEach({ column ->
+info.getColumnMap().forEach({key, column ->
 	field = FieldSpecBuilder.builder(getColumnType(column), column.getFieldName())
 	field.addModifiers(PRIVATE)
 	// @Id 注解
@@ -101,8 +101,8 @@ method.addModifiers(PUBLIC)
 builder.addMethod(method.build())
 
 // 生成日期格式化扩展方法
-info.getColumnList().forEach({ column ->
-	if (!column.isExt() && Date.class.isAssignableFrom(getColumnType(column))) {
+info.getColumnMap().forEach({key, column ->
+	if (Date.class.isAssignableFrom(getColumnType(column))) {
 		String n = firstUpperCase(column.getFieldName())
 		// 日期时间格式化
 		method = MethodSpecBuilder.methodBuilder('get' + n + '_DT')

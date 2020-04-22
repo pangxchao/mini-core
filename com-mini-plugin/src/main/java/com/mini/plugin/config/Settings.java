@@ -1,10 +1,14 @@
 package com.mini.plugin.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.intellij.ide.fileTemplates.impl.UrlUtil;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.mini.plugin.util.StringUtil;
+import com.mini.plugin.util.ThrowsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,12 +17,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Blob;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 import static com.intellij.openapi.components.ServiceManager.getService;
-import static com.intellij.openapi.util.text.StringUtil.defaultIfEmpty;
 import static com.mini.plugin.util.ThrowsUtil.hidden;
 
 /**
@@ -26,165 +28,210 @@ import static com.mini.plugin.util.ThrowsUtil.hidden;
  * @author xchao
  */
 @State(name = "MiniCode", storages = @Storage("Mini-Code.xml"))
-public final class Settings implements Serializable, PersistentStateComponent<Settings> {
+public final class Settings implements Serializable, PersistentStateComponent<Settings.SettingState> {
+	private static final ObjectMapper MAPPER = new ObjectMapper();
+	private static final SettingState STATE = new SettingState();
 	public static final String DEFAULT_NAME = "Default";
-	private String mapperGroupName = DEFAULT_NAME;
-	private String codeGroupName = DEFAULT_NAME;
-	private String dbGroupName = DEFAULT_NAME;
-	private Map<String, GroupMapper> mapperGroup;
-	private Map<String, GroupCode> codeGroup;
-	private Map<String, GroupDB> dbGroup;
-	private String encoding = "UTF-8";
-	private String author = "xchao";
 	
-	public synchronized void setMapperGroup(Map<String, GroupMapper> mapper) {
-		Optional.ofNullable(mapper).ifPresent(m -> {
-			this.getMapperGroup().clear();
-			getMapperGroup().putAll(m);
-		});
+	
+	public final synchronized void setDataTypeGroupMap(TreeMap<String, DataTypeGroup> dataTypeGroup) {
+		try {
+			if (dataTypeGroup == null) dataTypeGroup = new TreeMap<>();
+			ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
+			String content = writer.writeValueAsString(dataTypeGroup);
+			Settings.STATE.setDataTypeGroup(content);
+		} catch (JsonProcessingException e) {
+			throw ThrowsUtil.hidden(e);
+		}
 	}
 	
-	public synchronized void setCodeGroup(Map<String, GroupCode> code) {
-		Optional.ofNullable(code).ifPresent(c -> {
-			this.getCodeGroup().clear();
-			getCodeGroup().putAll(c);
-		});
+	public final synchronized void setTemplateGroupMap(TreeMap<String, TemplateGroup> templateGroup) {
+		try {
+			if (templateGroup == null) templateGroup = new TreeMap<>();
+			ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
+			String content = writer.writeValueAsString(templateGroup);
+			Settings.STATE.setTemplateGroup(content);
+		} catch (JsonProcessingException e) {
+			throw ThrowsUtil.hidden(e);
+		}
 	}
 	
-	public synchronized void setDbGroup(Map<String, GroupDB> db) {
-		Optional.ofNullable(db).ifPresent(d -> {
-			this.getDbGroup().clear();
-			getDbGroup().putAll(db);
-		});
-	}
-	
-	public synchronized void setMapperGroupName(String groupName) {
-		mapperGroupName = defaultIfEmpty(groupName, DEFAULT_NAME);
-	}
-	
-	public synchronized void setCodeGroupName(String groupName) {
-		codeGroupName = defaultIfEmpty(groupName, DEFAULT_NAME);
-	}
-	
-	public synchronized void setDbGroupName(String groupName) {
-		dbGroupName = defaultIfEmpty(groupName, DEFAULT_NAME);
-	}
-	
-	public synchronized void setEncoding(String encoding) {
-		this.encoding = defaultIfEmpty(encoding, "UTF-8");
-	}
-	
-	public synchronized void setAuthor(String author) {
-		this.author = defaultIfEmpty(author, "xchao");
+	public final synchronized void setDatabaseInfoMap(HashMap<String, DatabaseInfo> databaseInfo) {
+		try {
+			if (databaseInfo == null) databaseInfo = new HashMap<>();
+			ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
+			String content = writer.writeValueAsString(databaseInfo);
+			Settings.STATE.setDatabaseInfo(content);
+		} catch (JsonProcessingException e) {
+			throw ThrowsUtil.hidden(e);
+		}
 	}
 	
 	@NotNull
-	public synchronized Map<String, GroupMapper> getMapperGroup() {
-		if (Settings.this.mapperGroup == null) {
-			mapperGroup = new LinkedHashMap<>();
+	public final synchronized TreeMap<String, DataTypeGroup> getDataTypeGroupMap() {
+		try {
+			if (StringUtil.isEmpty(STATE.dataTypeGroup)) {
+				return new TreeMap<>();
+			}
+			String v = Settings.STATE.dataTypeGroup;
+			return MAPPER.readValue(v, DataTypeGroup.TYPE);
+		} catch (IOException | RuntimeException e) {
+			throw ThrowsUtil.hidden(e);
 		}
-		return mapperGroup;
 	}
 	
 	@NotNull
-	public synchronized Map<String, GroupCode> getCodeGroup() {
-		if (Settings.this.codeGroup == null) {
-			codeGroup = new LinkedHashMap<>();
+	public final synchronized TreeMap<String, TemplateGroup> getTemplateGroupMap() {
+		try {
+			if (StringUtil.isEmpty(STATE.templateGroup)) {
+				return new TreeMap<>();
+			}
+			String v = Settings.STATE.templateGroup;
+			return MAPPER.readValue(v, TemplateGroup.TYPE);
+		} catch (IOException | RuntimeException e) {
+			throw ThrowsUtil.hidden(e);
 		}
-		return codeGroup;
 	}
 	
 	@NotNull
-	public synchronized Map<String, GroupDB> getDbGroup() {
-		if (Settings.this.dbGroup == null) {
-			dbGroup = new LinkedHashMap<>();
+	public final synchronized HashMap<String, DatabaseInfo> getDatabaseInfoMap() {
+		try {
+			if (StringUtil.isEmpty(STATE.databaseInfo)) {
+				return new HashMap<>();
+			}
+			String v = Settings.STATE.databaseInfo;
+			return MAPPER.readValue(v, DatabaseInfo.TYPE);
+		} catch (IOException | RuntimeException e) {
+			throw ThrowsUtil.hidden(e);
 		}
-		return dbGroup;
+	}
+	
+	
+	public final synchronized void setDataTypeGroupName(String dataTypeGroupName) {
+		STATE.dataTypeGroupName = dataTypeGroupName;
+	}
+	
+	public final synchronized void setTemplateGroupName(String templateGroupName) {
+		STATE.templateGroupName = templateGroupName;
+	}
+	
+	public final synchronized void setEncoding(String encoding) {
+		STATE.encoding = encoding;
+	}
+	
+	public final synchronized void setAuthor(String author) {
+		STATE.author = author;
 	}
 	
 	@NotNull
-	public synchronized String getMapperGroupName() {
-		if (StringUtil.isEmpty(mapperGroupName)) {
-			mapperGroupName = DEFAULT_NAME;
+	public final synchronized String getDataTypeGroupName() {
+		if (StringUtil.isNotEmpty(STATE.dataTypeGroupName)) {
+			return STATE.dataTypeGroupName;
 		}
-		return mapperGroupName;
+		return DEFAULT_NAME;
+	}
+	
+	
+	@NotNull
+	public final synchronized String getTemplateGroupName() {
+		if (StringUtil.isNotEmpty(STATE.templateGroupName)) {
+			return STATE.templateGroupName;
+		}
+		return DEFAULT_NAME;
 	}
 	
 	@NotNull
-	public synchronized String getCodeGroupName() {
-		if (StringUtil.isEmpty(codeGroupName)) {
-			codeGroupName = DEFAULT_NAME;
+	public final synchronized String getEncoding() {
+		if (StringUtil.isNotEmpty(STATE.encoding)) {
+			return STATE.encoding;
 		}
-		return codeGroupName;
+		return "UTF-8";
 	}
 	
 	@NotNull
-	public synchronized String getDbGroupName() {
-		if (StringUtil.isEmpty(dbGroupName)) {
-			dbGroupName = DEFAULT_NAME;
+	public final synchronized String getAuthor() {
+		if (StringUtil.isNotEmpty(STATE.author)) {
+			return STATE.author;
 		}
-		return dbGroupName;
+		return "xchao";
 	}
 	
-	@NotNull
-	public synchronized String getEncoding() {
-		if (StringUtil.isEmpty(encoding)) {
-			encoding = "UTF-8";
-		}
-		return encoding;
+	/**
+	 * 添加或者修改一组数据类型映射信息
+	 * @param dataTypeGroup 数据类型映射信息
+	 */
+	public final synchronized void putDataTypeGroup(@NotNull DataTypeGroup dataTypeGroup) {
+		TreeMap<String, DataTypeGroup> map = getDataTypeGroupMap();
+		map.put(dataTypeGroup.getGroupName(), dataTypeGroup);
+		this.setDataTypeGroupMap(map);
 	}
 	
-	@NotNull
-	public synchronized String getAuthor() {
-		if (StringUtil.isEmpty(author)) {
-			author = "xchao";
-		}
-		return author;
+	/**
+	 * 添加或者修改一组模板分组信息
+	 * @param templateGroup 模板分组信息
+	 */
+	public final synchronized void putTemplateGroup(@NotNull TemplateGroup templateGroup) {
+		TreeMap<String, TemplateGroup> map = getTemplateGroupMap();
+		map.put(templateGroup.getGroupName(), templateGroup);
+		this.setTemplateGroupMap(map);
 	}
 	
-	public final void setCurrentGroupMapper(@NotNull GroupMapper mapper) {
-		this.getMapperGroup().put(mapper.getName(), mapper);
-		this.setMapperGroupName(mapper.getName());
+	/**
+	 * 添加或者修改一组数据库配置信息
+	 * @param databaseInfo 数据库信息
+	 */
+	public final synchronized void putDatabaseInfo(@NotNull DatabaseInfo databaseInfo) {
+		HashMap<String, DatabaseInfo> map = getDatabaseInfoMap();
+		map.put(databaseInfo.getDatabaseName(), databaseInfo);
+		this.setDatabaseInfoMap(map);
 	}
 	
-	public final void setCurrentGroupCode(@NotNull GroupCode code) {
-		this.getCodeGroup().put(code.getName(), code);
-		this.setCodeGroupName(code.getName());
-	}
-	
-	public final void setCurrentGroupDB(@NotNull GroupDB db) {
-		this.getDbGroup().put(db.getName(), db);
-		this.setDbGroupName(db.getName());
-	}
-	
+	/**
+	 * 获取指定分组名称的数据映射分组信息
+	 * @param groupName 分组名称
+	 * @return 数据映射分组信息
+	 */
 	@Nullable
-	public final GroupMapper getGroupMapper(@NotNull String groupName) {
-		return getMapperGroup().get(groupName);
+	public final synchronized DataTypeGroup getDataTypeGroup(String groupName) {
+		return getDataTypeGroupMap().get(groupName);
 	}
 	
+	/**
+	 * 获取指定分组名称的模板分组信息
+	 * @param groupName 分组名称
+	 * @return 模板分组信息
+	 */
 	@Nullable
-	public final GroupCode getGroupCode(@NotNull String groupName) {
-		return getCodeGroup().get(groupName);
+	public final synchronized TemplateGroup getTemplateGroup(String groupName) {
+		return getTemplateGroupMap().get(groupName);
 	}
 	
+	/**
+	 * 获取指定数据名称下的数据库信息
+	 * @param databaseName 数据库名称
+	 * @return 数据库信息
+	 */
 	@Nullable
-	public final GroupDB getGroupDB(@NotNull String groupName) {
-		return getDbGroup().get(groupName);
+	public final synchronized DatabaseInfo getDatabaseInfo(String databaseName) {
+		return getDatabaseInfoMap().get(databaseName);
 	}
 	
+	/**
+	 * 获取当前数据类型映射信息
+	 * @return 数据类型映射信息
+	 */
 	@Nullable
-	public final GroupMapper getCurrentGroupMapper() {
-		return getGroupMapper(getMapperGroupName());
+	public final synchronized DataTypeGroup getDataTypeGroup() {
+		return getDataTypeGroup(getDataTypeGroupName());
 	}
 	
+	/**
+	 * 获取当前模板分组信息
+	 * @return 模板分组信息
+	 */
 	@Nullable
-	public final GroupCode getCurrentGroupCode() {
-		return getGroupCode(getCodeGroupName());
-	}
-	
-	@Nullable
-	public final GroupDB getCurrentGroupDB() {
-		return getGroupDB(getDbGroupName());
+	public final synchronized TemplateGroup getTemplateGroup() {
+		return getTemplateGroup(getTemplateGroupName());
 	}
 	
 	// 加载默认配置
@@ -201,263 +248,334 @@ public final class Settings implements Serializable, PersistentStateComponent<Se
 	}
 	
 	@Override
-	public final void loadState(@NotNull Settings settings) {
-		if (!StringUtil.isEmpty(settings.getMapperGroupName())) {
-			setMapperGroupName(settings.getMapperGroupName());
+	public final void loadState(@NotNull SettingState state) {
+		if (StringUtil.isNotEmpty(state.getDataTypeGroupName())) {
+			STATE.setDataTypeGroupName(state.getDataTypeGroupName());
 		}
-		if (!StringUtil.isEmpty(settings.getCodeGroupName())) {
-			setCodeGroupName(settings.getCodeGroupName());
+		if (StringUtil.isNotEmpty(state.getTemplateGroupName())) {
+			STATE.setTemplateGroupName(state.getTemplateGroupName());
 		}
-		if (!StringUtil.isEmpty(settings.getDbGroupName())) {
-			setDbGroupName(settings.getDbGroupName());
+		if (StringUtil.isNotEmpty(state.getDataTypeGroup())) {
+			STATE.setDataTypeGroup(state.getDataTypeGroup());
 		}
-		if (!StringUtil.isEmpty(settings.getEncoding())) {
-			setEncoding(settings.getEncoding());
+		if (StringUtil.isNotEmpty(state.getTemplateGroup())) {
+			STATE.setTemplateGroup(state.getTemplateGroup());
 		}
-		if (!StringUtil.isEmpty(settings.getAuthor())) {
-			setAuthor(settings.getAuthor());
+		if (StringUtil.isNotEmpty(state.getDatabaseInfo())) {
+			STATE.setDatabaseInfo(state.getDatabaseInfo());
 		}
-		if (!settings.getMapperGroup().isEmpty()) {
-			setMapperGroup(settings.getMapperGroup());
+		if (StringUtil.isNotEmpty(state.getEncoding())) {
+			STATE.setEncoding(state.getEncoding());
 		}
-		if (!settings.getCodeGroup().isEmpty()) {
-			setCodeGroup(settings.getCodeGroup());
-		}
-		if (!settings.getDbGroup().isEmpty()) {
-			setDbGroup(settings.getDbGroup());
+		if (StringUtil.isNotEmpty(state.getAuthor())) {
+			STATE.setAuthor(state.getAuthor());
 		}
 	}
 	
+	@NotNull
 	@Override
-	public final Settings getState() {
-		return this;
+	public final SettingState getState() {
+		return STATE;
 	}
 	
 	public synchronized void resetToDefault() {
+		STATE.setDataTypeGroupName(null);
+		STATE.setTemplateGroupName(null);
+		STATE.setDataTypeGroup(null);
+		STATE.setTemplateGroup(null);
+		STATE.setEncoding(null);
+		STATE.setAuthor(null);
 		init_default();
 	}
 	
 	// 重置到默认配置
 	private synchronized void init_default() {
-		// 添加默认类型映射
-		this.setCurrentGroupMapper(GroupMapper.builder()
-			.name(Settings.DEFAULT_NAME)
-			// LONGTEXT => String
-			.element(TypeMapper.builder()
-				.nullJavaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.databaseType("LONGTEXT")
-				.build())
-			// MEDIUMTEXT => String
-			.element(TypeMapper.builder()
-				.nullJavaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.databaseType("MEDIUMTEXT")
-				.build())
-			// TEXT => String
-			.element(TypeMapper.builder()
-				.nullJavaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.databaseType("TEXT")
-				.build())
-			// TINYTEXT => String
-			.element(TypeMapper.builder()
-				.nullJavaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.databaseType("TINYTEXT")
-				.build())
-			// VARCHAR => String
-			.element(TypeMapper.builder()
-				.nullJavaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.databaseType("VARCHAR")
-				.build())
-			// CHAR => String
-			.element(TypeMapper.builder()
-				.nullJavaType(String.class.getCanonicalName())
-				.javaType(String.class.getCanonicalName())
-				.databaseType("CHAR")
-				.build())
-			// NUMERIC => BigDecimal
-			.element(TypeMapper.builder()
-				.nullJavaType(BigDecimal.class.getCanonicalName())
-				.javaType(BigDecimal.class.getCanonicalName())
-				.databaseType("NUMERIC")
-				.build())
-			// BIGINT => long
-			.element(TypeMapper.builder()
-				.nullJavaType(Long.class.getCanonicalName())
-				.javaType(long.class.getCanonicalName())
-				.databaseType("BIGINT")
-				.build())
-			// LONG => long
-			.element(TypeMapper.builder()
-				.nullJavaType(Long.class.getCanonicalName())
-				.javaType(long.class.getCanonicalName())
-				.databaseType("LONG")
-				.build())
-			// INT8 => long
-			.element(TypeMapper.builder()
-				.nullJavaType(Long.class.getCanonicalName())
-				.javaType(long.class.getCanonicalName())
-				.databaseType("INT8")
-				.build())
-			// MEDIUMINT => int
-			.element(TypeMapper.builder()
-				.nullJavaType(Integer.class.getCanonicalName())
-				.javaType(Integer.class.getCanonicalName())
-				.databaseType("MEDIUMINT")
-				.build())
-			// INTEGER => int
-			.element(TypeMapper.builder()
-				.nullJavaType(Integer.class.getCanonicalName())
-				.javaType(Integer.class.getCanonicalName())
-				.databaseType("INTEGER")
-				.build())
-			// INT4 => int
-			.element(TypeMapper.builder()
-				.nullJavaType(Integer.class.getCanonicalName())
-				.javaType(int.class.getCanonicalName())
-				.databaseType("INT4")
-				.build())
-			// INT => int
-			.element(TypeMapper.builder()
-				.nullJavaType(Integer.class.getCanonicalName())
-				.javaType(int.class.getCanonicalName())
-				.databaseType("INT")
-				.build())
-			// SMALLINT => int
-			.element(TypeMapper.builder()
-				.nullJavaType(Short.class.getCanonicalName())
-				.javaType(short.class.getCanonicalName())
-				.databaseType("SMALLINT")
-				.build())
-			// TINYINT => int
-			.element(TypeMapper.builder()
-				.nullJavaType(Byte.class.getCanonicalName())
-				.javaType(byte.class.getCanonicalName())
-				.databaseType("TINYINT")
-				.build())
-			// BOOLEAN => boolean
-			.element(TypeMapper.builder()
-				.nullJavaType(Boolean.class.getCanonicalName())
-				.javaType(boolean.class.getCanonicalName())
-				.databaseType("BOOLEAN")
-				.build())
-			// BOOL => boolean
-			.element(TypeMapper.builder()
-				.nullJavaType(Boolean.class.getCanonicalName())
-				.javaType(boolean.class.getCanonicalName())
-				.databaseType("BOOL")
-				.build())
-			// BIT => boolean
-			.element(TypeMapper.builder()
-				.nullJavaType(Boolean.class.getCanonicalName())
-				.javaType(boolean.class.getCanonicalName())
-				.databaseType("BIT")
-				.build())
-			// DECIMAL => double
-			.element(TypeMapper.builder()
-				.nullJavaType(Double.class.getCanonicalName())
-				.javaType(double.class.getCanonicalName())
-				.databaseType("DECIMAL")
-				.build())
-			// DOUBLE => double
-			.element(TypeMapper.builder()
-				.nullJavaType(Double.class.getCanonicalName())
-				.javaType(double.class.getCanonicalName())
-				.databaseType("DOUBLE")
-				.build())
-			// FLOAT => float
-			.element(TypeMapper.builder()
-				.nullJavaType(Float.class.getCanonicalName())
-				.javaType(float.class.getCanonicalName())
-				.databaseType("FLOAT")
-				.build())
-			// TIME => java.sql.Time
-			.element(TypeMapper.builder()
-				.nullJavaType(java.sql.Time.class.getCanonicalName())
-				.javaType(java.sql.Time.class.getCanonicalName())
-				.databaseType("TIME")
-				.build())
-			// DATE => java.util.Date
-			.element(TypeMapper.builder()
-				.nullJavaType(java.util.Date.class.getCanonicalName())
-				.javaType(java.util.Date.class.getCanonicalName())
-				.databaseType("DATE")
-				.build())
-			// DATETIME => java.util.Date
-			.element(TypeMapper.builder()
-				.nullJavaType(java.util.Date.class.getCanonicalName())
-				.javaType(java.util.Date.class.getCanonicalName())
-				.databaseType("DATETIME")
-				.build())
-			// TIMESTAMP => java.util.Date
-			.element(TypeMapper.builder()
-				.nullJavaType(java.util.Date.class.getCanonicalName())
-				.javaType(java.util.Date.class.getCanonicalName())
-				.databaseType("TIMESTAMP")
-				.build())
-			// LONGBLOB => Blob.
-			.element(TypeMapper.builder()
-				.javaType(Blob.class.getCanonicalName())
-				.databaseType("LONGBLOB")
-				.build())
-			// MEDIUMBLOB => Blob.
-			.element(TypeMapper.builder()
-				.javaType(Blob.class.getCanonicalName())
-				.databaseType("MEDIUMBLOB")
-				.build())
-			// BLOB => Blob.
-			.element(TypeMapper.builder()
-				.javaType(Blob.class.getCanonicalName())
-				.databaseType("BLOB")
-				.build())
-			// TINYBLOB => Blob.
-			.element(TypeMapper.builder()
-				.javaType(Blob.class.getCanonicalName())
-				.databaseType("TINYBLOB")
-				.build())
-			.build());
+		// 构造 DataTypeGroup
+		DataType dataType;
+		DataTypeGroup dataTypeGroup = new DataTypeGroup();
+		dataTypeGroup.setGroupName(Settings.DEFAULT_NAME);
+		// LONGTEXT => String
+		dataType = new DataType();
+		dataType.setDatabaseType("LONGTEXT");
+		dataType.setJavaType(String.class.getCanonicalName());
+		dataType.setNullJavaType(String.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// MEDIUMTEXT => String
+		dataType = new DataType();
+		dataType.setDatabaseType("MEDIUMTEXT");
+		dataType.setJavaType(String.class.getCanonicalName());
+		dataType.setNullJavaType(String.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// TEXT => String
+		dataType = new DataType();
+		dataType.setDatabaseType("TEXT");
+		dataType.setJavaType(String.class.getCanonicalName());
+		dataType.setNullJavaType(String.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// TINYTEXT => String
+		dataType = new DataType();
+		dataType.setDatabaseType("TINYTEXT");
+		dataType.setJavaType(String.class.getCanonicalName());
+		dataType.setNullJavaType(String.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// VARCHAR => String
+		dataType = new DataType();
+		dataType.setDatabaseType("VARCHAR");
+		dataType.setJavaType(String.class.getCanonicalName());
+		dataType.setNullJavaType(String.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// CHAR => String
+		dataType = new DataType();
+		dataType.setDatabaseType("CHAR");
+		dataType.setJavaType(String.class.getCanonicalName());
+		dataType.setNullJavaType(String.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// NUMERIC => BigDecimal
+		dataType = new DataType();
+		dataType.setDatabaseType("NUMERIC");
+		dataType.setJavaType(BigDecimal.class.getCanonicalName());
+		dataType.setNullJavaType(BigDecimal.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// BIGINT => long
+		dataType = new DataType();
+		dataType.setDatabaseType("BIGINT");
+		dataType.setJavaType(long.class.getCanonicalName());
+		dataType.setNullJavaType(Long.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// LONG => long
+		dataType = new DataType();
+		dataType.setDatabaseType("LONG");
+		dataType.setJavaType(long.class.getCanonicalName());
+		dataType.setNullJavaType(Long.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// INT8 => long
+		dataType = new DataType();
+		dataType.setDatabaseType("INT8");
+		dataType.setJavaType(long.class.getCanonicalName());
+		dataType.setNullJavaType(Long.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// MEDIUMINT => int
+		dataType = new DataType();
+		dataType.setDatabaseType("MEDIUMINT");
+		dataType.setJavaType(int.class.getCanonicalName());
+		dataType.setNullJavaType(Integer.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// INTEGER => int
+		dataType = new DataType();
+		dataType.setDatabaseType("INTEGER");
+		dataType.setJavaType(int.class.getCanonicalName());
+		dataType.setNullJavaType(Integer.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// INT4 => int
+		dataType = new DataType();
+		dataType.setDatabaseType("INT4");
+		dataType.setJavaType(int.class.getCanonicalName());
+		dataType.setNullJavaType(Integer.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// INT => int
+		dataType = new DataType();
+		dataType.setDatabaseType("INT");
+		dataType.setJavaType(int.class.getCanonicalName());
+		dataType.setNullJavaType(Integer.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// SMALLINT => short
+		dataType = new DataType();
+		dataType.setDatabaseType("SMALLINT");
+		dataType.setJavaType(short.class.getCanonicalName());
+		dataType.setNullJavaType(Short.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// TINYINT => byte
+		dataType = new DataType();
+		dataType.setDatabaseType("TINYINT");
+		dataType.setJavaType(byte.class.getCanonicalName());
+		dataType.setNullJavaType(Byte.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// BOOLEAN => boolean
+		dataType = new DataType();
+		dataType.setDatabaseType("BOOLEAN");
+		dataType.setJavaType(boolean.class.getCanonicalName());
+		dataType.setNullJavaType(Boolean.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// BOOL => boolean
+		dataType = new DataType();
+		dataType.setDatabaseType("BOOL");
+		dataType.setJavaType(boolean.class.getCanonicalName());
+		dataType.setNullJavaType(Boolean.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// BIT => boolean
+		dataType = new DataType();
+		dataType.setDatabaseType("BIT");
+		dataType.setJavaType(boolean.class.getCanonicalName());
+		dataType.setNullJavaType(Boolean.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// DECIMAL => double
+		dataType = new DataType();
+		dataType.setDatabaseType("DECIMAL");
+		dataType.setJavaType(double.class.getCanonicalName());
+		dataType.setNullJavaType(Double.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// DOUBLE => double
+		dataType = new DataType();
+		dataType.setDatabaseType("DOUBLE");
+		dataType.setJavaType(double.class.getCanonicalName());
+		dataType.setNullJavaType(Double.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// FLOAT => float
+		dataType = new DataType();
+		dataType.setDatabaseType("FLOAT");
+		dataType.setJavaType(float.class.getCanonicalName());
+		dataType.setNullJavaType(Float.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// TIME => java.sql.Time
+		dataType = new DataType();
+		dataType.setDatabaseType("TIME");
+		dataType.setJavaType(java.sql.Time.class.getCanonicalName());
+		dataType.setNullJavaType(java.sql.Time.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// DATE => java.util.Date
+		dataType = new DataType();
+		dataType.setDatabaseType("DATE");
+		dataType.setJavaType(java.util.Date.class.getCanonicalName());
+		dataType.setNullJavaType(java.util.Date.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// DATETIME => java.util.Date
+		dataType = new DataType();
+		dataType.setDatabaseType("DATETIME");
+		dataType.setJavaType(java.util.Date.class.getCanonicalName());
+		dataType.setNullJavaType(java.util.Date.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// TIMESTAMP => java.util.Date
+		dataType = new DataType();
+		dataType.setDatabaseType("TIMESTAMP");
+		dataType.setJavaType(java.util.Date.class.getCanonicalName());
+		dataType.setNullJavaType(java.util.Date.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// LONGBLOB => Blob
+		dataType = new DataType();
+		dataType.setDatabaseType("LONGBLOB");
+		dataType.setJavaType(Blob.class.getCanonicalName());
+		dataType.setNullJavaType(Blob.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// MEDIUMBLOB => Blob
+		dataType = new DataType();
+		dataType.setDatabaseType("MEDIUMBLOB");
+		dataType.setJavaType(Blob.class.getCanonicalName());
+		dataType.setNullJavaType(Blob.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// BLOB => Blob
+		dataType = new DataType();
+		dataType.setDatabaseType("BLOB");
+		dataType.setJavaType(Blob.class.getCanonicalName());
+		dataType.setNullJavaType(Blob.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		// TINYBLOB => Blob
+		dataType = new DataType();
+		dataType.setDatabaseType("TINYBLOB");
+		dataType.setJavaType(Blob.class.getCanonicalName());
+		dataType.setNullJavaType(Blob.class.getCanonicalName());
+		dataTypeGroup.addDataType(dataType);
+		//将 DataTypeGroup 添加到设置信息中
+		this.putDataTypeGroup(dataTypeGroup);
 		
-		// 加载默认的数据库模板
-		this.setCurrentGroupDB(GroupDB.builder()
-			.name(Settings.DEFAULT_NAME)
-			// 实体信息
-			.element(Template.builder()
-				.code(loadTemplateText("Entity"))
-				.name("Entity")
-				.build())
-			// DaoBase
-			.element(Template.builder()
-				.code(loadTemplateText("BaseDao"))
-				.name("BaseDao")
-				.build())
-			// Dao
-			.element(Template.builder()
-				.code(loadTemplateText("Dao"))
-				.name("Dao")
-				.build())
-			// DaoImpl
-			.element(Template.builder()
-				.code(loadTemplateText("DaoImpl"))
-				.name("DaoImpl")
-				.build())
-			.build());
+		// 构造 TemplateGroup
+		Template template;
+		TemplateGroup templateGroup = new TemplateGroup();
+		templateGroup.setGroupName(Settings.DEFAULT_NAME);
 		
-		// 加载默认的代码生成模板
-		this.setCurrentGroupCode(GroupCode.builder()
-			.name(Settings.DEFAULT_NAME)
-			.element(Template.builder()
-				.code(loadTemplateText("Builder"))
-				.name("Builder")
-				.build())
-			.build());
+		// 实体信息-Entity
+		template = new Template();
+		template.setName("Entity");
+		template.setContent(loadTemplateText("Entity"));
+		templateGroup.addTemplate(template);
+		// 数据库基础-DaoBase
+		template = new Template();
+		template.setName("BaseDao");
+		template.setContent(loadTemplateText("BaseDao"));
+		templateGroup.addTemplate(template);
+		// 数据库-Dao
+		template = new Template();
+		template.setName("Dao");
+		template.setContent(loadTemplateText("Dao"));
+		templateGroup.addTemplate(template);
+		// 数据库实现-DaoImpl
+		template = new Template();
+		template.setName("DaoImpl");
+		template.setContent(loadTemplateText("DaoImpl"));
+		templateGroup.addTemplate(template);
+		// 将 TemplateGroup 添加到设置信息中
+		this.putTemplateGroup(templateGroup);
 		
-		// 编码和作者
+		// 默认分组名称、编码和作者
+		this.setDataTypeGroupName(Settings.DEFAULT_NAME);
+		this.setTemplateGroupName(Settings.DEFAULT_NAME);
 		this.setEncoding("UTF-8");
 		this.setAuthor("xchao");
+	}
+	
+	public static class SettingState implements Serializable {
+		private String dataTypeGroupName;
+		private String templateGroupName;
+		private String dataTypeGroup;
+		private String templateGroup;
+		private String databaseInfo;
+		private String encoding;
+		private String author;
+		
+		public void setDataTypeGroupName(String dataTypeGroupName) {
+			this.dataTypeGroupName = dataTypeGroupName;
+		}
+		
+		public void setTemplateGroupName(String templateGroupName) {
+			this.templateGroupName = templateGroupName;
+		}
+		
+		public void setDataTypeGroup(String dataTypeGroup) {
+			this.dataTypeGroup = dataTypeGroup;
+		}
+		
+		public void setTemplateGroup(String templateGroup) {
+			this.templateGroup = templateGroup;
+		}
+		
+		public void setDatabaseInfo(String databaseInfo) {
+			this.databaseInfo = databaseInfo;
+		}
+		
+		public void setEncoding(String encoding) {
+			this.encoding = encoding;
+		}
+		
+		public void setAuthor(String author) {
+			this.author = author;
+		}
+		
+		public String getDataTypeGroupName() {
+			return dataTypeGroupName;
+		}
+		
+		public String getTemplateGroupName() {
+			return templateGroupName;
+		}
+		
+		public String getDataTypeGroup() {
+			return dataTypeGroup;
+		}
+		
+		public String getTemplateGroup() {
+			return templateGroup;
+		}
+		
+		public String getDatabaseInfo() {
+			return databaseInfo;
+		}
+		
+		public String getEncoding() {
+			return encoding;
+		}
+		
+		public String getAuthor() {
+			return author;
+		}
 	}
 	
 	private String loadTemplateText(String template) {

@@ -20,22 +20,6 @@ import static com.mini.plugin.util.Constants.GENERATED_ERROR;
 import static com.squareup.javapoet.ClassName.get;
 
 public final class GroovyUtil implements Serializable, EventListener {
-//	public static String generate(StringWriter writer, String template, TableInfo tableInfo) {
-//		GroovyClassLoader loader = new GroovyClassLoader(GroovyUtil.class.getClassLoader());
-//		//Map<String, TypeMapper> mapper = SettingUtil.getTypeMapperMap(Settings.getInstance());
-//		//try (java.io.PrintWriter out = new java.io.PrintWriter(writer)) {
-//		//	return (String) new GroovyShell(loader, new Binding() {{
-//		//		setVariable("tableInfo", tableInfo);
-//		//		setVariable("mapperMap", mapper);
-//		//		setVariable("printWriter", out);
-//		//	}}).evaluate(template);
-//		//} catch (GroovyRuntimeException e) {
-//		//	e.printStackTrace();
-//		//	throw ThrowsUtil.hidden(e);
-//		//}
-//		return null;
-//	}
-	
 	public static void generate(String template, TableInfo tableInfo, VirtualFile file) {
 		try {
 			ClassLoader parentLoader = GroovyUtil.class.getClassLoader();

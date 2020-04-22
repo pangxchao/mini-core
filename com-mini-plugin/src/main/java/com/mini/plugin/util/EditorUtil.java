@@ -11,14 +11,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
-import com.intellij.testFramework.LightVirtualFile;
 
 import static java.util.Objects.requireNonNull;
 
-public class EditorUtil {
+public final class EditorUtil {
 	private static final String TEMPLATE = "Mini-Code.groovy";
 	
-	public static Editor createEditor(Project project) {
+	public synchronized static Editor createEditor(Project project) {
 		// 创建文件类型对象
 		FileType fileType = FileTypeManager.getInstance().getFileTypeByExtension("groovy");
 		// 获取编辑器工厂
@@ -29,12 +28,12 @@ public class EditorUtil {
 		PsiFile psiFile = psiFileFactory.createFileFromText(TEMPLATE, fileType, "", 0, true);
 		// 标识为模板，让 Velocity 跳过语法校验
 		psiFile.getViewProvider().putUserData(FileTemplateManager.DEFAULT_TEMPLATE_PROPERTIES,
-			FileTemplateManager.getInstance(project).getDefaultProperties());
+				FileTemplateManager.getInstance(project).getDefaultProperties());
 		// 创建文档对象
 		Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
 		// 创建编辑框
 		Editor editor = editorFactory.createEditor(requireNonNull(document), //
-			project, psiFile.getVirtualFile(), false);
+				project, psiFile.getVirtualFile(), false);
 		// 编辑器设置
 		EditorSettings editorSettings = editor.getSettings();
 		// 关闭标记位置（断点位置）
