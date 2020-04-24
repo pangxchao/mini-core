@@ -103,8 +103,8 @@ public final class FieldHolder<T> implements Serializable {
 	private static Field findField(PropertyDescriptor des, Class<?> type) {
 		for (Class<?> t = type; t != null; t = t.getSuperclass()) {
 			try {
-				Field field = t.getDeclaredField(des.getName());
-				if (field != null && des.getPropertyType().isAssignableFrom(field.getType())) {
+				final Field field = t.getDeclaredField(des.getName());
+				if (des.getPropertyType().isAssignableFrom(field.getType())) {
 					return field;
 				}
 			} catch (NoSuchFieldException | SecurityException ignored) {

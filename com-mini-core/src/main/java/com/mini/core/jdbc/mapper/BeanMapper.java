@@ -20,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mini.core.jdbc.util.JdbcUtil.lookupColumnName;
 import static java.lang.Class.forName;
-import static java.util.Optional.ofNullable;
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 /**
  * BeanMapper.java
@@ -69,13 +70,13 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 	private final ClassHolder<T> holder;
 	
 	private BeanMapper(@Nonnull Class<T> type) {
-		this.holder = ClassHolder.create(type);
-		Objects.requireNonNull(this.holder);
-		this.holder.fields().forEach(h -> {
-			var column = h.getAnnotation(Column.class);
-			if (Objects.nonNull(column)) {
-				columns.put(column.value(), h);
-			}
+		this.holder = requireNonNull(ClassHolder.create(type));
+		BeanMapper.this.holder.fields().forEach(field -> {
+			Column c = field.getAnnotation(Column.class);
+			if (Objects.isNull(c)) return;
+			// 获取字段名和别名
+			var name = defaultIfBlank(c.alias(), c.value());
+			columns.put(name, field);
 		});
 	}
 	
@@ -106,7 +107,7 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			Class<?> mType;
 			try {
 				mType = forName(type.getCanonicalName() + BeanMapper.$MAPPER$);
-				ofNullable(mType).filter(Mapper.class::isAssignableFrom)
+				Optional.of(mType).filter(Mapper.class::isAssignableFrom)
 						.orElseThrow(NoClassDefFoundError::new);
 			} catch (ReflectiveOperationException | NoClassDefFoundError e) {
 				mType = BeanMapper.class;

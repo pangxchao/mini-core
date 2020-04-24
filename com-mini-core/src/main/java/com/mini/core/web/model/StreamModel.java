@@ -2,10 +2,8 @@ package com.mini.core.web.model;
 
 import com.mini.core.http.RangeParse;
 import com.mini.core.http.RangeParse.Range;
-import com.mini.core.util.Assert;
 import com.mini.core.util.StringUtil;
 import com.mini.core.util.ThrowsUtil;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -13,12 +11,14 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.mini.core.web.util.ResponseCode.REQUESTED_RANGE_NOT_SATISFIABLE;
-import static java.lang.Math.min;
 import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -36,7 +36,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 	private boolean acceptRangesSupport = true;
 	private WriteCallback writeCallback;
 	private boolean attachment = true;
-	private InputStream inputStream;
+	//	private InputStream inputStream;
 	private long contentLength;
 	private String fileName;
 	
@@ -67,11 +67,11 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-	
-	public final StreamModel setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-		return model();
-	}
+
+//	public final StreamModel setInputStream(InputStream inputStream) {
+//		this.inputStream = inputStream;
+//		return model();
+//	}
 	
 	public final StreamModel setWriteCallback(WriteCallback writeCallback) {
 		this.writeCallback = writeCallback;
@@ -196,34 +196,9 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 	
 	// 写入数据
 	private void copy(OutputStream out, long start, long end) throws Exception {
-		getWriteCallback().copy(out, start, end);
-	}
-	
-	@Nonnull
-	private synchronized WriteCallback getWriteCallback() {
-		return ObjectUtils.defaultIfNull(writeCallback, new WriteCallback() {
-			public void copy(OutputStream out, long start, long end) throws IOException {
-				if (StreamModel.this.inputStream == null) return;
-				try (InputStream source = StreamModel.this.inputStream) {
-					long sendLength = end - start + 1, skip = source.skip(start);
-					Assert.isTrue(skip >= start, "Skip fail. [%d, %d]", skip, start);
-					if (end >= 0) transferTo(out, source, sendLength);
-					else source.transferTo(out);
-				}
-			}
-			
-			private void transferTo(OutputStream out, InputStream source, long sendLength) throws IOException {
-				int length, size = BUFFER_SIZE;
-				byte[] buffer = new byte[size];
-				for (; sendLength > 0; sendLength -= length) {
-					size = min(size, (int) sendLength);
-					length = source.read(buffer, 0, size);
-					
-					if (length <= 0) break;
-					out.write(buffer, 0, length);
-				}
-			}
-		});
+		if (StreamModel.this.writeCallback != null) {
+			writeCallback.copy(out, start, end);
+		}
 	}
 	
 	@FunctionalInterface
