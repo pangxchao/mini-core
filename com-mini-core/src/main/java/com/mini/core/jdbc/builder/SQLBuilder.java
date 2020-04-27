@@ -501,7 +501,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final <T> SQLBuilder whereIn(String column, T[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -511,7 +511,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, boolean[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -521,7 +521,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, double[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -531,7 +531,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, float[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -541,7 +541,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, long[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -551,7 +551,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, short[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -561,7 +561,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, byte[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -571,7 +571,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, char[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -581,7 +581,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, int[] args) {
-		return where("%s IN (%s)", StringUtil.join(args, ','));
+		return where("%s IN (%s)", column, StringUtil.join(args, ','));
 	}
 	
 	/**
@@ -591,7 +591,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereLike(String column, String arg) {
-		return where("%s LIKE ?").args(arg);
+		return where("%s LIKE ?", column).args(arg);
 	}
 	
 	/**
