@@ -139,6 +139,44 @@ public class SQLBuilder implements EventListener, Serializable {
 		return select(format("AVG(%s)  AS `%s`", column, alias));
 	}
 	
+	/**
+	 * {@code select(format("MAX(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectMax(String column) {
+		return select(format("MAX(%s) AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code select(format("MAX(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectMax(String column, String alias) {
+		return select(format("MAX(%s) AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code select(format("MIN(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectMin(String column) {
+		return select(format("MIN(%s)  AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code select(format("MIN(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectMin(String column, String alias) {
+		return select(format("MIN(%s)  AS `%s`", column, alias));
+	}
+	
 	public final SQLBuilder selectDistinct(String... columns) {
 		SQLBuilder.this.distinct = true;
 		this.select(columns);
@@ -200,6 +238,44 @@ public class SQLBuilder implements EventListener, Serializable {
 	 */
 	public final SQLBuilder selectDistinctAvg(String column, String alias) {
 		return selectDistinct(format("AVG(%s)  AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("MAX(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctMax(String column) {
+		return selectDistinct(format("MAX(%s)  AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("MAX(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctMax(String column, String alias) {
+		return selectDistinct(format("MAX(%s)  AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("MIN(%s)", column)); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctMin(String column) {
+		return selectDistinct(format("MIN(%s)  AS `%s`", column, column));
+	}
+	
+	/**
+	 * {@code selectDistinct(format("MIN(%s)", column)); }
+	 * @param column 字段名称
+	 * @param alias  别名
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctMin(String column, String alias) {
+		return selectDistinct(format("MIN(%s)  AS `%s`", column, alias));
 	}
 	
 	public final SQLBuilder values(String column, String value) {

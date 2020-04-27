@@ -415,7 +415,7 @@ public final class Configures implements EventListener, Serializable {
 	 * @param consumer HttpServlet 设置回调
 	 */
 	public void addServlet(Class<? extends HttpServlet> servlet, Consumer<RegistrationServlet> consumer) {
-		servlets.computeIfAbsent(servlet, clazz -> {
+		RegistrationServlet register = servlets.computeIfAbsent(servlet, clazz -> {
 			var instance = requireNonNull(injector.getInstance(clazz));
 			RegistrationServlet val = new RegistrationServlet(instance);
 			val.setFileSizeThreshold(getFileSizeThreshold());
@@ -425,9 +425,9 @@ public final class Configures implements EventListener, Serializable {
 			val.setMaxFileSize(getMaxFileSize());
 			val.setName(servlet.getName());
 			val.setLoadOnStartup(1);
-			consumer.accept(val);
 			return val;
 		});
+		consumer.accept(register);
 	}
 	
 	/**
@@ -450,16 +450,16 @@ public final class Configures implements EventListener, Serializable {
 	 * @param consumer Filter 设置回调
 	 */
 	public void addFilter(Class<? extends Filter> filter, Consumer<RegistrationFilter> consumer) {
-		filters.computeIfAbsent(filter, clazz -> {
+		RegistrationFilter register = filters.computeIfAbsent(filter, clazz -> {
 			var instance = requireNonNull(injector.getInstance(clazz));
 			RegistrationFilter val = new RegistrationFilter(instance);
 			val.addDispatcherType(REQUEST, FORWARD, INCLUDE, ASYNC, ERROR);
 			val.setAsyncSupported(asyncSupported);
 			val.setName(filter.getName());
 			val.setMatchAfter(true);
-			consumer.accept(val);
 			return val;
 		});
+		consumer.accept(register);
 	}
 	
 	/**

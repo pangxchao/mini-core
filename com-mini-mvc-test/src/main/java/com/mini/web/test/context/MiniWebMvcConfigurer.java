@@ -47,11 +47,6 @@ public class MiniWebMvcConfigurer extends WebApplicationInitializer {
 	
 	@Override
 	public void onStartupRegister(ServletContext servletContext, Configures configure) {
-		// 自定义Servlet相关设置可以在这里进行
-		configure.addServlet(MiniWebMvcServlet.class, registration -> {
-			registration.addUrlPatterns("/front/user/group.htm");
-			registration.setMultipartEnabled(false);
-		});
 	}
 	
 	/**
