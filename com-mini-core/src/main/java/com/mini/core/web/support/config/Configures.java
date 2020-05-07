@@ -161,7 +161,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 日期时间格式
 	 */
-	private String dateTimeFormat = "yyyy-MM-dd HH[:mm[:ss]]";
+	private String dateTimeFormat = "yyyy-MM-dd HH[:mm[:ss[.SSS]]]";
 	
 	public void setDateTimeFormat(String dateTimeFormat) {
 		this.dateTimeFormat = dateTimeFormat;

@@ -45,7 +45,8 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 			message = format(message, e.getArgs().toArray());
 			invocation.getModel().setStatus(e.getStatus());
 			invocation.getModel().setMessage(message);
-			log.debug(exception.getMessage());
+			// 输出调试日志
+			log.debug(format("%s(%s)", request.getRequestURI(), e.getMessage()));
 		} catch (Exception | Error e) {
 			throw hidden(e);
 		}
