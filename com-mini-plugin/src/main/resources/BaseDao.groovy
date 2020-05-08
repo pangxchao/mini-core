@@ -35,24 +35,21 @@ info.getColumnMap().forEach({ key, column ->
 method.addJavadoc('@return 执行结果 \n')
 method.addCode('return execute(new $T() {{ \n ', sqlBuilderClass())
 if (info.getColumnMap().values().stream().anyMatch({ return it.isDel() })) {
-	method.addStatement('update($T.$L)', beanClass(info), info.getTableName().toUpperCase())
+	method.addStatement('\tthis.update($T.$L)', beanClass(info), info.getTableName().toUpperCase())
 	info.getColumnMap().forEach({ key, column ->
 		if (column.isDel()) {
-			method.addStatement('set("%s = ?", $T.$L)', beanClass(info), column.getColumnName().toUpperCase())
-			method.addStatement('args($S)', column.getDelValue())
+			method.addStatement('\tsetEquals($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
 		}
 		if (column.isLock()) {
-			method.addStatement('set("%s = ?", $T.$L)', beanClass(info), column.getColumnName().toUpperCase())
-			method.addStatement('args($T.currentTimeMillis())', System.class)
+			method.addStatement('\tsetEquals($T.$L, $T.currentTimeMillis())', beanClass(info), column.getColumnName().toUpperCase(), System.class)
 		}
 	})
 } else {
-	method.addStatement('delete().from($T.$L)', beanClass(info), info.getTableName().toUpperCase())
+	method.addStatement('\tdelete().from($T.$L)', beanClass(info), info.getTableName().toUpperCase())
 }
 info.getColumnMap().forEach({ key, column ->
 	if (column.isId()) {
-		method.addStatement('\twhere($S, $T.$L)', '%s = ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\targs($N)', column.getFieldName())
+		method.addStatement('\twhereEquals($T.$L, $N)', beanClass(info), column.getColumnName().toUpperCase(), column.getFieldName())
 	}
 })
 method.addStatement('}})')
@@ -73,12 +70,10 @@ method.addJavadoc('@return 实体信息 \n')
 method.addCode('return queryObject(new $T($T.class) {{ \n', sqlBuilderClass(), beanClass(info))
 info.getColumnMap().forEach({ key, column ->
 	if (column.isId()) {
-		method.addStatement('\twhere($S, $T.$L)', '%s = ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\targs($N)', column.getFieldName())
+		method.addStatement('\twhereEquals($T.$L, $N)', beanClass(info), column.getColumnName().toUpperCase(), column.getFieldName())
 	}
 	if (column.isDel()) {
-		method.addStatement('\twhere($S, $T.$L)', '%s <> ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\targs($S)', column.getDelValue())
+		method.addStatement('\twhereNotEqual($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
 	}
 })
 method.addStatement('}}, $T.class)', beanClass(info))
@@ -94,8 +89,7 @@ method.addJavadoc('@return 实体信息列表 \n') //
 method.addCode('return queryList(new $T($T.class) {{ \n', sqlBuilderClass(), beanClass(info))
 info.getColumnMap().forEach({ key, column ->
 	if (column.isDel()) {
-		method.addStatement('\twhere($S, $T.$L)', '%s <> ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\targs($S)', column.getDelValue())
+		method.addStatement('\twhereNotEqual($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
 	}
 })
 method.addStatement('}},  $T.class)', beanClass(info))
@@ -114,8 +108,7 @@ method.addJavadoc('@return 实体信息列表 \n')
 method.addCode('return queryPaging(page, limit, new $T($T.class)  {{ \n', sqlBuilderClass(), beanClass(info))
 info.getColumnMap().forEach({ key, column ->
 	if (column.isDel()) {
-		method.addStatement('\twhere($S, $T.$L)', '%s <> ?', beanClass(info), column.getColumnName().toUpperCase())
-		method.addStatement('\targs($S)', column.getDelValue())
+		method.addStatement('\twhereNotEqual($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
 	}
 })
 method.addStatement('}},  $T.class)', beanClass(info))

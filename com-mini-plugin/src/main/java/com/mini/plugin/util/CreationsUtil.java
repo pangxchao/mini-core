@@ -133,17 +133,17 @@ public final class CreationsUtil {
 							String targetName = join(key.getRefColumns().names(), ", ");
 							// 删除外键关联时，直接删除当前数据（级联删除）
 							if (key.getDeleteRule() == DasForeignKey.RuleAction.CASCADE) {
-								String format = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY(%s) -- \n\t REFERENCES %s(%s) ON DELETE CASCADE;\n";
+								String format = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY(%s) \n\t REFERENCES %s(%s) ON DELETE CASCADE;\n";
 								writer.write(format(format, table.getName(), key.getName(), sourceName, key.getRefTableName(), targetName));
 							}
 							// 删除外键关联时，将当前数据外键值设置为NULLL（非级联删除）
 							else if (key.getDeleteRule() == DasForeignKey.RuleAction.SET_NULL) {
-								String format = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY(%s) -- \n\t REFERENCES %s(%s) ON DELETE SET NULL;\n";
+								String format = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY(%s) \n\t REFERENCES %s(%s) ON DELETE SET NULL;\n";
 								writer.write(format(format, table.getName(), key.getName(), sourceName, key.getRefTableName(), targetName));
 							}
 							// 删除有外键关联数据时，无法删除
 							else {
-								String format = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY(%s) -- \n\t REFERENCES %s(%s);\n";
+								String format = "ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY(%s) \n\t REFERENCES %s(%s);\n";
 								writer.write(format(format, table.getName(), key.getName(), sourceName, key.getRefTableName(), targetName));
 							}
 						} catch (Exception | Error e) {
