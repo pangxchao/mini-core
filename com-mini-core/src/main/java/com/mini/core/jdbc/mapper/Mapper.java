@@ -13,6 +13,5 @@ public interface Mapper<T> {
 	 * @return 解析结果
 	 * @throws SQLException 转换错误
 	 */
-	@Nonnull
 	T get(ResultSet rs, int number) throws SQLException;
 }

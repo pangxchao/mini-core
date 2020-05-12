@@ -1,6 +1,7 @@
 package com.mini.core.web.model;
 
 import com.mini.core.web.support.config.Configures;
+import com.mini.core.web.util.ResponseCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -12,8 +13,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
-import static com.mini.core.web.util.ResponseCode.NOT_MODIFIED;
-import static com.mini.core.web.util.ResponseCode.OK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -22,7 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * 数据模型渲染器模板
  * @author xchao
  */
-public abstract class IModel<T extends IModel<T>> implements Serializable {
+public abstract class IModel<T extends IModel<T>> implements ResponseCode, Serializable {
 	private static final long serialVersionUID = -8709093093109721059L;
 	private static final String URL_REGEX = "http(s)?://([\\s\\S])+";
 	private static final Logger log = getLogger(IModel.class);
@@ -66,7 +65,6 @@ public abstract class IModel<T extends IModel<T>> implements Serializable {
 	public final String getMessage() {
 		return this.message;
 	}
-	
 	
 	/**
 	 * 获取内容类型
@@ -161,9 +159,8 @@ public abstract class IModel<T extends IModel<T>> implements Serializable {
 	 */
 	public final void onSubmit(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
 		try {
-			// 错误码处理和返回数据格式处理
+			// 设置返回数据类型和格式
 			response.setContentType(contentType);
-			response.setStatus(this.getStatus());
 			
 			// 验证返回码是否错误，并发送错误信息
 			if (getStatus() < 200 || getStatus() >= 300) {
@@ -222,9 +219,7 @@ public abstract class IModel<T extends IModel<T>> implements Serializable {
 	 * @param request  HttpServletRequest
 	 * @param response HttpServletResponse
 	 */
-	protected void onError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
-		response.sendError(getStatus(), getMessage());
-	}
+	protected abstract void onError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error;
 	
 	/**
 	 * 提交处理

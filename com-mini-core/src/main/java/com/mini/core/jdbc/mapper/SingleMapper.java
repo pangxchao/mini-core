@@ -1,6 +1,5 @@
 package com.mini.core.jdbc.mapper;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +18,6 @@ public final class SingleMapper<T> implements Mapper<T>, EventListener, Serializ
 		this.type = type;
 	}
 	
-	@Nonnull
 	@Override
 	public T get(ResultSet rs, int number) throws SQLException {
 		isTrue(rs.getMetaData().getColumnCount() == 1);
@@ -28,8 +26,7 @@ public final class SingleMapper<T> implements Mapper<T>, EventListener, Serializ
 	
 	@SuppressWarnings("unchecked")
 	public static <T> Mapper<T> create(Class<T> type) {
-		return (Mapper<T>) MAP.computeIfAbsent(type, k -> {
-			return new SingleMapper<>(type); //
-		});
+		return (Mapper<T>) MAP.computeIfAbsent(type, //
+				k -> new SingleMapper<>(type));
 	}
 }

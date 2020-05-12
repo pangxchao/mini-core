@@ -21,7 +21,6 @@ import com.mini.core.web.argument.header.*;
 import com.mini.core.web.argument.param.*;
 import com.mini.core.web.argument.uri.*;
 import com.mini.core.web.filter.AccessControlAllowOriginFilter;
-import com.mini.core.web.filter.CacheControlFilter;
 import com.mini.core.web.filter.CharacterEncodingFilter;
 import com.mini.core.web.handler.ExceptionHandlerDefault;
 import com.mini.core.web.handler.ExceptionHandlerValidate;
@@ -109,11 +108,6 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		// 跨域请求过虑器
 		CONFIGURES.addFilter(AccessControlAllowOriginFilter.class, registration -> {
 			registration.setName("AccessControlAllowOriginFilter");
-			registration.addUrlPatterns("/*");
-		});
-		// 静态资源缓存过虑器
-		CONFIGURES.addFilter(CacheControlFilter.class, registration -> {
-			registration.setName("CacheControlFilter");
 			registration.addUrlPatterns("/*");
 		});
 		// 验证异常处理器/其它普通异常处理器

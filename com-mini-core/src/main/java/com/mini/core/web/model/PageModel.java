@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.mini.core.validation.Validator.status;
-import static com.mini.core.web.util.ResponseCode.INTERNAL_SERVER_ERROR;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -89,6 +89,12 @@ public class PageModel extends IModel<PageModel> implements Serializable {
 		return model();
 	}
 	
+	
+	@Override
+	protected void onError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+		response.sendError(INTERNAL_SERVER_ERROR, format("%d(%s)", getStatus(), getMessage()));
+	}
+	
 	@Override
 	protected void onSubmit(HttpServletRequest request, HttpServletResponse response, String viewPath) throws Exception, Error {
 		try {
@@ -96,8 +102,8 @@ public class PageModel extends IModel<PageModel> implements Serializable {
 			PageViewResolver view = getConfigures().getPageViewResolver();
 			view.generator(data, viewPath, request, response);
 		} catch (IOException | Error e) {
+			response.setStatus(INTERNAL_SERVER_ERROR);
 			log.error(e.getMessage());
-			response.setStatus(500);
 		}
 	}
 }

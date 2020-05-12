@@ -289,45 +289,6 @@ public final class Configures implements EventListener, Serializable {
 	}
 	
 	/**
-	 * 缓存控制器
-	 */
-	private String cacheControl = "No-Cache";
-	
-	public void setCacheControl(String cacheControl) {
-		this.cacheControl = cacheControl;
-	}
-	
-	public String getCacheControl() {
-		return cacheControl;
-	}
-	
-	/**
-	 * 缓存标注
-	 */
-	private String cachePragma = "No-Cache";
-	
-	public void setCachePragma(String cachePragma) {
-		this.cachePragma = cachePragma;
-	}
-	
-	public String getCachePragma() {
-		return cachePragma;
-	}
-	
-	/**
-	 * 缓存过期时间
-	 */
-	private int cacheExpires = 0;
-	
-	public void setCacheExpires(int cacheExpires) {
-		this.cacheExpires = cacheExpires;
-	}
-	
-	public int getCacheExpires() {
-		return cacheExpires;
-	}
-	
-	/**
 	 * 请求映射容器
 	 */
 	private final Map<String, Map<Method, ActionSupportProxy>> mappings = new HashMap<>();

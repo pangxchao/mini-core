@@ -18,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static com.mini.core.web.util.ResponseCode.REQUESTED_RANGE_NOT_SATISFIABLE;
 import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -68,11 +67,6 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		}
 	}
 
-//	public final StreamModel setInputStream(InputStream inputStream) {
-//		this.inputStream = inputStream;
-//		return model();
-//	}
-	
 	public final StreamModel setWriteCallback(WriteCallback writeCallback) {
 		this.writeCallback = writeCallback;
 		return model();
@@ -99,6 +93,11 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 		} catch (UnsupportedEncodingException e) {
 			throw ThrowsUtil.hidden(e);
 		}
+	}
+	
+	@Override
+	protected void onError(HttpServletRequest request, HttpServletResponse response) throws Exception, Error {
+		response.sendError(INTERNAL_SERVER_ERROR, format("%d(%s)", getStatus(), getMessage()));
 	}
 	
 	@Override
@@ -189,8 +188,8 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			output.println();
 			output.print("--" + MULTIPART_BOUNDARY + "--");
 		} catch (IOException | Error e) {
+			response.setStatus(INTERNAL_SERVER_ERROR);
 			log.error(e.getMessage());
-			response.setStatus(500);
 		}
 	}
 	
