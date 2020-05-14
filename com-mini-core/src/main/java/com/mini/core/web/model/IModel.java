@@ -1,5 +1,6 @@
 package com.mini.core.web.model;
 
+import com.mini.core.util.StringUtil;
 import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -22,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author xchao
  */
 public abstract class IModel<T extends IModel<T>> implements ResponseCode, Serializable {
+	
 	private static final long serialVersionUID = -8709093093109721059L;
 	private static final String URL_REGEX = "http(s)?://([\\s\\S])+";
 	private static final Logger log = getLogger(IModel.class);
@@ -161,7 +163,6 @@ public abstract class IModel<T extends IModel<T>> implements ResponseCode, Seria
 		try {
 			// 设置返回数据类型和格式
 			response.setContentType(contentType);
-			
 			// 验证返回码是否错误，并发送错误信息
 			if (getStatus() < 200 || getStatus() >= 300) {
 				this.onError(request, response);
@@ -178,7 +179,6 @@ public abstract class IModel<T extends IModel<T>> implements ResponseCode, Seria
 				request.getRequestDispatcher(viewPath).forward(request, response);
 				return;
 			}
-			
 			// 重定向处理
 			if (viewPath != null && startsWithIgnoreCase(viewPath, "r:")) {
 				viewPath = viewPath.substring(2);
@@ -200,13 +200,11 @@ public abstract class IModel<T extends IModel<T>> implements ResponseCode, Seria
 				response.sendRedirect(viewPath);
 				return;
 			}
-			
 			// 处理缓存情况
 			if (this.useModifiedOrNoneMatch(request, response)) {
 				response.sendError(NOT_MODIFIED);
 				return;
 			}
-			
 			// 处理具体数据
 			this.onSubmit(request, response, viewPath);
 		} catch (IOException | Error e) {
@@ -233,24 +231,22 @@ public abstract class IModel<T extends IModel<T>> implements ResponseCode, Seria
 	
 	// 判断该请求资源是否没有修改过(直接使用缓存返回页面)
 	private boolean useModifiedOrNoneMatch(HttpServletRequest request, HttpServletResponse response) {
-		// If-Modified与Etag都未设置，表示该请求不支持缓存
-		if (lastModified < 0 && isBlank(eTag)) {
+		// 不使用缓存
+		if (IModel.this.lastModified == -1) {
 			return false;
 		}
-		
-		// 返回 If-Modified 与 Etag 的返回头信息
-		response.setDateHeader("If-Modified", lastModified);
-		response.setHeader("Etag", this.eTag);
-		
 		// 获取页面提交过来的If-Modified与Etag值(上次请求时返回给客户端的)
-		long ifModifiedSince = request.getDateHeader("If-Modified-Since");
-		String ifNoneMatch = request.getHeader("If-None-Match");
-		
-		// If-Modified 信息满足使用缓存的条件时
-		if (lastModified >= 0 && ifModifiedSince < lastModified) {
-			return isBlank(eTag) || eTag.equals(ifNoneMatch);
+		if (request.getDateHeader("If-Modified-Since") < IModel.this.lastModified) {
+			if (lastModified >= 0 && !response.containsHeader("Last-Modified")) {
+				response.setDateHeader("Last-Modified", lastModified);
+			}
+			return false;
 		}
-		// If-Modified不满足使用缓存条件，判断Etag
-		return !isBlank(eTag) && eTag.equals(ifNoneMatch);
+		// 设置ETag标识
+		final String ifNoneMatch = request.getHeader("If-None-Match");
+		if (isNotBlank(eTag) && !StringUtil.equals(eTag, ifNoneMatch)) {
+			response.setHeader("ETag", IModel.this.eTag);
+		}
+		return true;
 	}
 }

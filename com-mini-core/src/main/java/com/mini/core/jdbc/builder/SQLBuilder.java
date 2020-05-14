@@ -399,12 +399,12 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code onDuplicateKeyUpdate("%s = VALUES(%)", column, column); }
+	 * {@code onDuplicateKeyUpdate("%s = VALUES(%s)", column, column); }
 	 * @param column 修改字段名
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder onDuplicateKeyUpdateFromInsert(String column) {
-		return onDuplicateKeyUpdate("%s = VALUES(%)", column, column);
+		return onDuplicateKeyUpdate("%s = VALUES(%s)", column, column);
 	}
 	
 	/**

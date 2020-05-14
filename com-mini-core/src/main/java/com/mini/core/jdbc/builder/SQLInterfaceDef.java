@@ -136,14 +136,12 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 				// 修改字段的删除状态
 				Del del = h.getAnnotation(Del.class);
 				if (nonNull(del)) {
-					builder.set("%s = ?", column.value());
-					builder.args(del.value());
+					builder.setEquals(column.value(), del.value());
 				}
 				
 				// 修改字段的锁数据
 				if (nonNull(h.getAnnotation(Lock.class))) {
-					builder.set("%s = ?", column.value());
-					builder.args(currentTimeMillis());
+					builder.setEquals(column.value(), currentTimeMillis());
 				}
 			});
 		} else builder.delete(aTable.value()).from(aTable.value());
@@ -156,14 +154,12 @@ public final class SQLInterfaceDef implements SQLInterface, EventListener, Seria
 			
 			// 添加字段ID条件
 			if (nonNull(h.getAnnotation(Id.class))) {
-				builder.where("%s = ?", column.value());
-				builder.args(h.getValue(instance));
+				builder.whereEquals(column.value(), h.getValue(instance));
 			}
 			
 			// 添加字段锁条件
 			if (nonNull(h.getAnnotation(Lock.class))) {
-				builder.where("%s = ?", column.value());
-				builder.args(h.getValue(instance));
+				builder.whereEquals(column.value(), h.getValue(instance));
 			}
 		});
 	}
