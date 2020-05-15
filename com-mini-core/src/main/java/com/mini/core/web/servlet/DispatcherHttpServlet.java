@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -43,6 +44,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * 默认的Servlet
  * @author xchao
  */
+@Singleton
 public final class DispatcherHttpServlet extends HttpServlet implements Serializable {
 	private static final Logger log = getLogger(DispatcherHttpServlet.class);
 	private static final PathMatcher matcher = new PathMatcherAnt();
