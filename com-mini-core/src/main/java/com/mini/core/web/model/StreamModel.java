@@ -12,7 +12,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -66,7 +65,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			throw ThrowsUtil.hidden(e);
 		}
 	}
-
+	
 	public final StreamModel setWriteCallback(WriteCallback writeCallback) {
 		this.writeCallback = writeCallback;
 		return model();
@@ -194,7 +193,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 	}
 	
 	// 写入数据
-	private void copy(OutputStream out, long start, long end) throws Exception {
+	private void copy(ServletOutputStream out, long start, long end) throws Exception {
 		if (StreamModel.this.writeCallback != null) {
 			writeCallback.copy(out, start, end);
 		}
@@ -202,6 +201,6 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 	
 	@FunctionalInterface
 	public interface WriteCallback {
-		void copy(OutputStream out, long start, long end) throws Exception;
+		void copy(ServletOutputStream out, long start, long end) throws Exception;
 	}
 }

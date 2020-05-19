@@ -23,9 +23,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class JsonModel extends IModel<JsonModel> implements Serializable {
 	private static final Logger log = getLogger(JsonModel.class);
 	private final Map<String, Object> map = new HashMap<>();
+	private static final String TYPE = "application/json";
 	private final List<Object> list = new ArrayList<>();
 	private static final long serialVersionUID = 1L;
-	private static final String TYPE = "text/plain";
 	private Object data = map;
 	
 	public JsonModel() {

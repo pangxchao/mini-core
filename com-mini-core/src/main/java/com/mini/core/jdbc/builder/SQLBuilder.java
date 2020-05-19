@@ -613,7 +613,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereMatch(String[] columns, Object arg) {
-		String string = StringUtil.join(columns, ',');
+		final String string = StringUtil.join(columns, ',');
 		return where("MATCH(%s) AGAINST(?)", string)//
 				.args(arg);
 	}
