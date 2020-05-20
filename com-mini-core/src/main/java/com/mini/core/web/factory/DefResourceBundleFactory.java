@@ -20,8 +20,8 @@ public final class DefResourceBundleFactory implements ResourceBundleFactory, Ev
 				.map(r -> r.getHeader("Accept-Language"))
 				.map(Locale::forLanguageTag)
 				.orElse(Locale.getDefault());
-		return MAP.computeIfAbsent(locale, key -> {
-			return getBundle("i18n.message", key); //
+		return MAP.computeIfAbsent(locale, key -> { //
+			return getBundle("i18n.message", key);
 		});
 	}
 }
