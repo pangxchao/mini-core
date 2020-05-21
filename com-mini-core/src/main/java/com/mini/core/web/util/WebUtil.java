@@ -1,5 +1,6 @@
 package com.mini.core.web.util;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.apache.commons.lang3.StringUtils.*;
@@ -15,7 +16,7 @@ public final class WebUtil {
 	 * @return 如：http://localhost:8080
 	 */
 	public static String getDomain(HttpServletRequest req) {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append(req.getScheme()).append("://");
 		builder.append(req.getServerName());
 		if (req.getServerPort() == 80) {
@@ -31,7 +32,7 @@ public final class WebUtil {
 	 * @param req request 对象
 	 * @return 路径
 	 */
-	public static String getRequestPath(HttpServletRequest req) {
+	public static String getRequestPath(@Nonnull HttpServletRequest req) {
 		if (isBlank(req.getContextPath())) return req.getRequestURI();
 		return replace(req.getRequestURI(), req.getContextPath(), "", 1);
 	}
@@ -51,22 +52,7 @@ public final class WebUtil {
 	 * @return IP地址
 	 */
 	public static String getIpAddress(HttpServletRequest request) {
-		String ip = request.getHeader("x-forwarded-for");
-		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("Proxy-Client-IP");
-		}
-		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("WL-Proxy-Client-IP");
-		}
-		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_CLIENT_IP");
-		}
-		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-		}
-		if (isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getRemoteAddr();
-		}
+		final String ip = request.getRemoteAddr();
 		return defaultIfBlank(ip, "127.0.0.1");
 	}
 }
