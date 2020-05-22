@@ -40,6 +40,7 @@ import javax.servlet.annotation.HandlesTypes;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -187,7 +188,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 				getRequestUriList(clazz, controller, method, action).stream().distinct().forEach(requestUri -> {
 					// 根据扫描出来的 Action 对象创建 ActionProxy 并添加到配置信息中
 					CONFIGURES.addActionProxy(requestUri, new ActionSupportProxy() {
-						private List<ActionInterceptor> interceptors;
+						private CopyOnWriteArrayList<ActionInterceptor> interceptors;
 						private ParameterHandler[] handlers;
 						
 						@Nonnull
@@ -218,11 +219,11 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 						
 						@Nonnull
 						@Override
-						public final List<ActionInterceptor> getInterceptors() {
+						public final CopyOnWriteArrayList<ActionInterceptor> getInterceptors() {
 							return ofNullable(interceptors).orElseGet(() -> {
 								synchronized(this) {
 									// 创建拦截器列表实例
-									interceptors = new ArrayList<>();
+									interceptors = new CopyOnWriteArrayList<>();
 									// 将方法上的拦截器添加到实例列表中
 									if (methodBefore != null && methodBefore.value().length > 0) {
 										interceptors.addAll(of(methodBefore.value())

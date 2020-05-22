@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -117,7 +118,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			
 			// 不支持断点续传
 			if (!StreamModel.this.acceptRangesSupport) {
-				copy(output, 0, contentLength - 1);
+				copy(output, 0, contentLength - 1, response);
 				return;
 			}
 			
@@ -125,9 +126,10 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			String rangeText = request.getHeader("Range");
 			response.setHeader("Accept-Ranges", "bytes");
 			
+			
 			// 如果请求数据范围不存在，则客户端不需要断点续传，直接返回
 			if (rangeText == null || StringUtils.isBlank(rangeText)) {
-				this.copy(output, 0, contentLength - 1);
+				this.copy(output, 0, contentLength - 1, response);
 				return;
 			}
 			
@@ -144,7 +146,6 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 				if (range.validate(contentLength)) {
 					continue;
 				}
-				
 				// 如果Range对象不合法，返回错误信息
 				response.addHeader("Content-Range", "bytes */" + contentLength);
 				response.sendError(REQUESTED_RANGE_NOT_SATISFIABLE);
@@ -156,14 +157,12 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 				// 设置返回的数据范围
 				RangeParse.Range range = rangeList.get(0);
 				response.addHeader("Content-Range", format("bytes %d-%d/%d", range.getStart(), range.getEnd(), range.getLength()));
-				
 				// 设置传回内容在大小和Buffer大小
 				long length = range.getEnd() - range.getStart() + 1;
 				response.setContentLengthLong(length);
 				response.setBufferSize(BUFFER_SIZE);
-				
 				// 写数据
-				this.copy(output, range.getStart(), range.getEnd());
+				this.copy(output, range.getStart(), range.getEnd(), null);
 				return;
 			}
 			
@@ -180,7 +179,7 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 				
 				// 输出一个空行,再定入数据
 				output.println();
-				this.copy(output, range.getStart(), range.getEnd());
+				this.copy(output, range.getStart(), range.getEnd(), null);
 			}
 			
 			// 输出结尾符
@@ -188,12 +187,15 @@ public class StreamModel extends IModel<StreamModel> implements Serializable {
 			output.print("--" + MULTIPART_BOUNDARY + "--");
 		} catch (IOException | Error e) {
 			response.setStatus(INTERNAL_SERVER_ERROR);
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 		}
 	}
 	
 	// 写入数据
-	private void copy(ServletOutputStream out, long start, long end) throws Exception {
+	private void copy(ServletOutputStream out, long start, long end, HttpServletResponse response) throws Exception {
+		if (Objects.nonNull(response) && this.contentLength > 0) {
+			response.setContentLengthLong(contentLength);
+		}
 		if (StreamModel.this.writeCallback != null) {
 			writeCallback.copy(out, start, end);
 		}

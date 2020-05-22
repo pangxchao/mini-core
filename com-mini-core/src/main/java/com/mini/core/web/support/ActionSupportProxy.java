@@ -12,7 +12,7 @@ import com.mini.core.web.model.IModel;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.EventListener;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public interface ActionSupportProxy {
@@ -49,7 +49,7 @@ public interface ActionSupportProxy {
 	 * @return 拦截器对象
 	 */
 	@Nonnull
-	List<ActionInterceptor> getInterceptors();
+	CopyOnWriteArrayList<ActionInterceptor> getInterceptors();
 	
 	/**
 	 * 获取目标方法的所有参数信息
