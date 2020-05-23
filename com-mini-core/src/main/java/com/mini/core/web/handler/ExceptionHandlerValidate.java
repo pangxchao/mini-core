@@ -1,7 +1,7 @@
 package com.mini.core.web.handler;
 
 import com.mini.core.validation.ValidationException;
-import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.model.IModel;
 import com.mini.core.web.support.config.Configures;
 import org.slf4j.Logger;
 
@@ -33,9 +33,9 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 	}
 	
 	@Override
-	public void handler(ActionInvocation invocation, Throwable exception, HttpServletRequest request, HttpServletResponse response) {
+	public void handler(IModel<?> model, Throwable exception, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			ResourceBundle bundle = configures.getResourceBundleFactory().get(invocation);
+			ResourceBundle bundle = configures.getResourceBundleFactory().get(request);
 			ValidationException e = (ValidationException) exception;
 			// 获取消息内容
 			var message = bundle.containsKey(e.getKey())
@@ -43,8 +43,7 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 					: e.getMessage();
 			// 格式化消息参数
 			message = format(message, e.getArgs().toArray());
-			invocation.getModel().setStatus(e.getStatus());
-			invocation.getModel().setMessage(message);
+			model.setStatus(e.getStatus()).setMessage(message);
 			// 输出调试日志
 			log.debug(format("%s(%s)", request.getRequestURI(), e.getMessage()));
 		} catch (Exception | Error e) {

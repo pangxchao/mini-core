@@ -1,6 +1,6 @@
 package com.mini.core.web.handler;
 
-import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.model.IModel;
 import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;
 import org.slf4j.Logger;
@@ -32,14 +32,13 @@ public final class ExceptionHandlerDefault implements ExceptionHandler {
 	}
 	
 	@Override
-	public void handler(ActionInvocation invocation, Throwable e, HttpServletRequest request, HttpServletResponse response) {
+	public void handler(IModel<?> model, Throwable e, HttpServletRequest request, HttpServletResponse response) {
 		try {
-			ResourceBundle bundle = configures.getResourceBundleFactory().get(invocation);
-			invocation.getModel().setStatus(ResponseCode.INTERNAL_SERVER_ERROR);
+			ResourceBundle bundle = configures.getResourceBundleFactory().get(request);
 			String code = String.valueOf(ResponseCode.INTERNAL_SERVER_ERROR);
-			String message = bundle.containsKey(code) ? bundle.getString(code)
-					: defaultIfBlank(e.getMessage(), "Service Error");
-			invocation.getModel().setMessage(message);
+			model.setMessage(bundle.containsKey(code) ? bundle.getString(code)
+					: defaultIfBlank(e.getMessage(), "Service Error"));
+			model.setStatus(ResponseCode.INTERNAL_SERVER_ERROR);
 			log.error(e.getMessage(), e);
 		} catch (Exception | Error ex) {
 			throw hidden(ex);

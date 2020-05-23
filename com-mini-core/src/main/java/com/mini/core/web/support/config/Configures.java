@@ -496,6 +496,7 @@ public final class Configures implements EventListener, Serializable {
 		pageViewResolver = requireNonNull(injector.getInstance(resolver));
 	}
 	
+	@Nonnull
 	public PageViewResolver getPageViewResolver() {
 		return pageViewResolver;
 	}
@@ -509,6 +510,7 @@ public final class Configures implements EventListener, Serializable {
 		resourceBundleFactory = requireNonNull(injector.getInstance(factory));
 	}
 	
+	@Nonnull
 	public ResourceBundleFactory getResourceBundleFactory() {
 		return resourceBundleFactory;
 	}

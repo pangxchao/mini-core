@@ -3,10 +3,11 @@ package com.mini.core.validation;
 import com.mini.core.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.EventListener;
-import java.util.List;
-import java.util.Objects;
+import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.function.BiConsumer;
+
+import static java.lang.String.format;
 
 public final class Validator implements EventListener {
 	private List<Object> args;
@@ -52,11 +53,23 @@ public final class Validator implements EventListener {
 	}
 	
 	/**
+	 * 发送错误码和错误消息到回调方法，支持传入同际化处理
+	 * @param bundle   国际化 ResourceBundle 对象
+	 * @param consumer 回调方法
+	 */
+	public final void send(ResourceBundle bundle, @Nonnull BiConsumer<Integer, String> consumer) {
+		var m = Optional.ofNullable(bundle).filter(b -> b.containsKey(getKey())) //
+				.map(b -> b.getString(getKey())).orElse(this.message);
+		consumer.accept(status, format(m, getArgs().toArray()));
+	}
+	
+	/**
 	 * 直接发送错误消息
 	 */
 	public final ValidationException send() {
 		throw getValidationException();
 	}
+	
 	
 	/**
 	 * 当表达式不为 True 是发送错误消息

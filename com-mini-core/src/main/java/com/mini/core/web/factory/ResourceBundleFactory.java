@@ -1,8 +1,7 @@
 package com.mini.core.web.factory;
 
-import com.mini.core.web.interceptor.ActionInvocation;
-
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
 import java.util.EventListener;
 import java.util.ResourceBundle;
 
@@ -12,5 +11,5 @@ import java.util.ResourceBundle;
  */
 public interface ResourceBundleFactory extends EventListener {
 	@Nonnull
-	ResourceBundle get(ActionInvocation invocation);
+	ResourceBundle get(@Nonnull HttpServletRequest request);
 }

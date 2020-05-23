@@ -252,12 +252,11 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
 				for (var handler : configure.getExceptionHandlerList()) {
 					for (var e = exception; e != null; e = e.getCause()) {
 						if (!handler.supportException(e)) continue;
-						handler.handler(action, e, request, response);
+						handler.handler(model, e, request, response);
 						break handler_each;
 					}
 				}
 			}
-			
 			// 返回数据
 			model.onSubmit(request, response);
 		} catch (Exception | Error ex) {

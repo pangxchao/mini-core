@@ -1,6 +1,6 @@
 package com.mini.core.web.handler;
 
-import com.mini.core.web.interceptor.ActionInvocation;
+import com.mini.core.web.model.IModel;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,10 +28,10 @@ public interface ExceptionHandler {
 	
 	/**
 	 * 全局异常处理方法
-	 * @param invocation Action 调用对象
-	 * @param exception  异常信息
-	 * @param request    HttpServletRequest 对象
-	 * @param response   HttpServletResponse 对象
+	 * @param model     数据模型渲染器
+	 * @param exception 异常信息
+	 * @param request   HttpServletRequest 对象
+	 * @param response  HttpServletResponse 对象
 	 */
-	void handler(ActionInvocation invocation, Throwable exception, HttpServletRequest request, HttpServletResponse response);
+	void handler(IModel<?> model, Throwable exception, HttpServletRequest request, HttpServletResponse response);
 }
