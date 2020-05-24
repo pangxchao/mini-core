@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -291,7 +294,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 请求映射容器
 	 */
-	private final Map<String, Map<Method, ActionSupportProxy>> mappings = new HashMap<>();
+	private final Map<String, Map<Method, ActionSupportProxy>> mappings = new ConcurrentHashMap<>();
 	
 	/**
 	 * 根据URI获取一个Action代理对象
@@ -368,7 +371,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * Http Servlet 容器
 	 */
-	private final Map<Class<? extends HttpServlet>, RegistrationServlet> servlets = new HashMap<>();
+	private final Map<Class<? extends HttpServlet>, RegistrationServlet> servlets = new ConcurrentHashMap<>();
 	
 	/**
 	 * 添加一个Servlet
@@ -403,7 +406,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * Filter 容器
 	 */
-	private final Map<Class<? extends Filter>, RegistrationFilter> filters = new HashMap<>();
+	private final Map<Class<? extends Filter>, RegistrationFilter> filters = new ConcurrentHashMap<>();
 	
 	/**
 	 * 添加一个过虑器
@@ -443,7 +446,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 参数解析器容器
 	 */
-	private final Set<ArgumentResolver> argumentResolverSet = new HashSet<>();
+	private final Set<ArgumentResolver> argumentResolverSet = new ConcurrentSkipListSet<>();
 	
 	public void addArgumentResolver(Class<? extends ArgumentResolver> resolver) {
 		argumentResolverSet.add(requireNonNull(injector.getInstance(resolver)));
@@ -457,7 +460,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 全局拦截器容器
 	 */
-	private final List<ActionInterceptor> interceptorList = new ArrayList<>();
+	private final List<ActionInterceptor> interceptorList = new CopyOnWriteArrayList<>();
 	
 	public void addInterceptor(Class<? extends ActionInterceptor> interceptor) {
 		interceptorList.add(requireNonNull(injector.getInstance(interceptor)));
@@ -471,7 +474,7 @@ public final class Configures implements EventListener, Serializable {
 	/**
 	 * 全局异常处理器容器
 	 */
-	private final List<ExceptionHandler> exceptionHandlerList = new ArrayList<>();
+	private final List<ExceptionHandler> exceptionHandlerList = new CopyOnWriteArrayList<>();
 	
 	/**
 	 * 注册一个异常处理器

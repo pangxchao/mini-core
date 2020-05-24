@@ -4,6 +4,7 @@ import com.mini.core.util.Assert;
 import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.interceptor.ActionInvocation;
 
+import javax.annotation.Nonnull;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -43,5 +44,10 @@ public class ArgumentResolverContext implements ArgumentResolver {
 		Assert.notNull(function, "Unsupported parameter type.");
 		// 获取参数名称和参值，并处理
 		return function.apply(invocation);
+	}
+	
+	@Override
+	public final int compareTo(@Nonnull ArgumentResolver o) {
+		return this.hashCode() - o.hashCode();
 	}
 }

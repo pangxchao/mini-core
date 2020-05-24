@@ -26,7 +26,6 @@ public abstract class ArgumentResolverBasic implements ArgumentResolver, EventLi
 	public final Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		Function<String, ?> function = getBasicFunc(parameter.getType());
 		Assert.notNull(function, "Unsupported parameter type.");
-		
 		// 获取参数名称和参值，并处理
 		String value = getValue(getParameterName(parameter), invocation);
 		return function.apply(value);
@@ -47,4 +46,9 @@ public abstract class ArgumentResolverBasic implements ArgumentResolver, EventLi
 	 * @return 参数值
 	 */
 	protected abstract String getValue(String name, ActionInvocation invocation);
+	
+	@Override
+	public final int compareTo(@Nonnull ArgumentResolver o) {
+		return this.hashCode() - o.hashCode();
+	}
 }

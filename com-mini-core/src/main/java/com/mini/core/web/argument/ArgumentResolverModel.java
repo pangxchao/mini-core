@@ -4,6 +4,7 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.model.IModel;
 
+import javax.annotation.Nonnull;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -18,5 +19,10 @@ public final class ArgumentResolverModel implements ArgumentResolver {
 	@Override
 	public Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		return invocation.getModel();
+	}
+	
+	@Override
+	public final int compareTo(@Nonnull ArgumentResolver o) {
+		return this.hashCode() - o.hashCode();
 	}
 }

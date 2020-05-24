@@ -5,6 +5,7 @@ import com.mini.core.util.reflect.MiniParameter;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.support.config.Configures;
 
+import javax.annotation.Nonnull;
 import java.util.EventListener;
 import java.util.function.Function;
 
@@ -25,7 +26,6 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
 	public final Object getValue(MiniParameter parameter, ActionInvocation invocation) {
 		Function<String[], ?> function = getArrayFunc(parameter.getType());
 		Assert.notNull(function, "Unsupported parameter type.");
-		
 		// 获取参数名称和参值，并处理
 		String[] value = getValue(getParameterName(parameter), invocation);
 		return function.apply(value);
@@ -45,4 +45,9 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
 	 * @return 参数值
 	 */
 	protected abstract String[] getValue(String name, ActionInvocation invocation);
+	
+	@Override
+	public final int compareTo(@Nonnull ArgumentResolver o) {
+		return this.hashCode() - o.hashCode();
+	}
 }

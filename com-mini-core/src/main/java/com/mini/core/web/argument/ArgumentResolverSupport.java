@@ -4,10 +4,12 @@ import com.mini.core.web.support.config.Configures;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.time.Instant.ofEpochMilli;
+import static java.time.ZoneId.systemDefault;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Optional.ofNullable;
 
@@ -41,19 +44,12 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			LocalDate date = LocalDate.parse(text, format);
 			return java.sql.Date.valueOf(date);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			return new Date(Long.parseLong(text));
-		} catch (NumberFormatException ignored) {}
-		return null;
+		return new java.util.Date(Long.parseLong(text));
 	};
 	
 	// java.time.Instant 类型的参数
-	private static final Function<? super String, ? extends java.time.Instant> java_time_instant = text -> {
-		try {
-			return ofEpochMilli(Long.parseLong(text));
-		} catch (DateTimeException | NumberFormatException ignored) {}
-		return null;
-	};
+	private static final Function<? super String, ? extends java.time.Instant> java_time_instant = text ->
+			ofEpochMilli(Long.parseLong(text));
 	
 	// java.time.LocalDateTime 类型的参数
 	private static final Function<? super String, ? extends java.time.LocalDateTime> java_time_local_date_time = text -> {
@@ -61,11 +57,8 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 			return LocalDateTime.parse(text, format);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			Instant instant = ofEpochMilli(Long.parseLong(text));
-			return LocalDateTime.ofInstant(instant, ZoneOffset.systemDefault());
-		} catch (DateTimeException | NumberFormatException ignored) {}
-		return null;
+		Instant instant = ofEpochMilli(Long.parseLong(text));
+		return LocalDateTime.ofInstant(instant, systemDefault());
 	};
 	
 	// java.time.LocalDate 类型的参数
@@ -74,11 +67,8 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 			return LocalDate.parse(text, format);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			Instant instant = ofEpochMilli(Long.parseLong(text));
-			return LocalDate.ofInstant(instant, ZoneOffset.systemDefault());
-		} catch (DateTimeException | NumberFormatException ignored) {}
-		return null;
+		Instant instant = ofEpochMilli(Long.parseLong(text));
+		return LocalDate.ofInstant(instant, systemDefault());
 	};
 	
 	// java.time.LocalTime 类型的参数
@@ -87,11 +77,8 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			DateTimeFormatter format = ofPattern(configures.getDateTimeFormat());
 			return LocalTime.parse(text, format);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			Instant instant = ofEpochMilli(Long.parseLong(text));
-			return LocalTime.ofInstant(instant, ZoneOffset.systemDefault());
-		} catch (DateTimeException | NumberFormatException ignored) {}
-		return null;
+		Instant instant = ofEpochMilli(Long.parseLong(text));
+		return LocalTime.ofInstant(instant, systemDefault());
 	};
 	
 	// java.sql.Timestamp 类型的参数
@@ -101,10 +88,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			LocalDateTime date = LocalDateTime.parse(text, format);
 			return java.sql.Timestamp.valueOf(date);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			return new java.sql.Timestamp(Long.parseLong(text));
-		} catch (NumberFormatException ignored) {}
-		return null;
+		return new java.sql.Timestamp(Long.parseLong(text));
 	};
 	
 	// java.sql.Date 类型的参数
@@ -114,10 +98,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			LocalDate date = LocalDate.parse(text, format);
 			return java.sql.Date.valueOf(date);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			return new java.sql.Date(Long.parseLong(text));
-		} catch (NumberFormatException ignored) {}
-		return null;
+		return new java.sql.Date(Long.parseLong(text));
 	};
 	
 	// java.sql.Time 类型的参数
@@ -127,10 +108,7 @@ public final class ArgumentResolverSupport implements Serializable, EventListene
 			LocalTime time = LocalTime.parse(text, format);
 			return java.sql.Time.valueOf(time);
 		} catch (DateTimeParseException ignored) {}
-		try {
-			return new java.sql.Time(Long.parseLong(text));
-		} catch (NumberFormatException ignored) {}
-		return null;
+		return new java.sql.Time(Long.parseLong(text));
 	};
 	
 	private static final Map<Class<?>, Function<String, Object>> BASIC_MAP = new HashMap<>() {{

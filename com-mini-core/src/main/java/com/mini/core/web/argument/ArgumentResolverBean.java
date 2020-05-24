@@ -7,6 +7,7 @@ import com.mini.core.web.annotation.Param;
 import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.support.config.Configures;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.EventListener;
@@ -18,6 +19,7 @@ import static com.mini.core.validation.ValidationUtil.validate;
 import static com.mini.core.web.argument.ArgumentResolverSupport.getBeanFunc;
 import static java.lang.Class.forName;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 public abstract class ArgumentResolverBean implements ArgumentResolver, EventListener {
@@ -78,7 +80,7 @@ public abstract class ArgumentResolverBean implements ArgumentResolver, EventLis
 		return ArgumentResolverBean.MAP.computeIfAbsent(type, key -> {
 			try {
 				Class<?> mType = forName(type.getCanonicalName() + $RESOLVER$);
-				ofNullable(mType).filter(ArgumentResolver.class::isAssignableFrom)
+				of(mType).filter(ArgumentResolver.class::isAssignableFrom)
 						.orElseThrow(NoClassDefFoundError::new);
 				var mClass = mType.asSubclass(ArgumentResolver.class);
 				return mClass.getDeclaredConstructor().newInstance();
@@ -86,5 +88,10 @@ public abstract class ArgumentResolverBean implements ArgumentResolver, EventLis
 				return null;
 			}
 		});
+	}
+	
+	@Override
+	public final int compareTo(@Nonnull ArgumentResolver o) {
+		return this.hashCode() - o.hashCode();
 	}
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context sessionCookiePath="/" reloadable="true">
+	<Parameter value="7nmFOIUFka6Lsdp71leFapC" name="CLOUD_CODE"/>
+	<Parameter name="CLOUD_ID" value="100001"/>
+
+	<Parameter name="LOCATION_PATH" value="c:/temp"/>
+	<Parameter name="FilePath" value="D:/static/"/>
+</Context>

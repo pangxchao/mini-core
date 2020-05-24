@@ -30,10 +30,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static com.mini.core.util.ThrowsUtil.getLastInvocationTarget;
+import static com.mini.core.validation.Validator.status;
 import static com.mini.core.web.util.ResponseCode.INTERNAL_SERVER_ERROR;
+import static com.mini.core.web.util.ResponseCode.VERIFY;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Stream.of;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
@@ -223,8 +224,13 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
 				@Nonnull
 				@Override
 				public synchronized final Object[] getParameterValues() {
-					return Stream.of(proxy.getParameterHandlers()).map(param -> {
-						return param.getValue(this); //
+					return of(proxy.getParameterHandlers()).map(param -> {
+						try {
+							return param.getValue(this);
+						} catch (NumberFormatException exception) {
+							final var message = exception.getMessage();
+							throw status(VERIFY).message(message).send();
+						}
 					}).toArray(Object[]::new);
 				}
 				

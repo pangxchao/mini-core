@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 public final class Validator implements EventListener {
 	private List<Object> args;
@@ -18,7 +19,7 @@ public final class Validator implements EventListener {
 		this.status = status;
 	}
 	
-	private ValidationException getValidationException() {
+	private ValidationException getValidationException() throws Error {
 		return new ValidationException(status, message, args);
 	}
 	
@@ -26,13 +27,15 @@ public final class Validator implements EventListener {
 		return new Validator(status);
 	}
 	
-	public Validator message(String message) {
+	public final Validator message(String message) {
 		this.message = message;
 		return this;
 	}
 	
-	public Validator args(Object... args) {
-		this.args = Arrays.asList(args);
+	public final Validator args(Object... args) {
+		if (nonNull(args) && args.length > 0) {
+			this.args = Arrays.asList(args);
+		}
 		return this;
 	}
 	
@@ -59,8 +62,9 @@ public final class Validator implements EventListener {
 	 */
 	public final void send(ResourceBundle bundle, @Nonnull BiConsumer<Integer, String> consumer) {
 		var m = Optional.ofNullable(bundle).filter(b -> b.containsKey(getKey())) //
-				.map(b -> b.getString(getKey())).orElse(this.message);
-		consumer.accept(status, format(m, getArgs().toArray()));
+				.map(b -> b.getString(getKey())).orElse(this.getMessage());
+		consumer.accept(status, format(m, Optional.ofNullable(args) //
+				.map(List::toArray).orElse(new Object[0])));
 	}
 	
 	/**
@@ -103,7 +107,7 @@ public final class Validator implements EventListener {
 	 * @param object 传入对象
 	 */
 	public final void isNotNull(Object object) {
-		is(Objects.nonNull(object));
+		is(nonNull(object));
 	}
 	
 	/**
