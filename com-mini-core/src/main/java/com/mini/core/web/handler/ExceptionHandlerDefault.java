@@ -5,12 +5,14 @@ import com.mini.core.web.support.config.Configures;
 import com.mini.core.web.util.ResponseCode;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ResourceBundle;
 
+import static com.mini.core.util.LanguageUtil.getMessage;
 import static com.mini.core.util.ThrowsUtil.hidden;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -27,17 +29,17 @@ public final class ExceptionHandlerDefault implements ExceptionHandler {
 	}
 	
 	@Override
-	public boolean supportException(Throwable exception) {
+	public boolean supportException(@Nonnull Throwable exception) {
 		return true;
 	}
 	
 	@Override
-	public void handler(IModel<?> model, Throwable e, HttpServletRequest request, HttpServletResponse response) {
+	public void handler(@Nonnull IModel<?> model, Throwable e, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
 		try {
 			ResourceBundle bundle = configures.getResourceBundleFactory().get(request);
+			String defaultMessage = defaultIfBlank(e.getMessage(), "Service Error");
 			String code = String.valueOf(ResponseCode.INTERNAL_SERVER_ERROR);
-			model.setMessage(bundle.containsKey(code) ? bundle.getString(code)
-					: defaultIfBlank(e.getMessage(), "Service Error"));
+			model.setMessage(getMessage(code, bundle, defaultMessage));
 			model.setStatus(ResponseCode.INTERNAL_SERVER_ERROR);
 			log.error(e.getMessage(), e);
 		} catch (Exception | Error ex) {

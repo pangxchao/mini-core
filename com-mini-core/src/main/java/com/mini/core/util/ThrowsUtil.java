@@ -3,10 +3,11 @@ package com.mini.core.util;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.EventListener;
 
 import static java.util.Optional.ofNullable;
 
-public class ThrowsUtil {
+public final class ThrowsUtil implements EventListener {
 	@Nonnull
 	public static Throwable getLastCause(@Nonnull Throwable throwable) {
 		return ofNullable(throwable.getCause())

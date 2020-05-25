@@ -2,6 +2,7 @@ package com.mini.core.web.handler;
 
 import com.mini.core.web.model.IModel;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +25,7 @@ public interface ExceptionHandler {
 	 * @param throwable 异常信息
 	 * @return true-支持
 	 */
-	boolean supportException(Throwable throwable);
+	boolean supportException(@Nonnull Throwable throwable);
 	
 	/**
 	 * 全局异常处理方法
@@ -33,5 +34,5 @@ public interface ExceptionHandler {
 	 * @param request   HttpServletRequest 对象
 	 * @param response  HttpServletResponse 对象
 	 */
-	void handler(IModel<?> model, Throwable exception, HttpServletRequest request, HttpServletResponse response);
+	void handler(@Nonnull IModel<?> model, @Nonnull Throwable exception, @Nonnull HttpServletRequest request,@Nonnull  HttpServletResponse response);
 }

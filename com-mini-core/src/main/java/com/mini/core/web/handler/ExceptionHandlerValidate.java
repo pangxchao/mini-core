@@ -5,12 +5,14 @@ import com.mini.core.web.model.IModel;
 import com.mini.core.web.support.config.Configures;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ResourceBundle;
 
+import static com.mini.core.util.LanguageUtil.getMessage;
 import static com.mini.core.util.ThrowsUtil.hidden;
 import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,21 +30,17 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 	}
 	
 	@Override
-	public boolean supportException(Throwable throwable) {
+	public boolean supportException(@Nonnull Throwable throwable) {
 		return throwable instanceof ValidationException;
 	}
 	
 	@Override
-	public void handler(IModel<?> model, Throwable exception, HttpServletRequest request, HttpServletResponse response) {
+	public void handler(@Nonnull IModel<?> model, @Nonnull Throwable exception, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
 		try {
 			ResourceBundle bundle = configures.getResourceBundleFactory().get(request);
 			ValidationException e = (ValidationException) exception;
-			// 获取消息内容
-			var message = bundle.containsKey(e.getKey())
-					? bundle.getString(e.getKey())
-					: e.getMessage();
-			// 格式化消息参数
-			message = format(message, e.getArgs().toArray());
+			// 设置消息和状态码
+			String message = getMessage(e.getKey(), bundle, e.getMessage(), e.getArgs().toArray());
 			model.setStatus(e.getStatus()).setMessage(message);
 			// 输出调试日志
 			log.debug(format("%s(%s)", request.getRequestURI(), e.getMessage()));

@@ -1,5 +1,6 @@
 package com.mini.core.validation;
 
+import com.mini.core.util.LanguageUtil;
 import com.mini.core.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,8 +8,8 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-import static java.lang.String.format;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 
 public final class Validator implements EventListener {
 	private List<Object> args;
@@ -61,9 +62,7 @@ public final class Validator implements EventListener {
 	 * @param consumer 回调方法
 	 */
 	public final void send(ResourceBundle bundle, @Nonnull BiConsumer<Integer, String> consumer) {
-		var m = Optional.ofNullable(bundle).filter(b -> b.containsKey(getKey())) //
-				.map(b -> b.getString(getKey())).orElse(this.getMessage());
-		consumer.accept(status, format(m, Optional.ofNullable(args) //
+		consumer.accept(status, LanguageUtil.getMessage(getKey(), bundle, ofNullable(args) //
 				.map(List::toArray).orElse(new Object[0])));
 	}
 	
@@ -73,7 +72,6 @@ public final class Validator implements EventListener {
 	public final ValidationException send() {
 		throw getValidationException();
 	}
-	
 	
 	/**
 	 * 当表达式不为 True 是发送错误消息
@@ -189,5 +187,4 @@ public final class Validator implements EventListener {
 	public final void isRequire(String string) {
 		is(StringUtil.isRequire(string));
 	}
-	
 }
