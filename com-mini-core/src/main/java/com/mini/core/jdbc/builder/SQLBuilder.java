@@ -1,11 +1,13 @@
 package com.mini.core.jdbc.builder;
 
 import com.mini.core.util.StringUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EventListener;
 import java.util.List;
 
@@ -85,16 +87,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code select(format("COUNT(%s)", column)); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectCount(String column) {
-		return select(format("COUNT(%s) AS `%s`", column, column));
-	}
-	
-	/**
-	 * {@code select(format("COUNT(%s)", column)); }
+	 * {@code select(format("COUNT(%sAS `%s`)", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
@@ -104,16 +97,16 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code select(format("SUM(%s)", column)); }
+	 * {@code selectCount(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectSum(String column) {
-		return select(format("SUM(%s) AS `%s`", column, column));
+	public final SQLBuilder selectCount(String column) {
+		return selectCount(column, column);
 	}
 	
 	/**
-	 * {@code select(format("SUM(%s)", column)); }
+	 * {@code select(format("SUM(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
@@ -123,35 +116,35 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code select(format("AVG(%s)", column)); }
+	 * {@code selectSum(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectAvg(String column) {
-		return select(format("AVG(%s)  AS `%s`", column, column));
+	public final SQLBuilder selectSum(String column) {
+		return selectSum(column, column);
 	}
 	
 	/**
-	 * {@code select(format("AVG(%s)", column)); }
+	 * {@code select(format("AVG(%s)AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
 	 */
 	public final SQLBuilder selectAvg(String column, String alias) {
-		return select(format("AVG(%s)  AS `%s`", column, alias));
+		return select(format("AVG(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code select(format("MAX(%s)", column)); }
+	 * {@code selectAvg(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectMax(String column) {
-		return select(format("MAX(%s) AS `%s`", column, column));
+	public final SQLBuilder selectAvg(String column) {
+		return selectAvg(column, column);
 	}
 	
 	/**
-	 * {@code select(format("MAX(%s)", column)); }
+	 * {@code select(format("MAX(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
@@ -161,22 +154,32 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code select(format("MIN(%s)", column)); }
+	 * {@code selectMax(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectMin(String column) {
-		return select(format("MIN(%s)  AS `%s`", column, column));
+	public final SQLBuilder selectMax(String column) {
+		return selectMax(column, column);
 	}
 	
+	
 	/**
-	 * {@code select(format("MIN(%s)", column)); }
+	 * {@code select(format("MIN(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
 	 */
 	public final SQLBuilder selectMin(String column, String alias) {
-		return select(format("MIN(%s)  AS `%s`", column, alias));
+		return select(format("MIN(%s) AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code selectMin(column, column); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectMin(String column) {
+		return selectMin(column, column);
 	}
 	
 	public final SQLBuilder selectDistinct(String... columns) {
@@ -186,16 +189,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code selectDistinct(format("COUNT(%s)", column)); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctCount(String column) {
-		return selectDistinct(format("COUNT(%s) AS `%s`", column, column));
-	}
-	
-	/**
-	 * {@code selectDistinct(format("COUNT(%s)", column)); }
+	 * {@code selectDistinct(format("COUNT(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
@@ -205,79 +199,88 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code selectDistinct(format("SUM(%s)", column)); }
+	 * {@code selectDistinctCount(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectDistinctSum(String column) {
-		return selectDistinct(format("SUM(%s)  AS `%s`", column, column));
+	public final SQLBuilder selectDistinctCount(String column) {
+		return selectDistinctCount(column, column);
 	}
 	
 	/**
-	 * {@code selectDistinct(format("SUM(%s)", column)); }
+	 * {@code selectDistinct(format("SUM(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
 	 */
 	public final SQLBuilder selectDistinctSum(String column, String alias) {
-		return selectDistinct(format("SUM(%s)  AS `%s`", column, alias));
+		return selectDistinct(format("SUM(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectDistinct(format("AVG(%s)", column)); }
+	 * {@code selectDistinctSum(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectDistinctAvg(String column) {
-		return selectDistinct(format("AVG(%s)  AS `%s`", column, column));
+	public final SQLBuilder selectDistinctSum(String column) {
+		return selectDistinctSum(column, column);
 	}
 	
 	/**
-	 * {@code selectDistinct(format("AVG(%s)", column)); }
+	 * {@code selectDistinct(format("AVG(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
 	 */
 	public final SQLBuilder selectDistinctAvg(String column, String alias) {
-		return selectDistinct(format("AVG(%s)  AS `%s`", column, alias));
+		return selectDistinct(format("AVG(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectDistinct(format("MAX(%s)", column)); }
+	 * {@code selectDistinctAvg(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectDistinctMax(String column) {
-		return selectDistinct(format("MAX(%s)  AS `%s`", column, column));
+	public final SQLBuilder selectDistinctAvg(String column) {
+		return selectDistinctAvg(column, column);
 	}
 	
 	/**
-	 * {@code selectDistinct(format("MAX(%s)", column)); }
+	 * {@code selectDistinct(format("MAX(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
 	 */
 	public final SQLBuilder selectDistinctMax(String column, String alias) {
-		return selectDistinct(format("MAX(%s)  AS `%s`", column, alias));
+		return selectDistinct(format("MAX(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectDistinct(format("MIN(%s)", column)); }
+	 * {@code selectDistinctMax(column, column); }
 	 * @param column 字段名称
 	 * @return {@code this}
 	 */
-	public final SQLBuilder selectDistinctMin(String column) {
-		return selectDistinct(format("MIN(%s)  AS `%s`", column, column));
+	public final SQLBuilder selectDistinctMax(String column) {
+		return selectDistinctMax(column, column);
 	}
 	
 	/**
-	 * {@code selectDistinct(format("MIN(%s)", column)); }
+	 * {@code selectDistinct(format("MIN(%s) AS `%s`", column, alias)); }
 	 * @param column 字段名称
 	 * @param alias  别名
 	 * @return {@code this}
 	 */
 	public final SQLBuilder selectDistinctMin(String column, String alias) {
-		return selectDistinct(format("MIN(%s)  AS `%s`", column, alias));
+		return selectDistinct(format("MIN(%s) AS `%s`", column, alias));
+	}
+	
+	/**
+	 * {@code selectDistinctMin(column, column); }
+	 * @param column 字段名称
+	 * @return {@code this}
+	 */
+	public final SQLBuilder selectDistinctMin(String column) {
+		return selectDistinctMin(column, column);
 	}
 	
 	public final SQLBuilder values(String column, String value) {
@@ -466,7 +469,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code where("%s <=> ?", column).args(arg); }
+	 * {@code where("%s < ?", column).args(arg); }
 	 * @param column 条件字段
 	 * @param arg    参数
 	 * @return ｛@code this｝
@@ -496,17 +499,16 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code var p = of(args).map(o -> "?").collect(joining(", ")); }
-	 * <br/>
-	 * {@code return where("%s IN (%s)", column, p).args(args); }
+	 * {@code  where("%s IN (%s)", column, of(args).map(o -> "?")
+	 * .collect(joining(", "))).args(args); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 * @see java.util.stream.Stream#of(Object[])
 	 */
 	public final SQLBuilder whereIn(String column, Object[] args) {
-		var p = of(args).map(o -> "?").collect(joining(", "));
-		return where("%s IN (%s)", column, p).args(args);
+		return where("%s IN (%s)", column, of(args).map(o -> "?")
+				.collect(joining(", "))).args(args);
 	}
 	
 	/**
@@ -521,14 +523,13 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
+	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, float[] args) {
-		final String params = StringUtil.join(args, ',');
-		return where("%s IN (%s)", column, params);
+		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
@@ -554,36 +555,43 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
+	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, short[] args) {
-		final String params = StringUtil.join(args, ',');
-		return where("%s IN (%s)", column, params);
+		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
+	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, byte[] args) {
-		final String params = StringUtil.join(args, ',');
-		return where("%s IN (%s)", column, params);
+		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
+	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, char[] args) {
-		final String params = StringUtil.join(args, ',');
-		return where("%s IN (%s)", column, params);
+		return whereIn(column, ArrayUtils.toObject(args));
+	}
+	
+	/**
+	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereIn(String column, boolean[] args) {
+		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
@@ -615,9 +623,8 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereMatch(String[] columns, Object arg) {
-		final String string = StringUtil.join(columns, ',');
-		return where("MATCH(%s) AGAINST(?)", string)//
-				.args(arg);
+		return where("MATCH(%s) AGAINST(?)", StringUtil //
+				.join(columns, ',')).args(arg);
 	}
 	
 	/**
@@ -687,7 +694,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code having("%s <=> ?", column).args(param); }
+	 * {@code having("%s < ?", column).args(param); }
 	 * @param column 条件字段
 	 * @param param  参数
 	 * @return ｛@code this｝
@@ -718,16 +725,15 @@ public class SQLBuilder implements EventListener, Serializable {
 	
 	
 	/**
-	 * {@code var p = of(args).map(o -> "?").collect(joining(", ")); }
-	 * <br/>
-	 * {@code having("%s IN (%s)", column, p).args(args) }
+	 * {@code having("%s IN (%s)", column, of(args).map(o -> "?")
+	 * .collect(joining(", "))).args(args); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, Object[] args) {
-		var p = of(args).map(o -> "?").collect(joining(", "));
-		return having("%s IN (%s)", column, p).args(args);
+		return having("%s IN (%s)", column, of(args).map(o -> "?")
+				.collect(joining(", "))).args(args);
 	}
 	
 	/**
@@ -741,13 +747,13 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, float[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
@@ -771,33 +777,43 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, short[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, byte[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, char[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+		return havingIn(column, ArrayUtils.toObject(args));
+	}
+	
+	/**
+	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, boolean[] args) {
+		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
@@ -945,7 +961,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * 获取SQL完整内容
 	 * @return SQL完整内容
 	 */
-	public synchronized final String toString() {
+	public synchronized final String toSQL() {
 		//  INSERT 语句
 		if (statement == StatementType.INSERT) {
 			return this.insertString();
@@ -978,6 +994,12 @@ public class SQLBuilder implements EventListener, Serializable {
 		
 		// statement为空，语句错误
 		throw new RuntimeException("SQL ERROR!");
+	}
+	
+	@Override
+	public synchronized final String toString() {
+		return format("%s\n%s", this.toSQL(), //
+				Arrays.toString(args()));
 	}
 	
 	// Base Statement
