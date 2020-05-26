@@ -5,13 +5,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
 
 import static com.mini.core.jdbc.builder.SQLInterfaceDef.getSQLInterface;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.addAll;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.of;
 
 public class SQLBuilder implements EventListener, Serializable {
@@ -493,36 +496,17 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * {@code var p = of(args).map(o -> "?").collect(joining(", ")); }
 	 * <br/>
-	 * {@code of(args).forEach(o -> joiner.add(Objects.toString(o))); }
-	 * <br/>
-	 * {@code return where("%s IN (%s)", column, joiner.toString()); }
+	 * {@code return where("%s IN (%s)", column, p).args(args); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 * @see java.util.stream.Stream#of(Object[])
 	 */
-	public final <T> SQLBuilder whereIn(String column, T[] args) {
-		StringJoiner joiner = new StringJoiner("', '", "'", "'");
-		of(args).forEach(o -> joiner.add(Objects.toString(o)));
-		return where("%s IN (%s)", column, joiner.toString());
-	}
-	
-	/**
-	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
-	 * <br/>
-	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
-	 * <br/>
-	 * {@code where("%s IN (%s)", column, joiner.toString()) }
-	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
-	 */
-	public final SQLBuilder whereIn(String column, boolean[] args) {
-		StringJoiner joiner = new StringJoiner("', '", "'", "'");
-		for (var arg : args) joiner.add(Objects.toString(arg));
-		return where("%s IN (%s)", column, joiner.toString());
+	public final SQLBuilder whereIn(String column, Object[] args) {
+		var p = of(args).map(o -> "?").collect(joining(", "));
+		return where("%s IN (%s)", column, p).args(args);
 	}
 	
 	/**
@@ -537,27 +521,18 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
-	 * <br/>
-	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
-	 * <br/>
-	 * {@code where("%s IN (%s)", column, joiner.toString()) }
+	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, float[] args) {
-		StringJoiner joiner = new StringJoiner("', '", "'", "'");
-		for (var arg : args) joiner.add(Objects.toString(arg));
-		return where("%s IN (%s)", column, joiner.toString());
+		final String params = StringUtil.join(args, ',');
+		return where("%s IN (%s)", column, params);
 	}
 	
 	/**
 	 * {@code whereIn(column, stream(args).boxed().toArray()); }
-	 * <br/>
-	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
-	 * <br/>
-	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
@@ -579,51 +554,36 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
-	 * <br/>
-	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
-	 * <br/>
-	 * {@code where("%s IN (%s)", column, joiner.toString()) }
+	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, short[] args) {
-		StringJoiner joiner = new StringJoiner("', '", "'", "'");
-		for (var arg : args) joiner.add(Objects.toString(arg));
-		return where("%s IN (%s)", column, joiner.toString());
+		final String params = StringUtil.join(args, ',');
+		return where("%s IN (%s)", column, params);
 	}
 	
 	/**
-	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
-	 * <br/>
-	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
-	 * <br/>
-	 * {@code where("%s IN (%s)", column, joiner.toString()) }
+	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, byte[] args) {
-		StringJoiner joiner = new StringJoiner("', '", "'", "'");
-		for (var arg : args) joiner.add(Objects.toString(arg));
-		return where("%s IN (%s)", column, joiner.toString());
+		final String params = StringUtil.join(args, ',');
+		return where("%s IN (%s)", column, params);
 	}
 	
 	/**
-	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
-	 * <br/>
-	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
-	 * <br/>
-	 * {@code where("%s IN (%s)", column, joiner.toString()) }
+	 * {@code where("%s IN (%s)", column, StringUtil.join(args, ',')) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, char[] args) {
-		StringJoiner joiner = new StringJoiner("', '", "'", "'");
-		for (var arg : args) joiner.add(Objects.toString(arg));
-		return where("%s IN (%s)", column, joiner.toString());
+		final String params = StringUtil.join(args, ',');
+		return where("%s IN (%s)", column, params);
 	}
 	
 	/**
@@ -758,33 +718,26 @@ public class SQLBuilder implements EventListener, Serializable {
 	
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code var p = of(args).map(o -> "?").collect(joining(", ")); }
+	 * <br/>
+	 * {@code having("%s IN (%s)", column, p).args(args) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final <T> SQLBuilder havingIn(String column, T[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+	public final SQLBuilder havingIn(String column, Object[] args) {
+		var p = of(args).map(o -> "?").collect(joining(", "));
+		return having("%s IN (%s)", column, p).args(args);
 	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
-	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
-	 */
-	public final SQLBuilder havingIn(String column, boolean[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
-	}
-	
-	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code havingIn(column, stream(args).boxed().toArray()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, double[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
@@ -798,13 +751,23 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code havingIn(column, stream(args).boxed().toArray()); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, long[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
+		return havingIn(column, stream(args).boxed().toArray());
+	}
+	
+	/**
+	 * {@code havingIn(column, stream(args).boxed().toArray()); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder havingIn(String column, int[] args) {
+		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
@@ -834,16 +797,6 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingIn(String column, char[] args) {
-		return having("%s IN (%s)", StringUtil.join(args, ','));
-	}
-	
-	/**
-	 * {@code having("%s IN (%s)", column,  StringUtil.join(args, ',')); }
-	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
-	 */
-	public final SQLBuilder havingIn(String column, int[] args) {
 		return having("%s IN (%s)", StringUtil.join(args, ','));
 	}
 	
