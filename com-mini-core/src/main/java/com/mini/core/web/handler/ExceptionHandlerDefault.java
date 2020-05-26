@@ -34,12 +34,12 @@ public final class ExceptionHandlerDefault implements ExceptionHandler {
 	}
 	
 	@Override
-	public void handler(@Nonnull IModel<?> model, Throwable e, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
+	public void handler(@Nonnull IModel<?> model, @Nonnull Throwable e, @Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response) {
 		try {
 			ResourceBundle bundle = configures.getResourceBundleFactory().get(request);
 			String defaultMessage = defaultIfBlank(e.getMessage(), "Service Error");
 			String code = String.valueOf(ResponseCode.INTERNAL_SERVER_ERROR);
-			model.setMessage(getMessage(code, bundle, defaultMessage));
+			model.setMessage(getMessage(code, defaultMessage, bundle));
 			model.setStatus(ResponseCode.INTERNAL_SERVER_ERROR);
 			log.error(e.getMessage(), e);
 		} catch (Exception | Error ex) {
