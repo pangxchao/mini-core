@@ -5,13 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.List;
+import java.util.*;
 
 import static com.mini.core.jdbc.builder.SQLInterfaceDef.getSQLInterface;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.addAll;
 import static java.util.stream.Stream.of;
 
@@ -493,95 +492,138 @@ public class SQLBuilder implements EventListener, Serializable {
 		return where("%s <= ?", column).args(arg);
 	}
 	
-	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * <br/>
+	 * {@code of(args).forEach(o -> joiner.add(Objects.toString(o))); }
+	 * <br/>
+	 * {@code return where("%s IN (%s)", column, joiner.toString()); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
+	 * @see java.util.stream.Stream#of(Object[])
 	 */
 	public final <T> SQLBuilder whereIn(String column, T[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		StringJoiner joiner = new StringJoiner("', '", "'", "'");
+		of(args).forEach(o -> joiner.add(Objects.toString(o)));
+		return where("%s IN (%s)", column, joiner.toString());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * <br/>
+	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, boolean[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		StringJoiner joiner = new StringJoiner("', '", "'", "'");
+		for (var arg : args) joiner.add(Objects.toString(arg));
+		return where("%s IN (%s)", column, joiner.toString());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code whereIn(column, stream(args).boxed().toArray()); }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
+	 * @see java.util.Arrays#stream(int[])
 	 */
 	public final SQLBuilder whereIn(String column, double[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * <br/>
+	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, float[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		StringJoiner joiner = new StringJoiner("', '", "'", "'");
+		for (var arg : args) joiner.add(Objects.toString(arg));
+		return where("%s IN (%s)", column, joiner.toString());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code whereIn(column, stream(args).boxed().toArray()); }
+	 * <br/>
+	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
+	 * @see java.util.Arrays#stream(int[])
 	 */
 	public final SQLBuilder whereIn(String column, long[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code whereIn(column, stream(args).boxed().toArray()); }
+	 * @param column 条件字段
+	 * @param args   参数
+	 * @return ｛@code this｝
+	 * @see java.util.Arrays#stream(int[])
+	 */
+	public final SQLBuilder whereIn(String column, int[] args) {
+		return whereIn(column, stream(args).boxed().toArray());
+	}
+	
+	/**
+	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * <br/>
+	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, short[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		StringJoiner joiner = new StringJoiner("', '", "'", "'");
+		for (var arg : args) joiner.add(Objects.toString(arg));
+		return where("%s IN (%s)", column, joiner.toString());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * <br/>
+	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, byte[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		StringJoiner joiner = new StringJoiner("', '", "'", "'");
+		for (var arg : args) joiner.add(Objects.toString(arg));
+		return where("%s IN (%s)", column, joiner.toString());
 	}
 	
 	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
+	 * {@code StringJoiner joiner = new StringJoiner("', '", "'", "'"); }
+	 * <br/>
+	 * {@code for (var arg : args) joiner.add(Objects.toString(arg)) }
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, joiner.toString()) }
 	 * @param column 条件字段
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder whereIn(String column, char[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
-	}
-	
-	/**
-	 * {@code where("%s IN (%s)", column,  StringUtil.join(args, ',')); }
-	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
-	 */
-	public final SQLBuilder whereIn(String column, int[] args) {
-		return where("%s IN (%s)", column, StringUtil.join(args, ','));
+		StringJoiner joiner = new StringJoiner("', '", "'", "'");
+		for (var arg : args) joiner.add(Objects.toString(arg));
+		return where("%s IN (%s)", column, joiner.toString());
 	}
 	
 	/**
