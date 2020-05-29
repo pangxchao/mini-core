@@ -1,5 +1,6 @@
 package com.mini.core.jdbc.builder;
 
+import com.mini.core.util.Assert;
 import com.mini.core.util.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -103,7 +104,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 * @see #insertInto(String)
 	 */
-	public final SQLBuilder replaceInto(String table) {
+	public final SQLBuilder replaceInto(@Nonnull String table) {
 		this.statement = StatementType.REPLACE;
 		this.table.addValues(table);
 		return this;
@@ -116,7 +117,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param tables 删除的表列表，该列表中的表名不能是子查询SQL语句
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder delete(String... tables) {
+	public final SQLBuilder delete(@Nonnull String... tables) {
 		this.statement = StatementType.DELETE;
 		this.table.addValues(tables);
 		return this;
@@ -129,7 +130,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param tables 修改的表列表，该列表中的表名不能是子查询SQL语句
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder update(String... tables) {
+	public final SQLBuilder update(@Nonnull String... tables) {
 		this.statement = StatementType.UPDATE;
 		this.table.addValues(tables);
 		return this;
@@ -523,7 +524,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @return ｛@code this｝
 	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
-	public final SQLBuilder onDuplicateKeyUpdateIncrease(@Nonnull String column, Object arg) {
+	public final SQLBuilder onDuplicateKeyUpdateIncrease(@Nonnull String column, @Nullable Object arg) {
 		return onDuplicateKeyUpdate("%s = %s + ?", column, column).args(arg);
 	}
 	
@@ -534,7 +535,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   格式化字符串参数列表
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder where(@Nonnull String format, Object... args) {
+	public final SQLBuilder where(@Nonnull String format, @Nonnull Object... args) {
 		this.where.addValues(format(format, args));
 		this.last = this.where;
 		return this;
@@ -631,6 +632,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @see java.util.stream.Stream#of(Object[])
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull Object[] args) {
+		Assert.isTrue(args.length > 0, "Where In args can not empty.");
 		return where("%s IN (%s)", column, of(args).map(o -> "?")
 				.collect(joining(", "))).args(args);
 	}
@@ -767,70 +769,70 @@ public class SQLBuilder implements EventListener, Serializable {
 		return this;
 	}
 	
-	public final SQLBuilder having(@Nonnull String format, Object... args) {
+	public final SQLBuilder having(@Nonnull String format, @Nonnull Object... args) {
 		this.having.addValues(format(format, args));
 		this.last = this.having;
 		return this;
 	}
 	
 	/**
-	 * {@code having("%s = ?", column).args(param); }
+	 * {@code arg == null ? having("%s = IS NULL", column) : having("%s = ?", column).args(arg) }
 	 * @param column 条件字段
 	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
 	public final SQLBuilder havingEquals(@Nonnull String column, Object arg) {
-		return having("%s = ?", column).args(arg);
+		return arg == null ? having("%s = IS NULL", column) : having("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code having("%s <> ?", column).args(param); }
+	 * {@code  arg == null ? having("%s = IS NOT NULL", column) : having("%s <> ?", column).args(arg) }
 	 * @param column 条件字段
-	 * @param param  参数
+	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingNotEqual(@Nonnull String column, Object param) {
-		return having("%s <> ?", column).args(param);
+	public final SQLBuilder havingNotEqual(@Nonnull String column, Object arg) {
+		return arg == null ? having("%s = IS NOT NULL", column) : having("%s <> ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code having("%s > ?", column).args(param); }
 	 * @param column 条件字段
-	 * @param param  参数
+	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingGreaterThan(@Nonnull String column, Object param) {
-		return having("%s > ?", column).args(param);
+	public final SQLBuilder havingGreaterThan(@Nonnull String column, @Nonnull Object arg) {
+		return having("%s > ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code having("%s < ?", column).args(param); }
 	 * @param column 条件字段
-	 * @param param  参数
+	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingLess(@Nonnull String column, Object param) {
-		return having("%s < ?", column).args(param);
+	public final SQLBuilder havingLess(@Nonnull String column, @Nonnull Object arg) {
+		return having("%s < ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code having("%s >= ?", column).args(param); }
 	 * @param column 条件字段
-	 * @param param  参数
+	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingGreaterThanOrEquals(@Nonnull String column, Object param) {
-		return having("%s >= ?", column).args(param);
+	public final SQLBuilder havingGreaterThanOrEquals(@Nonnull String column, @Nonnull Object arg) {
+		return having("%s >= ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code having("%s <= ?", column).args(param); }
 	 * @param column 条件字段
-	 * @param param  参数
+	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingLessOrEquals(@Nonnull String column, Object param) {
-		return having("%s <= ?", column).args(param);
+	public final SQLBuilder havingLessOrEquals(@Nonnull String column, @Nonnull Object arg) {
+		return having("%s <= ?", column).args(arg);
 	}
 	
 	
@@ -841,7 +843,8 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, Object[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull Object[] args) {
+		Assert.isTrue(args.length > 0, "Having In args can not empty.");
 		return having("%s IN (%s)", column, of(args).map(o -> "?")
 				.collect(joining(", "))).args(args);
 	}
@@ -852,7 +855,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, double[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull double[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
@@ -862,7 +865,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, float[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull float[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -872,7 +875,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, long[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull long[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
@@ -882,7 +885,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, int[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull int[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
@@ -892,7 +895,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, short[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull short[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -902,7 +905,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, byte[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull byte[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -912,7 +915,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, char[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull char[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -922,40 +925,42 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(@Nonnull String column, boolean[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull boolean[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
 	 * {@code having("%s LIKE ?").args(param); }
 	 * @param column 条件字段
-	 * @param param  参数
+	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingLike(@Nonnull String column, String param) {
-		return having("%s LIKE ?").args(param);
+	public final SQLBuilder havingLike(@Nonnull String column, @Nonnull String arg) {
+		return having("%s LIKE ?").args(arg);
 	}
 	
 	/**
 	 * {@code having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(param); }
 	 * @param columns 搜索的字段
+	 * @param arg     搜索参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingMatchInBooleanMode(@Nonnull String[] columns, Object param) {
+	public final SQLBuilder havingMatchInBooleanMode(@Nonnull String[] columns, @Nonnull Object arg) {
 		return having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
 				StringUtil.join(columns, ',')) //
-				.args(param);
+				.args(arg);
 	}
 	
 	/**
 	 * {@code having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(param); }
 	 * @param columns 搜索的字段
+	 * @param arg     搜索参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingMatch(@Nonnull String[] columns, Object param) {
+	public final SQLBuilder havingMatch(@Nonnull String[] columns, @Nonnull Object arg) {
 		String string = StringUtil.join(columns, ',');
 		return having("MATCH(%s) AGAINST(?)", string)//
-				.args(param);
+				.args(arg);
 	}
 	
 	/**
@@ -965,11 +970,11 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param max    参数最大值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingBetweenAnd(@Nonnull String column, Object min, Object max) {
+	public final SQLBuilder havingBetweenAnd(@Nonnull String column, @Nonnull Object min, @Nonnull Object max) {
 		return having("%s BETWEEN ? AND ?", column).args(min, max);
 	}
 	
-	public final SQLBuilder orderBy(@Nonnull String format, Object... args) {
+	public final SQLBuilder orderBy(@Nonnull String format, @Nonnull Object... args) {
 		orderBy.addValues(format(format, args));
 		return this;
 	}
