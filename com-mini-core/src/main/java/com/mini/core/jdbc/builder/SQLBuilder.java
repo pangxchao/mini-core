@@ -5,6 +5,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +17,15 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.addAll;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.of;
 
+/**
+ * SQL构建器
+ * <p>构建结果会根据最后一次提交更改的类型构建，其它与该构建类型不相关的子句将会被忽略<p/>
+ * @author xchao
+ */
 public class SQLBuilder implements EventListener, Serializable {
 	private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatement();
 	private final OuterJoinStatement outerJoin = new OuterJoinStatement();
@@ -40,461 +47,578 @@ public class SQLBuilder implements EventListener, Serializable {
 	private StatementType statement;
 	private boolean distinct;
 	
+	/**
+	 * 创建一个空的SQL构建语句
+	 */
 	public SQLBuilder() {}
 	
+	/**
+	 * 根据实体类对象类型创建个包括实体注解支持的基础查询语句
+	 * @param type 实体类对象
+	 * @param <T>  实体类型
+	 */
 	public <T> SQLBuilder(@Nonnull Class<T> type) {
 		var inter = getSQLInterface(type);
 		inter.createSelect(this, type);
 	}
 	
-	public final SQLBuilder args(Object... args) {
+	/**
+	 * 新增SQL注入中的参数
+	 * <p>SQL注入参数需要根据构建SQL的顺序一一对应</p>
+	 * @param args 新增参数列表
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder args(@Nonnull Object... args) {
 		this.args.addAll(asList(args));
 		return this;
 	}
 	
+	/**
+	 * 获取SQL中注入的参数列表
+	 * @return 注入参数列表
+	 */
 	public final Object[] args() {
 		return args.toArray();
 	}
 	
-	public final SQLBuilder insertInto(String table) {
+	/**
+	 * 根据列名称将SQL语句类型更改为INSERT INTO语句
+	 * <p>该语句不能重复构建，后一次会覆盖前一次的表，但不会清空之前VALUE中的字段与值</p>
+	 * <p>delete、update、select、from、join、set、where、groupBy、orderBy、having等与新增操作无关的SQL子句无效</p>
+	 * @param table INSERT INTO 操作的列名称
+	 * @return ｛@code this｝
+	 * @see #replaceInto(String)
+	 */
+	public final SQLBuilder insertInto(@Nonnull String table) {
 		this.statement = StatementType.INSERT;
 		this.table.addValues(table);
 		return this;
 	}
 	
+	/**
+	 * 根据列名称将SQL语句类型更改为REPLACE INTO语句
+	 * <p>该语句不能重复构建，后一次会覆盖前一次的表，但不会清空之前VALUE中的字段与值</p>
+	 * <p>delete、update、select、from、join、set、where、groupBy、orderBy、having、onDuplicateKeyUpdate等与替换操作无关的SQL子句无效</p>
+	 * @param table REPLACE INTO 操作的列名称
+	 * @return ｛@code this｝
+	 * @see #insertInto(String)
+	 */
 	public final SQLBuilder replaceInto(String table) {
 		this.statement = StatementType.REPLACE;
 		this.table.addValues(table);
 		return this;
 	}
 	
+	/**
+	 * 根据指定的表名称列表将构建的SQL语句更改为DELETE语句
+	 * <p>该语句可以重复构建，后一次的表会追加到之前的表列表之后，最后构建时，表名列表中可以没有表名，将由from子名表名确定</p>
+	 * <p>insertInto、replaceInto、update、select、values、set、groupBy、orderBy、having、onDuplicateKeyUpdate等与删除操作无关的SQL子句无效</p>
+	 * @param tables 删除的表列表，该列表中的表名不能是子查询SQL语句
+	 * @return ｛@code this｝
+	 */
 	public final SQLBuilder delete(String... tables) {
 		this.statement = StatementType.DELETE;
 		this.table.addValues(tables);
 		return this;
 	}
 	
+	/**
+	 * 根据指定的表名列表将构建的SQL语句更改为UPDATE语句
+	 * <p>该语句可以重复构建，后一次的表会追加到之前的表列表之后，最后构建时，表名列表中必须至少有一个表名</p>
+	 * <p>insertInto、replaceInto、delete、select、values、groupBy、orderBy、having、onDuplicateKeyUpdate等与修改操作无关的SQL子句无效</p>
+	 * @param tables 修改的表列表，该列表中的表名不能是子查询SQL语句
+	 * @return ｛@code this｝
+	 */
 	public final SQLBuilder update(String... tables) {
 		this.statement = StatementType.UPDATE;
 		this.table.addValues(tables);
 		return this;
 	}
 	
-	public final SQLBuilder select(String... columns) {
+	/**
+	 * 根据指定查询的字段列表将构建的SQL语句更改为SELECT语句
+	 * <p>该语句可以重复构建，后一次的字段会追加到前一次字段列表之后，在构建时会用’,‘分隔生成正确的SQL字段拼接格式</p>
+	 * <p>insertInto、replaceInto、delete、update、set、onDuplicateKeyUpdate等与删查询作无关的SQL子句无效</p>
+	 * @param columns 想要查询的字段列表，该字段可以写可“字段名 AS `别名`”的形式
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder select(@Nonnull String... columns) {
 		this.statement = StatementType.SELECT;
 		this.select.addSelect(columns);
 		return this;
 	}
 	
 	/**
-	 * {@code select(format("COUNT(%sAS `%s`)", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
+	 * select方法的快捷操作 传入select方法的参数为：
+	 * <P>String.format("COUNT(%sAS `%s`)", column, alias)</P>
+	 * @param column 字段名称; 必须符合查询字段名的写法，或者通配置符写法，如：user, *
+	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
+	 * @see String#format(String, Object...)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectCount(String column, String alias) {
+	public final SQLBuilder selectCount(@Nonnull String column, @Nonnull String alias) {
 		return select(format("COUNT(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectCount(column, column); }
-	 * @param column 字段名称
+	 * selectCount方法的快捷操作 调用代码为：
+	 * <br />
+	 * {@code selectCount(column, column) }
+	 * @param column 字段名称 字段名称; 必须符合查询字段名的写法，或者通配置符写法，如：user, *
 	 * @return {@code this}
+	 * @see #selectCount(String, String)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectCount(String column) {
+	public final SQLBuilder selectCount(@Nonnull String column) {
 		return selectCount(column, column);
 	}
 	
 	/**
-	 * {@code select(format("SUM(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
+	 * select方法的快捷操作 传入select方法的参数为：
+	 * <P>String.format("SUM(%s) AS `%s`", column, alias)</P>
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
+	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
+	 * @see String#format(String, Object...)
+	 * #select(String...)
 	 */
-	public final SQLBuilder selectSum(String column, String alias) {
+	public final SQLBuilder selectSum(@Nonnull String column, @Nonnull String alias) {
 		return select(format("SUM(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectSum(column, column); }
+	 * selectSum方法的快捷操作 调用代码为：
+	 * <br />
+	 * {@code selectSum(column, column) }
 	 * @param column 字段名称
 	 * @return {@code this}
+	 * @see #selectSum(String, String)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectSum(String column) {
+	public final SQLBuilder selectSum(@Nonnull String column) {
 		return selectSum(column, column);
 	}
 	
 	/**
-	 * {@code select(format("AVG(%s)AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
+	 * select方法的快捷操作 传入select方法的参数为：
+	 * <P>String.format("AVG(%s) AS `%s`", column, alias)</P>
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
+	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
+	 * @see String#format(String, Object...)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectAvg(String column, String alias) {
+	public final SQLBuilder selectAvg(@Nonnull String column, @Nonnull String alias) {
 		return select(format("AVG(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectAvg(column, column); }
-	 * @param column 字段名称
+	 * selectAvg 调用代码为：
+	 * <br />
+	 * {@code selectAvg(column, column) }
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @return {@code this}
+	 * @see #selectAvg(String, String)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectAvg(String column) {
+	public final SQLBuilder selectAvg(@Nonnull String column) {
 		return selectAvg(column, column);
 	}
 	
 	/**
-	 * {@code select(format("MAX(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
+	 * select方法的快捷操作 传入select方法的参数为：
+	 * <P>String.format("MAX(%s) AS `%s`", column, alias)</P>
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
+	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
+	 * @see String#format(String, Object...)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectMax(String column, String alias) {
+	public final SQLBuilder selectMax(@Nonnull String column, @Nonnull String alias) {
 		return select(format("MAX(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectMax(column, column); }
-	 * @param column 字段名称
+	 * selectAvg 调用代码为：
+	 * <br />
+	 * {@code selectMax(column, column) }
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @return {@code this}
+	 * @see #selectMax(String, String)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectMax(String column) {
+	public final SQLBuilder selectMax(@Nonnull String column) {
 		return selectMax(column, column);
 	}
 	
 	
 	/**
-	 * {@code select(format("MIN(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
+	 * select方法的快捷操作 传入select方法的参数为：
+	 * <P>String.format("MIN(%s) AS `%s`", column, alias)</P>
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
+	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
+	 * @see String#format(String, Object...)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectMin(String column, String alias) {
+	public final SQLBuilder selectMin(@Nonnull String column, @Nonnull String alias) {
 		return select(format("MIN(%s) AS `%s`", column, alias));
 	}
 	
 	/**
-	 * {@code selectMin(column, column); }
-	 * @param column 字段名称
+	 * selectAvg 调用代码为：
+	 * <br />
+	 * {@code selectMin(column, column) }
+	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @return {@code this}
+	 * @see #selectMin(String, String)
+	 * @see #select(String...)
 	 */
-	public final SQLBuilder selectMin(String column) {
+	public final SQLBuilder selectMin(@Nonnull String column) {
 		return selectMin(column, column);
 	}
 	
-	public final SQLBuilder selectDistinct(String... columns) {
+	/**
+	 * 根据指定查询的字段列表将构建的SQL语句更改为SELECT语句并设置整个查询结果去重
+	 * <p>该语句使用方法同{@code select(String...)}，调用过该方法会在构建结果SELECT关键字后添加DISTINCT关键字</p>
+	 * @param columns 想要查询的字段列表，该字段可以写可“字段名 AS `别名`”的形式
+	 * @return @return {@code this}
+	 * @see #select(String...)
+	 */
+	public final SQLBuilder selectDistinct(@Nonnull String... columns) {
 		SQLBuilder.this.distinct = true;
 		this.select(columns);
 		return this;
 	}
 	
 	/**
-	 * {@code selectDistinct(format("COUNT(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
-	 * @return {@code this}
+	 * INSERT INTO与REPLACE INTO语句字段设置
+	 * <p>该方法的仅仅设置INSERT INTO与REPLACE INTO的字段，value参数只是VALUES子句的占位符、函数、属性等<p/>
+	 * @param column 字段名-必须是数据库存在的字段名称
+	 * @param value  字段占位符；比如：“?”、point(?, ?)、NOW()、CURRENT_TIMESTAMP等
+	 * @return @return {@code this}
 	 */
-	public final SQLBuilder selectDistinctCount(String column, String alias) {
-		return selectDistinct(format("COUNT(%s) AS `%s`", column, alias));
-	}
-	
-	/**
-	 * {@code selectDistinctCount(column, column); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctCount(String column) {
-		return selectDistinctCount(column, column);
-	}
-	
-	/**
-	 * {@code selectDistinct(format("SUM(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctSum(String column, String alias) {
-		return selectDistinct(format("SUM(%s) AS `%s`", column, alias));
-	}
-	
-	/**
-	 * {@code selectDistinctSum(column, column); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctSum(String column) {
-		return selectDistinctSum(column, column);
-	}
-	
-	/**
-	 * {@code selectDistinct(format("AVG(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctAvg(String column, String alias) {
-		return selectDistinct(format("AVG(%s) AS `%s`", column, alias));
-	}
-	
-	/**
-	 * {@code selectDistinctAvg(column, column); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctAvg(String column) {
-		return selectDistinctAvg(column, column);
-	}
-	
-	/**
-	 * {@code selectDistinct(format("MAX(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctMax(String column, String alias) {
-		return selectDistinct(format("MAX(%s) AS `%s`", column, alias));
-	}
-	
-	/**
-	 * {@code selectDistinctMax(column, column); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctMax(String column) {
-		return selectDistinctMax(column, column);
-	}
-	
-	/**
-	 * {@code selectDistinct(format("MIN(%s) AS `%s`", column, alias)); }
-	 * @param column 字段名称
-	 * @param alias  别名
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctMin(String column, String alias) {
-		return selectDistinct(format("MIN(%s) AS `%s`", column, alias));
-	}
-	
-	/**
-	 * {@code selectDistinctMin(column, column); }
-	 * @param column 字段名称
-	 * @return {@code this}
-	 */
-	public final SQLBuilder selectDistinctMin(String column) {
-		return selectDistinctMin(column, column);
-	}
-	
-	public final SQLBuilder values(String column, String value) {
+	public final SQLBuilder values(@Nonnull String column, @Nonnull String value) {
 		this.columns.addValues(column);
 		this.values.addValues(value);
 		return this;
 	}
 	
-	public final SQLBuilder values(String column) {
+	/**
+	 * INSERT INTO与REPLACE INTO语句字段设置，默认占位符为“?”
+	 * @param column 字段名-必须是数据库存在的字段名称
+	 * @return @return {@code this}
+	 * @see #values(String, String)
+	 */
+	public final SQLBuilder values(@Nonnull String column) {
 		return values(column, "?");
 	}
 	
-	public final SQLBuilder from(String... tables) {
+	/**
+	 * DELETE、UPDATE、SELECT语句中的FROM子句
+	 * <P>该方法可以重复调用，表列表会追加到之前的列表之后</P>
+	 * <p>insertInto、replaceInto、values、onDuplicateKeyUpdate等SQL中没有FROM子句的SQL无效</p>
+	 * @param tables FROM子句中的表列表
+	 * @return @return {@code this}
+	 */
+	public final SQLBuilder from(@Nonnull String... tables) {
 		this.from.addValues(tables);
 		return this;
 	}
 	
 	/**
-	 * {@code from(builder.toString());}
-	 * <p>子查询的SQL中参数无效</p>
-	 * @param builder 子查询SQL
+	 * DELETE、UPDATE、SELECT语句中的FROM子句
+	 * <P>该方法调用的FROM子句中是一个了查询</P>
+	 * <P>该方法可以重复调用，表列表会追加到之前的列表之后</P>
+	 * <p>insertInto、replaceInto、values、onDuplicateKeyUpdate等SQL中没有FROM子句的SQL无效</p>
+	 * <p>该方法构建的FROM子句不能用于DELETE、UPDATE语句的FROM子名构建</p>
+	 * @param builder 子查询SQL；该SQL的注入参数无效，需要将参数添加到主SQL的对应位置
 	 * @return {@code this}
 	 */
-	public final SQLBuilder from(SQLBuilder builder) {
+	public final SQLBuilder from(@Nonnull SQLBuilder builder) {
 		return from(builder.toString());
 	}
 	
-	public final SQLBuilder join(String format, Object... args) {
+	/**
+	 * DELETE、UPDATE、SELECT语句中的JOIN子句
+	 * <P>格式化字符串参数可以是一个子查询</P>
+	 * <P>该方法可以多次调用，创建多个JOIN子句</P>
+	 * <p>insertInto、replaceInto、values、onDuplicateKeyUpdate等SQL中没有JOIN子句的SQL无效</p>
+	 * <p>该方法构建的JOIN子句如果是一个子查询语句，不能用于DELETE、UPDATE语句的JOIN子名构建</p>
+	 * @param format 子句内容格式化字符串
+	 * @param args   内容格式化字符串中的参数
+	 * @return @return {@code this}
+	 */
+	public final SQLBuilder join(@Nonnull String format, Object... args) {
 		join.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * {@code join("%s ON %s = %s", table, column, joinColumn); }
-	 * @param table      联合表名称
-	 * @param column     当前表字段
-	 * @param joinColumn 联合表字段
+	 * JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * @param table      联合表名称-格式化字符串的第一个参数
+	 * @param column     当前表字段-格式化字符串的第二个参数
+	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
 	 * @return {@code this}
+	 * @see #join(String, Object...)
 	 */
-	public final SQLBuilder joinSingle(String table, String column, String joinColumn) {
+	public final SQLBuilder joinSingle(@Nonnull String table, @Nonnull String column, @Nonnull String joinColumn) {
 		return join("%s ON %s = %s", table, column, joinColumn);
 	}
 	
-	public final SQLBuilder leftJoin(String format, Object... args) {
+	/**
+	 * DELETE、UPDATE、SELECT语句中的LEFT JOIN子句
+	 * <P>格式化字符串参数可以是一个子查询</P>
+	 * <P>该方法可以多次调用，创建多个LEFT JOIN子句</P>
+	 * <p>insertInto、replaceInto、values、onDuplicateKeyUpdate等SQL中没有LEFT JOIN子句的SQL无效</p>
+	 * <p>该方法构建的LEFT JOIN子句如果是一个子查询语句，不能用于DELETE、UPDATE语句的JOIN子名构建</p>
+	 * @param format 子句内容格式化字符串
+	 * @param args   内容格式化字符串中的参数
+	 * @return @return {@code this}
+	 */
+	public final SQLBuilder leftJoin(@Nonnull String format, Object... args) {
 		leftJoin.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * {@code leftJoin("%s ON %s = %s", table, column, joinColumn); }
-	 * @param table      联合表名称
-	 * @param column     当前表字段
-	 * @param joinColumn 联合表字段
+	 * LEFT JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * @param table      联合表名称-格式化字符串的第一个参数
+	 * @param column     当前表字段-格式化字符串的第二个参数
+	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
 	 * @return {@code this}
+	 * @see #leftJoin(String, Object...)
 	 */
-	public final SQLBuilder leftJoinSingle(String table, String column, String joinColumn) {
+	public final SQLBuilder leftJoinSingle(@Nonnull String table, @Nonnull String column, @Nonnull String joinColumn) {
 		return leftJoin("%s ON %s = %s", table, column, joinColumn);
 	}
 	
-	public final SQLBuilder rightJoin(String format, Object... args) {
+	/**
+	 * DELETE、UPDATE、SELECT语句中的RIGHT JOIN子句
+	 * <P>格式化字符串参数可以是一个子查询</P>
+	 * <P>该方法可以多次调用，创建多个RIGHT JOIN子句</P>
+	 * <p>insertInto、replaceInto、values、onDuplicateKeyUpdate等SQL中没有RIGHT JOIN子句的SQL无效</p>
+	 * <p>该方法构建的RIGHT JOIN子句如果是一个子查询语句，不能用于DELETE、UPDATE语句的JOIN子名构建</p>
+	 * @param format 子句内容格式化字符串
+	 * @param args   内容格式化字符串中的参数
+	 * @return @return {@code this}
+	 */
+	public final SQLBuilder rightJoin(@Nonnull String format, Object... args) {
 		rightJoin.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * {@code rightJoin("%s ON %s = %s", table, column, joinColumn); }
-	 * @param table      联合表名称
-	 * @param column     当前表字段
-	 * @param joinColumn 联合表字段
+	 * RIGHT JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * @param table      联合表名称-格式化字符串的第一个参数
+	 * @param column     当前表字段-格式化字符串的第二个参数
+	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
 	 * @return {@code this}
+	 * @see #rightJoin(String, Object...)
 	 */
-	public final SQLBuilder rightJoinSingle(String table, String column, String joinColumn) {
+	public final SQLBuilder rightJoinSingle(@Nonnull String table, @Nonnull String column, @Nonnull String joinColumn) {
 		return rightJoin("%s ON %s = %s", table, column, joinColumn);
 	}
 	
-	public final SQLBuilder outerJoin(String format, Object... args) {
+	/**
+	 * DELETE、UPDATE、SELECT语句中的OUTER JOIN子句
+	 * <P>格式化字符串参数可以是一个子查询</P>
+	 * <P>该方法可以多次调用，创建多个OUTER JOIN子句</P>
+	 * <p>insertInto、replaceInto、values、onDuplicateKeyUpdate等SQL中没有OUTER JOIN子句的SQL无效</p>
+	 * <p>该方法构建的OUTER JOIN子句如果是一个子查询语句，不能用于DELETE、UPDATE语句的JOIN子名构建</p>
+	 * @param format 子句内容格式化字符串
+	 * @param args   内容格式化字符串中的参数
+	 * @return @return {@code this}
+	 */
+	public final SQLBuilder outerJoin(@Nonnull String format, Object... args) {
 		outerJoin.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * {@code outerJoin("%s ON %s = %s", table, column, joinColumn); }
-	 * @param table      联合表名称
-	 * @param column     当前表字段
-	 * @param joinColumn 联合表字段
+	 * OUTER JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * @param table      联合表名称-格式化字符串的第一个参数
+	 * @param column     当前表字段-格式化字符串的第二个参数
+	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
 	 * @return {@code this}
+	 * @see #outerJoin(String, Object...)
 	 */
-	public final SQLBuilder outerJoinSingle(String table, String column, String joinColumn) {
+	public final SQLBuilder outerJoinSingle(@Nonnull String table, @Nonnull String column, @Nonnull String joinColumn) {
 		return outerJoin("%s ON %s = %s", table, column, joinColumn);
 	}
 	
-	public final SQLBuilder set(String format, Object... args) {
+	/**
+	 * UPDATE语句中的SET子句
+	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
+	 * @param format 子句内容格式化字条串
+	 * @param args   格式化字条串中的参数
+	 * @return {@code this}
+	 */
+	public final SQLBuilder set(@Nonnull String format, Object... args) {
 		this.set.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * {@code set("%s = ?", column).args(arg); }
-	 * @param column 修改字段名
-	 * @param arg    参数
+	 * UPDATE语句中的SET子句简便写法，默认格式化字符串内容为“%s = ?”
+	 * @param column 要修改的字段名；格式化字符串中的参数同该值替换
+	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
 	 * @return ｛@code this｝
+	 * @see #set(String, Object...)
 	 */
-	public final SQLBuilder setEquals(String column, Object arg) {
+	public final SQLBuilder setEquals(@Nonnull String column, Object arg) {
 		return set("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code set("%s = %s + ?", column, column).args(arg); }
-	 * @param column 修改字段名
-	 * @param arg    参数
+	 * UPDATE语句中的SET子句简便写法，默认格式化字符串内容为“%s = %s + ?”
+	 * @param column 要修改的字段名；两个格式化字符串的参数都由该值替换
+	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
 	 * @return ｛@code this｝
+	 * @see #set(String, Object...)
 	 */
-	public final SQLBuilder setIncrease(String column, Object arg) {
+	public final SQLBuilder setIncrease(@Nonnull String column, Object arg) {
 		return set("%s = %s + ?", column, column).args(arg);
 	}
 	
-	public final SQLBuilder onDuplicateKeyUpdate(String format, Object... args) {
+	/**
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句，默认格式化字符串为“”
+	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
+	 * @param format 子句内容格式化字条串
+	 * @param args   格式化字条串中的参数
+	 * @return {@code this}
+	 */
+	public final SQLBuilder onDuplicateKeyUpdate(@Nonnull String format, Object... args) {
 		this.onDuplicateKeyUpdate.addValues(format(format, args));
 		this.statement = StatementType.INSERT_UPDATE;
 		return this;
 	}
 	
 	/**
-	 * {@code onDuplicateKeyUpdate("%s = VALUES(%s)", column, column); }
-	 * @param column 修改字段名
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，默认格式化字符串为“%s = VALUES(%s)”
+	 * @param column 修改字段名；格式化字符串中的两个参数都由该值替换
 	 * @return ｛@code this｝
+	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
-	public final SQLBuilder onDuplicateKeyUpdateFromInsert(String column) {
+	public final SQLBuilder onDuplicateKeyUpdateFromInsert(@Nonnull String column) {
 		return onDuplicateKeyUpdate("%s = VALUES(%s)", column, column);
 	}
 	
 	/**
-	 * {@code onDuplicateKeyUpdateEquals("%s = ?", column).args(arg); }
-	 * @param column 修改字段名
-	 * @param arg    参数
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，默认格式化字符串为“%s = ?”
+	 * @param column 修改字段名；格式化字符串中的参数由该值替换
+	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
 	 * @return ｛@code this｝
+	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
-	public final SQLBuilder onDuplicateKeyUpdateEquals(String column, Object arg) {
+	public final SQLBuilder onDuplicateKeyUpdateEquals(@Nonnull String column, @Nullable Object arg) {
 		return onDuplicateKeyUpdate("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code onDuplicateKeyUpdate("%s = %s + ?", column, column).args(arg); }
-	 * @param column 修改字段名
-	 * @param arg    参数
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，默认格式化字符串为“%s = %s + ?”
+	 * @param column 修改字段名；格式化字符串中的两个参数都由该值替换
+	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
 	 * @return ｛@code this｝
+	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
-	public final SQLBuilder onDuplicateKeyUpdateIncrease(String column, Object arg) {
+	public final SQLBuilder onDuplicateKeyUpdateIncrease(@Nonnull String column, Object arg) {
 		return onDuplicateKeyUpdate("%s = %s + ?", column, column).args(arg);
 	}
 	
-	public final SQLBuilder where(String format, Object... args) {
+	/**
+	 * DELETE、UPDATE、SELECT语句的WHERE子句
+	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
+	 * @param format 格式化字符串
+	 * @param args   格式化字符串参数列表
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder where(@Nonnull String format, Object... args) {
 		this.where.addValues(format(format, args));
 		this.last = this.where;
 		return this;
 	}
 	
 	/**
-	 * {@code where("%s = ?", column).args(arg); }
-	 * @param column 条件字段
-	 * @param arg    参数
+	 * 将WHERE子句、HAVING子句的连接条件改为AND
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereEquals(String column, Object arg) {
-		return where("%s = ?", column).args(arg);
+	public final SQLBuilder and() {
+		if (last != null) {
+			last.addAND();
+		}
+		return this;
 	}
 	
 	/**
-	 * {@code where("%s <> ?", column).args(arg); }
-	 * @param column 条件字段
-	 * @param arg    参数
+	 * 将WHERE子句、HAVING子句的连接条件改为OR
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereNotEqual(String column, Object arg) {
-		return where("%s <> ?", column).args(arg);
+	public final SQLBuilder or() {
+		if (last != null) {
+			last.addOR();
+		}
+		return this;
+	}
+	
+	/**
+	 * {@code isNull(arg) ? where("%s IS NULL") : where("%s = ?", column).args(arg);  }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereEquals(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? where("%s IS NULL", column) : where("%s = ?", column).args(arg);
+	}
+	
+	/**
+	 * {@code isNull(arg) ? where("%s IS NOT NULL", column) : where("%s <> ?", column).args(arg); }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return ｛@code this｝
+	 */
+	public final SQLBuilder whereNotEqual(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? where("%s IS NOT NULL", column) : where("%s <> ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code where("%s > ?", column).args(arg); }
 	 * @param column 条件字段
-	 * @param arg    参数
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereGreaterThan(String column, Object arg) {
+	public final SQLBuilder whereGreaterThan(@Nonnull String column, @Nonnull Object arg) {
 		return where("%s > ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code where("%s < ?", column).args(arg); }
 	 * @param column 条件字段
-	 * @param arg    参数
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereLessThan(String column, Object arg) {
+	public final SQLBuilder whereLessThan(@Nonnull String column, @Nonnull Object arg) {
 		return where("%s < ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code where("%s >= ?", column).args(arg); }
 	 * @param column 条件字段
-	 * @param arg    参数
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereGreaterThanOrEquals(String column, Object arg) {
+	public final SQLBuilder whereGreaterThanOrEquals(@Nonnull String column, @Nonnull Object arg) {
 		return where("%s >= ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code where("%s <= ?", column).args(arg); }
 	 * @param column 条件字段
-	 * @param arg    参数
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereLessThanOrEquals(String column, Object arg) {
+	public final SQLBuilder whereLessThanOrEquals(@Nonnull String column, @Nonnull Object arg) {
 		return where("%s <= ?", column).args(arg);
 	}
 	
@@ -502,11 +626,11 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * {@code  where("%s IN (%s)", column, of(args).map(o -> "?")
 	 * .collect(joining(", "))).args(args); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 * @see java.util.stream.Stream#of(Object[])
 	 */
-	public final SQLBuilder whereIn(String column, Object[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull Object[] args) {
 		return where("%s IN (%s)", column, of(args).map(o -> "?")
 				.collect(joining(", "))).args(args);
 	}
@@ -514,103 +638,103 @@ public class SQLBuilder implements EventListener, Serializable {
 	/**
 	 * {@code whereIn(column, stream(args).boxed().toArray()); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 * @see java.util.Arrays#stream(int[])
 	 */
-	public final SQLBuilder whereIn(String column, double[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull double[] args) {
 		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
 	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereIn(String column, float[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull float[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
 	 * {@code whereIn(column, stream(args).boxed().toArray()); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 * @see java.util.Arrays#stream(int[])
 	 */
-	public final SQLBuilder whereIn(String column, long[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull long[] args) {
 		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
 	 * {@code whereIn(column, stream(args).boxed().toArray()); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 * @see java.util.Arrays#stream(int[])
 	 */
-	public final SQLBuilder whereIn(String column, int[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull int[] args) {
 		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
 	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereIn(String column, short[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull short[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
 	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereIn(String column, byte[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull byte[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
 	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereIn(String column, char[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull char[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
 	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
 	 * @param column 条件字段
-	 * @param args   参数
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereIn(String column, boolean[] args) {
+	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull boolean[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
 	 * {@code where("%s LIKE ?").args(arg); }
 	 * @param column 条件字段
-	 * @param arg    参数
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereLike(String column, String arg) {
+	public final SQLBuilder whereLike(@Nonnull String column, @Nonnull String arg) {
 		return where("%s LIKE ?", column).args(arg);
 	}
 	
 	/**
 	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(arg); }
 	 * @param columns 搜索的字段
-	 * @param arg     参数
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereMatchInBooleanMode(String[] columns, Object arg) {
+	public final SQLBuilder whereMatchInBooleanMode(@Nonnull String[] columns, @Nonnull Object arg) {
 		return where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
 				StringUtil.join(columns, ',')) //
 				.args(arg);
@@ -619,10 +743,10 @@ public class SQLBuilder implements EventListener, Serializable {
 	/**
 	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(arg); }
 	 * @param columns 搜索的字段
-	 * @param arg     参数
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereMatch(String[] columns, Object arg) {
+	public final SQLBuilder whereMatch(@Nonnull String[] columns, @Nonnull Object arg) {
 		return where("MATCH(%s) AGAINST(?)", StringUtil //
 				.join(columns, ',')).args(arg);
 	}
@@ -634,30 +758,16 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param max    参数最大值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder whereBetweenAnd(String column, Object min, Object max) {
+	public final SQLBuilder whereBetweenAnd(@Nonnull String column, @Nonnull Object min, @Nonnull Object max) {
 		return where("%s BETWEEN ? AND ?", column).args(min, max);
 	}
 	
-	public final SQLBuilder and() {
-		if (last != null) {
-			last.addAND();
-		}
-		return this;
-	}
-	
-	public final SQLBuilder or() {
-		if (last != null) {
-			last.addOR();
-		}
-		return this;
-	}
-	
-	public final SQLBuilder groupBy(String... columns) {
+	public final SQLBuilder groupBy(@Nonnull String... columns) {
 		groupBy.addValues(columns);
 		return this;
 	}
 	
-	public final SQLBuilder having(String format, Object... args) {
+	public final SQLBuilder having(@Nonnull String format, Object... args) {
 		this.having.addValues(format(format, args));
 		this.last = this.having;
 		return this;
@@ -669,7 +779,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param arg    参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingEquals(String column, Object arg) {
+	public final SQLBuilder havingEquals(@Nonnull String column, Object arg) {
 		return having("%s = ?", column).args(arg);
 	}
 	
@@ -679,7 +789,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param param  参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingNotEqual(String column, Object param) {
+	public final SQLBuilder havingNotEqual(@Nonnull String column, Object param) {
 		return having("%s <> ?", column).args(param);
 	}
 	
@@ -689,7 +799,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param param  参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingGreaterThan(String column, Object param) {
+	public final SQLBuilder havingGreaterThan(@Nonnull String column, Object param) {
 		return having("%s > ?", column).args(param);
 	}
 	
@@ -699,7 +809,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param param  参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingLess(String column, Object param) {
+	public final SQLBuilder havingLess(@Nonnull String column, Object param) {
 		return having("%s < ?", column).args(param);
 	}
 	
@@ -709,7 +819,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param param  参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingGreaterThanOrEquals(String column, Object param) {
+	public final SQLBuilder havingGreaterThanOrEquals(@Nonnull String column, Object param) {
 		return having("%s >= ?", column).args(param);
 	}
 	
@@ -719,7 +829,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param param  参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingLessOrEquals(String column, Object param) {
+	public final SQLBuilder havingLessOrEquals(@Nonnull String column, Object param) {
 		return having("%s <= ?", column).args(param);
 	}
 	
@@ -731,7 +841,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, Object[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, Object[] args) {
 		return having("%s IN (%s)", column, of(args).map(o -> "?")
 				.collect(joining(", "))).args(args);
 	}
@@ -742,7 +852,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, double[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, double[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
@@ -752,7 +862,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, float[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, float[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -762,7 +872,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, long[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, long[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
@@ -772,7 +882,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, int[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, int[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
@@ -782,7 +892,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, short[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, short[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -792,7 +902,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, byte[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, byte[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -802,7 +912,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, char[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, char[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -812,7 +922,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingIn(String column, boolean[] args) {
+	public final SQLBuilder havingIn(@Nonnull String column, boolean[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
@@ -822,7 +932,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param param  参数
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingLike(String column, String param) {
+	public final SQLBuilder havingLike(@Nonnull String column, String param) {
 		return having("%s LIKE ?").args(param);
 	}
 	
@@ -831,7 +941,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param columns 搜索的字段
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingMatchInBooleanMode(String[] columns, Object param) {
+	public final SQLBuilder havingMatchInBooleanMode(@Nonnull String[] columns, Object param) {
 		return having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
 				StringUtil.join(columns, ',')) //
 				.args(param);
@@ -842,7 +952,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param columns 搜索的字段
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingMatch(String[] columns, Object param) {
+	public final SQLBuilder havingMatch(@Nonnull String[] columns, Object param) {
 		String string = StringUtil.join(columns, ',');
 		return having("MATCH(%s) AGAINST(?)", string)//
 				.args(param);
@@ -855,11 +965,11 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param max    参数最大值
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder havingBetweenAnd(String column, Object min, Object max) {
+	public final SQLBuilder havingBetweenAnd(@Nonnull String column, Object min, Object max) {
 		return having("%s BETWEEN ? AND ?", column).args(min, max);
 	}
 	
-	public final SQLBuilder orderBy(String format, Object... args) {
+	public final SQLBuilder orderBy(@Nonnull String format, Object... args) {
 		orderBy.addValues(format(format, args));
 		return this;
 	}
@@ -869,7 +979,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param columns 排序字段
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder orderByAsc(String... columns) {
+	public final SQLBuilder orderByAsc(@Nonnull String... columns) {
 		of(columns).forEach(column -> orderBy("%s ASC", column));
 		return this;
 	}
@@ -879,7 +989,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param columns 排序字段
 	 * @return ｛@code this｝
 	 */
-	public final SQLBuilder orderByDesc(String... columns) {
+	public final SQLBuilder orderByDesc(@Nonnull String... columns) {
 		of(columns).forEach(column -> orderBy("%s DESC", column));
 		return this;
 	}
