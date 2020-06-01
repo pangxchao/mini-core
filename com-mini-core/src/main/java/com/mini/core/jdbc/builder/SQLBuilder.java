@@ -67,7 +67,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * 新增SQL注入中的参数
 	 * <p>SQL注入参数需要根据构建SQL的顺序一一对应</p>
 	 * @param args 新增参数列表
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder args(@Nonnull Object... args) {
 		this.args.addAll(asList(args));
@@ -87,7 +87,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * <p>该语句不能重复构建，后一次会覆盖前一次的表，但不会清空之前VALUE中的字段与值</p>
 	 * <p>delete、update、select、from、join、set、where、groupBy、orderBy、having等与新增操作无关的SQL子句无效</p>
 	 * @param table INSERT INTO 操作的列名称
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #replaceInto(String)
 	 */
 	public final SQLBuilder insertInto(@Nonnull String table) {
@@ -101,7 +101,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * <p>该语句不能重复构建，后一次会覆盖前一次的表，但不会清空之前VALUE中的字段与值</p>
 	 * <p>delete、update、select、from、join、set、where、groupBy、orderBy、having、onDuplicateKeyUpdate等与替换操作无关的SQL子句无效</p>
 	 * @param table REPLACE INTO 操作的列名称
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #insertInto(String)
 	 */
 	public final SQLBuilder replaceInto(@Nonnull String table) {
@@ -115,7 +115,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * <p>该语句可以重复构建，后一次的表会追加到之前的表列表之后，最后构建时，表名列表中可以没有表名，将由from子名表名确定</p>
 	 * <p>insertInto、replaceInto、update、select、values、set、groupBy、orderBy、having、onDuplicateKeyUpdate等与删除操作无关的SQL子句无效</p>
 	 * @param tables 删除的表列表，该列表中的表名不能是子查询SQL语句
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder delete(@Nonnull String... tables) {
 		this.statement = StatementType.DELETE;
@@ -128,7 +128,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * <p>该语句可以重复构建，后一次的表会追加到之前的表列表之后，最后构建时，表名列表中必须至少有一个表名</p>
 	 * <p>insertInto、replaceInto、delete、select、values、groupBy、orderBy、having、onDuplicateKeyUpdate等与修改操作无关的SQL子句无效</p>
 	 * @param tables 修改的表列表，该列表中的表名不能是子查询SQL语句
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder update(@Nonnull String... tables) {
 		this.statement = StatementType.UPDATE;
@@ -141,7 +141,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * <p>该语句可以重复构建，后一次的字段会追加到前一次字段列表之后，在构建时会用’,‘分隔生成正确的SQL字段拼接格式</p>
 	 * <p>insertInto、replaceInto、delete、update、set、onDuplicateKeyUpdate等与删查询作无关的SQL子句无效</p>
 	 * @param columns 想要查询的字段列表，该字段可以写可“字段名 AS `别名`”的形式
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder select(@Nonnull String... columns) {
 		this.statement = StatementType.SELECT;
@@ -150,8 +150,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * select方法的快捷操作 传入select方法的参数为：
-	 * <P>String.format("COUNT(%sAS `%s`)", column, alias)</P>
+	 * SELECT方法的快捷操作，调用代码为：
+	 * <br />
+	 * {@code String.select(format("COUNT(%s) AS `%s`", column, alias)) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，或者通配置符写法，如：user, *
 	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
@@ -163,7 +164,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * selectCount方法的快捷操作 调用代码为：
+	 * selectCount方法的快捷操作，调用代码为：
 	 * <br />
 	 * {@code selectCount(column, column) }
 	 * @param column 字段名称 字段名称; 必须符合查询字段名的写法，或者通配置符写法，如：user, *
@@ -176,8 +177,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * select方法的快捷操作 传入select方法的参数为：
-	 * <P>String.format("SUM(%s) AS `%s`", column, alias)</P>
+	 * select方法的快捷操作，调用代码为：
+	 * <br/>
+	 * {@code select(format("SUM(%s) AS `%s`", column, alias)) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
@@ -189,7 +191,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * selectSum方法的快捷操作 调用代码为：
+	 * selectSum方法的快捷操作，调用代码为：
 	 * <br />
 	 * {@code selectSum(column, column) }
 	 * @param column 字段名称
@@ -202,8 +204,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * select方法的快捷操作 传入select方法的参数为：
-	 * <P>String.format("AVG(%s) AS `%s`", column, alias)</P>
+	 * select方法的快捷操作，调用代码为：
+	 * <br/>
+	 * {@code select(format("AVG(%s) AS `%s`", column, alias)) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
@@ -215,7 +218,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * selectAvg 调用代码为：
+	 * selectAvg方法的快捷操作，调用代码为：
 	 * <br />
 	 * {@code selectAvg(column, column) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
@@ -228,8 +231,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * select方法的快捷操作 传入select方法的参数为：
-	 * <P>String.format("MAX(%s) AS `%s`", column, alias)</P>
+	 * select方法的快捷操作，调用代码为：
+	 * <br/>
+	 * {@code select(format("MAX(%s) AS `%s`", column, alias)) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
@@ -241,7 +245,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * selectAvg 调用代码为：
+	 * selectMax方法的快捷操作，调用代码为：
 	 * <br />
 	 * {@code selectMax(column, column) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
@@ -255,8 +259,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	
 	
 	/**
-	 * select方法的快捷操作 传入select方法的参数为：
-	 * <P>String.format("MIN(%s) AS `%s`", column, alias)</P>
+	 * select方法的快捷操作，调用代码为：
+	 * <br/>
+	 * {@code select(format("MIN(%s) AS `%s`", column, alias)) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
 	 * @param alias  别名; 必须符合字段别名的命名规则
 	 * @return {@code this}
@@ -268,7 +273,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * selectAvg 调用代码为：
+	 * selectMin方法的快捷操作，调用代码为：
 	 * <br />
 	 * {@code selectMin(column, column) }
 	 * @param column 字段名称; 必须符合查询字段名的写法，如：user
@@ -351,13 +356,15 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   内容格式化字符串中的参数
 	 * @return @return {@code this}
 	 */
-	public final SQLBuilder join(@Nonnull String format, Object... args) {
+	public final SQLBuilder join(@Nonnull String format, @Nonnull Object... args) {
 		join.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * JOIN子句的单表联合简便方式，调用代码为：
+	 * <br />
+	 * {@code join("%s ON %s = %s", table, column, joinColumn) }
 	 * @param table      联合表名称-格式化字符串的第一个参数
 	 * @param column     当前表字段-格式化字符串的第二个参数
 	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
@@ -384,7 +391,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * LEFT JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * LEFT JOIN子句的单表联合简便方式，调用代码为：
+	 * <br />
+	 * {@code leftJoin("%s ON %s = %s", table, column, joinColumn) }
 	 * @param table      联合表名称-格式化字符串的第一个参数
 	 * @param column     当前表字段-格式化字符串的第二个参数
 	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
@@ -411,7 +420,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * RIGHT JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * RIGHT JOIN子句的单表联合简便方式，调用代码为：
+	 * <br />
+	 * {@code rightJoin("%s ON %s = %s", table, column, joinColumn) }
 	 * @param table      联合表名称-格式化字符串的第一个参数
 	 * @param column     当前表字段-格式化字符串的第二个参数
 	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
@@ -438,7 +449,9 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * OUTER JOIN子句的单表联合简便方式，默认格式化字符串内容为“%s ON %s = %s”
+	 * OUTER JOIN子句的单表联合简便方式，调用代码为：
+	 * <br />
+	 * {@code outerJoin("%s ON %s = %s", table, column, joinColumn) }
 	 * @param table      联合表名称-格式化字符串的第一个参数
 	 * @param column     当前表字段-格式化字符串的第二个参数
 	 * @param joinColumn 联合表字段-格式化字符串的第三个参数
@@ -456,50 +469,56 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @param args   格式化字条串中的参数
 	 * @return {@code this}
 	 */
-	public final SQLBuilder set(@Nonnull String format, Object... args) {
+	public final SQLBuilder set(@Nonnull String format, @Nullable Object... args) {
 		this.set.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
-	 * UPDATE语句中的SET子句简便写法，默认格式化字符串内容为“%s = ?”
+	 * UPDATE语句中的SET子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code set("%s = ?", column).args(arg)}
 	 * @param column 要修改的字段名；格式化字符串中的参数同该值替换
 	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #set(String, Object...)
 	 */
-	public final SQLBuilder setEquals(@Nonnull String column, Object arg) {
+	public final SQLBuilder setEquals(@Nonnull String column, @Nullable Object arg) {
 		return set("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * UPDATE语句中的SET子句简便写法，默认格式化字符串内容为“%s = %s + ?”
+	 * UPDATE语句中的SET子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code set("%s = %s + ?", column, column).args(arg) }
 	 * @param column 要修改的字段名；两个格式化字符串的参数都由该值替换
 	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #set(String, Object...)
 	 */
-	public final SQLBuilder setIncrease(@Nonnull String column, Object arg) {
+	public final SQLBuilder setIncrease(@Nonnull String column, @Nullable Object arg) {
 		return set("%s = %s + ?", column, column).args(arg);
 	}
 	
 	/**
-	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句，默认格式化字符串为“”
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句
 	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
 	 * @param format 子句内容格式化字条串
 	 * @param args   格式化字条串中的参数
 	 * @return {@code this}
 	 */
-	public final SQLBuilder onDuplicateKeyUpdate(@Nonnull String format, Object... args) {
+	public final SQLBuilder onDuplicateKeyUpdate(@Nonnull String format, @Nullable Object... args) {
 		this.onDuplicateKeyUpdate.addValues(format(format, args));
 		this.statement = StatementType.INSERT_UPDATE;
 		return this;
 	}
 	
 	/**
-	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，默认格式化字符串为“%s = VALUES(%s)”
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code onDuplicateKeyUpdate("%s = VALUES(%s)", column, column) }
 	 * @param column 修改字段名；格式化字符串中的两个参数都由该值替换
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
 	public final SQLBuilder onDuplicateKeyUpdateFromInsert(@Nonnull String column) {
@@ -507,10 +526,12 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，默认格式化字符串为“%s = ?”
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code onDuplicateKeyUpdate("%s = ?", column).args(arg) }
 	 * @param column 修改字段名；格式化字符串中的参数由该值替换
 	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
 	public final SQLBuilder onDuplicateKeyUpdateEquals(@Nonnull String column, @Nullable Object arg) {
@@ -518,10 +539,12 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，默认格式化字符串为“%s = %s + ?”
+	 * INSERT INTO语句中的ON DUPLICATE KEY UPDATE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code onDuplicateKeyUpdate("%s = %s + ?", column, column).args(arg) }
 	 * @param column 修改字段名；格式化字符串中的两个参数都由该值替换
 	 * @param arg    修改字段对应的值，该值不是占位符，是数据库修改后的实际值
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see #onDuplicateKeyUpdate(String, Object...)
 	 */
 	public final SQLBuilder onDuplicateKeyUpdateIncrease(@Nonnull String column, @Nullable Object arg) {
@@ -529,21 +552,8 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * DELETE、UPDATE、SELECT语句的WHERE子句
-	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
-	 * @param format 格式化字符串
-	 * @param args   格式化字符串参数列表
-	 * @return ｛@code this｝
-	 */
-	public final SQLBuilder where(@Nonnull String format, @Nonnull Object... args) {
-		this.where.addValues(format(format, args));
-		this.last = this.where;
-		return this;
-	}
-	
-	/**
 	 * 将WHERE子句、HAVING子句的连接条件改为AND
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder and() {
 		if (last != null) {
@@ -554,7 +564,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	
 	/**
 	 * 将WHERE子句、HAVING子句的连接条件改为OR
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder or() {
 		if (last != null) {
@@ -564,211 +574,549 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code isNull(arg) ? where("%s IS NULL") : where("%s = ?", column).args(arg);  }
+	 * DELETE、UPDATE、SELECT语句的WHERE子句
+	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
+	 * @param format 格式化字符串
+	 * @param args   格式化字符串参数列表
+	 * @return {@code this}
+	 */
+	public final SQLBuilder where(@Nonnull String format, @Nonnull Object... args) {
+		this.where.addValues(format(format, args));
+		this.last = this.where;
+		return this;
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? where("%s IS NULL", column) : where("%s = ?", column).args(arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereEquals(@Nonnull String column, @Nullable Object arg) {
 		return isNull(arg) ? where("%s IS NULL", column) : where("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code isNull(arg) ? where("%s IS NOT NULL", column) : where("%s <> ?", column).args(arg); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : where("%s = ?", column).args(arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 */
+	public final SQLBuilder whereEqualsIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : where("%s = ?", column).args(arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? where("%s IS NOT NULL", column) : where("%s <> ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereNotEqual(@Nonnull String column, @Nullable Object arg) {
 		return isNull(arg) ? where("%s IS NOT NULL", column) : where("%s <> ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code where("%s > ?", column).args(arg); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : where("%s <> ?", column).args(arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
 	 */
-	public final SQLBuilder whereGreaterThan(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder whereNotEqualIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : where("%s <> ?", column).args(arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s > ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 */
+	public final SQLBuilder whereGreaterThan(@Nonnull String column, @Nullable Object arg) {
 		return where("%s > ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code where("%s < ?", column).args(arg); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : whereGreaterThan(column, arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereGreaterThan(String, Object arg)
 	 */
-	public final SQLBuilder whereLessThan(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder whereGreaterThanIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : whereGreaterThan(column, arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s < ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 */
+	public final SQLBuilder whereLessThan(@Nonnull String column, @Nullable Object arg) {
 		return where("%s < ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code where("%s >= ?", column).args(arg); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : whereLessThan(column, arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereLessThan(String, Object)
 	 */
-	public final SQLBuilder whereGreaterThanOrEquals(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder whereLessThanIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : whereLessThan(column, arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s >= ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 */
+	public final SQLBuilder whereGreaterThanOrEquals(@Nonnull String column, @Nullable Object arg) {
 		return where("%s >= ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code where("%s <= ?", column).args(arg); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : whereGreaterThanOrEquals(column, arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereGreaterThanOrEquals(String, Object)
 	 */
-	public final SQLBuilder whereLessThanOrEquals(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder whereGreaterThanOrEqualsIfNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : whereGreaterThanOrEquals(column, arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s <= ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 */
+	public final SQLBuilder whereLessThanOrEquals(@Nonnull String column, @Nullable Object arg) {
 		return where("%s <= ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code  where("%s IN (%s)", column, of(args).map(o -> "?")
-	 * .collect(joining(", "))).args(args); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : whereLessThanOrEquals(column, arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereLessThanOrEquals(String, Object)
+	 */
+	public final SQLBuilder whereLessThanOrEqualsIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : whereLessThanOrEquals(column, arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s IN (%s)", column, of(args).map(o -> "?").collect(joining(", "))).args(args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 * @see java.util.stream.Stream#of(Object[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull Object[] args) {
-		Assert.isTrue(args.length > 0, "Where In args can not empty.");
+		Assert.isTrue(args.length > 0, "WhereIn args can not be empty.");
 		return where("%s IN (%s)", column, of(args).map(o -> "?")
 				.collect(joining(", "))).args(args);
 	}
 	
 	/**
-	 * {@code whereIn(column, stream(args).boxed().toArray()); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, Object[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable Object[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, stream(args).boxed().toArray()) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
 	 * @see java.util.Arrays#stream(int[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull double[] args) {
 		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, double[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable double[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull float[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code whereIn(column, stream(args).boxed().toArray()); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, float[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable float[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, stream(args).boxed().toArray()) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
 	 * @see java.util.Arrays#stream(int[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull long[] args) {
 		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code whereIn(column, stream(args).boxed().toArray()); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, long[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable long[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, stream(args).boxed().toArray()) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
 	 * @see java.util.Arrays#stream(int[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull int[] args) {
 		return whereIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, int[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable int[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull short[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, short[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable short[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull byte[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, byte[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable byte[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull char[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code whereIn(column, ArrayUtils.toObject(args)); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
 	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, char[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable char[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code whereIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereIn(@Nonnull String column, @Nonnull boolean[] args) {
 		return whereIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code where("%s LIKE ?").args(arg); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see #whereIn(String, boolean[])
+	 */
+	public final SQLBuilder whereInIfNotEmpty(@Nonnull String column, @Nullable boolean[] args) {
+		return isNull(args) || args.length <= 0 ? this : whereIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s LIKE ?", column).args(arg) }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereLike(@Nonnull String column, @Nonnull String arg) {
 		return where("%s LIKE ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(arg); }
-	 * @param columns 搜索的字段
-	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code  StringUtil.isBlank(arg) ? this : whereLike(column, arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see StringUtil#isBlank(CharSequence)
+	 * @see #whereLike(String, String)
 	 */
-	public final SQLBuilder whereMatchInBooleanMode(@Nonnull String[] columns, @Nonnull Object arg) {
-		return where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
-				StringUtil.join(columns, ',')) //
-				.args(arg);
+	public final SQLBuilder whereLikeIfNotBlank(@Nonnull String column, @Nullable String arg) {
+		return StringUtil.isBlank(arg) ? this : whereLike(column, arg);
 	}
 	
 	/**
-	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(arg); }
-	 * @param columns 搜索的字段
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ", ")).args(arg) }
 	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
-	 * @return ｛@code this｝
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see StringUtil#join(Object[], String)
 	 */
-	public final SQLBuilder whereMatch(@Nonnull String[] columns, @Nonnull Object arg) {
-		return where("MATCH(%s) AGAINST(?)", StringUtil //
-				.join(columns, ',')).args(arg);
+	public final SQLBuilder whereMatchInBooleanMode(@Nullable String arg, @Nonnull String... columns) {
+		Assert.isTrue(columns.length > 0, "whereMatchInBooleanMode columns can not be empty.");
+		return where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ", ")).args(arg);
 	}
 	
 	/**
-	 * {@code where("%s BETWEEN ? AND ?", column).args(min, max); }
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code  StringUtil.isBlank(arg) ? this : whereMatchInBooleanMode(arg, columns) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see StringUtil#isBlank(CharSequence)
+	 * @see StringUtil#join(Object[], String)
+	 */
+	public final SQLBuilder whereMatchInBooleanModeIfNotBlank(@Nullable String arg, @Nonnull String... columns) {
+		return StringUtil.isBlank(arg) ? this : whereMatchInBooleanMode(arg, columns);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("MATCH(%s) AGAINST(?)", StringUtil.join(columns, ',')).args(arg) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see StringUtil#join(Object[], String)
+	 */
+	public final SQLBuilder whereMatch(@Nullable String arg, @Nonnull String... columns) {
+		Assert.isTrue(columns.length > 0, "whereMatch columns can not be empty.");
+		return where("MATCH(%s) AGAINST(?)", StringUtil.join(columns, ", ")).args(arg);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code StringUtil.isBlank(arg) ? this : whereMatch(arg, columns) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #where(String, Object...)
+	 * @see StringUtil#isBlank(CharSequence)
+	 */
+	public final SQLBuilder whereMatchIfNotBlank(@Nullable String arg, @Nonnull String... columns) {
+		return StringUtil.isBlank(arg) ? this : whereMatch(arg, columns);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("%s BETWEEN ? AND ?", column).args(min, max) }
 	 * @param column 条件字段
 	 * @param min    参数最小值
 	 * @param max    参数最大值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereBetweenAnd(@Nonnull String column, @Nonnull Object min, @Nonnull Object max) {
 		return where("%s BETWEEN ? AND ?", column).args(min, max);
 	}
 	
+	/**
+	 * SELECT语句中的GROUP BY子句
+	 * @param columns GROUP BY子句后面的字段名称，符合SQL中GROUP BY子句字段标准
+	 * @return {@code this}
+	 */
 	public final SQLBuilder groupBy(@Nonnull String... columns) {
 		groupBy.addValues(columns);
 		return this;
 	}
 	
+	/**
+	 * SELECT语句的HAVING子句
+	 * <P>该方法可以多次调用，会将子句内容追加到之前的内容后面</P>
+	 * @param format 格式化字符串
+	 * @param args   格式化字符串参数列表
+	 * @return {@code this}
+	 */
 	public final SQLBuilder having(@Nonnull String format, @Nonnull Object... args) {
 		this.having.addValues(format(format, args));
 		this.last = this.having;
@@ -776,213 +1124,536 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
-	 * {@code arg == null ? having("%s = IS NULL", column) : having("%s = ?", column).args(arg) }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? having("%s IS NULL", column) : having("%s = ?", column).args(arg) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
 	 */
-	public final SQLBuilder havingEquals(@Nonnull String column, Object arg) {
-		return arg == null ? having("%s = IS NULL", column) : having("%s = ?", column).args(arg);
+	public final SQLBuilder havingEquals(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? having("%s IS NULL", column) : having("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code  arg == null ? having("%s = IS NOT NULL", column) : having("%s <> ?", column).args(arg) }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : having("%s = ?", column).args(arg) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
 	 */
-	public final SQLBuilder havingNotEqual(@Nonnull String column, Object arg) {
-		return arg == null ? having("%s = IS NOT NULL", column) : having("%s <> ?", column).args(arg);
+	public final SQLBuilder havingEqualsIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : having("%s = ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code having("%s > ?", column).args(param); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? having("%s IS NOT NULL", column) : having("%s <> ?", column).args(arg) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
 	 */
-	public final SQLBuilder havingGreaterThan(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder havingNotEqual(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? having("%s IS NOT NULL", column) : having("%s <> ?", column).args(arg);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : having("%s <> ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 */
+	public final SQLBuilder havingNotEqualIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : having("%s <> ?", column).args(arg);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code  having("%s > ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 */
+	public final SQLBuilder havingGreaterThan(@Nonnull String column, @Nullable Object arg) {
 		return having("%s > ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code having("%s < ?", column).args(param); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : havingGreaterThan(column, arg) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingGreaterThan(String, Object arg)
 	 */
-	public final SQLBuilder havingLess(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder havingGreaterThanIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : havingGreaterThan(column, arg);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code having("%s < ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 */
+	public final SQLBuilder havingLessThan(@Nonnull String column, @Nullable Object arg) {
 		return having("%s < ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code having("%s >= ?", column).args(param); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : havingLessThan(column, arg) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingLessThan(String, Object)
 	 */
-	public final SQLBuilder havingGreaterThanOrEquals(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder havingLessThanIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : havingLessThan(column, arg);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code having("%s >= ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 */
+	public final SQLBuilder havingGreaterThanOrEquals(@Nonnull String column, @Nullable Object arg) {
 		return having("%s >= ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code having("%s <= ?", column).args(param); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : havingGreaterThanOrEquals(column, arg) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingGreaterThanOrEquals(String, Object)
 	 */
-	public final SQLBuilder havingLessOrEquals(@Nonnull String column, @Nonnull Object arg) {
+	public final SQLBuilder havingGreaterThanOrEqualsIfNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : havingGreaterThanOrEquals(column, arg);
+	}
+	
+	/**
+	 * having子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code having("%s <= ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 */
+	public final SQLBuilder havingLessThanOrEquals(@Nonnull String column, @Nullable Object arg) {
 		return having("%s <= ?", column).args(arg);
 	}
 	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(arg) ? this : havingLessThanOrEquals(column, arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingLessThanOrEquals(String, Object)
+	 */
+	public final SQLBuilder havingLessThanOrEqualsIfNotNull(@Nonnull String column, @Nullable Object arg) {
+		return isNull(arg) ? this : havingLessThanOrEquals(column, arg);
+	}
 	
 	/**
-	 * {@code having("%s IN (%s)", column, of(args).map(o -> "?")
-	 * .collect(joining(", "))).args(args); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code having("%s IN (%s)", column, of(args).map(o -> "?").collect(joining(", "))).args(args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see java.util.stream.Stream#of(Object[])
+	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull Object[] args) {
-		Assert.isTrue(args.length > 0, "Having In args can not empty.");
+		Assert.isTrue(args.length > 0, "havingIn args can not be empty.");
 		return having("%s IN (%s)", column, of(args).map(o -> "?")
 				.collect(joining(", "))).args(args);
 	}
 	
 	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, Object[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable Object[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
 	 * {@code havingIn(column, stream(args).boxed().toArray()) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see java.util.Arrays#stream(int[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull double[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, double[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable double[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull float[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code havingIn(column, stream(args).boxed().toArray()); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, float[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable float[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, stream(args).boxed().toArray()) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see java.util.Arrays#stream(int[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull long[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code havingIn(column, stream(args).boxed().toArray()); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : whereIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, long[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable long[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, stream(args).boxed().toArray()) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see java.util.Arrays#stream(int[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull int[] args) {
 		return havingIn(column, stream(args).boxed().toArray());
 	}
 	
 	/**
-	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, int[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable int[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull short[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, short[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable short[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull byte[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, byte[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable byte[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull char[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code havingIn(column, ArrayUtils.toObject(args)); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param args   参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, char[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable char[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code havingIn(column, ArrayUtils.toObject(args)) }
+	 * @param column 条件字段
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see ArrayUtils#toObject(float[])
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingIn(@Nonnull String column, @Nonnull boolean[] args) {
 		return havingIn(column, ArrayUtils.toObject(args));
 	}
 	
 	/**
-	 * {@code having("%s LIKE ?").args(param); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code isNull(args) || args.length <= 0 ? this : havingIn(column, args) }
 	 * @param column 条件字段
-	 * @param arg    参数
-	 * @return ｛@code this｝
+	 * @param args   参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see #havingIn(String, boolean[])
+	 */
+	public final SQLBuilder havingInIfNotEmpty(@Nonnull String column, @Nullable boolean[] args) {
+		return isNull(args) || args.length <= 0 ? this : havingIn(column, args);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code having("%s LIKE ?", column).args(arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingLike(@Nonnull String column, @Nonnull String arg) {
-		return having("%s LIKE ?").args(arg);
+		return having("%s LIKE ?", column).args(arg);
 	}
 	
 	/**
-	 * {@code having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(param); }
-	 * @param columns 搜索的字段
-	 * @param arg     搜索参数
-	 * @return ｛@code this｝
+	 * WHERE子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code  StringUtil.isBlank(arg) ? this : havingLike(column, arg) }
+	 * @param column 条件字段
+	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
+	 * @return {@code this}
+	 * @see StringUtil#isBlank(CharSequence)
+	 * @see #havingLike(String, String)
 	 */
-	public final SQLBuilder havingMatchInBooleanMode(@Nonnull String[] columns, @Nonnull Object arg) {
-		return having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", //
-				StringUtil.join(columns, ',')) //
-				.args(arg);
+	public final SQLBuilder havingLikeIfNotBlank(@Nonnull String column, @Nullable String arg) {
+		return StringUtil.isBlank(arg) ? this : havingLike(column, arg);
 	}
 	
 	/**
-	 * {@code having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ',')).args(param); }
-	 * @param columns 搜索的字段
-	 * @param arg     搜索参数
-	 * @return ｛@code this｝
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil.join(columns, ", ")).args(arg) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see StringUtil#join(Object[], String)
 	 */
-	public final SQLBuilder havingMatch(@Nonnull String[] columns, @Nonnull Object arg) {
-		String string = StringUtil.join(columns, ',');
-		return having("MATCH(%s) AGAINST(?)", string)//
-				.args(arg);
+	public final SQLBuilder havingMatchInBooleanMode(@Nullable String arg, @Nonnull String... columns) {
+		Assert.isTrue(columns.length > 0, "whereMatchInBooleanMode columns can not be empty.");
+		return having("MATCH(%s) AGAINST(? in BOOLEAN MODE)", StringUtil //
+				.join(columns, ", ")).args(arg);
 	}
 	
 	/**
-	 * {@code where("%s BETWEEN ? AND ?", column).args(min, max); }
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code StringUtil.isBlank(arg) ? this : havingMatchInBooleanMode(arg, columns) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see StringUtil#isBlank(CharSequence)
+	 */
+	public final SQLBuilder havingMatchInBooleanModeIfNotBlank(@Nullable String arg, @Nonnull String... columns) {
+		return StringUtil.isBlank(arg) ? this : havingMatchInBooleanMode(arg, columns);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code where("MATCH(%s) AGAINST(?)", StringUtil.join(columns, ',')).args(arg) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see StringUtil#join(Object[], String)
+	 */
+	public final SQLBuilder havingMatch(@Nullable String arg, @Nonnull String... columns) {
+		Assert.isTrue(columns.length > 0, "whereMatch columns can not be empty.");
+		return having("MATCH(%s) AGAINST(?)", StringUtil.join(columns, ',')).args(arg);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code StringUtil.isBlank(arg) ? this : havingMatch(arg, columns) }
+	 * @param arg     参数，该参数不是占位符，是数据库中修改的目标值
+	 * @param columns 字段名称列表
+	 * @return {@code this}
+	 * @see #having(String, Object...)
+	 * @see StringUtil#isBlank(CharSequence)
+	 */
+	public final SQLBuilder havingMatchIfNotBlank(@Nullable String arg, @Nonnull String... columns) {
+		return StringUtil.isBlank(arg) ? this : havingMatch(arg, columns);
+	}
+	
+	/**
+	 * HAVING子句简便写法，调用代码为：
+	 * <br/>
+	 * {@code having("%s BETWEEN ? AND ?", column).args(min, max) }
 	 * @param column 条件字段
 	 * @param min    参数最小值
 	 * @param max    参数最大值
-	 * @return ｛@code this｝
+	 * @return {@code this}
+	 * @see #having(String, Object...)
 	 */
 	public final SQLBuilder havingBetweenAnd(@Nonnull String column, @Nonnull Object min, @Nonnull Object max) {
 		return having("%s BETWEEN ? AND ?", column).args(min, max);
 	}
 	
+	/**
+	 * SELECT语句中的ORDER BY子句
+	 * @param format 子句格式化字符串
+	 * @param args   格式化字符串中的参数
+	 * @return {@code this}
+	 */
 	public final SQLBuilder orderBy(@Nonnull String format, @Nonnull Object... args) {
 		orderBy.addValues(format(format, args));
 		return this;
 	}
 	
 	/**
+	 * ORDER BY子句的简便写法，调用代码为：
+	 * <br />
 	 * {@code of(columns).forEach(column -> orderBy("%s ASC", column)); }
 	 * @param columns 排序字段
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder orderByAsc(@Nonnull String... columns) {
 		of(columns).forEach(column -> orderBy("%s ASC", column));
@@ -990,9 +1661,11 @@ public class SQLBuilder implements EventListener, Serializable {
 	}
 	
 	/**
+	 * ORDER BY子句的简便写法，调用代码为：
+	 * <br />
 	 * {@code of(columns).forEach(column -> orderBy("%s DESC", column)); }
 	 * @param columns 排序字段
-	 * @return ｛@code this｝
+	 * @return {@code this}
 	 */
 	public final SQLBuilder orderByDesc(@Nonnull String... columns) {
 		of(columns).forEach(column -> orderBy("%s DESC", column));
