@@ -4,6 +4,8 @@ import com.mini.core.util.Assert;
 import com.mini.core.util.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,6 +31,7 @@ import static java.util.stream.Stream.of;
  */
 public class SQLBuilder implements EventListener, Serializable {
 	private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatement();
+	private static final Logger log = LoggerFactory.getLogger(SQLBuilder.class);
 	private final OuterJoinStatement outerJoin = new OuterJoinStatement();
 	private final RightJoinStatement rightJoin = new RightJoinStatement();
 	private final LeftJoinStatement leftJoin = new LeftJoinStatement();
@@ -1003,20 +1006,20 @@ public class SQLBuilder implements EventListener, Serializable {
 	/**
 	 * WHERE子句简便写法，调用代码为：
 	 * <br/>
-	 * {@code where("%s LIKE ?", column).args(arg) }
+	 * {@code where("%s LIKE ?", column).args(arg+ "%") }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return {@code this}
 	 * @see #where(String, Object...)
 	 */
 	public final SQLBuilder whereLike(@Nonnull String column, @Nonnull String arg) {
-		return where("%s LIKE ?", column).args(arg);
+		return where("%s LIKE ?", column).args(arg + "%");
 	}
 	
 	/**
 	 * WHERE子句简便写法，调用代码为：
 	 * <br/>
-	 * {@code  StringUtil.isBlank(arg) ? this : whereLike(column, arg) }
+	 * {@code  StringUtil.isBlank(arg) ? this : whereLike(column, arg+ "%") }
 	 * @param column 条件字段
 	 * @param arg    参数，该参数不是占位符，是数据库中修改的目标值
 	 * @return {@code this}
@@ -1024,7 +1027,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @see #whereLike(String, String)
 	 */
 	public final SQLBuilder whereLikeIfNotBlank(@Nonnull String column, @Nullable String arg) {
-		return StringUtil.isBlank(arg) ? this : whereLike(column, arg);
+		return StringUtil.isBlank(arg) ? this : whereLike(column, arg + "%");
 	}
 	
 	/**
@@ -1754,34 +1757,37 @@ public class SQLBuilder implements EventListener, Serializable {
 		if (statement == StatementType.INSERT) {
 			return this.insertString();
 		}
-		
 		// REPLACE 语句
 		if (statement == StatementType.REPLACE) {
 			return this.replaceString();
 		}
-		
 		// DELETE 语句
 		if (statement == StatementType.DELETE) {
 			return this.deleteString();
 		}
-		
 		// UPDATE 语句
 		if (statement == StatementType.UPDATE) {
 			return this.updateString();
 		}
-		
 		// SELECT 语句
 		if (statement == StatementType.SELECT) {
 			return this.selectString();
 		}
-		
-		// INSERT INTO OR ON DUPLICATE KEY UPDATE
+		// INSERT INTO ON DUPLICATE KEY UPDATE
 		if (statement == StatementType.INSERT_UPDATE) {
 			return this.insertOnUpdateString();
 		}
-		
 		// statement为空，语句错误
 		throw new RuntimeException("SQL ERROR!");
+	}
+	
+	/**
+	 * 输出SQL内容
+	 * @return {@code this}
+	 */
+	public synchronized final SQLBuilder println() {
+		log.debug("\n" + this.toString());
+		return this;
 	}
 	
 	@Override
