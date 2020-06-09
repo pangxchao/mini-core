@@ -124,8 +124,7 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 	 * Actually match the given {@code path} against the given {@code pattern}.
 	 * @param pattern   the pattern to match against
 	 * @param path      the path to test
-	 * @param fullMatch whether a full pattern match is required (else a pattern match as far as the given base path
-	 *                  goes is sufficient)
+	 * @param fullMatch whether a full pattern match is required (else a pattern match as far as the given base path  goes is sufficient)
 	 * @return {@code true} if the supplied {@code path} matched, {@code false} if it didn't
 	 */
 	protected boolean doMatch(String pattern, @Nullable String path, boolean fullMatch,
@@ -134,100 +133,100 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 			return false;
 		}
 		
-		String[] pattDirs = tokenizePattern(pattern);
-		if (fullMatch && this.caseSensitive && !isPotentialMatch(path, pattDirs)) {
+		String[] patternDirs = tokenizePattern(pattern);
+		if (fullMatch && this.caseSensitive && !isPotentialMatch(path, patternDirs)) {
 			return false;
 		}
 		
 		String[] pathDirs = tokenizePath(path);
-		int pattIdxStart = 0;
-		int pattIdxEnd = pattDirs.length - 1;
+		int patternIdxStart = 0;
+		int patternIdxEnd = patternDirs.length - 1;
 		int pathIdxStart = 0;
 		int pathIdxEnd = pathDirs.length - 1;
 		
 		// Match all elements up to the first **
-		while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd) {
-			String pattDir = pattDirs[pattIdxStart];
-			if ("**".equals(pattDir)) {
+		while (patternIdxStart <= patternIdxEnd && pathIdxStart <= pathIdxEnd) {
+			String patternDir = patternDirs[patternIdxStart];
+			if ("**".equals(patternDir)) {
 				break;
 			}
-			if (!matchStrings(pattDir, pathDirs[pathIdxStart], uriTemplateVariables)) {
+			if (!matchStrings(patternDir, pathDirs[pathIdxStart], uriTemplateVariables)) {
 				return false;
 			}
-			pattIdxStart++;
+			patternIdxStart++;
 			pathIdxStart++;
 		}
 		
 		if (pathIdxStart > pathIdxEnd) {
 			// Path is exhausted, only match if rest of pattern is * or **'s
-			if (pattIdxStart > pattIdxEnd) {
+			if (patternIdxStart > patternIdxEnd) {
 				return (pattern.endsWith(this.pathSeparator) == path.endsWith(this.pathSeparator));
 			}
 			if (!fullMatch) {
 				return true;
 			}
-			if (pattIdxStart == pattIdxEnd && pattDirs[pattIdxStart].equals("*") && path.endsWith(this.pathSeparator)) {
+			if (patternIdxStart == patternIdxEnd && patternDirs[patternIdxStart].equals("*") && path.endsWith(this.pathSeparator)) {
 				return true;
 			}
-			for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
-				if (!pattDirs[i].equals("**")) {
+			for (int i = patternIdxStart; i <= patternIdxEnd; i++) {
+				if (!patternDirs[i].equals("**")) {
 					return false;
 				}
 			}
 			return true;
-		} else if (pattIdxStart > pattIdxEnd) {
+		} else if (patternIdxStart > patternIdxEnd) {
 			// String not exhausted, but pattern is. Failure.
 			return false;
-		} else if (!fullMatch && "**".equals(pattDirs[pattIdxStart])) {
+		} else if (!fullMatch && "**".equals(patternDirs[patternIdxStart])) {
 			// Path start definitely matches due to "**" part in pattern.
 			return true;
 		}
 		
 		// up to last '**'
-		while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd) {
-			String pattDir = pattDirs[pattIdxEnd];
-			if (pattDir.equals("**")) {
+		while (patternIdxStart <= patternIdxEnd && pathIdxStart <= pathIdxEnd) {
+			String patternDir = patternDirs[patternIdxEnd];
+			if (patternDir.equals("**")) {
 				break;
 			}
-			if (!matchStrings(pattDir, pathDirs[pathIdxEnd], uriTemplateVariables)) {
+			if (!matchStrings(patternDir, pathDirs[pathIdxEnd], uriTemplateVariables)) {
 				return false;
 			}
-			pattIdxEnd--;
+			patternIdxEnd--;
 			pathIdxEnd--;
 		}
 		if (pathIdxStart > pathIdxEnd) {
 			// String is exhausted
-			for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
-				if (!pattDirs[i].equals("**")) {
+			for (int i = patternIdxStart; i <= patternIdxEnd; i++) {
+				if (!patternDirs[i].equals("**")) {
 					return false;
 				}
 			}
 			return true;
 		}
 		
-		while (pattIdxStart != pattIdxEnd && pathIdxStart <= pathIdxEnd) {
+		while (patternIdxStart != patternIdxEnd && pathIdxStart <= pathIdxEnd) {
 			int patIdxTmp = -1;
-			for (int i = pattIdxStart + 1; i <= pattIdxEnd; i++) {
-				if (pattDirs[i].equals("**")) {
+			for (int i = patternIdxStart + 1; i <= patternIdxEnd; i++) {
+				if (patternDirs[i].equals("**")) {
 					patIdxTmp = i;
 					break;
 				}
 			}
-			if (patIdxTmp == pattIdxStart + 1) {
+			if (patIdxTmp == patternIdxStart + 1) {
 				// '**/**' situation, so skip one
-				pattIdxStart++;
+				patternIdxStart++;
 				continue;
 			}
 			// Find the pattern between padIdxStart & padIdxTmp in str between
 			// strIdxStart & strIdxEnd
-			int patLength = (patIdxTmp - pattIdxStart - 1);
+			int patLength = (patIdxTmp - patternIdxStart - 1);
 			int strLength = (pathIdxEnd - pathIdxStart + 1);
 			int foundIdx = -1;
 			
 			strLoop:
 			for (int i = 0; i <= strLength - patLength; i++) {
 				for (int j = 0; j < patLength; j++) {
-					String subPat = pattDirs[pattIdxStart + j + 1];
+					String subPat = patternDirs[patternIdxStart + j + 1];
 					String subStr = pathDirs[pathIdxStart + i + j];
 					if (!matchStrings(subPat, subStr, uriTemplateVariables)) {
 						continue strLoop;
@@ -241,12 +240,12 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 				return false;
 			}
 			
-			pattIdxStart = patIdxTmp;
+			patternIdxStart = patIdxTmp;
 			pathIdxStart = foundIdx + patLength;
 		}
 		
-		for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
-			if (!pattDirs[i].equals("**")) {
+		for (int i = patternIdxStart; i <= patternIdxEnd; i++) {
+			if (!patternDirs[i].equals("**")) {
 				return false;
 			}
 		}
@@ -254,14 +253,14 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 		return true;
 	}
 	
-	private boolean isPotentialMatch(String path, String[] pattDirs) {
+	private boolean isPotentialMatch(String path, String[] patternDirs) {
 		int pos = 0;
-		for (String pattDir : pattDirs) {
+		for (String patternDir : patternDirs) {
 			int skipped = skipSeparator(path, pos, this.pathSeparator);
 			pos += skipped;
-			skipped = skipSegment(path, pos, pattDir);
-			if (skipped < pattDir.length()) {
-				return (skipped > 0 || (pattDir.length() > 0 && isWildcardChar(pattDir.charAt(0))));
+			skipped = skipSegment(path, pos, patternDir);
+			if (skipped < patternDir.length()) {
+				return (skipped > 0 || (patternDir.length() > 0 && isWildcardChar(patternDir.charAt(0))));
 			}
 			pos += skipped;
 		}
@@ -307,7 +306,7 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 	 * Tokenize the given path pattern into parts, based on this matcher's settings.
 	 * <p>
 	 * Performs caching based on {@link #setCachePatterns}, delegating to {@link #tokenizePath(String)} for the actual
-	 * tokenization algorithm.
+	 * tokenized algorithm.
 	 * @param pattern the pattern to tokenize
 	 * @return the tokenized pattern parts
 	 */
@@ -625,8 +624,7 @@ public class PathMatcherAnt implements PathMatcher, EventListener {
 	protected static class AntPathStringMatcher {
 		
 		@SuppressWarnings("RegExpRedundantEscape")
-		private static final Pattern GLOB_PATTERN = Pattern.compile("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)" +
-				"\\}");
+		private static final Pattern GLOB_PATTERN = Pattern.compile("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}");
 		
 		private static final String DEFAULT_VARIABLE_PATTERN = "(.*)";
 		

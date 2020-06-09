@@ -38,8 +38,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Singleton
 public final class Configures implements EventListener, Serializable {
-	private static final Logger log = getLogger(Configures.class);
 	private static final PathMatcher MATCHER = new PathMatcherAnt();
+	private static final Logger log = getLogger(Configures.class);
 	private static final String TEMP_KEY = "java.io.tmpdir";
 	
 	/**
