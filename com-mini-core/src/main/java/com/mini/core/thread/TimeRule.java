@@ -20,38 +20,31 @@ public final class TimeRule implements Serializable, EventListener {
 	}
 	
 	public final boolean secondMatch(int value) {
-		return second.isEmpty() || second.stream() //
-				.anyMatch(v -> v == value);
+		return second.isEmpty() || second.stream().anyMatch(v -> v == value);
 	}
 	
 	public final boolean minuteMatch(int value) {
-		return minute.isEmpty() || minute.stream() //
-				.anyMatch(v -> v == value);
+		return minute.isEmpty() || minute.stream().anyMatch(v -> v == value);
 	}
 	
 	public final boolean monthMatch(int value) {
-		return month.isEmpty() || month.stream() //
-				.anyMatch(v -> v == value);
+		return month.isEmpty() || month.stream().anyMatch(v -> v == value);
 	}
 	
 	public final boolean hourMatch(int value) {
-		return hour.isEmpty() || hour.stream() //
-				.anyMatch(v -> v == value);
+		return hour.isEmpty() || hour.stream().anyMatch(v -> v == value);
 	}
 	
 	public final boolean yearMatch(int value) {
-		return year.isEmpty() || year.stream() //
-				.anyMatch(v -> v == value);
+		return year.isEmpty() || year.stream().anyMatch(v -> v == value);
 	}
 	
 	public final boolean weekMatch(int value) {
-		return week.isEmpty() || week.stream() //
-				.anyMatch(v -> v == value);
+		return week.isEmpty() || week.stream().anyMatch(v -> v == value);
 	}
 	
 	public final boolean dayMatch(int value) {
-		return day.isEmpty() || day.stream() //
-				.anyMatch(v -> v == value);
+		return day.isEmpty() || day.stream().anyMatch(v -> v == value);
 	}
 	
 	@Nonnull

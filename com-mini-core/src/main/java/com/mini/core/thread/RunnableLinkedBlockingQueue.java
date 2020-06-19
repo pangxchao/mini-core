@@ -3,37 +3,36 @@ package com.mini.core.thread;
 
 import org.slf4j.Logger;
 
+import java.io.Serializable;
+import java.util.EventListener;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static com.mini.core.thread.ScheduledThreadExecutor.execute;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public final class RunnableLinkedBlockingQueue {
-	private static final Logger log = getLogger(RunnableLinkedBlockingQueue.class);
+public final class RunnableLinkedBlockingQueue implements EventListener, Serializable {
 	private static final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
+	private static final Logger log = getLogger(RunnableLinkedBlockingQueue.class);
 	private static boolean flag = false;
 	
 	// 队列监听启动
-	protected synchronized static void start() {
-		// 如果线程正在运行则不处理
-		if (RunnableLinkedBlockingQueue.flag) {
-			return;
-		}
-		// 标记线程下在运行中
-		RunnableLinkedBlockingQueue.flag = true;
-		// 开启一个线程来处理队列任务
-		ScheduledThreadExecutor.thread(() -> {
-			while (RunnableLinkedBlockingQueue.flag) {
+	private synchronized static void start() {
+		if (!RunnableLinkedBlockingQueue.flag) {
+			ScheduledThreadExecutor.thread(() -> {
 				try {
-					// 使用阻塞模式获取队列消息
-					Runnable runnable = queue.take();
-					// 将获取消息交由线程池处理
-					ScheduledThreadExecutor.execute(runnable);
-				} catch (Exception | Error e) {
+					flag = true;
+					for (Runnable runnable; flag; ) {
+						runnable = queue.take();
+						execute(runnable);
+					}
+				} catch (InterruptedException e) {
 					log.error(e.getMessage(), e);
+				} finally {
+					flag = false;
 				}
-			}
-		});
+			});
+		}
 	}
 	
 	/**
@@ -44,7 +43,7 @@ public final class RunnableLinkedBlockingQueue {
 		try {
 			RunnableLinkedBlockingQueue.queue.put(runnable);
 			RunnableLinkedBlockingQueue.start();
-		} catch (Exception | Error e) {
+		} catch (InterruptedException e) {
 			log.error(e.getMessage(), e);
 		}
 	}

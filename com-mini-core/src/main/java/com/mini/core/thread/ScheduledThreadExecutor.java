@@ -1,6 +1,9 @@
 package com.mini.core.thread;
 
+import javax.annotation.Nonnull;
+import java.io.Serializable;
 import java.util.Calendar;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.RunnableScheduledFuture;
@@ -8,6 +11,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Calendar.*;
 
@@ -15,16 +19,15 @@ import static java.util.Calendar.*;
  * - 开启后台执行任务和定时任务
  * @author xchao
  */
-public final class ScheduledThreadExecutor {
+public final class ScheduledThreadExecutor implements EventListener, Serializable {
+	private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2 * getRuntime().availableProcessors());
 	private static final Map<String, ScheduledFuture<?>> futures = new HashMap<>();
-	private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(//
-			2 * Runtime.getRuntime().availableProcessors());
 	
 	/**
 	 * 在后台线程执行一个任务
 	 * @param runnable 任务内容
 	 */
-	public static void execute(Runnable runnable) {
+	public static void execute(@Nonnull Runnable runnable) {
 		executor.execute(runnable);
 	}
 	
@@ -33,8 +36,7 @@ public final class ScheduledThreadExecutor {
 	 * @param runnable 任务内容
 	 * @param delay    延时时间
 	 */
-	
-	public static void schedule(Runnable runnable, long delay) {
+	public static void schedule(@Nonnull Runnable runnable, long delay) {
 		schedule(runnable, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -44,7 +46,7 @@ public final class ScheduledThreadExecutor {
 	 * @param delay    延时时间
 	 * @param unit     时间单位
 	 */
-	public static void schedule(Runnable runnable, long delay, TimeUnit unit) {
+	public static void schedule(@Nonnull Runnable runnable, long delay, @Nonnull TimeUnit unit) {
 		executor.schedule(runnable, delay, unit);
 	}
 	
@@ -54,8 +56,7 @@ public final class ScheduledThreadExecutor {
 	 * @param runnable 任务内容
 	 * @param delay    延时时间
 	 */
-	
-	public static void schedule(String id, Runnable runnable, long delay) {
+	public static void schedule(@Nonnull String id, @Nonnull Runnable runnable, long delay) {
 		schedule(id, runnable, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -66,8 +67,14 @@ public final class ScheduledThreadExecutor {
 	 * @param delay    延时时间
 	 * @param unit     时间单位
 	 */
-	public static void schedule(String id, Runnable runnable, long delay, TimeUnit unit) {
-		futures.put(id, executor.schedule(runnable, delay, unit));
+	public static void schedule(@Nonnull String id, @Nonnull Runnable runnable, long delay, @Nonnull TimeUnit unit) {
+		futures.put(id, executor.schedule(() -> {
+			try {
+				runnable.run();
+			} finally {
+				futures.remove(id);
+			}
+		}, delay, unit));
 	}
 	
 	/**
@@ -76,8 +83,7 @@ public final class ScheduledThreadExecutor {
 	 * @param delay    上次开始到下次开始的时间间隔
 	 * @param unit     时间单位
 	 */
-	
-	public static void scheduleAtFixedRate(Runnable runnable, long delay, TimeUnit unit) {
+	public static void scheduleAtFixedRate(@Nonnull Runnable runnable, long delay, @Nonnull TimeUnit unit) {
 		executor.scheduleAtFixedRate(runnable, 0, delay, unit);
 	}
 	
@@ -87,8 +93,7 @@ public final class ScheduledThreadExecutor {
 	 * @param initialDelay 第一次延迟的时间
 	 * @param delay        上次开始到下次开始的时间间隔
 	 */
-	
-	public static void scheduleAtFixedRate(Runnable runnable, long initialDelay, long delay) {
+	public static void scheduleAtFixedRate(@Nonnull Runnable runnable, long initialDelay, long delay) {
 		scheduleAtFixedRate(runnable, initialDelay, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -99,7 +104,7 @@ public final class ScheduledThreadExecutor {
 	 * @param delay        上次开始到下次开始的时间间隔
 	 * @param unit         时间单位
 	 */
-	public static void scheduleAtFixedRate(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
+	public static void scheduleAtFixedRate(@Nonnull Runnable runnable, long initialDelay, long delay, @Nonnull TimeUnit unit) {
 		executor.scheduleAtFixedRate(runnable, initialDelay, delay, unit);
 	}
 	
@@ -109,7 +114,7 @@ public final class ScheduledThreadExecutor {
 	 * @param initialDelay 第一次延迟的时间
 	 * @param delay        上次开始到下次开始的时间间隔
 	 */
-	public static void scheduleAtFixedRate(String id, Runnable runnable, long initialDelay, long delay) {
+	public static void scheduleAtFixedRate(@Nonnull String id, @Nonnull Runnable runnable, long initialDelay, long delay) {
 		scheduleAtFixedRate(id, runnable, initialDelay, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -120,9 +125,14 @@ public final class ScheduledThreadExecutor {
 	 * @param delay        上次开始到下次开始的时间间隔
 	 * @param unit         时间单位
 	 */
-	public static void scheduleAtFixedRate(String id, Runnable runnable, long initialDelay, long delay,
-			TimeUnit unit) {
-		futures.put(id, executor.scheduleAtFixedRate(runnable, initialDelay, delay, unit));
+	public static void scheduleAtFixedRate(@Nonnull String id, @Nonnull Runnable runnable, long initialDelay, long delay, @Nonnull TimeUnit unit) {
+		futures.put(id, executor.scheduleAtFixedRate(() -> {
+			try {
+				runnable.run();
+			} finally {
+				futures.remove(id);
+			}
+		}, initialDelay, delay, unit));
 	}
 	
 	/**
@@ -130,8 +140,7 @@ public final class ScheduledThreadExecutor {
 	 * @param runnable 任务内容
 	 * @param delay    上次任务结束到下次任务开始的时间间隔
 	 */
-	
-	public static void scheduleWithFixedDelay(Runnable runnable, long delay) {
+	public static void scheduleWithFixedDelay(@Nonnull Runnable runnable, long delay) {
 		scheduleWithFixedDelay(runnable, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -141,7 +150,7 @@ public final class ScheduledThreadExecutor {
 	 * @param delay    上次任务结束到下次任务开始的时间间隔
 	 * @param unit     时间单位
 	 */
-	public static void scheduleWithFixedDelay(Runnable runnable, long delay, TimeUnit unit) {
+	public static void scheduleWithFixedDelay(@Nonnull Runnable runnable, long delay, @Nonnull TimeUnit unit) {
 		executor.scheduleWithFixedDelay(runnable, 0, delay, unit);
 	}
 	
@@ -151,8 +160,7 @@ public final class ScheduledThreadExecutor {
 	 * @param initialDelay 第一次延迟的时间
 	 * @param delay        上次任务结束到下次任务开始的时间间隔
 	 */
-	
-	public static void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay) {
+	public static void scheduleWithFixedDelay(@Nonnull Runnable runnable, long initialDelay, long delay) {
 		scheduleWithFixedDelay(runnable, initialDelay, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -163,7 +171,7 @@ public final class ScheduledThreadExecutor {
 	 * @param delay        上次任务结束到下次任务开始的时间间隔
 	 * @param unit         时间单位
 	 */
-	public static void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
+	public static void scheduleWithFixedDelay(@Nonnull Runnable runnable, long initialDelay, long delay, @Nonnull TimeUnit unit) {
 		executor.scheduleWithFixedDelay(runnable, initialDelay, delay, unit);
 	}
 	
@@ -174,8 +182,7 @@ public final class ScheduledThreadExecutor {
 	 * @param initialDelay 第一次延迟的时间
 	 * @param delay        上次任务结束到下次任务开始的时间间隔
 	 */
-	
-	public static void scheduleWithFixedDelay(String id, Runnable runnable, long initialDelay, long delay) {
+	public static void scheduleWithFixedDelay(@Nonnull String id, @Nonnull Runnable runnable, long initialDelay, long delay) {
 		scheduleWithFixedDelay(id, runnable, initialDelay, delay, TimeUnit.MILLISECONDS);
 	}
 	
@@ -187,9 +194,48 @@ public final class ScheduledThreadExecutor {
 	 * @param delay        上次任务结束到下次任务开始的时间间隔
 	 * @param unit         时间单位
 	 */
-	public static void scheduleWithFixedDelay(String id, Runnable runnable, long initialDelay, long delay,
-			TimeUnit unit) {
-		futures.put(id, executor.scheduleWithFixedDelay(runnable, initialDelay, delay, unit));
+	public static void scheduleWithFixedDelay(@Nonnull String id, @Nonnull Runnable runnable, long initialDelay, long delay, @Nonnull TimeUnit unit) {
+		futures.put(id, executor.scheduleWithFixedDelay(() -> {
+			try {
+				runnable.run();
+			} finally {
+				futures.remove(id);
+			}
+		}, initialDelay, delay, unit));
+	}
+	
+	/**
+	 * 根据时间规则开启一个定时任务
+	 * @param runnable 任务内容
+	 * @param rule     时间规则
+	 */
+	public static void scheduleAtTimeRule(@Nonnull Runnable runnable, @Nonnull TimeRule rule) {
+		final long delay = 1000 - currentTimeMillis() % 1000;
+		ScheduledThreadExecutor.scheduleAtFixedRate(() -> {
+			final Calendar c = Calendar.getInstance();
+			if (!rule.secondMatch(c.get(SECOND))) {
+				return; // 秒
+			}
+			if (!rule.minuteMatch(c.get(MINUTE))) {
+				return; // 分
+			}
+			if (!rule.hourMatch(c.get(HOUR_OF_DAY))) {
+				return; // 时
+			}
+			if (!rule.dayMatch(c.get(DAY_OF_MONTH))) {
+				return; // 日
+			}
+			if (!rule.monthMatch(c.get(MONTH))) {
+				return; // 月
+			}
+			if (!rule.weekMatch(c.get(DAY_OF_WEEK))) {
+				return; // 周
+			}
+			if (!rule.yearMatch(c.get(YEAR))) {
+				return; // 年
+			}
+			runnable.run();
+		}, delay, 1000);
 	}
 	
 	/**
@@ -198,7 +244,7 @@ public final class ScheduledThreadExecutor {
 	 * @param runnable 任务内容
 	 * @param rule     时间规则
 	 */
-	public static void scheduleAtTimeRule(String id, Runnable runnable, TimeRule rule) {
+	public static void scheduleAtTimeRule(@Nonnull String id, @Nonnull Runnable runnable, @Nonnull TimeRule rule) {
 		final long delay = 1000 - currentTimeMillis() % 1000;
 		ScheduledThreadExecutor.scheduleAtFixedRate(id, () -> {
 			final Calendar c = Calendar.getInstance();
@@ -236,11 +282,20 @@ public final class ScheduledThreadExecutor {
 	}
 	
 	/**
+	 * 是否在指定在定时任务正在运行
+	 * @param id 定时任务唯一识别码
+	 * @return true-是
+	 */
+	public static boolean has(@Nonnull String id) {
+		return futures.containsKey(id);
+	}
+	
+	/**
 	 * 取消未执行的延时任务
 	 * @param id 定时器ID
 	 */
-	public static void cancel(String id) {
-		ScheduledFuture<?> future = futures.get(id);
+	public static void cancel(@Nonnull final String id) {
+		final ScheduledFuture<?> future = futures.get(id);
 		if (future instanceof RunnableScheduledFuture) {
 			executor.remove((Runnable) future);
 			future.cancel(false);

@@ -26,7 +26,6 @@ public final class EventExecutor implements Serializable {
 		EVENT.unregister(object);
 	}
 	
-	
 	/**
 	 * 发送通知
 	 * @param event 事件对象

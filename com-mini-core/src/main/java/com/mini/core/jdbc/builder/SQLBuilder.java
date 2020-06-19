@@ -718,7 +718,7 @@ public class SQLBuilder implements EventListener, Serializable {
 	 * @see #where(String, Object...)
 	 * @see #whereGreaterThanOrEquals(String, Object)
 	 */
-	public final SQLBuilder whereGreaterThanOrEqualsIfNull(@Nonnull String column, @Nullable Object arg) {
+	public final SQLBuilder whereGreaterThanOrEqualsIfNotNull(@Nonnull String column, @Nullable Object arg) {
 		return isNull(arg) ? this : whereGreaterThanOrEquals(column, arg);
 	}
 	
