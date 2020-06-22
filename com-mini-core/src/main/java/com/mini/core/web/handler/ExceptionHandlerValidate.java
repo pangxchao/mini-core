@@ -43,7 +43,7 @@ public final class ExceptionHandlerValidate implements ExceptionHandler {
 			var message = getMessage(e.getKey(), e.getMessage(), bundle, e.getArgs().toArray());
 			model.setStatus(e.getStatus()).setMessage(message);
 			// 输出调试日志
-			log.debug(format("%s(%s)", request.getRequestURI(), e.getMessage()));
+			log.info(format("%s(%s)", request.getRequestURI(), e.getMessage()));
 		} catch (Exception | Error e) {
 			throw hidden(e);
 		}

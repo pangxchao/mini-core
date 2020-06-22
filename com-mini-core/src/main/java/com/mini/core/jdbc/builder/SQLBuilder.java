@@ -4,8 +4,6 @@ import com.mini.core.util.Assert;
 import com.mini.core.util.StringUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +29,6 @@ import static java.util.stream.Stream.of;
  */
 public class SQLBuilder implements EventListener, Serializable {
 	private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatement();
-	private static final Logger log = LoggerFactory.getLogger(SQLBuilder.class);
 	private final OuterJoinStatement outerJoin = new OuterJoinStatement();
 	private final RightJoinStatement rightJoin = new RightJoinStatement();
 	private final LeftJoinStatement leftJoin = new LeftJoinStatement();
@@ -1779,15 +1776,6 @@ public class SQLBuilder implements EventListener, Serializable {
 		}
 		// statement为空，语句错误
 		throw new RuntimeException("SQL ERROR!");
-	}
-	
-	/**
-	 * 输出SQL内容
-	 * @return {@code this}
-	 */
-	public synchronized final SQLBuilder println() {
-		log.debug("\n" + this.toString());
-		return this;
 	}
 	
 	@Override
