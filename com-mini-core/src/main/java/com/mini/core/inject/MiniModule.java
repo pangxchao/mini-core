@@ -5,13 +5,14 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import com.mini.core.inject.annotation.ComponentScan;
 import com.mini.core.inject.annotation.PropertySource;
-import com.mini.core.jdbc.transaction.TransInterceptor;
+import com.mini.core.jdbc.transaction.TransactionInterceptor;
 import com.mini.core.jdbc.transaction.TransactionEnable;
 import com.mini.core.jdbc.transaction.Transactional;
 import com.mini.core.util.MiniProperties;
 
 import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.util.EventListener;
 
 import static com.google.inject.Key.get;
 import static com.google.inject.matcher.Matchers.annotatedWith;
@@ -19,7 +20,7 @@ import static com.google.inject.matcher.Matchers.any;
 import static com.google.inject.name.Names.named;
 import static com.mini.core.util.MiniProperties.createProperties;
 
-public abstract class MiniModule implements Module {
+public abstract class MiniModule implements Module, EventListener {
 	
 	@Override
 	public synchronized final void configure(Binder binder) {
@@ -35,7 +36,7 @@ public abstract class MiniModule implements Module {
 		// 开启事务
 		if (this.getAnnotation(TransactionEnable.class) != null) {
 			// 创建事务拦截器对象并注入属性
-			TransInterceptor interceptor = new TransInterceptor();
+			TransactionInterceptor interceptor = new TransactionInterceptor();
 			binder.requestInjection(interceptor);
 			
 			// 配置事务拦截器到指定方法上
@@ -45,6 +46,16 @@ public abstract class MiniModule implements Module {
 	}
 	
 	protected abstract void onStartup(Binder binder);
+	
+	/**
+	 * 绑定字符串
+	 * @param binder 绑定器
+	 * @param name   绑定名称
+	 * @param value  绑定值
+	 */
+	public final <T> void bind(Binder binder, String name, T value, Class<T> type) {
+		binder.bind(get(type, named(name))).toInstance(value);
+	}
 	
 	/**
 	 * 绑定字符串
@@ -146,6 +157,11 @@ public abstract class MiniModule implements Module {
 		return this.getClass().getAnnotation(clazz);
 	}
 	
+	// 获取当前类PropertySource注解信息
+	public final PropertySource[] getPropertySources() {
+		return getAnnotationsByType(PropertySource.class);
+	}
+	
 	// 获取当前类ComponentScan注解信息
 	public final ComponentScan getComponentScan() {
 		return getAnnotation(ComponentScan.class);
@@ -160,10 +176,5 @@ public abstract class MiniModule implements Module {
 		ComponentScan scan = getComponentScan();
 		if (scan == null) return new String[0];
 		return scan.value();
-	}
-	
-	// 获取当前类PropertySource注解信息
-	public final PropertySource[] getPropertySources() {
-		return getAnnotationsByType(PropertySource.class);
 	}
 }

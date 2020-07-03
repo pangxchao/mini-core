@@ -16,12 +16,12 @@ public final class MysqlJdbcTemplate extends JdbcTemplate {
 	@Nonnull
 	@Override
 	public final String totals(String str) {
-		return StringUtils.join("select count(*) from (", str, ") t");
+		return StringUtils.join("SELECT COUNT(*) FROM (", str, ") t");
 	}
 	
 	@Nonnull
 	@Override
 	protected String paging(int start, int limit, String str) {
-		return StringUtils.join(str, " limit ", start, ", ", limit);
+		return StringUtils.join(str, " LIMIT ", start, ", ", limit);
 	}
 }

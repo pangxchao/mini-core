@@ -30,7 +30,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 	}
 	
 	@Nonnull
-	protected final Connection getConnection() throws SQLException {
+	private Connection getConnection() throws SQLException {
 		Holder connection = RESOURCES.get().get(dataSource);
 		if (connection == null || connection.isClosed()) {
 			connection = JdbcAccessor.create(dataSource);
@@ -182,54 +182,32 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 				}
 				
 				public final void startTransaction() throws SQLException {
-					if (transactionCount > 0) {
-						transactionCount++;
+					if (Holder.this.transactionCount > 0) {
+						Holder.this.transactionCount++;
 						return;
 					}
-					setAutoCommit(false);
-					transactionCount = 1;
+					Holder.this.setAutoCommit(false);
+					Holder.this.transactionCount = 1;
+					this.point = setSavepoint();
 				}
 				
-				public final Savepoint setSavepoint() throws SQLException {
-					this.point = Holder.this.setSavepoint();
-					return this.point;
-				}
-				
-				@SuppressWarnings("unused")
-				public final Savepoint setSavepoint(String name) throws SQLException {
-					this.point = Holder.this.setSavepoint(name);
-					return this.point;
-				}
-				
-				@SuppressWarnings("unused")
-				public final void transactionRollback(Savepoint point) throws SQLException {
-					Holder.this.rollback(point);
-					this.point = null;
-				}
-				
-				public final void endTransaction(boolean trans_commit) throws SQLException {
+				public final void endTransaction(boolean commit) throws SQLException {
 					try {
-						// 事务计数 -1
 						Holder.this.transactionCount--;
-						if (!trans_commit && point != null) {
+						if (!commit && point != null) {
 							rollback(point);
 						}
 					} finally {
-						// 所有事务完成处理
 						if (transactionCount <= 0) {
 							boolean rollback = true;
 							try {
-								if (trans_commit) {
+								if (commit) {
 									commit();
 									rollback = false;
 								}
 							} finally {
-								try {
-									if (rollback) {
-										rollback();
-									}
-								} finally {
-									setAutoCommit(true);
+								if (rollback) {
+									rollback();
 								}
 							}
 						}
@@ -602,29 +580,6 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 		void startTransaction() throws SQLException;
 		
 		/**
-		 * 事务中保存一个回滚点
-		 * @return 回滚点
-		 */
-		Savepoint setSavepoint() throws SQLException;
-		
-		/**
-		 * 事务中保存一个回滚点
-		 * @param name 保存点名称
-		 * @return 回滚点
-		 */
-		Savepoint setSavepoint(String name) throws SQLException;
-		
-		/**
-		 * 回滚事务到指定回滚点
-		 * @param point 指定回滚保存点
-		 * @see Connection#setAutoCommit(boolean)
-		 * @see Connection#rollback(Savepoint)
-		 * @see Connection#rollback()
-		 * @see Connection#commit()
-		 */
-		void transactionRollback(Savepoint point) throws SQLException;
-		
-		/**
 		 * 结束一个数据库事务
 		 * @param commit true-提交
 		 * @see Connection#setAutoCommit(boolean)
@@ -633,6 +588,7 @@ public abstract class JdbcAccessor implements EventListener, Serializable {
 		 * @see Connection#commit()
 		 */
 		void endTransaction(boolean commit) throws SQLException;
+		
 	}
 	
 	// JTA 事务接口

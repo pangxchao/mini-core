@@ -16,15 +16,16 @@ public final class OracleJdbcTemplate extends JdbcTemplate {
 	@Nonnull
 	@Override
 	public String totals(String str) {
-		return StringUtils.join("select count(*) from (", str, ") t");
+		return StringUtils.join("SELECT COUNT(*) FROM (", str, ") t");
 	}
 	
 	@Nonnull
 	@Override
 	public String paging(int start, int limit, String str) {
-		return StringUtils.join("select * from (", //
-				"   select max_count.*, rownum row_number from (", str, ") max_count where rownum <= ",
-				(start + limit),
-				") max_count_rownum where row_number > ", limit);
+		return StringUtils.join("SELECT MAX_COUNT_ROWNUM.* FROM ( \n", //
+				"   SELECT MAX_COUNT.*, rownum ROW_NUMBER FROM ( \n",
+				"      ", str, " \n",
+				"   ) MAX_COUNT WHERE rownum <= ", (start + limit), "\n",
+				") MAX_COUNT_ROWNUM WHERE ROW_NUMBER > ", limit, "\n");
 	}
 }

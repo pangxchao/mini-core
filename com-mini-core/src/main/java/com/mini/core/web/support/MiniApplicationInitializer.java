@@ -44,6 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.mini.core.util.ClassUtil.scanner;
 import static com.mini.core.util.FileUtil.getFileExt;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -94,23 +95,6 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 				}
 			}
 		});
-		// 配置默认视图实现类
-		CONFIGURES.setPageViewResolver(JspPageViewResolver.class);
-		// 注册默认 HttpServlet
-		CONFIGURES.addServlet(DispatcherHttpServlet.class, registration -> {
-			registration.addUrlPatterns(CONFIGURES.getDefaultMapping());
-			registration.setName("DispatcherHttpServlet");
-		});
-		// 编码统一管理过虑器
-		CONFIGURES.addFilter(CharacterEncodingFilter.class, registration -> {
-			registration.setName("CharacterEncodingFilter");
-			registration.addUrlPatterns("/*");
-		});
-		// 跨域请求过虑器
-		CONFIGURES.addFilter(AccessControlAllowOriginFilter.class, registration -> {
-			registration.setName("AccessControlAllowOriginFilter");
-			registration.addUrlPatterns("/*");
-		});
 		// 验证异常处理器/其它普通异常处理器
 		CONFIGURES.addExceptionHandler(ExceptionHandlerValidate.class);
 		CONFIGURES.addExceptionHandler(ExceptionHandlerDefault.class);
@@ -145,11 +129,28 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		CONFIGURES.addArgumentResolver(ArgumentResolverBeanRequestHeader.class);
 		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestHeader.class);
 		CONFIGURES.addArgumentResolver(ArgumentResolverMapRequestHeaderArray.class);
+		// 配置默认视图实现类
+		CONFIGURES.setPageViewResolver(JspPageViewResolver.class);
+		// 编码统一管理过虑器
+		CONFIGURES.addFilter(CharacterEncodingFilter.class, registration -> {
+			registration.setName("CharacterEncodingFilter");
+			registration.addUrlPatterns("/*");
+		});
+		// 跨域请求过虑器
+		CONFIGURES.addFilter(AccessControlAllowOriginFilter.class, registration -> {
+			registration.setName("AccessControlAllowOriginFilter");
+			registration.addUrlPatterns("/*");
+		});
 		// 初始化项目自定义配置信息
 		for (WebApplicationInitializer config : configList) {
 			config.onStartupRegister(context, CONFIGURES);
 			registerActionProxy(injector, config);
 		}
+		// 注册默认 HttpServlet
+		CONFIGURES.addServlet(DispatcherHttpServlet.class, registration -> {
+			registration.addUrlPatterns(CONFIGURES.getDefaultMapping());
+			registration.setName("DispatcherHttpServlet");
+		});
 		// 绑定 Servlet、Filter、listener
 		CONFIGURES.getServlets().forEach(servlet -> servlet.register(context));
 		CONFIGURES.getFilters().forEach(filter -> filter.register(context));
@@ -160,11 +161,8 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 	private void registerActionProxy(Injector injector, WebApplicationInitializer config) {
 		// 获取需要扫描的所有包
 		Stream.concat(of(config.getClass().getPackageName()), ofNullable(config.getClass()
-				.getAnnotation(ComponentScan.class))
-				.map(ComponentScan::value)
-				.stream()
-				.flatMap(Stream::of))
-				.map(name -> ClassUtil.scanner(name, Controller.class))
+				.getAnnotation(ComponentScan.class)).map(ComponentScan::value).stream()
+				.flatMap(Stream::of)).map(name -> scanner(name, Controller.class))
 				.flatMap(Collection::stream).distinct().forEach(clazz -> {
 			// 获取类上的注解信息
 			Controller controller = clazz.getAnnotation(Controller.class);
@@ -312,8 +310,7 @@ public final class MiniApplicationInitializer implements ServletContainerInitial
 		Assert.notBlank(methodPath);
 		
 		// 获取完整的视图路径
-		return StringUtils.strip(typePath + SEP //
-				+ methodPath, SEP);
+		return StringUtils.strip(typePath + SEP + methodPath, SEP);
 	}
 	
 	@Nonnull

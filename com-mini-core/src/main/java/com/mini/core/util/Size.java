@@ -1,11 +1,11 @@
 package com.mini.core.util;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static java.lang.Math.min;
 
 public class Size implements Serializable {
-	private static final long serialVersionUID = 1L;
 	public double width, height;
 	
 	public Size(double width, double height) {
@@ -75,7 +75,7 @@ public class Size implements Serializable {
 	}
 	
 	public String toString() {
-		return "Size(" + width + ", " + height + ")";
+		return "Size(width=" + width + ", height=" + height + ")";
 	}
 	
 	public boolean equals(final Object obj) {

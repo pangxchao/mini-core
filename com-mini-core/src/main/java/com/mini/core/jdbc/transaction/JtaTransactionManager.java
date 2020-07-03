@@ -14,31 +14,26 @@ import static java.util.Objects.requireNonNull;
  * @author xchao
  */
 @Singleton
-public final class JtaTransManager implements TransManager {
+public final class JtaTransactionManager implements TransactionManager {
 	private final UserTransaction transaction;
 	
 	@Inject
-	public JtaTransManager(@Nullable UserTransaction transaction) {
+	public JtaTransactionManager(@Nullable UserTransaction transaction) {
 		this.transaction = transaction;
 	}
 	
 	@Override
-	public <T> T open(TransManagerCallback<T> callback) {
+	public <T> T open(TransactionManagerCallback<T> callback) {
 		var userTrans = requireNonNull(transaction);
 		return transaction(userTrans, trans -> {
 			try {
 				boolean commit = false;
 				try {
-					// 开始事务
 					trans.startTransaction();
-					// 调用目标方法
 					T t = callback.apply();
-					// 标记提交
 					commit = true;
-					// 返回
 					return t;
 				} finally {
-					// 结束当前事务 (true-提交)
 					trans.endTransaction(commit);
 				}
 			} catch (Throwable e) {

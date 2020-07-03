@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.mini.core.jdbc.util.JdbcUtil.full;
 import static java.sql.ResultSet.CONCUR_READ_ONLY;
@@ -49,9 +50,8 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final int execute(String str, Object... params) {
-		return execute((PreparedStatementCreator) con -> {
-			return con.prepareStatement(str); //
-		}, stm -> full(stm, params).executeUpdate());
+		return execute((PreparedStatementCreator) con -> con.prepareStatement(str),
+				stm -> full(stm, params).executeUpdate());
 	}
 	
 	@Override
@@ -61,8 +61,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final int execute(HolderGenerated holder, String str, Object... params) {
-		return execute((PreparedStatementCreator) con -> con.prepareStatement(//
-				str, RETURN_GENERATED_KEYS), stm -> {
+		return execute((PreparedStatementCreator) con -> con.prepareStatement(str, RETURN_GENERATED_KEYS), stm -> {
 			int result = full(stm, params).executeUpdate();
 			try (ResultSet rs = stm.getGeneratedKeys()) {
 				holder.setValue(rs);
@@ -165,8 +164,8 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Override
 	public final <T> List<T> queryList(String str, Mapper<T> m, Object... params) {
 		return JdbcTemplate.this.query(str, rs -> {
-			List<T> result = new ArrayList<>();
-			while (rs != null && rs.next()) {
+			final List<T> result = new ArrayList<>();
+			while (Objects.nonNull(rs) && rs.next()) {
 				result.add(m.get(rs, rs.getRow()));
 			}
 			return result;
@@ -335,8 +334,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	@Nullable
 	@Override
 	public final <T> T queryObject(String str, Mapper<T> m, Object... params) {
-		return query(paging(0, 1, str), rs -> rs.next() ? m.get(rs, //
-				rs.getRow()) : null, params);
+		return query(paging(0, 1, str), rs -> rs.next() ? m.get(rs, rs.getRow()) : null, params);
 	}
 	
 	@Nullable
@@ -443,7 +441,7 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final short queryShortVal(String str, Object[] params) {
-		Short value = this.queryShort(str, params);
+		final Short value = this.queryShort(str, params);
 		return ofNullable(value).orElse((short) 0);
 	}
 	
@@ -467,13 +465,13 @@ public abstract class JdbcTemplate extends JdbcAccessor implements JdbcInterface
 	
 	@Override
 	public final byte queryByteVal(String str, Object[] params) {
-		Byte value = this.queryByte(str, params);
+		final Byte value = this.queryByte(str, params);
 		return ofNullable(value).orElse((byte) 0);
 	}
 	
 	@Override
 	public final byte queryByteVal(SQLBuilder builder) {
-		Byte value = this.queryByte(builder);
+		final Byte value = this.queryByte(builder);
 		return ofNullable(value).orElse((byte) 0);
 	}
 	
