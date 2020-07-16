@@ -1679,7 +1679,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		table.builder(builder);
 		columns.builder(builder);
 		values.builder(builder);
-		return builder.toString(); //
+		return builder.toString();
 	}
 	
 	// Replace Into
@@ -1689,7 +1689,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		table.builder(builder);
 		columns.builder(builder);
 		values.builder(builder);
-		return builder.toString(); //
+		return builder.toString();
 	}
 	
 	// Delete Into
@@ -1702,7 +1702,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		rightJoin.builder(builder);
 		outerJoin.builder(builder);
 		this.where.builder(builder);
-		return builder.toString(); //
+		return builder.toString();
 	}
 	
 	// Update Into
@@ -1715,7 +1715,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		outerJoin.builder(builder);
 		this.set.builder(builder);
 		this.where.builder(builder);
-		return builder.toString(); //
+		return builder.toString();
 	}
 	
 	// Select Into
@@ -1732,7 +1732,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		this.groupBy.builder(builder);
 		this.having.builder(builder);
 		this.orderBy.builder(builder);
-		return builder.toString(); //
+		return builder.toString();
 	}
 	
 	private String insertOnUpdateString() throws Error {
@@ -1742,7 +1742,7 @@ public class SQLBuilder implements EventListener, Serializable {
 		columns.builder(builder);
 		values.builder(builder);
 		onDuplicateKeyUpdate.builder(builder);
-		return builder.toString(); //
+		return builder.toString();
 	}
 	
 	/**
