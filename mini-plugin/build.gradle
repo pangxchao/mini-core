@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        maven { url "https://plugins.gradle.org/m2/" }
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        //noinspection SpellCheckingInspection
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.21"
+    }
+}
+
+//noinspection SpellCheckingInspection
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: "java"
+apply plugin: 'idea'
+
+group 'com.mini'
+version '1.0'
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = JavaVersion.VERSION_1_8
+//noinspection GroovyUnusedAssignment
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    //noinspection SpellCheckingInspection,GrUnresolvedAccess
+    implementation 'org.apache.poi:poi-ooxml:3.5-FINAL'
+    //noinspection GrUnresolvedAccess,SpellCheckingInspection
+    implementation 'com.squareup:javapoet:1.11.1'
+    //noinspection GrUnresolvedAccess
+    testImplementation 'junit:junit:4.12'
+}
+
+//noinspection GrUnresolvedAccess
+intellij {
+    //noinspection GrUnresolvedAccess
+    updateSinceUntilBuild false
+    plugins = ['DatabaseTools']
+    //noinspection GrUnresolvedAccess
+    pluginName 'Mini Code'
+    version '2019.1'
+    //noinspection GrUnresolvedAccess
+    type 'IU'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}

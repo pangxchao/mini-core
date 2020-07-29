@@ -1,0 +1,113 @@
+<!--suppress PluginXmlValidity -->
+<idea-plugin>
+    <!-- 插件ID配置 -->
+    <id>com.mini.plugin.MiniCode</id>
+    <!-- 插件名称配置 -->
+    <name>Mini Code</name>
+    <!-- 插件版本配置 -->
+    <version>1.0.0-RELEASE</version>
+    <!-- 开发者信息 -->
+    <vendor email="pang.xchao@qq.com" url="www.weijiangtai.com">
+        Mini Code Plugin
+    </vendor>
+
+    <!-- 插件介绍 -->
+    <description><![CDATA[
+        <tag>MiniCode,Mini Code,mini,code,code generate,code tools</tag>
+        <h3>English:</h3>
+        <ul>
+            <li>The code generation plug-in based on Intellij IDEA is developed to support custom templates (Java, HTML, JS, XML).</li>
+            <li>As long as database related code can be generated through custom templates. Support database type and Java type mapping
+                relationship configuration.
+            </li>
+            <li>The code that supports generating multiple tables at the same time. Each table has a separate configuration information.
+                Full personalization definition, the rules are set by you.
+            </li>
+        </ul>
+        <h3>中文：</h3>
+        <ul>
+            <li>基于Intellij IDEA开发的代码生成插件，支持自定义任意模板（Java、html、js、xml）。</li>
+            <li>只要是与数据库相关的代码都可以通过自定义模板来生成。支持数据库类型与java类型映射关系配置。</li>
+            <li>支持同时生成生成多张表的代码。每张表有独立的配置信息。完全的个性化定义，规则由你设置。</li>
+        </ul>
+    ]]></description>
+
+    <!-- 插件版本介绍 -->
+    <change-notes><![CDATA[
+        <p>1.0.0-SNAPSHOT</p>
+        <ul>
+            <li>1.Support custom templates (based on velocity)</li>
+            <li>2.Support custom table information and add extension attributes</li>
+            <li>3.Support to generate multiple tables and multiple template codes at the same time</li>
+            <li>4.Support to generate any code related to the database</li>
+            <li>5.Based on Database Tool development, support a varied of databases</li>
+        </ul>
+        <ul>
+            <li>1.支持自定义模板(基于Groovy语言)</li>
+            <li>2.支持定制表信息，以及添加扩展属性</li>
+            <li>3.支持同时生成多张表与多个模板代码</li>
+            <li>4.支持生成与数据库相关的任何代码</li>
+            <li>5.基于Database Tool开发，支持多种数据库</li>
+        </ul>
+        <p>More <a href="https://github.com/makejavas/EasyCode">Help Info</a>.</p>
+    ]]></change-notes>
+    <idea-version since-build="183.0"/>
+
+    <!--必须为企业版-->
+    <depends>com.intellij.modules.lang</depends>
+    <!--必须依赖 Database 插件-->
+    <depends>com.intellij.database</depends>
+    <!-- 扩展配置、高亮语法、语言支持等 -->
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable instance="com.mini.plugin.ui.MainSetting" dynamic="true"/>
+        <applicationService serviceImplementation="com.mini.plugin.config.Settings"/>
+    </extensions>
+
+    <actions>
+        <!-- 数据库表右键菜单分组 -->
+        <group class="com.mini.plugin.action.DBActionGroup"
+               id="com.mini.plugin.action.DBActionGroup"
+               description="Mini core"
+               text="Mini-Core"
+               popup="true">
+            <!-- 挂载到数据库表右键菜单的第一个位置 -->
+            <add-to-group relative-to-action="Jdbc.OpenEditor.DDL"
+                          group-id="DatabaseViewPopupMenu"
+                          anchor="first"/>
+            <!-- 代码生成动作 -->
+            <action class="com.mini.plugin.action.GenerateCode"
+                    id="com.mini.plugin.action.GenerateCode"
+                    description="Mini core generate code"
+                    text="Generate Code">
+            </action>
+            <!-- 表配置动作 -->
+            <action class="com.mini.plugin.action.TableConfig"
+                    id="com.mini.plugin.action.TableConfig"
+                    description="Mini core table config"
+                    text="Table Config">
+            </action>
+            <!-- 表配置动作 -->
+            <action class="com.mini.plugin.action.Dictionaries"
+                    description="Mini core table Dictionaries"
+                    id="com.mini.plugin.action.Dictionaries"
+                    text="Dictionaries">
+            </action>
+            <!-- 创建表语句 -->
+            <action class="com.mini.plugin.action.Creations"
+                    description="Mini core table Creations"
+                    id="com.mini.plugin.action.Creations"
+                    text="Creations">
+            </action>
+        </group>
+
+        <action class="com.mini.plugin.action.BuilderAction"
+                id="com.mini.plugin.action.BuilderAction"
+                description="Mini builder"
+                text="Mini Builder">
+            <add-to-group relative-to-action="JavaGenerateGroup2"
+                          group-id="GenerateGroup"
+                          anchor="after"/>
+        </action>
+    </actions>
+
+</idea-plugin>
