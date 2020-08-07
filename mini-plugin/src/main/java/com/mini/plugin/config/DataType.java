@@ -9,6 +9,7 @@ import java.io.Serializable;
  * 数据类型映射表格信息
  * @author xchao
  */
+@SuppressWarnings("UnusedReturnValue")
 public final class DataType extends AbstractClone<DataType> implements Serializable {
 	private String databaseType;
 	private String nullJavaType;

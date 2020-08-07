@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractTableModel<T> extends DefaultTableModel {
-	private List<CellUpdatedListener> callChangeListener = new ArrayList<>();
+	private final List<CellUpdatedListener> callChangeListener = new ArrayList<>();
 	
 	public void addCallChangeListener(CellUpdatedListener listener) {
 		this.callChangeListener.add(listener);

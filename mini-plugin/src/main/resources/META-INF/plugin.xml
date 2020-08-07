@@ -99,15 +99,6 @@
                     text="Creations">
             </action>
         </group>
-
-        <action class="com.mini.plugin.action.BuilderAction"
-                id="com.mini.plugin.action.BuilderAction"
-                description="Mini builder"
-                text="Mini Builder">
-            <add-to-group relative-to-action="JavaGenerateGroup2"
-                          group-id="GenerateGroup"
-                          anchor="after"/>
-        </action>
     </actions>
 
 </idea-plugin>

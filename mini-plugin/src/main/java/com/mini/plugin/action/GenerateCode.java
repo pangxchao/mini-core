@@ -19,6 +19,7 @@ import static java.util.Arrays.stream;
 public class GenerateCode extends AnAction implements EventListener {
 	
 	@Override
+	@SuppressWarnings("DuplicatedCode")
 	public void actionPerformed(@NotNull AnActionEvent event) {
 		PsiElement[] elements = event.getData(PSI_ELEMENT_ARRAY);
 		final Project project = GenerateCode.getEventProject(event);
@@ -39,6 +40,7 @@ public class GenerateCode extends AnAction implements EventListener {
 	}
 	
 	@Override
+	@SuppressWarnings("DuplicatedCode")
 	public synchronized void update(@NotNull AnActionEvent event) {
 		PsiElement[] elements = event.getData(PSI_ELEMENT_ARRAY);
 		final Project project = GenerateCode.getEventProject(event);

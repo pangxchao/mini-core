@@ -1,6 +1,6 @@
 rootProject.name = 'mini-core'
-include 'mini-util'
-include 'mini-jdbc'
+include 'mini-core'
 include 'mini-mvc'
 include 'mini-plugin'
+include 'mini-test'
 

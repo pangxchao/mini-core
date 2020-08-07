@@ -25,17 +25,22 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-    jcenter()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     //noinspection SpellCheckingInspection,GrUnresolvedAccess
-    implementation 'org.apache.poi:poi-ooxml:3.5-FINAL'
-    //noinspection GrUnresolvedAccess,SpellCheckingInspection
-    implementation 'com.squareup:javapoet:1.11.1'
+    compile 'org.apache.poi:poi-ooxml:3.5-FINAL'
+    //noinspection SpellCheckingInspection
+    compile 'org.projectlombok:lombok:1.18.10'
+    //noinspection GrUnresolvedAccess,SpellCheckingInspectiond
+    compile "com.squareup:kotlinpoet:1.6.0"
+    //noinspection GrUnresolvedAccess,SpellCheckingInspectiond
+    compile 'com.squareup:javapoet:1.11.1'
+    compile 'com.mini:mini-core:1.0'
     //noinspection GrUnresolvedAccess
-    testImplementation 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
 }
 
 //noinspection GrUnresolvedAccess

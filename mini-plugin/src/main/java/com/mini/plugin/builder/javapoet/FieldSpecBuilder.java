@@ -1,6 +1,5 @@
 package com.mini.plugin.builder.javapoet;
 
-import com.mini.plugin.builder.AbstractBuilder;
 import com.squareup.javapoet.*;
 import com.squareup.javapoet.FieldSpec.Builder;
 

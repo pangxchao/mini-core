@@ -1,10 +1,11 @@
+import com.mini.core.jdbc.DaoInterface
+import com.mini.core.jdbc.builder.SQLBuilder
 import com.mini.plugin.builder.javapoet.MethodSpecBuilder
 import com.mini.plugin.builder.javapoet.TypeSpecBuilder
 import com.mini.plugin.config.TableInfo
-import com.mini.plugin.util.ColumnUtil
 import com.squareup.javapoet.JavaFile
 
-import static com.mini.plugin.util.GroovyUtil.*
+import static com.mini.plugin.util.GroovyUtil.typeName
 import static javax.lang.model.element.Modifier.DEFAULT
 import static javax.lang.model.element.Modifier.PUBLIC
 
@@ -14,106 +15,65 @@ MethodSpecBuilder method
 TypeSpecBuilder builder
 
 // 定义类的声明
-builder = TypeSpecBuilder.interfaceBuilder(daoBaseName(info))
+builder = TypeSpecBuilder.interfaceBuilder(info.daoBaseName())
 builder.addModifiers(PUBLIC)
-builder.addSuperinterface(jdbcInterfaceClass())
+builder.addSuperinterface(typeName(DaoInterface.class, info.beanClass()))
 builder.addJavadoc('$L Base Dao \n', info.getComment())
 builder.addJavadoc('@author xchao \n')
 
 // 生成 deleteById 方法
 method = MethodSpecBuilder.methodBuilder('deleteById')
-method.methodBuilder('deleteById')
 method.addModifiers(DEFAULT, PUBLIC)
 method.returns(int.class)
-method.addJavadoc('删除$L \n', info.getComment())
-info.getColumnMap().forEach({ key, column ->
-	if (column.isId()) {
-		method.addParameter(ColumnUtil.getColumnType(column), column.getFieldName())
-		method.addJavadoc('@param $N $N \n', column.getFieldName(), column.getComment())
-	}
-})
-method.addJavadoc('@return 执行结果 \n')
-method.addCode('return execute(new $T() {{ \n ', sqlBuilderClass())
-if (info.getColumnMap().values().stream().anyMatch({ return it.isDel() })) {
-	method.addStatement('\tthis.update($T.$L)', beanClass(info), info.getTableName().toUpperCase())
-	info.getColumnMap().forEach({ key, column ->
-		if (column.isDel()) {
-			method.addStatement('\tsetEquals($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
-		}
-		if (column.isLock()) {
-			method.addStatement('\tsetEquals($T.$L, $T.currentTimeMillis())', beanClass(info), column.getColumnName().toUpperCase(), System.class)
-		}
-	})
-} else {
-	method.addStatement('\tdelete().from($T.$L)', beanClass(info), info.getTableName().toUpperCase())
+// 生成参数
+info.getColumnMap().values().stream().filter { it.isId() }.forEach { it ->
+    method.addParameter(it.getType(), it.getFieldName())
 }
-info.getColumnMap().forEach({ key, column ->
-	if (column.isId()) {
-		method.addStatement('\twhereEquals($T.$L, $N)', beanClass(info), column.getColumnName().toUpperCase(), column.getFieldName())
-	}
-})
-method.addStatement('}})')
-builder.addMethod(method.build())
+method.addCode('return execute(new $T({ \n ', SQLBuilder.class)
+if (info.getColumnMap().values().stream().anyMatch({ it.isDel() })) {
+    method.addStatement('\tUPDATE(%T.$L)', info.beanClass(), info.tableName)
+    info.getColumnMap().values().stream().filter { it.isDel() }.forEach { it ->
+        method.addStatement('\tSET($L.$L + " = ?")', info.beanClass(), it.columnName)
+        method.addStatement('\tARGS($S)', it.delValue)
+    }
+    info.getColumnMap().values().stream().filter { it.isLock() }.forEach { it ->
+        method.addStatement('\tSET($L.$L + " = ?")', info.beanClass(), it.columnName)
+        method.addStatement('\tARGS(System.currentTimeMillis())')
+    }
+    info.getColumnMap().values().stream().filter { it.isUpdateAt() }.forEach { it ->
+        method.addStatement('\tSET($L.$L + " = ?")', info.beanClass(), it.columnName)
+        method.addStatement('\tARGS(new $T())', Date.class)
+    }
+} else {
+    method.addStatement('\tDELETE().FROM(%T.$L)', info.beanClass(), info.tableName)
+}
+info.getColumnMap().values().stream().filter { it.isId() || it.isLock() }.forEach { it ->
+    method.addStatement('\tWHERE($L.$L + " = ?")', info.beanClass(), it.columnName)
+    method.addStatement('\tARGS($L)', it.fieldName)
+}
+method.addStatement('}))')
 
-// 生成 queryById 方法
+
+// 生成 queryById方法
 method = MethodSpecBuilder.methodBuilder('queryById')
 method.addModifiers(DEFAULT, PUBLIC)
-method.returns(beanClass(info))
-method.addJavadoc('根据ID查询实体信息 \n')
-info.getColumnMap().forEach({ key, column ->
-	if (column.isId()) {
-		method.addParameter(ColumnUtil.getColumnType(column), column.getFieldName())
-		method.addJavadoc('@param $N $N \n', column.getFieldName(), column.getComment())
-	}
-})
-method.addJavadoc('@return 实体信息 \n')
-method.addCode('return queryObject(new $T($T.class) {{ \n', sqlBuilderClass(), beanClass(info))
-info.getColumnMap().forEach({ key, column ->
-	if (column.isId()) {
-		method.addStatement('\twhereEquals($T.$L, $N)', beanClass(info), column.getColumnName().toUpperCase(), column.getFieldName())
-	}
-	if (column.isDel()) {
-		method.addStatement('\twhereNotEqual($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
-	}
-})
-method.addStatement('}}, $T.class)', beanClass(info))
-builder.addMethod(method.build())
+method.returns(info.beanClass())
+info.getColumnMap().values().stream().filter { it.isId() }.forEach { it ->
+    method.addParameter(it.getType(), it.getFieldName())
+}
+method.addCode('return queryObject(new $T({ \n ', SQLBuilder.class)
+method.addStatement('\tSELECT_FROM_JOIN(%T.class)', info.beanClass())
+info.getColumnMap().values().stream().filter { it.isId() }.forEach { it ->
+    method.addStatement('\tWHERE($L.$L + " = ?")', info.beanClass(), it.columnName)
+    method.addStatement('\tARGS($L)', it.fieldName)
+}
+info.getColumnMap().values().stream().filter { it.isDel() }.forEach { it ->
+    method.addStatement('\tSET($L.$L + " = ?")', info.beanClass(), it.columnName)
+    method.addStatement('\tARGS($S)', it.delValue)
+}
+method.addStatement('}), $T)', info.beanClass())
 
-// 生成 queryAll 方法
-method = MethodSpecBuilder.methodBuilder('queryAll')
-method.methodBuilder('queryAll')
-method.addModifiers(DEFAULT, PUBLIC)
-method.returns(getParameterizedTypeName(List.class, beanClass(info))) //
-method.addJavadoc('查询所有实体信息 \n') //
-method.addJavadoc('@return 实体信息列表 \n') //
-method.addCode('return queryList(new $T($T.class) {{ \n', sqlBuilderClass(), beanClass(info))
-info.getColumnMap().forEach({ key, column ->
-	if (column.isDel()) {
-		method.addStatement('\twhereNotEqual($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
-	}
-})
-method.addStatement('}},  $T.class)', beanClass(info))
-builder.addMethod(method.build())
-
-// 生成 queryAll(Paging) 方法
-method = MethodSpecBuilder.methodBuilder('queryAll')
-method.addModifiers(DEFAULT, PUBLIC)
-method.returns(getParameterizedTypeName(pagingClass(), beanClass(info)))
-method.addParameter(int.class, 'page')
-method.addParameter(int.class, 'limit')
-method.addJavadoc('查询所有实体信息 \n')
-method.addJavadoc('@param $N 分页-页码数\n', 'page')
-method.addJavadoc('@param $N 分页- 每页条数\n', 'limit')
-method.addJavadoc('@return 实体信息列表 \n')
-method.addCode('return queryPaging(page, limit, new $T($T.class)  {{ \n', sqlBuilderClass(), beanClass(info))
-info.getColumnMap().forEach({ key, column ->
-	if (column.isDel()) {
-		method.addStatement('\twhereNotEqual($T.$L, $S)', beanClass(info), column.getColumnName().toUpperCase(), column.getDelValue())
-	}
-})
-method.addStatement('}},  $T.class)', beanClass(info))
-builder.addMethod(method.build())
 
 // 返回JavaFile信息
-return JavaFile.builder(daoBasePackage(info),
-		builder.build()).build()
+return JavaFile.builder(info.daoBasePackage(),
+        builder.build()).build()
