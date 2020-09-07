@@ -6,7 +6,6 @@ import com.mini.core.jdbc.JdbcTemplate;
 import com.mini.core.jdbc.MysqlJdbcTemplate;
 import com.mini.core.mvc.support.WebApplicationInitializer;
 import com.mini.core.mvc.support.config.Configures;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

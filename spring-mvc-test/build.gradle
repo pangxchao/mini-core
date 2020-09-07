@@ -17,8 +17,9 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-devtools"
     compile "org.springframework.boot:spring-boot-starter"
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compileOnly "org.projectlombok:lombok:1.18.12"
     compile "mysql:mysql-connector-java:8.0.18"
-    compile 'org.projectlombok:lombok:1.18.10'
     compile "com.mini:spring-mvc:1.0"
     compile "com.mini:mini-jdbc:1.0"
 

@@ -5,9 +5,10 @@ apply plugin: "java"
 apply plugin: "war"
 
 dependencies {
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compileOnly "javax.servlet:javax.servlet-api:4.0.1"
+    compileOnly "org.projectlombok:lombok:1.18.12"
     compile "mysql:mysql-connector-java:8.0.18"
-    compile 'org.projectlombok:lombok:1.18.10'
     compile "com.mini:mini-util:1.0"
     compile project(":mini-core")
-
 }
