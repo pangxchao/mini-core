@@ -1,3 +1,4 @@
+//noinspection SpellCheckingInspection
 apply plugin: "org.jetbrains.kotlin.jvm"
 apply plugin: "maven-publish"
 apply plugin: "java-library"
@@ -6,37 +7,11 @@ apply plugin: "java"
 apply plugin: "idea"
 
 dependencies {
-    //noinspection GrUnresolvedAccess,SpellCheckingInspection
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-    //noinspection GrUnresolvedAccess,SpellCheckingInspection
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    //noinspection GrUnresolvedAccess
-    implementation "junit:junit:$junit_version"
-
-    compile 'org.apache.commons:commons-lang3:3.9'
-    compile 'com.google.guava:guava:28.2-jre'
-    compile 'com.google.auto.service:auto-service:1.0-rc6'
-    //noinspection SpellCheckingInspection
-    compile 'com.google.inject:guice:4.2.3'
-    //noinspection SpellCheckingInspection
-    compile 'com.google.inject.extensions:guice-multibindings:4.2.3'
-    compile 'javax.inject:javax.inject:1'
-    compile 'aopalliance:aopalliance:1.0'
-    compile 'javax.transaction:transaction-api:1.1'
-    //noinspection SpellCheckingInspection
-    compile 'com.alibaba:fastjson:1.2.47'
-    compile 'org.ow2.asm:asm-tree:7.1'
-    compile 'org.slf4j:slf4j-api:2.0.0-alpha1'
-    compile 'ch.qos.logback:logback-classic:1.3.0-alpha5'
-    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
-tasks.withType(Javadoc) {
-    options.encoding = "UTF-8"
+    compile "org.hibernate.validator:hibernate-validator:6.1.5.Final"
+    compile "org.springframework:spring-context:$spring_version"
+    compileOnly "javax.servlet:javax.servlet-api:4.0.1"
+    compile "com.alibaba:fastjson:1.2.47"
+    compile "com.mini:mini-util:1.0"
 }
 
 publishing {
@@ -48,8 +23,11 @@ publishing {
         }
     }
 
+    //noinspection GroovyAssignabilityCheck
     repositories {
-        maven { url = "file:D:/workspace-maven-git/maven/" }
+        maven {
+            url = "file:D:/workspace-maven-git/maven/"
+        }
         mavenLocal()
     }
 }

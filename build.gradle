@@ -1,15 +1,21 @@
+//noinspection GroovyAssignabilityCheck
 buildscript {
     ext {
         spring_dependency_management = "1.0.9.RELEASE"
-        spring_boot_version = "2.3.1.RELEASE"
-        spring_version = "5.2.7.RELEASE"
-        kotlin_version = "1.4.0-rc"
+        spring_boot_version = "2.3.3.RELEASE"
+        spring_version = "5.2.8.RELEASE"
+        kotlin_version = "1.4.0"
         junit_version = "4.12"
     }
 
+    //noinspection GroovyAssignabilityCheck
     repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/repositories/releases/" }
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+        maven {
+            url "http://maven.aliyun.com/nexus/content/repositories/releases/"
+        }
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap'
+        }
         mavenCentral()
         mavenLocal()
         jcenter()
@@ -24,13 +30,42 @@ buildscript {
 }
 
 allprojects {
+    //noinspection GroovyAssignabilityCheck
     repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/repositories/releases/" }
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-        mavenCentral()
         mavenLocal()
-        jcenter()
-        google()
+        maven {
+            url "http://maven.aliyun.com/nexus/content/repositories/releases/"
+            content {
+                excludeGroupByRegex "com.mini"
+            }
+        }
+        maven {
+            url "https://raw.github.com/pangxchao/maven/master"
+            content {
+                includeGroup "com.mini"
+            }
+        }
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap'
+            content {
+                excludeGroup "com.mini"
+            }
+        }
+        mavenCentral() {
+            content {
+                excludeGroup "com.mini"
+            }
+        }
+        jcenter() {
+            content {
+                excludeGroup "com.mini"
+            }
+        }
+        google() {
+            content {
+                excludeGroup "com.mini"
+            }
+        }
     }
 }
 
@@ -78,6 +113,8 @@ subprojects {
 
     // 指定编译的编码
     tasks.withType(JavaCompile) {
+//        options.compilerArgs.add "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
+//        options.compilerArgs.add "-parameters"
         options.encoding = "UTF-8"
     }
 

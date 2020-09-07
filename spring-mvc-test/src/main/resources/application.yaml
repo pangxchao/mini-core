@@ -1,0 +1,31 @@
+#logging:
+#  config: classpath:logback.xml
+server:
+  port: 8088
+  servlet:
+    context-path: /mini
+spring:
+  application:
+    name: mini-mvc
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/mini_test?serverTimezone=GMT%2B8&characterEncoding=utf8&useUnicode=true&useSSL=false
+    username: root
+    password: Qwe123456!
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: true
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        format_sql: true
+
+
+
+

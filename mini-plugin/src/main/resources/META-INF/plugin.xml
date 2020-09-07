@@ -5,7 +5,7 @@
     <!-- 插件名称配置 -->
     <name>Mini Code</name>
     <!-- 插件版本配置 -->
-    <version>1.0.0-RELEASE</version>
+    <version>1.0</version>
     <!-- 开发者信息 -->
     <vendor email="pang.xchao@qq.com" url="www.weijiangtai.com">
         Mini Code Plugin
@@ -34,20 +34,18 @@
 
     <!-- 插件版本介绍 -->
     <change-notes><![CDATA[
-        <p>1.0.0-SNAPSHOT</p>
+        <p>1.0</p>
         <ul>
-            <li>1.Support custom templates (based on velocity)</li>
-            <li>2.Support custom table information and add extension attributes</li>
-            <li>3.Support to generate multiple tables and multiple template codes at the same time</li>
-            <li>4.Support to generate any code related to the database</li>
-            <li>5.Based on Database Tool development, support a varied of databases</li>
+            <li>1.Support custom templates (based on Groovy)</li>
+            <li>2.Support to generate multiple tables and multiple template codes at the same time</li>
+            <li>3.Support to generate any code related to the database</li>
+            <li>4.Based on Database Tool development, support a varied of databases</li>
         </ul>
         <ul>
             <li>1.支持自定义模板(基于Groovy语言)</li>
-            <li>2.支持定制表信息，以及添加扩展属性</li>
-            <li>3.支持同时生成多张表与多个模板代码</li>
-            <li>4.支持生成与数据库相关的任何代码</li>
-            <li>5.基于Database Tool开发，支持多种数据库</li>
+            <li>2.支持同时生成多张表与多个模板代码</li>
+            <li>3.支持生成与数据库相关的任何代码</li>
+            <li>4.基于Database Tool开发，支持多种数据库</li>
         </ul>
         <p>More <a href="https://github.com/makejavas/EasyCode">Help Info</a>.</p>
     ]]></change-notes>
@@ -59,7 +57,7 @@
     <depends>com.intellij.database</depends>
     <!-- 扩展配置、高亮语法、语言支持等 -->
     <extensions defaultExtensionNs="com.intellij">
-        <applicationConfigurable instance="com.mini.plugin.ui.MainSetting" dynamic="true"/>
+        <applicationConfigurable instance="com.mini.plugin.ui.SettingCoreMain" dynamic="true"/>
         <applicationService serviceImplementation="com.mini.plugin.config.Settings"/>
     </extensions>
 
@@ -74,10 +72,10 @@
             <add-to-group relative-to-action="Jdbc.OpenEditor.DDL"
                           group-id="DatabaseViewPopupMenu"
                           anchor="first"/>
-            <!-- 代码生成动作 -->
+            <!--  代码生成动作 -->
             <action class="com.mini.plugin.action.GenerateCode"
                     id="com.mini.plugin.action.GenerateCode"
-                    description="Mini core generate code"
+                    description="Mini core generate Code"
                     text="Generate Code">
             </action>
             <!-- 表配置动作 -->
