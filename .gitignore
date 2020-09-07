@@ -1,12 +1,34 @@
-/build/
-/sn.mini.java.jdbc/build
-/sn.mini.java.jdbc/target
-/sn.mini.java.test/out
-/sn.mini.java.util/out
-/sn.mini.java.web/out
-/com.mini.util/target
-/com-mini-mvc-test/target
-/com-mini-mvc/target
-/com-mini-code/target
-/com-mini-core/target
-/com-mini-code/src/main/java/com/mini/code/*.java
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
