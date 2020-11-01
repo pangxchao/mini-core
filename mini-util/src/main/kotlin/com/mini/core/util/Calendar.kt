@@ -4,7 +4,6 @@
 package com.mini.core.util
 
 import java.util.*
-import java.util.Calendar.*
 
 
 /**
@@ -21,7 +20,7 @@ fun Calendar.format(format: String = DATE_TIME): String {
  * @return ｛@code this｝
  */
 fun Calendar.addMillisecond(value: Int): Calendar {
-    this.add(MILLISECOND, value)
+    this.add(Calendar.MILLISECOND, value)
     return this
 }
 
@@ -31,7 +30,7 @@ fun Calendar.addMillisecond(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addSecond(value: Int): Calendar {
-    this.add(SECOND, value)
+    this.add(Calendar.SECOND, value)
     return this
 }
 
@@ -41,7 +40,7 @@ fun Calendar.addSecond(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addMinute(value: Int): Calendar {
-    this.add(MINUTE, value)
+    this.add(Calendar.MINUTE, value)
     return this
 }
 
@@ -51,7 +50,7 @@ fun Calendar.addMinute(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addHourOfDay(value: Int): Calendar {
-    this.add(HOUR_OF_DAY, value)
+    this.add(Calendar.HOUR_OF_DAY, value)
     return this
 }
 
@@ -61,7 +60,7 @@ fun Calendar.addHourOfDay(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addDayOfMonth(value: Int): Calendar {
-    this.add(DAY_OF_MONTH, value)
+    this.add(Calendar.DAY_OF_MONTH, value)
     return this
 }
 
@@ -71,7 +70,7 @@ fun Calendar.addDayOfMonth(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addDayOfWeek(value: Int): Calendar {
-    this.add(DAY_OF_WEEK, value)
+    this.add(Calendar.DAY_OF_WEEK, value)
     return this
 }
 
@@ -81,7 +80,7 @@ fun Calendar.addDayOfWeek(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addMonth(value: Int): Calendar {
-    this.add(MONTH, value)
+    this.add(Calendar.MONTH, value)
     return this
 }
 
@@ -91,7 +90,7 @@ fun Calendar.addMonth(value: Int): Calendar {
  * @return ｛@code this｝
  */
 fun Calendar.addYear(value: Int): Calendar {
-    this.add(YEAR, value)
+    this.add(Calendar.YEAR, value)
     return this
 }
 
@@ -100,7 +99,7 @@ fun Calendar.addYear(value: Int): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfSecond(): Calendar {
-    set(MILLISECOND, getActualMinimum(MILLISECOND))
+    set(Calendar.MILLISECOND, getActualMinimum(Calendar.MILLISECOND))
     return this
 }
 
@@ -109,7 +108,7 @@ fun Calendar.getStartOfSecond(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfSecond(): Calendar {
-    set(MILLISECOND, getActualMaximum(MILLISECOND))
+    set(Calendar.MILLISECOND, getActualMaximum(Calendar.MILLISECOND))
     return this
 }
 
@@ -118,7 +117,7 @@ fun Calendar.getEndOfSecond(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfMinute(): Calendar {
-    set(SECOND, getActualMinimum(SECOND))
+    set(Calendar.SECOND, getActualMinimum(Calendar.SECOND))
     return getStartOfSecond()
 }
 
@@ -127,7 +126,7 @@ fun Calendar.getStartOfMinute(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfMinute(): Calendar {
-    set(SECOND, getActualMaximum(SECOND))
+    set(Calendar.SECOND, getActualMaximum(Calendar.SECOND))
     return getEndOfSecond()
 }
 
@@ -136,7 +135,7 @@ fun Calendar.getEndOfMinute(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfHour(): Calendar {
-    set(MINUTE, getActualMinimum(MINUTE))
+    set(Calendar.MINUTE, getActualMinimum(Calendar.MINUTE))
     return getStartOfMinute()
 }
 
@@ -145,7 +144,7 @@ fun Calendar.getStartOfHour(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfHour(): Calendar {
-    set(MINUTE, getActualMaximum(MINUTE))
+    set(Calendar.MINUTE, getActualMaximum(Calendar.MINUTE))
     return getEndOfMinute()
 }
 
@@ -154,7 +153,7 @@ fun Calendar.getEndOfHour(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfDay(): Calendar {
-    set(HOUR_OF_DAY, getActualMinimum(HOUR_OF_DAY))
+    set(Calendar.HOUR_OF_DAY, getActualMinimum(Calendar.HOUR_OF_DAY))
     return getStartOfHour()
 }
 
@@ -163,7 +162,7 @@ fun Calendar.getStartOfDay(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfDay(): Calendar {
-    set(HOUR_OF_DAY, getActualMaximum(HOUR_OF_DAY))
+    set(Calendar.HOUR_OF_DAY, getActualMaximum(Calendar.HOUR_OF_DAY))
     return getEndOfHour()
 }
 
@@ -172,7 +171,7 @@ fun Calendar.getEndOfDay(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfWeek(): Calendar {
-    set(DAY_OF_WEEK, getActualMinimum(DAY_OF_WEEK))
+    set(Calendar.DAY_OF_WEEK, getActualMinimum(Calendar.DAY_OF_WEEK))
     return getStartOfDay()
 }
 
@@ -181,7 +180,7 @@ fun Calendar.getStartOfWeek(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfWeek(): Calendar {
-    set(DAY_OF_WEEK, getActualMaximum(DAY_OF_WEEK))
+    set(Calendar.DAY_OF_WEEK, getActualMaximum(Calendar.DAY_OF_WEEK))
     return getEndOfDay()
 }
 
@@ -190,7 +189,7 @@ fun Calendar.getEndOfWeek(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfMonth(): Calendar {
-    set(DAY_OF_MONTH, getActualMinimum(DAY_OF_MONTH))
+    set(Calendar.DAY_OF_MONTH, getActualMinimum(Calendar.DAY_OF_MONTH))
     return getStartOfDay()
 }
 
@@ -199,7 +198,7 @@ fun Calendar.getStartOfMonth(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfMonth(): Calendar {
-    set(DAY_OF_MONTH, getActualMaximum(DAY_OF_MONTH))
+    set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
     return getEndOfDay()
 }
 
@@ -208,7 +207,7 @@ fun Calendar.getEndOfMonth(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getStartOfYear(): Calendar {
-    set(MONTH, getActualMinimum(MONTH))
+    set(Calendar.MONTH, getActualMinimum(Calendar.MONTH))
     return getStartOfMonth()
 }
 
@@ -217,6 +216,6 @@ fun Calendar.getStartOfYear(): Calendar {
  * @return 计算结果
  */
 fun Calendar.getEndOfYear(): Calendar {
-    set(MONTH, getActualMaximum(MONTH))
+    set(Calendar.MONTH, getActualMaximum(Calendar.MONTH))
     return getEndOfMonth()
 }

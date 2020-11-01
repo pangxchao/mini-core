@@ -9,6 +9,8 @@ import javax.annotation.Nonnull;
 import java.util.EventListener;
 import java.util.function.Function;
 
+import static com.mini.core.web.argument.ArgumentResolverSupport.getArrayFunc;
+
 public abstract class ArgumentResolverArray implements ArgumentResolver, EventListener {
 	
 	protected ArgumentResolverArray(Configures configures) {
@@ -17,12 +19,12 @@ public abstract class ArgumentResolverArray implements ArgumentResolver, EventLi
 	
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
-		return ArgumentResolverSupport.getArrayFunc(parameter.getType()) != null;
+		return getArrayFunc(parameter.getType()) != null;
 	}
 	
 	@Override
 	public final Object getValue(MiniParameter parameter, ActionInvocation invocation) {
-		Function<String[], ?> function = ArgumentResolverSupport.getArrayFunc(parameter.getType());
+		Function<String[], ?> function = getArrayFunc(parameter.getType());
 		Assert.notNull(function, "Unsupported parameter type.");
 		// 获取参数名称和参值，并处理
 		String[] value = getValue(getParameterName(parameter), invocation);

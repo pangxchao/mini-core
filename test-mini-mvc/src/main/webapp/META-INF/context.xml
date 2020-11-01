@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context reloadable="true" sessionCookiePath="/" debug="0" privileged="true">
+    <Resource url="jdbc:mysql://127.0.0.1:3306/mini_test?useSSL=false&amp;serverTimezone=GMT%2B8"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              type="javax.sql.DataSource"
+              validationQuery="select 1"
+              maxWaitMillis="10000"
+              password="Qwe123456!"
+              testWhileIdle="true"
+              auth="Container"
+              name="jdbc/mini"
+              username="root"
+              maxTotal="5"
+              maxIdle="2"/>
+
+    <Parameter name="LOCATION_PATH" value="c:/temp"/>
+</Context>

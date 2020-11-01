@@ -1,23 +1,27 @@
 package com.mini.core.jdbc;
 
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
-import static java.lang.String.format;
-
-public class MysqlJdbcTemplate extends JdbcTemplate {
-
-    public MysqlJdbcTemplate(DataSource dataSource) {
-        super(dataSource);
-    }
-
-
-    @Override
-    protected String paging(int start, int limit, String sql) {
-        return format("%s LIMIT %d, %d", sql, start, limit);
-    }
-
-    @Override
-    protected String totals(String sql) {
-        return format("SELECT COUNT(*) FROM (%s) TB", sql);
-    }
+@Singleton
+public final class MysqlJdbcTemplate extends JdbcTemplate {
+	
+	public MysqlJdbcTemplate(@Nonnull DataSource dataSource) {
+		super(dataSource);
+	}
+	
+	@Nonnull
+	@Override
+	public final String totals(String str) {
+		return StringUtils.join("SELECT COUNT(*) FROM (", str, ") t");
+	}
+	
+	@Nonnull
+	@Override
+	protected String paging(int start, int limit, String str) {
+		return StringUtils.join(str, " LIMIT ", start, ", ", limit);
+	}
 }

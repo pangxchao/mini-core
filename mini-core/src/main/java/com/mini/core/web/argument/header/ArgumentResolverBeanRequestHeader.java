@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.stream.Stream;
 
+import static com.mini.core.web.annotation.Param.Value.HEADER;
 import static java.util.Objects.isNull;
 import static java.util.stream.Stream.of;
 
@@ -23,7 +24,7 @@ public final class ArgumentResolverBeanRequestHeader extends ArgumentResolverBea
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.HEADER) {
+		if (isNull(param) || param.value() != HEADER) {
 			return false;
 		}
 		return super.supportParameter(parameter);

@@ -68,10 +68,10 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 	private static final ResultSetCall DEF = JdbcUtil::getObject;
 	private static final String $MAPPER$ = "_$$$MAPPER$$$";
 	private final ClassHolder<T> holder;
-
+	
 	private BeanMapper(@Nonnull Class<T> type) {
 		this.holder = requireNonNull(ClassHolder.create(type));
-		BeanMapper.this.holder.getFields().values().forEach(field -> {
+		BeanMapper.this.holder.fields().forEach(field -> {
 			Column c = field.getAnnotation(Column.class);
 			if (Objects.isNull(c)) return;
 			// 获取字段名和别名
@@ -79,11 +79,11 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 			columns.put(name, field);
 		});
 	}
-
+	
 	@Nonnull
 	@Override
 	public T get(ResultSet rs, int number) throws SQLException {
-		var result = holder.getInstance();
+		var result = holder.createInstance();
 		ResultSetMetaData metaData = rs.getMetaData();
 		for (int i = 1; i <= metaData.getColumnCount(); i++) {
 			try {
@@ -100,7 +100,7 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 		}
 		return result;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static <T> Mapper<T> create(Class<T> type) {
 		return (Mapper<T>) MAP.computeIfAbsent(type, key -> {
@@ -113,14 +113,14 @@ public final class BeanMapper<T> implements Mapper<T>, EventListener, Serializab
 				mType = BeanMapper.class;
 			}
 			try {
-				var mClass = mType.asSubclass(Mapper.class);
+				Class<? extends Mapper> mClass = mType.asSubclass(Mapper.class);
 				return mClass.getDeclaredConstructor(Class.class).newInstance(type);
 			} catch (ReflectiveOperationException | NoClassDefFoundError e) {
 				throw ThrowsUtil.hidden(e);
 			}
 		});
 	}
-
+	
 	private interface ResultSetCall {
 		Object apply(ResultSet rs, int columnIndex) throws SQLException;
 	}

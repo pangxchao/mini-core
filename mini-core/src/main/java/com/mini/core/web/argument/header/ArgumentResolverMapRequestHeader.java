@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mini.core.web.annotation.Param.Value.HEADER;
 import static java.util.Objects.isNull;
 
 @Named
@@ -20,7 +21,7 @@ public final class ArgumentResolverMapRequestHeader implements ArgumentResolver 
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.HEADER) {
+		if (isNull(param) || param.value() != HEADER) {
 			return false;
 		}
 		if (Map.class != parameter.getType()) {

@@ -1,6 +1,6 @@
 package com.mini.core.web.model;
 
-import com.mini.core.jdbc.model.Page;
+import com.mini.core.jdbc.model.Paging;
 import com.mini.core.web.view.PageViewResolver;
 import org.slf4j.Logger;
 
@@ -50,7 +50,7 @@ public class PageModel extends IModel<PageModel> implements Serializable {
 	 * @param paging 分页数据
 	 * @return {@link PageModel}
 	 */
-	public final PageModel setData(Page<?> paging) {
+	public final PageModel setData(Paging<?> paging) {
 		this.data.put("total", paging.getTotal());
 		this.data.put("rows", paging.getRows());
 		this.data.put("page", paging.getPage());

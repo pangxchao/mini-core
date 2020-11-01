@@ -1,23 +1,19 @@
 package com.mini.core.util.holder;
 
 
-import com.mini.core.util.ThrowableKt;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public final class ClassHolder<T> {
     private static final Map<Class<?>, ClassHolder<?>> M = new HashMap<>();
     private final Map<String, FieldHolder<T>> fields = new HashMap<>();
     private final Class<T> type;
-    private final T instance;
+    private T instance;
 
 
-    private ClassHolder(Class<T> type) throws ReflectiveOperationException {
-        Constructor<T> constructor = type.getConstructor();
-        instance = constructor.newInstance();
+    private ClassHolder(Class<T> type) {
         this.type = type;
     }
 
@@ -26,7 +22,11 @@ public final class ClassHolder<T> {
         return type;
     }
 
-    public T getInstance() {
+    public final T getInstance() throws ReflectiveOperationException {
+        if (Objects.isNull(ClassHolder.this.instance)) {
+            var constructor = type.getConstructor();
+            instance = constructor.newInstance();
+        }
         return instance;
     }
 
@@ -49,13 +49,9 @@ public final class ClassHolder<T> {
     @SuppressWarnings("unchecked")
     public static <T> ClassHolder<T> create(Class<T> type) {
         return (ClassHolder<T>) M.computeIfAbsent(type, key -> {
-            try {
-                ClassHolder<T> holder = new ClassHolder<>(type);
-                FieldHolder.create(holder);
-                return holder;
-            } catch (ReflectiveOperationException e) {
-                throw ThrowableKt.hidden(e);
-            }
+            ClassHolder<T> holder = new ClassHolder<>(type);
+            FieldHolder.create(holder);
+            return holder;
         });
     }
 

@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
 
+import static com.mini.core.web.annotation.Param.Value.PARAM;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
@@ -24,7 +25,7 @@ public final class ArgumentResolverPartRequestParam implements ArgumentResolver 
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.PARAM) {
+		if (isNull(param) || param.value() != PARAM) {
 			return false;
 		}
 		return Part.class == parameter.getType();

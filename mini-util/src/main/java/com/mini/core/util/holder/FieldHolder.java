@@ -1,8 +1,8 @@
 package com.mini.core.util.holder;
 
 import com.mini.core.util.ThrowableKt;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -20,7 +20,7 @@ public final class FieldHolder<T> implements Serializable {
     private final Method getter, setter;
     private final Field field;
 
-    private FieldHolder(@NotNull Class<T> type, @NotNull PropertyDescriptor des) {
+    private FieldHolder(@Nonnull Class<T> type, @Nonnull PropertyDescriptor des) {
         this.field = findField(des, type);
         setter = des.getWriteMethod();
         getter = des.getReadMethod();
@@ -91,7 +91,7 @@ public final class FieldHolder<T> implements Serializable {
         return descriptor.getName();
     }
 
-    static synchronized <T> void create(@NotNull ClassHolder<T> h) {
+    static synchronized <T> void create(@Nonnull ClassHolder<T> h) {
         try {
             ofNullable(Introspector.getBeanInfo(h.getType()))
                     .map(BeanInfo::getPropertyDescriptors).stream()

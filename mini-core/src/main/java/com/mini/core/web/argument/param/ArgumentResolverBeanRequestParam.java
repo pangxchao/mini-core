@@ -9,6 +9,7 @@ import com.mini.core.web.support.config.Configures;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import static com.mini.core.web.annotation.Param.Value.PARAM;
 import static java.util.Objects.isNull;
 
 @Singleton
@@ -21,7 +22,7 @@ public final class ArgumentResolverBeanRequestParam extends ArgumentResolverBean
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.PARAM) {
+		if (isNull(param) || param.value() != PARAM) {
 			return false;
 		}
 		return super.supportParameter(parameter);

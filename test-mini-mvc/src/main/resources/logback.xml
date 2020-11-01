@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- debug: 当此属性设置为true时，将打印出log Back内部日志信息 -->
+<!-- 实时查看logback运行状态。默认值为false -->
+<configuration debug="true">
+    <!--定义日志文件的存储地址 勿在 Log Back 的配置中使用相对路径-->
+    <property name="LOG_HOME" value="logs"/>
+
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 定义文件输出格式的实现类和输出格式的格式化字符串 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] %logger{50}.%M\(%line\): %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 每天生成一个文件，并限制文件总大小和单个文件大小，日志最多保存的天数 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/log.back.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+
+        <!-- 定义文件输出格式的实现类和输出格式的格式化字符串 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] %logger{50}.%M\(%line\): %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 按文件大小输出日志文件 -->
+    <appender name="FILE-INDEX" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log.back.log</file>
+        <!-- 文件内容满固定大小后生成新的日志文件 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/log.back.%i.log</fileNamePattern>
+            <maxIndex>20</maxIndex>
+            <minIndex>1</minIndex>
+        </rollingPolicy>
+
+        <!-- 每天生成的文件的单个文件大小 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>5MB</maxFileSize>
+        </triggeringPolicy>
+
+        <!-- 定义文件输出格式的实现类和输出格式的格式化字符串 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] %logger{50}.%M\(%line\): %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.hibernate.validator" level="INFO"/>
+    <logger name="io.netty.util.internal" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+    <logger name="org.mybatis" level="INFO"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

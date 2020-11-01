@@ -23,6 +23,12 @@ const val MOBILE = "1\\d{10}"
 const val NUMBER = "\\d+"
 const val LETTER = "\\w+"
 
+/**
+ * 字符串连接
+ */
+fun <T> String.join(array: Array<T>, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((T) -> CharSequence)? = null): String {
+    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
+}
 
 /**
  * 将日期格式的字符串转化成日期

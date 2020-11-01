@@ -1,8 +1,6 @@
 package com.mini.core.util.security;
 
 import java.nio.charset.Charset;
-import java.util.Base64;
-import java.util.Base64.Encoder;
 import java.util.EventListener;
 
 public abstract class SecurityBase<T extends SecurityBase<T>> implements EventListener {
@@ -35,22 +33,23 @@ public abstract class SecurityBase<T extends SecurityBase<T>> implements EventLi
     public final byte[] digest(String data) {
         return digest(data.getBytes());
     }
-
-    public final String encode() {
-        byte[] b = this.digest();
-        return toHexString(b);
-    }
-
-    public final String base64() {
-        byte[] bytes = this.digest();
-        Encoder code = Base64.getEncoder();
-        return code.encodeToString(bytes);
-    }
+//
+//    public final String base64EncodeToString() {
+//        final byte[] bytes = this.digest();
+//        Encoder code = Base64.getEncoder();
+//        return code.encodeToString(bytes);
+//    }
+//
+//    public final String base64(Charset charset) {
+//        final byte[] bytes = this.digest();
+//        Encoder code = Base64.getEncoder();
+//        return code.encodeToString(bytes);
+//    }
 
     /**
      * 将byte数组转换成String
      */
-    private static String toHexString(byte[] bytes) {
+    public static String toHexString(byte[] bytes) {
         char[] result = new char[bytes.length * 2];
         for (int i = 0, n; i < bytes.length; i++) {
             //Integer.toHexString(bytes[i]&0xff);

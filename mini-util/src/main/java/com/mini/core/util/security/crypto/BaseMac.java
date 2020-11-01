@@ -7,7 +7,7 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.security.InvalidAlgorithmParameterException;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
@@ -32,7 +32,7 @@ public abstract class BaseMac extends SecurityBase<BaseMac> {
         try {
             mac.init(new SecretKeySpec(input, offset, len, algorithm), params);
             return this;
-        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (GeneralSecurityException e) {
             throw hidden(e);
         }
     }
@@ -41,7 +41,7 @@ public abstract class BaseMac extends SecurityBase<BaseMac> {
         try {
             mac.init(new SecretKeySpec(input, offset, len, algorithm));
             return this;
-        } catch (InvalidKeyException e) {
+        } catch (GeneralSecurityException e) {
             throw hidden(e);
         }
     }
@@ -50,7 +50,7 @@ public abstract class BaseMac extends SecurityBase<BaseMac> {
         try {
             mac.init(new SecretKeySpec(input, algorithm), params);
             return this;
-        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (GeneralSecurityException e) {
             throw hidden(e);
         }
     }

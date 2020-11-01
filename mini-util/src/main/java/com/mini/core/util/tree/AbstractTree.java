@@ -1,14 +1,13 @@
 
 package com.mini.core.util.tree;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public abstract class AbstractTree<T extends ITree<T>> implements ITree<T> {
 
     @Override
-    public final void addChild(@NotNull T child) {
+    public final void addChild(@Nonnull T child) {
         ITree.super.addChild(child);
     }
 

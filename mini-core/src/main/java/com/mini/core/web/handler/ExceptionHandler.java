@@ -34,5 +34,5 @@ public interface ExceptionHandler {
 	 * @param request   HttpServletRequest 对象
 	 * @param response  HttpServletResponse 对象
 	 */
-	void handler(@Nonnull IModel<?> model, @Nonnull Throwable exception, @Nonnull HttpServletRequest request, @Nonnull  HttpServletResponse response);
+	void handler(@Nonnull IModel<?> model, @Nonnull Throwable exception, @Nonnull HttpServletRequest request,@Nonnull  HttpServletResponse response);
 }

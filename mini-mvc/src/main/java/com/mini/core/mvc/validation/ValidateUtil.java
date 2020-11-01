@@ -2,32 +2,62 @@ package com.mini.core.mvc.validation;
 
 import org.hibernate.validator.internal.engine.messageinterpolation.DefaultLocaleResolver;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import javax.validation.Validator;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import static com.mini.core.util.StringKt.*;
 import static java.util.Collections.emptySet;
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
+import static javax.validation.Validation.byDefaultProvider;
 
 public class ValidateUtil {
-    private static final Logger log = LoggerFactory.getLogger(ValidateUtil.class);
+    private static String bundleName = "org.hibernate.validator.ValidationMessages";
+    private HttpStatus status = HttpStatus.BAD_REQUEST;
+    private String message;
 
-    private final String message;
+    private ValidateUtil(String message, HttpStatus status) {
+        this.message = message;
+        this.status = status;
+    }
 
     private ValidateUtil(String message) {
         this.message = message;
     }
 
+    private ValidateUtil(HttpStatus status) {
+        this.status = status;
+    }
+
+    private ValidateUtil() {
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public ValidateUtil message(String message) {
+        this.message = message;
+        return this;
+    }
+
+    public ValidateUtil status(HttpStatus status) {
+        this.status = status;
+        return this;
+    }
+
     public ValidationException send() {
-        throw new ValidationException(message);
+        throw new ValidateException(message, status);
     }
 
     public void isTrue(boolean expression) {
@@ -46,12 +76,12 @@ public class ValidateUtil {
         isTrue(string != null && !string.isEmpty());
     }
 
-    public void isNotNull(String string) {
-        isTrue(string != null);
+    public void isNotNull(Object object) {
+        isTrue(object != null);
     }
 
-    public void isNull(String string) {
-        isTrue(string == null);
+    public void isNull(Object object) {
+        isTrue(object == null);
     }
 
     public void isEmail(String string) {
@@ -90,50 +120,120 @@ public class ValidateUtil {
         isPattern(string, REQUIRE);
     }
 
-    public static Validator getValidator(Locale locale) {
-        ResourceBundleMessageInterpolator interpolator = new ResourceBundleMessageInterpolator(emptySet(), locale, new DefaultLocaleResolver(), false);
-        return Validation.byDefaultProvider().configure().messageInterpolator(interpolator).buildValidatorFactory().getValidator();
+    @NotNull
+    public static Validator getValidator(@Nullable Locale locale) {
+        final Locale l = locale == null ? Locale.getDefault() : locale;
+        final DefaultLocaleResolver resolver = new DefaultLocaleResolver();
+        var i = new ResourceBundleMessageInterpolator(emptySet(), l, resolver, false);
+        return byDefaultProvider().configure().messageInterpolator(i).buildValidatorFactory().getValidator();
     }
 
     public static Validator getValidator() {
-        return getValidator(Locale.getDefault());
+        return getValidator(null);
     }
 
-    public static ValidateUtil message(String message) {
+    public <T> ValidateUtil validateParameters(@Nullable Locale locale, T obj, Method method, Object[] parameterValues, Class<?>... groups) {
+        of(getValidator(locale)).map(Validator::forExecutables).map(it -> it.validateParameters(obj, method, parameterValues, groups))
+                .map(ValidateUtil::getConstraintViolationSetMessage).ifPresent(this::message);
+        return this;
+    }
+
+    public <T> ValidateUtil validateParameters(T obj, Method method, Object[] parameterValues, Class<?>... groups) {
+        return validateParameters(Locale.getDefault(), obj, method, parameterValues, groups);
+    }
+
+    public <T> ValidateUtil validate(@Nullable Locale locale, T obj, Class<?>... groups) {
+        Optional.of(getValidator(locale)).map(it -> it.validate(obj, groups))
+                .map(ValidateUtil::getConstraintViolationSetMessage)
+                .ifPresent(this::message);
+        return this;
+    }
+
+    public <T> ValidateUtil validate(T obj, Class<?>... groups) {
+        return validate(Locale.getDefault(), obj, groups);
+    }
+
+    public static void setBundleName(@NotNull String bundleName) {
+        ValidateUtil.bundleName = bundleName;
+    }
+
+    public static ValidateUtil build(String message, HttpStatus status) {
+        return new ValidateUtil(message, status);
+    }
+
+    public static ValidateUtil build(String message) {
         return new ValidateUtil(message);
     }
 
-    private static <T> void validate_callback(Set<ConstraintViolation<T>> constraintViolation) {
-        ofNullable(constraintViolation).map(Set::iterator).filter(Iterator::hasNext).map(Iterator::next).ifPresent(it -> {
-            log.error(it.getMessage(), "[${it.propertyPath}]${it.message}");
-            System.out.println(it.getMessageTemplate());
-//            System.out.println(it.propertyPath)
-//            System.out.println(it.invalidValue)
-//            System.out. println(it.constraintDescriptor)
-//            System.out. println(it.executableParameters)
-//            System.out. println(it.leafBean)
-//            System.out.println(it.rootBeanClass)
-            throw message(it.getMessage()).send();
-        });
+    public static ValidateUtil build(HttpStatus status) {
+        return new ValidateUtil(status);
+    }
+
+    public static ValidateUtil build() {
+        return new ValidateUtil();
+    }
+
+    @NotNull
+    private static String getBindingResultMessage(@Nullable BindingResult bindingResult) {
+        return ofNullable(bindingResult).map(Errors::getFieldErrors)
+                .map(List::iterator).filter(Iterator::hasNext).map(Iterator::next)
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .filter(it -> !it.isBlank())
+                .orElse("Bad Request");
+    }
+
+    @NotNull
+    public static String methodArgumentNotValidMessage(MethodArgumentNotValidException exception) {
+        return ofNullable(exception).map(it -> exception.getBindingResult())
+                .map(ValidateUtil::getBindingResultMessage)
+                .orElse("Bad Request");
+    }
+
+    @NotNull
+    private static <T> String getConstraintViolationSetMessage(Set<ConstraintViolation<T>> set) {
+        return ofNullable(set).map(Set::iterator).filter(Iterator::hasNext)
+                .map(Iterator::next).map(ConstraintViolation::getMessage)
+                .filter(it -> !it.isBlank())
+                .orElse("Bad Request");
+    }
+
+    @NotNull
+    public static <T> String constraintViolationMessage(ConstraintViolationException exception) {
+        return ofNullable(exception).map(ConstraintViolationException::getConstraintViolations)
+                .map(Set.class::cast).map(ValidateUtil::getConstraintViolationSetMessage)
+                .orElse("Bad Request");
+    }
+
+    @NotNull
+    public static String validateMessage(ValidateException exception, Locale locale) {
+        return Optional.ofNullable(exception).map(Throwable::getMessage).map(message ->
+                ofNullable(locale).map(it -> ResourceBundle.getBundle(bundleName, it))
+                        .filter(it -> message.startsWith("{") && message.endsWith("}"))
+                        .filter(it -> it.containsKey(message))
+                        .map(it -> it.getString(message))
+                        .orElse(message))
+                .orElse("Bad Request");
+    }
+
+    @NotNull
+    public static String validationMessage(ValidationException exception) {
+        return ofNullable(exception).map(Throwable::getMessage)
+                .filter(it -> !it.isBlank())
+                .orElse("Bad Request");
     }
 
 
-    public static <T> void validateParameters(Locale locale, T obj, Method method, Object[] parameterValues, Class<?>... groups) {
-        ofNullable(getValidator(locale).forExecutables().validateParameters(obj, method, parameterValues, groups)) //
-                .ifPresent(ValidateUtil::validate_callback);
+    @NotNull
+    public static String validateMessage(ValidateException exception) {
+        return validateMessage(exception, null);
     }
 
-    public static <T> void validateParameters(T obj, Method method, Object[] parameterValues, Class<?>... groups) {
-        ofNullable(getValidator().forExecutables().validateParameters(obj, method, parameterValues, groups)) //
-                .ifPresent(ValidateUtil::validate_callback);
+    @NotNull
+    public static String bindMessage(BindException exception) {
+        return ofNullable(exception).map(BindException::getAllErrors).map(List::iterator)
+                .map(errors -> errors.hasNext() ? errors.next() : null)
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .filter(it -> !it.isBlank())
+                .orElse("Bad Request");
     }
-
-    public static <T> void validate(Locale locale, T obj, Class<?>... groups) {
-        ofNullable(getValidator(locale).validate(obj, groups)).ifPresent(ValidateUtil::validate_callback);
-    }
-
-    public static <T> void validate(T obj, Class<?>... groups) {
-        ofNullable(getValidator().validate(obj, groups)).ifPresent(ValidateUtil::validate_callback);
-    }
-
 }

@@ -9,6 +9,9 @@ buildscript {
         maven {
             url "https://dl.bintray.com/jetbrains/intellij-plugin-service"
         }
+        maven {
+            url "https://jetbrains.bintray.com/intellij-third-party-dependencies"
+        }
 
     }
     dependencies {

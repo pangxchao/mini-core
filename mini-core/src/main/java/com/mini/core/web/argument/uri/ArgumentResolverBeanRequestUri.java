@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
 
+import static com.mini.core.web.annotation.Param.Value.URI;
 import static java.util.Objects.isNull;
 
 @Singleton
@@ -23,7 +24,7 @@ public final class ArgumentResolverBeanRequestUri extends ArgumentResolverBean {
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.URI) {
+		if (isNull(param) || param.value() != URI) {
 			return false;
 		}
 		return super.supportParameter(parameter);

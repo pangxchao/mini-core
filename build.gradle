@@ -1,10 +1,19 @@
 //noinspection GroovyAssignabilityCheck
 buildscript {
     ext {
+        //noinspection GroovyAssignabilityCheck
         spring_dependency_management = "1.0.9.RELEASE"
-        spring_boot_version = "2.3.3.RELEASE"
-        spring_version = "5.2.8.RELEASE"
+        //noinspection GroovyAssignabilityCheck
+        spring_boot_version = "2.3.4.RELEASE"
+        //noinspection GroovyAssignabilityCheck
+        spring_data_rel = "2.0.4.RELEASE"
+        //noinspection GroovyAssignabilityCheck
+        spring_version = "5.2.9.RELEASE"
+        //noinspection GroovyAssignabilityCheck
+        spring_data = "2.3.4.RELEASE"
+        //noinspection GroovyAssignabilityCheck
         kotlin_version = "1.4.0"
+        //noinspection GroovyAssignabilityCheck
         junit_version = "4.12"
     }
 

@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mini.core.web.annotation.Param.Value.URI;
 import static java.util.Objects.isNull;
 
 @Named
@@ -21,7 +22,7 @@ public final class ArgumentResolverMapRequestUriArray implements ArgumentResolve
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.URI) {
+		if (isNull(param) || param.value() != URI) {
 			return false;
 		}
 		if (Map.class != parameter.getType()) {

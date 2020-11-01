@@ -3,6 +3,8 @@ import com.mini.plugin.state.DbTable
 import com.mini.plugin.util.BuilderWriter
 import org.apache.commons.lang3.StringUtils
 
+import static com.mini.plugin.extension.StringKt.firstUpperCase
+
 //noinspection GrUnresolvedAccess
 DbTable info = tableInfo
 
@@ -101,12 +103,12 @@ out.println """   public ${info.entityName}(){}"""
 info.columnList.stream().filter { it.javaType == "Date" }.forEach {
     out.println """ """
     out.println """     @JSONField(format="yyyy-MM-dd HH:mm:ss") """
-    out.println """     public ${it.javaType} get${StringKt.firstUpperCase(it.fieldName)}_DT() { """
+    out.println """     public ${it.javaType} get${firstUpperCase(it.fieldName)}_DT() { """
     out.println """         return this.${it.fieldName}; """
     out.println """     } """
     out.println """ """
     out.println """     @JSONField(format="yyyy-MM-dd") """
-    out.println """     public ${it.javaType} get${StringKt.firstUpperCase(it.fieldName)}_D() { """
+    out.println """     public ${it.javaType} get${firstUpperCase(it.fieldName)}_D() { """
     out.println """         return this.${it.fieldName}; """
     out.println """     } """
 }

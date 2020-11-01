@@ -1,29 +1,31 @@
 package com.mini.core.jdbc;
 
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
-import static java.lang.String.format;
-
-public class OracleJdbcTemplate extends JdbcTemplate {
-    public OracleJdbcTemplate(DataSource dataSource) {
-        super(dataSource);
-    }
-
-    @Override
-    @SuppressWarnings("SpellCheckingInspection")
-    protected String paging(int start, int limit, String sql) {
-        return format("" +
-                "SELECT MAX_COUNT_ROWNUM.* FROM (" +
-                "    SELECT MAX_COUNT.*, rownum ROW_NUMBER FROM (" +
-                "        %s" +
-                "    ) MAX_COUNT WHERE rownum <= %d" +
-                ") MAX_COUNT_ROWNUM WHERE ROW_NUMBER > %d" +
-                "", sql, start + limit, limit);
-    }
-
-    @Override
-    protected String totals(String sql) {
-        return format("SELECT COUNT(*) FROM (%s) TB", sql);
-    }
+@Singleton
+public final class OracleJdbcTemplate extends JdbcTemplate {
+	
+	public OracleJdbcTemplate(@Nonnull DataSource dataSource) {
+		super(dataSource);
+	}
+	
+	@Nonnull
+	@Override
+	public String totals(String str) {
+		return StringUtils.join("SELECT COUNT(*) FROM (", str, ") t");
+	}
+	
+	@Nonnull
+	@Override
+	public String paging(int start, int limit, String str) {
+		return StringUtils.join("SELECT MAX_COUNT_ROWNUM.* FROM ( \n", //
+				"   SELECT MAX_COUNT.*, rownum ROW_NUMBER FROM ( \n",
+				"      ", str, " \n",
+				"   ) MAX_COUNT WHERE rownum <= ", (start + limit), "\n",
+				") MAX_COUNT_ROWNUM WHERE ROW_NUMBER > ", limit, "\n");
+	}
 }
-

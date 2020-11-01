@@ -11,7 +11,6 @@ import com.mini.core.web.interceptor.ActionInvocation;
 import com.mini.core.web.model.IModel;
 import com.mini.core.web.support.ActionSupportProxy;
 import com.mini.core.web.support.config.Configures;
-import com.mini.core.web.util.ResponseCode;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -34,6 +33,8 @@ import java.util.Map;
 
 import static com.mini.core.util.ThrowsUtil.getLastInvocationTarget;
 import static com.mini.core.validation.Validator.status;
+import static com.mini.core.web.util.ResponseCode.INTERNAL_SERVER_ERROR;
+import static com.mini.core.web.util.ResponseCode.VERIFY;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Stream.of;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
@@ -228,7 +229,7 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
 							return param.getValue(this);
 						} catch (NumberFormatException exception) {
 							final var message = exception.getMessage();
-							throw status(ResponseCode.VERIFY).message(message).send();
+							throw status(VERIFY).message(message).send();
 						}
 					}).toArray(Object[]::new);
 				}
@@ -251,7 +252,7 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
 			try {
 				action.invoke();
 			} catch (Throwable exception) {
-				model.setStatus(ResponseCode.INTERNAL_SERVER_ERROR);
+				model.setStatus(INTERNAL_SERVER_ERROR);
 				model.setMessage("Service Error!");
 				handler_each:
 				for (var handler : configure.getExceptionHandlerList()) {
@@ -267,7 +268,7 @@ public final class DispatcherHttpServlet extends HttpServlet implements Serializ
 		} catch (Exception | Error ex) {
 			log.error(ex.getMessage(), ex);
 			if (response.isCommitted()) return;
-			response.setStatus(ResponseCode.INTERNAL_SERVER_ERROR);
+			response.setStatus(INTERNAL_SERVER_ERROR);
 		}
 	}
 }

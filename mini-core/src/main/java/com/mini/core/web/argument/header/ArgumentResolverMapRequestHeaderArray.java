@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.mini.core.web.annotation.Param.Value.HEADER;
 import static java.util.Objects.isNull;
 
 @Named
@@ -22,7 +23,7 @@ public final class ArgumentResolverMapRequestHeaderArray implements ArgumentReso
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.HEADER) {
+		if (isNull(param) || param.value() != HEADER) {
 			return false;
 		}
 		if (Map.class != parameter.getType()) {

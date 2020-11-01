@@ -1,6 +1,7 @@
 
 package com.mini.core.util.security.digest;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
 
 public final class SHA1 extends BaseDigest {
@@ -9,10 +10,12 @@ public final class SHA1 extends BaseDigest {
     }
 
     public static String encode(String data, Charset charset) {
-        return new SHA1().update(data, charset).encode();
+        final var v = new SHA1().update(data, charset);
+        return toHexString(v.digest());
     }
 
-    public static String encode(String data) {
-        return new SHA1().update(data).encode();
+    public static String encode(@Nonnull String data) {
+        final var v = new SHA1().update(data);
+        return toHexString(v.digest());
     }
 }

@@ -1,7 +1,8 @@
 package com.mini.core.web.model;
 
 import com.alibaba.fastjson.JSON;
-import com.mini.core.jdbc.model.Page;
+import com.mini.core.jdbc.model.Paging;
+import com.mini.core.web.util.ResponseCode;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -144,7 +145,7 @@ public class JsonModel extends IModel<JsonModel> implements Serializable {
 	 * @param paging 分页数据
 	 * @return {@link PageModel}
 	 */
-	public JsonModel setData(Page<?> paging) {
+	public JsonModel setData(Paging<?> paging) {
 		this.map.put("total", paging.getTotal());
 		this.map.put("limit", paging.getLimit());
 		this.map.put("rows", paging.getRows());

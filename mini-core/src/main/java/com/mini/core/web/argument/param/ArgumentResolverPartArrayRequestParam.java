@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
 
+import static com.mini.core.web.annotation.Param.Value.PARAM;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
@@ -25,7 +26,7 @@ public final class ArgumentResolverPartArrayRequestParam implements ArgumentReso
 	@Override
 	public boolean supportParameter(MiniParameter parameter) {
 		Param param = parameter.getAnnotation(Param.class);
-		if (isNull(param) || param.value() != Param.Value.PARAM) {
+		if (isNull(param) || param.value() != PARAM) {
 			return false;
 		}
 		return Part[].class == parameter.getType();

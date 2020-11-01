@@ -7,7 +7,13 @@ apply plugin: "java"
 apply plugin: "idea"
 
 dependencies {
+    compile "org.springframework.data:spring-data-relational:$spring_data_rel"
+    //compile "org.springframework.data:spring-data-jdbc:${spring_data_rel}"
+    compile "org.springframework.data:spring-data-commons:$spring_data"
+    compile "org.springframework:spring-context:$spring_version"
+    compile "org.springframework:spring-aspects:$spring_version"
     compile "org.springframework:spring-jdbc:$spring_version"
+    compile "org.springframework:spring-tx:$spring_version"
     compile "com.mini:mini-util:1.0"
 }
 
