@@ -68,7 +68,6 @@ public class Settings implements PersistentStateComponent<Settings>, Serializabl
         this.author = author;
     }
 
-
     @NotNull
     public final DataTypeGroupMap getDataTypeGroupMap() {
         if (Settings.this.dataTypeGroupMap == null) {
@@ -206,49 +205,37 @@ public class Settings implements PersistentStateComponent<Settings>, Serializabl
         }});
 
         //   Default 模板
-        getTemplateGroupMap().add(new TemplateGroup(DEFAULT_NAME) {{
-            add(new Template("KotlinEntity", load("Default-Kotlin")));
-            add(new Template("JavaEntity", load("Default-Java")));
+        getTemplateGroupMap().add(new TemplateGroup("JavaDefault") {{
+            add(new Template("Entity", load("Java-Default")));
         }});
 
-        // Java Default 模板
-        getTemplateGroupMap().add(new TemplateGroup("JavaMiniDefault") {{
-            add(new Template("BaseDao", load("Java-Mini-Base-Dao")));
-            add(new Template("DaoImpl", load("Java-Mini-Dao-Impl")));
-            add(new Template("Entity", load("Java-Mini-Entity")));
-            add(new Template("Dao", load("Java-Mini-Dao")));
+        // Java Jdbc 模板
+        getTemplateGroupMap().add(new TemplateGroup("JavaJdbc") {{
+            add(new Template("Repository", load("Java-Jdbc-Repository")));
+            add(new Template("Entity", load("Java-Jdbc-Entity")));
         }});
 
-        // Java Spring Jdbc 模板
-        getTemplateGroupMap().add(new TemplateGroup("JavaSpringJdbc") {{
-            add(new Template("Repository", load("Java-Spring-Jdbc-Repository")));
-            add(new Template("Entity", load("Java-Spring-Jdbc-Entity")));
+        // Java Jpa 模板
+        getTemplateGroupMap().add(new TemplateGroup("JavaJpa") {{
+            add(new Template("Repository", load("Java-Jpa-Repository")));
+            add(new Template("Entity", load("Java-Jpa-Entity")));
         }});
 
-        // Java Spring Jpa 模板
-        getTemplateGroupMap().add(new TemplateGroup("JavaSpringJpa") {{
-            add(new Template("Repository", load("Java-Spring-Jpa-Repository")));
-            add(new Template("Entity", load("Java-Spring-Jpa-Entity")));
+        //  Kotlin Default 模板
+        getTemplateGroupMap().add(new TemplateGroup("KotlinDefault") {{
+            add(new Template("Entity", load("Kotlin-Default")));
         }});
 
-        // Kotlin Default 模板
-        getTemplateGroupMap().add(new TemplateGroup("KotlinMiniDefault") {{
-            add(new Template("BaseDao", load("Kotlin-Mini-Base-Dao")));
-            add(new Template("DaoImpl", load("Kotlin-Mini-Dao-Impl")));
-            add(new Template("Entity", load("Kotlin-Mini-Entity")));
-            add(new Template("Dao", load("Kotlin-Mini-Dao")));
+        // Kotlin Jdbc 模板
+        getTemplateGroupMap().add(new TemplateGroup("KotlinJdbc") {{
+            add(new Template("Repository", load("Kotlin-Jdbc-Repository")));
+            add(new Template("Entity", load("Kotlin-Jdbc-Entity")));
         }});
 
-        // Kotlin Spring Jdbc 模板
-        getTemplateGroupMap().add(new TemplateGroup("KotlinSpringJdbc") {{
-            add(new Template("Repository", load("Kotlin-Spring-Jdbc-Repository")));
-            add(new Template("Entity", load("Kotlin-Spring-Jdbc-Entity")));
-        }});
-
-        // Kotlin Spring Jpa 模板
-        getTemplateGroupMap().add(new TemplateGroup("KotlinSpringJpa") {{
-            add(new Template("Repository", load("Kotlin-Spring-Jpa-Repository")));
-            add(new Template("Entity", load("Kotlin-Spring-Jpa-Entity")));
+        // Kotlin Jpa 模板
+        getTemplateGroupMap().add(new TemplateGroup("KotlinJpa") {{
+            add(new Template("Repository", load("Kotlin-Jpa-Repository")));
+            add(new Template("Entity", load("Kotlin-Jpa-Entity")));
         }});
     }
 

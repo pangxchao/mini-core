@@ -53,7 +53,9 @@ object ModuleUtil : EventListener {
                 return@sorted -1
             }
             return@sorted 0
-        }.map { it.name }.toArray { arrayOfNulls(it) }
+        }.map { it.name }.toArray {
+            arrayOfNulls<String>(it)
+        }
     }
 
     @JvmStatic

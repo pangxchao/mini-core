@@ -12,7 +12,6 @@ import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -20,51 +19,34 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
+@EnableWebMvc
 @EnableJdbcAuditing
 @SpringBootApplication
 @EnableJdbcRepositories
-public abstract class MiniApplicationInitializer extends MiniSpringBootServletInitializer {
+@EnableTransactionManagement
+@Import(AbstractJdbcConfiguration.class)
+public class MiniApplicationInitializer extends MiniSpringBootServletInitializer {
+    private static final String JNDI = "java:/comp/env/jdbc/mini";
 
-    @EnableWebMvc
-    @EnableTransactionManagement
-    @Import(AbstractJdbcConfiguration.class)
-    public static class WebServletInitializer extends MiniApplicationInitializer {
-        private static final String JNDI = "java:/comp/env/jdbc/mini";
-
-        @Override
-        public void onStartup(ServletContext servletContext) throws ServletException {
-            R.setLocationPath(servletContext.getInitParameter("LOCATION_PATH"));
-            super.onStartup(servletContext);
-        }
-
-        @Bean
-        @Qualifier("dataSource")
-        public DataSource dataSource() throws NamingException {
-            InitialContext context = new InitialContext();
-            return (DataSource) context.lookup(JNDI);
-        }
+    public static void main(String[] args) {
+        R.setLocationPath("c:/temp");
+        run(MiniApplicationInitializer.class, args);
     }
 
-    @EnableWebMvc
-    @EnableTransactionManagement
-    @Import(AbstractJdbcConfiguration.class)
-    public static class MainApplication extends MiniApplicationInitializer {
-        public static void main(String[] args) {
-            run(MainApplication.class, args);
-        }
-    }
-
-    @Bean
-    @Qualifier("jdbcTemplate")
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
+//    @Override
+//    public void onStartup(ServletContext context) throws ServletException {
+//        R.setLocationPath(context.getInitParameter("LOCATION_PATH"));
+//        super.onStartup(context);
+//    }
+//
+//    @Bean
+//    @Qualifier("dataSource")
+//    public DataSource dataSource() throws NamingException {
+//        InitialContext context = new InitialContext();
+//        return (DataSource) context.lookup(JNDI);
+//    }
 
     @Bean
     @Qualifier("namedParameterJdbcOperations")
@@ -73,7 +55,8 @@ public abstract class MiniApplicationInitializer extends MiniSpringBootServletIn
     }
 
     @Bean
-    public ApplicationListener<BeforeSaveEvent<LongId>> LongIdBeforeSaveApplicationListener() {
+    @Qualifier("beforeSaveApplicationListener")
+    public ApplicationListener<BeforeSaveEvent<LongId>> beforeSaveApplicationListener() {
         return new LongIdBeforeSaveApplicationListener();
     }
 

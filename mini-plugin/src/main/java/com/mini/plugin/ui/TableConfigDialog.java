@@ -76,9 +76,9 @@ public class TableConfigDialog extends JDialog implements EventListener {
         jbTable.setSelectionMode(SINGLE_SELECTION);
         // 设置表格列宽
         ofNullable(jbTable.getColumnModel()).ifPresent(it -> {
-            it.getColumn(0).setPreferredWidth(120);
-            it.getColumn(1).setPreferredWidth(240);
-            it.getColumn(2).setPreferredWidth(240);
+            it.getColumn(0).setPreferredWidth(100);
+            it.getColumn(1).setPreferredWidth(200);
+            it.getColumn(2).setPreferredWidth(200);
             it.getColumn(3).setPreferredWidth(240);
         });
 

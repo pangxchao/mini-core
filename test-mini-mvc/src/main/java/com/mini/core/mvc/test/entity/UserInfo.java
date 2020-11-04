@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.Tolerate;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.*;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -45,6 +44,8 @@ public class UserInfo implements Serializable {
     private Long regionId;
 
     @CreatedDate
+    @LastModifiedBy
+    @CreatedBy
     @Column(user_create_time)
     private Date createTime;
 

@@ -33,4 +33,9 @@ public interface Constants {
 
     // 代码生成错误
     String GENERATED_ERROR = "Error Generating Code";
+
+    String T = "\t";
+
+    // Builder 生成标题
+    String BUILDER_TITLE = "Select Fields for the Builder";
 }

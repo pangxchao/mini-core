@@ -21,7 +21,7 @@ public class UserController {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserController(@Qualifier("userRepository") UserRepository userRepository) {
+    public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

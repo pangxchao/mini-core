@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.mini.plugin.config.Settings.instance;
+import static com.mini.plugin.extension.StringKt.firstUpperCase;
 import static com.mini.plugin.extension.StringKt.toJavaName;
 import static java.util.Objects.hash;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
@@ -24,14 +25,14 @@ public class DbColumn implements AbstractData<DbColumn>, Serializable {
     private String columnName;
     private String fieldName;
     private String comment;
-    private boolean isCreateAt;
-    private boolean isUpdateAt;
-    private boolean isId;
-    private boolean isAuto;
-    private boolean isNotNull;
-    private boolean isLock;
-    private boolean isDel;
-    private int delValue = 1;
+    private boolean id;
+    private boolean auto;
+    private boolean notNull;
+    private boolean createdDate;
+    private boolean createdBy;
+    private boolean modifiedDate;
+    private boolean modifiedBy;
+    private boolean version;
 
     public DbColumn() {
     }
@@ -39,13 +40,14 @@ public class DbColumn implements AbstractData<DbColumn>, Serializable {
     public DbColumn(@NotNull com.intellij.database.model.DasColumn column) {
         databaseType = column.getDataType().typeName.toUpperCase();
         fieldName = toJavaName(column.getName(), false);
-        isId = DasUtil.isPrimary(column);
-        isAuto = DasUtil.isAuto(column);
-        isNotNull = column.isNotNull();
+        id = DasUtil.isPrimary(column);
+        auto = DasUtil.isAuto(column);
+        notNull = column.isNotNull();
         comment = column.getComment();
         columnName = column.getName();
         this.column = column;
     }
+
 
     @Nullable
     @Transient
@@ -94,68 +96,68 @@ public class DbColumn implements AbstractData<DbColumn>, Serializable {
         this.comment = comment;
     }
 
-    public boolean isCreateAt() {
-        return isCreateAt;
-    }
-
-    public void setCreateAt(boolean createAt) {
-        isCreateAt = createAt;
-    }
-
-    public boolean isUpdateAt() {
-        return isUpdateAt;
-    }
-
-    public void setUpdateAt(boolean updateAt) {
-        isUpdateAt = updateAt;
+    public boolean isCreatedDate() {
+        return createdDate;
     }
 
     public boolean isId() {
-        return isId;
+        return id;
     }
 
     public void setId(boolean id) {
-        isId = id;
+        this.id = id;
     }
 
     public boolean isAuto() {
-        return isAuto;
+        return auto;
     }
 
     public void setAuto(boolean auto) {
-        isAuto = auto;
+        this.auto = auto;
     }
 
     public boolean isNotNull() {
-        return isNotNull;
+        return notNull;
     }
 
     public void setNotNull(boolean notNull) {
-        isNotNull = notNull;
+        this.notNull = notNull;
     }
 
-    public boolean isLock() {
-        return isLock;
+    public void setCreatedDate(boolean createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public void setLock(boolean lock) {
-        isLock = lock;
+    public boolean isCreatedBy() {
+        return createdBy;
     }
 
-    public boolean isDel() {
-        return isDel;
+    public void setCreatedBy(boolean createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setDel(boolean del) {
-        isDel = del;
+    public boolean isModifiedDate() {
+        return modifiedDate;
     }
 
-    public int getDelValue() {
-        return delValue;
+    public void setModifiedDate(boolean modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 
-    public void setDelValue(int delValue) {
-        this.delValue = delValue;
+    public boolean isModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(boolean modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public boolean isVersion() {
+        return version;
+    }
+
+    public void setVersion(boolean version) {
+        this.version = version;
     }
 
     @Override
@@ -174,31 +176,33 @@ public class DbColumn implements AbstractData<DbColumn>, Serializable {
     @Override
     public synchronized final @NotNull DbColumn copy() {
         final DbColumn dbColumn = new DbColumn();
+        dbColumn.column = column;
         dbColumn.databaseType = databaseType;
-        dbColumn.isUpdateAt = isUpdateAt;
-        dbColumn.isCreateAt = isCreateAt;
         dbColumn.columnName = columnName;
         dbColumn.fieldName = fieldName;
-        dbColumn.isNotNull = isNotNull;
-        dbColumn.delValue = delValue;
         dbColumn.comment = comment;
-        dbColumn.isLock = isLock;
-        dbColumn.isAuto = isAuto;
-        dbColumn.column = column;
-        dbColumn.isId = isId;
+        dbColumn.id = id;
+        dbColumn.auto = auto;
+        dbColumn.notNull = notNull;
+        dbColumn.createdDate = createdDate;
+        dbColumn.createdBy = createdBy;
+        dbColumn.modifiedDate = modifiedDate;
+        dbColumn.modifiedBy = modifiedBy;
+        dbColumn.version = version;
         return dbColumn;
     }
 
     public void reset(@NotNull DbColumn column) {
-        this.isCreateAt = column.isCreateAt;
-        this.isUpdateAt = column.isUpdateAt;
-        this.isNotNull = column.isNotNull;
-        this.fieldName = column.fieldName;
-        this.delValue = column.delValue;
         this.comment = column.comment;
-        this.isAuto = column.isAuto;
-        this.isLock = column.isLock;
-        this.isId = column.isId;
+        this.fieldName = column.fieldName;
+        this.id = column.id;
+        this.auto = column.auto;
+        this.notNull = column.notNull;
+        this.createdDate = column.createdDate;
+        this.createdBy = column.createdBy;
+        this.modifiedDate = column.modifiedDate;
+        this.modifiedBy = column.modifiedBy;
+        this.version = column.version;
     }
 
     @NotNull
@@ -241,29 +245,48 @@ public class DbColumn implements AbstractData<DbColumn>, Serializable {
                 .orElse("");
     }
 
+    @Transient
+    @JsonIgnore
+    public String getJavaGetterName() {
+        if ("Boolean".equals(getJavaType()) || "boolean".equals(getJavaType())) {
+            if (getFieldName().startsWith("is")) {
+                return getFieldName();
+            }
+            return "is" + firstUpperCase(getFieldName());
+        }
+        return "get" + firstUpperCase(getFieldName());
+    }
+
+    @Transient
+    @JsonIgnore
+    public String getJavaSetterName() {
+        return "set" + firstUpperCase(getFieldName());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        DbColumn that = (DbColumn) o;
-        return isCreateAt == that.isCreateAt &&
-                isUpdateAt == that.isUpdateAt &&
-                isId == that.isId &&
-                isAuto == that.isAuto &&
-                isNotNull == that.isNotNull &&
-                isLock == that.isLock &&
-                delValue == that.delValue &&
-                Objects.equals(column, that.column) &&
-                Objects.equals(databaseType, that.databaseType) &&
-                Objects.equals(columnName, that.columnName) &&
-                Objects.equals(fieldName, that.fieldName) &&
-                Objects.equals(comment, that.comment);
+        DbColumn column1 = (DbColumn) o;
+        return id == column1.id &&
+                auto == column1.auto &&
+                notNull == column1.notNull &&
+                createdDate == column1.createdDate &&
+                createdBy == column1.createdBy &&
+                modifiedDate == column1.modifiedDate &&
+                modifiedBy == column1.modifiedBy &&
+                version == column1.version &&
+                Objects.equals(column, column1.column) &&
+                Objects.equals(databaseType, column1.databaseType) &&
+                Objects.equals(columnName, column1.columnName) &&
+                Objects.equals(fieldName, column1.fieldName) &&
+                Objects.equals(comment, column1.comment);
     }
 
     @Override
     public int hashCode() {
-        return hash(column, databaseType, columnName, fieldName, comment, isCreateAt, isUpdateAt, isId, isAuto, isNotNull, isLock, delValue);
+        return hash(column, databaseType, columnName, fieldName, comment, id, auto, notNull, createdDate, createdBy, modifiedDate, modifiedBy, version);
     }
 }

@@ -73,30 +73,39 @@
                           group-id="DatabaseViewPopupMenu"
                           anchor="first"/>
             <!--  代码生成动作 -->
-            <action class="com.mini.plugin.action.GenerateCode"
-                    id="com.mini.plugin.action.GenerateCode"
+            <action class="com.mini.plugin.action.GenerateCodeAction"
+                    id="com.mini.plugin.action.GenerateCodeAction"
                     description="Mini core generate Code"
                     text="Generate Code">
             </action>
             <!-- 表配置动作 -->
-            <action class="com.mini.plugin.action.TableConfig"
-                    id="com.mini.plugin.action.TableConfig"
+            <action class="com.mini.plugin.action.TableConfigAction"
+                    id="com.mini.plugin.action.TableConfigAction"
                     description="Mini core table config"
                     text="Table Config">
             </action>
             <!-- 表配置动作 -->
-            <action class="com.mini.plugin.action.Dictionaries"
+            <action class="com.mini.plugin.action.DictionariesAction"
                     description="Mini core table Dictionaries"
-                    id="com.mini.plugin.action.Dictionaries"
+                    id="com.mini.plugin.action.DictionariesAction"
                     text="Dictionaries">
             </action>
             <!-- 创建表语句 -->
-            <action class="com.mini.plugin.action.Creations"
+            <action class="com.mini.plugin.action.CreationsAction"
                     description="Mini core table Creations"
-                    id="com.mini.plugin.action.Creations"
+                    id="com.mini.plugin.action.CreationsAction"
                     text="Creations">
             </action>
         </group>
+        <!-- Builder 模式 Action -->
+        <action class="com.mini.plugin.action.BuilderAction"
+                id="com.mini.plugin.action.BuilderAction"
+                description="Mini Code builder"
+                text="Builder...">
+            <add-to-group relative-to-action="JavaGenerateGroup1"
+                          group-id="GenerateGroup"
+                          anchor="after"/>
+        </action>
     </actions>
 
 </idea-plugin>

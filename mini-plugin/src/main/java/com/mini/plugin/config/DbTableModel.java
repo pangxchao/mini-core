@@ -19,10 +19,10 @@ public class DbTableModel extends AbstractTableModel<DbColumn> implements EventL
             java.lang.Boolean.class,  // 4-是否为主键
             java.lang.Boolean.class,  // 5-是否为自增长字段
             java.lang.Boolean.class,  // 6-是否为创建时间字段
-            java.lang.Boolean.class,  // 7-是否为修改时间字段
-            java.lang.Boolean.class,  // 8-是否为标识删除突
-            java.lang.Integer.class,  // 9-标识删除的值
-            java.lang.Boolean.class   // 10-是否为锁字段
+            java.lang.Boolean.class,  // 7-是否为创建者
+            java.lang.Boolean.class,   // 8-是否为修改时间
+            java.lang.Boolean.class,   // 9-是否为修改者
+            java.lang.Boolean.class   // 10-是否为版本字段
     };
 
     public DbTableModel() {
@@ -39,15 +39,15 @@ public class DbTableModel extends AbstractTableModel<DbColumn> implements EventL
         // 5-是否为自增长字段
         addColumn("Auto");
         // 6-是否为创建时间字段
-        addColumn("CreateAt");
-        // 7-是否为修改时间字段
-        addColumn("UpdateAt");
-        // 8-是否为标识删除突
-        addColumn("Del");
-        // 9-标识删除的值
-        addColumn("Del Val");
-        // 10-是否为锁字段
-        addColumn("Lock");
+        addColumn("CreatedDate");
+        // 7-是否为创建时间字段
+        addColumn("CreatedBy");
+        // 8-是否为修改时间字段
+        addColumn("ModifiedDate");
+        // 9-是否为修改时间字段
+        addColumn("ModifiedBy");
+        // 10-是否为版本字段
+        addColumn("Version");
     }
 
     @Override
@@ -59,11 +59,11 @@ public class DbTableModel extends AbstractTableModel<DbColumn> implements EventL
                 value.getComment(),
                 value.isId(),
                 value.isAuto(),
-                value.isCreateAt(),
-                value.isUpdateAt(),
-                value.isDel(),
-                value.getDelValue(),
-                value.isLock()
+                value.isCreatedDate(),
+                value.isCreatedBy(),
+                value.isModifiedDate(),
+                value.isModifiedBy(),
+                value.isVersion()
         });
     }
 
@@ -87,11 +87,10 @@ public class DbTableModel extends AbstractTableModel<DbColumn> implements EventL
         column.setComment(getValueAtString(row, 3));
         column.setId(getValueAtBool(row, 4));
         column.setAuto(getValueAtBool(row, 5));
-        column.setCreateAt(getValueAtBool(row, 6));
-        column.setUpdateAt(getValueAtBool(row, 7));
-        column.setDel(getValueAtBool(row, 8));
-        column.setDel(getValueAtBool(row, 8));
-        column.setDelValue(getValueAtInt(row, 9));
-        column.setLock(getValueAtBool(row, 10));
+        column.setCreatedDate(getValueAtBool(row, 6));
+        column.setCreatedBy(getValueAtBool(row, 7));
+        column.setModifiedDate(getValueAtBool(row, 8));
+        column.setModifiedBy(getValueAtBool(row, 9));
+        column.setVersion(getValueAtBool(row, 10));
     }
 }

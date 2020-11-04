@@ -4,15 +4,15 @@ import com.mini.core.jdbc.MiniIndexedRepositoryImpl;
 import lombok.NonNull;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.relational.core.dialect.Dialect;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 public class MiniTestIndexedRepositoryImpl<E> extends MiniIndexedRepositoryImpl implements MiniTestIndexedRepository<E> {
     @NonNull
     private final JdbcAggregateOperations entityOperations;
 
-    public MiniTestIndexedRepositoryImpl(@NonNull JdbcAggregateOperations entityOperations,
-                                         JdbcTemplate jdbcTemplate, Dialect jdbcDialect) {
-        super(jdbcTemplate, jdbcDialect);
+    public MiniTestIndexedRepositoryImpl(NamedParameterJdbcOperations jdbcOperations, Dialect jdbcDialect,
+                                         @NonNull JdbcAggregateOperations entityOperations) {
+        super(jdbcOperations, jdbcDialect);
         this.entityOperations = entityOperations;
     }
 

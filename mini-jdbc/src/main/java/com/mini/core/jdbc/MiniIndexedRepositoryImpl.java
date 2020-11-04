@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,11 +23,11 @@ import static java.util.Objects.requireNonNullElse;
 import static java.util.Optional.ofNullable;
 
 public class MiniIndexedRepositoryImpl implements MiniIndexedRepository {
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcOperations jdbcOperations;
     private final Dialect jdbcDialect;
 
-    public MiniIndexedRepositoryImpl(JdbcTemplate jdbcTemplate, Dialect jdbcDialect) {
-        this.jdbcTemplate = jdbcTemplate;
+    public MiniIndexedRepositoryImpl(NamedParameterJdbcOperations jdbcOperations,  Dialect jdbcDialect) {
+        this.jdbcOperations = jdbcOperations.getJdbcOperations();
         this.jdbcDialect = jdbcDialect;
     }
 
@@ -47,7 +48,7 @@ public class MiniIndexedRepositoryImpl implements MiniIndexedRepository {
 
     @Override
     public int execute(@NotNull String sql, @Nullable List<Object> params) {
-        return jdbcTemplate.update(sql, requireNonNullElse(params, emptyList()).toArray());
+        return jdbcOperations.update(sql, requireNonNullElse(params, emptyList()).toArray());
     }
 
     @Override
@@ -58,19 +59,19 @@ public class MiniIndexedRepositoryImpl implements MiniIndexedRepository {
     @Nonnull
     @Override
     public final int[] executeBatch(@Nonnull String... sql) {
-        return jdbcTemplate.batchUpdate(sql);
+        return jdbcOperations.batchUpdate(sql);
     }
 
     @NotNull
     @Override
     public int[] executeBatch(@NotNull String sql, List<Object[]> paramsList) {
-        return jdbcTemplate.batchUpdate(sql, paramsList);
+        return jdbcOperations.batchUpdate(sql, paramsList);
     }
 
     @Nonnull
     @Override
     public final <T> List<T> queryList(@Nonnull String sql, List<Object> params, RowMapper<T> mapper) {
-        return jdbcTemplate.query(sql, requireNonNullElse(params, emptyList()).toArray(), mapper);
+        return jdbcOperations.query(sql, requireNonNullElse(params, emptyList()).toArray(), mapper);
     }
 
 
