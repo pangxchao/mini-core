@@ -3,12 +3,10 @@ package com.mini.core.mvc.model;
 import com.mini.core.util.ThrowableKt;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.*;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,11 +15,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-
-import static org.springframework.http.ContentDisposition.builder;
 
 @SuppressWarnings("UnusedReturnValue")
 public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamModel> {
@@ -53,25 +48,6 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
     @Override
     public final StreamModel setCode(Integer code) {
         return super.setCode(code);
-    }
-
-    public final StreamModel setContentDisposition(boolean attachment, @Nullable String fileName) {
-        ContentDisposition.Builder builder = builder(attachment ? "attachment" : "inline");
-        if (StringUtils.hasText(fileName)) builder.filename(fileName);
-        getHeaders().setContentDisposition(builder.build());
-        return this;
-    }
-
-    public final StreamModel setContentDisposition(boolean attachment, @Nullable String fileName, Charset charset) {
-        ContentDisposition.Builder builder = builder(attachment ? "attachment" : "inline");
-        if (StringUtils.hasText(fileName)) builder.filename(fileName, charset);
-        getHeaders().setContentDisposition(builder.build());
-        return this;
-    }
-
-    public final StreamModel setContentLength(long contentLength) {
-        this.getHeaders().setContentLength(contentLength);
-        return this;
     }
 
     public final StreamModel setResource(Resource resource) {
@@ -111,7 +87,7 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
         return setResource(new ByteArrayResource(byteArray));
     }
 
-    public final StreamModel setUrlResource(URI uri) {
+    public final StreamModel setUriResource(URI uri) {
         try {
             return setResource(new UrlResource(uri));
         } catch (MalformedURLException e) {
