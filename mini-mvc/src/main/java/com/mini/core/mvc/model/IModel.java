@@ -14,7 +14,6 @@ import java.io.Serializable;
 
 import static java.util.Objects.requireNonNullElse;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.MediaType.parseMediaType;
 
 @SuppressWarnings("UnusedReturnValue")
 public abstract class IModel<D, T extends IModel<D, T>> implements Serializable {
@@ -24,6 +23,7 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
     private HttpStatus status = HttpStatus.OK;
     private final HttpServletRequest request;
     private String message;
+    private Integer code;
 
     protected IModel(HttpServletRequest request, HttpServletResponse response, MediaType mediaType) {
         this.headers.setContentType(mediaType);
@@ -33,21 +33,11 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
 
     protected abstract T getThis();
 
-    public T setStatus(@NotNull HttpStatus status) {
-        this.status = status;
-        return getThis();
-    }
-
-    public T setMessage(String message) {
-        this.message = message;
-        return getThis();
-    }
-
-    public HttpServletResponse getResponse() {
+    public final HttpServletResponse getResponse() {
         return response;
     }
 
-    public HttpServletRequest getRequest() {
+    public final HttpServletRequest getRequest() {
         return request;
     }
 
@@ -63,6 +53,26 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
 
     public final String getMessage() {
         return message;
+    }
+
+    public final Integer getCode() {
+        return code;
+    }
+
+    public T setStatus(@NotNull HttpStatus status) {
+        this.status = status;
+        return getThis();
+    }
+
+    public T setMessage(String message) {
+        this.message = message;
+        return getThis();
+    }
+
+
+    public T setCode(Integer code) {
+        this.code = code;
+        return getThis();
     }
 
     public abstract D build();

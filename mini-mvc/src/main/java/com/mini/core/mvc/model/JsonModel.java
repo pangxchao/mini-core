@@ -50,6 +50,12 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
         return super.setMessage(message);
     }
 
+    @Override
+    public final JsonModel setCode(Integer code) {
+        model.addAttribute("code", code);
+        return super.setCode(code);
+    }
+
     /**
      * 获取所有的数据-有效的数据
      *
@@ -206,6 +212,6 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
 
     @Override
     protected final String getDispatcherPath() {
-        return "/error/json";
+        return "/h/json";
     }
 }

@@ -17,7 +17,7 @@ import java.util.Locale;
 import static com.mini.core.mvc.validation.ValidateUtil.*;
 
 @ControllerAdvice
-public class MiniMessageSupportHandler {
+public class MiniMessageValidationHandler {
 
     @SuppressWarnings("SameParameterValue")
     protected <T extends Exception> void handler(T exception, String message, HttpStatus status, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -28,7 +28,6 @@ public class MiniMessageSupportHandler {
         var dispatcher = request.getRequestDispatcher("/error");
         dispatcher.forward(request, response);
     }
-
 
     @ExceptionHandler(value = {ValidateException.class})
     public void validate(ValidateException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {

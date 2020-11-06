@@ -122,6 +122,6 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
 
     @Override
     protected final String getDispatcherPath() {
-        return "/error/stream";
+        return "/h/stream";
     }
 }

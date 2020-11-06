@@ -28,9 +28,30 @@ public class ValidateUtil {
     private static String bundleName = "org.hibernate.validator.ValidationMessages";
     private HttpStatus status = HttpStatus.BAD_REQUEST;
     private String message;
+    private Integer code;
 
-    private ValidateUtil(String message, HttpStatus status) {
+    private ValidateUtil(HttpStatus status, String message, Integer code) {
         this.message = message;
+        this.status = status;
+        this.code = code;
+    }
+
+    private ValidateUtil(HttpStatus status, String message) {
+        this.message = message;
+        this.status = status;
+    }
+
+    private ValidateUtil(HttpStatus status, Integer code) {
+        this.status = status;
+        this.code = code;
+    }
+
+    private ValidateUtil(String message, Integer code) {
+        this.message = message;
+        this.code = code;
+    }
+
+    private ValidateUtil(HttpStatus status) {
         this.status = status;
     }
 
@@ -38,8 +59,8 @@ public class ValidateUtil {
         this.message = message;
     }
 
-    private ValidateUtil(HttpStatus status) {
-        this.status = status;
+    private ValidateUtil(Integer code) {
+        this.code = code;
     }
 
     private ValidateUtil() {
@@ -56,8 +77,13 @@ public class ValidateUtil {
         return this;
     }
 
+    public ValidateUtil code(Integer code) {
+        this.code = code;
+        return this;
+    }
+
     public ValidationException send() {
-        throw new ValidateException(message, status);
+        throw new ValidateException(message, status, code);
     }
 
     public void isTrue(boolean expression) {
@@ -157,16 +183,32 @@ public class ValidateUtil {
         ValidateUtil.bundleName = bundleName;
     }
 
-    public static ValidateUtil build(String message, HttpStatus status) {
-        return new ValidateUtil(message, status);
+    public static ValidateUtil build(HttpStatus status, String message, Integer code) {
+        return new ValidateUtil(status, message, code);
+    }
+
+    public static ValidateUtil build(HttpStatus status, String message) {
+        return new ValidateUtil(status, message);
+    }
+
+    public static ValidateUtil build(HttpStatus status, Integer code) {
+        return new ValidateUtil(status, code);
+    }
+
+    public static ValidateUtil build(String message, Integer code) {
+        return new ValidateUtil(message, code);
+    }
+
+    public static ValidateUtil build(HttpStatus status) {
+        return new ValidateUtil(status);
     }
 
     public static ValidateUtil build(String message) {
         return new ValidateUtil(message);
     }
 
-    public static ValidateUtil build(HttpStatus status) {
-        return new ValidateUtil(status);
+    public static ValidateUtil build(Integer code) {
+        return new ValidateUtil(code);
     }
 
     public static ValidateUtil build() {
@@ -221,7 +263,6 @@ public class ValidateUtil {
                 .filter(it -> !it.isBlank())
                 .orElse("Bad Request");
     }
-
 
     @NotNull
     public static String validateMessage(ValidateException exception) {

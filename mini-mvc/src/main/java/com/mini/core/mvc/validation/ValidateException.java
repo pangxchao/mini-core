@@ -7,10 +7,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class ValidateException extends RuntimeException {
     private final HttpStatus status;
+    private final Integer code;
 
-    public ValidateException(String message, HttpStatus status) {
+    public ValidateException(String message, HttpStatus status, Integer code) {
         super(message);
         this.status = status;
+        this.code = code;
     }
 
     @NotNull
@@ -19,5 +21,9 @@ public class ValidateException extends RuntimeException {
             return BAD_REQUEST;
         }
         return status;
+    }
+
+    public final Integer getCode() {
+        return code;
     }
 }

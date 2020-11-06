@@ -84,19 +84,21 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     }
 
     @Bean
-    @Qualifier("miniMessageSupportHandler")
-    public MiniMessageSupportHandler miniMessageSupportHandler() {
-        return new MiniMessageSupportHandler();
+    @Qualifier("MiniMessageSupportController")
+    @ConditionalOnMissingBean(MiniMessageSupportController.class)
+    public MiniMessageSupportController miniMessageSupportController() {
+        return new MiniMessageSupportController();
     }
 
     @Bean
-    @Qualifier("miniMessageController")
-    public MiniMessageController miniMessageController() {
-        return new MiniMessageController();
+    @Qualifier("miniMessageValidationHandler")
+    public MiniMessageValidationHandler miniMessageValidationHandler() {
+        return new MiniMessageValidationHandler();
     }
 
     @Bean
     @Primary
+    @Qualifier("objectMapper")
     @ConditionalOnMissingBean(ObjectMapper.class)
     public ObjectMapper objectMapper() throws RuntimeException, Error {
         final JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder();

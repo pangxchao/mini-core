@@ -42,7 +42,14 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
 
     @Override
     public final PageModel setMessage(String message) {
+        this.mv.addObject("message", message);
         return super.setMessage(message);
+    }
+
+    @Override
+    public final PageModel setCode(Integer code) {
+        this.mv.addObject("code", code);
+        return super.setCode(code);
     }
 
     /**
@@ -138,6 +145,6 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
 
     @Override
     protected final String getDispatcherPath() {
-        return "/error/page";
+        return "/h/page";
     }
 }

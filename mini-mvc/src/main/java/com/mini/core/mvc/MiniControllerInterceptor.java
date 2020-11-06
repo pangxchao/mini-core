@@ -32,5 +32,4 @@ public class MiniControllerInterceptor {
         }
         return result;
     }
-
 }
