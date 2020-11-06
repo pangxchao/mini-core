@@ -1,9 +1,8 @@
 package com.mini.core.mvc;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mini.core.mvc.processor.JsonModelProcessor;
 import com.mini.core.mvc.processor.PageModelProcessor;
 import com.mini.core.mvc.processor.StreamModelProcessor;
@@ -16,46 +15,24 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static com.fasterxml.jackson.databind.ser.std.ToStringSerializer.instance;
-import static java.util.Arrays.asList;
 
 public abstract class MiniSpringBootServletInitializer extends SpringBootServletInitializer implements WebMvcConfigurer {
-    private WebSessionProcessor webSessionProcessor;
-    private StreamModelProcessor streamModelProcessor;
-    private JsonModelProcessor jsonModelProcessor;
-    private PageModelProcessor pageModelProcessor;
-
     @Autowired
-    public final void setWebSessionProcessor(WebSessionProcessor webSessionProcessor) {
-        this.webSessionProcessor = webSessionProcessor;
-    }
-
-    @Autowired
-    public final void setStreamModelProcessor(StreamModelProcessor streamModelProcessor) {
-        this.streamModelProcessor = streamModelProcessor;
-    }
-
-    @Autowired
-    public final void setJsonModelProcessor(JsonModelProcessor jsonModelProcessor) {
-        this.jsonModelProcessor = jsonModelProcessor;
-    }
-
-    @Autowired
-    public final void setPageModelProcessor(PageModelProcessor pageModelProcessor) {
-        this.pageModelProcessor = pageModelProcessor;
-    }
+    protected ApplicationContext applicationContext;
 
     @Override
     protected final SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -121,30 +98,34 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     @Bean
     @Primary
     @ConditionalOnMissingBean(ObjectMapper.class)
-    public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder mapperBuilder) {
-        final ObjectMapper objectMapper = mapperBuilder.createXmlMapper(false).build();
-        // 有未知属性时，不抛出JsonMappingException异常
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // 允许出现特殊字符和转义符
-        objectMapper.configure(ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(), true);
-        // 允许出现单引号
-        objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-        // 不包含Null值
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
+    public ObjectMapper objectMapper() throws RuntimeException, Error {
+        final JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder();
+        // 是否允许JSON字符串包含未转义的控制字符(值小于32的ASCII字符，包括制表符和换行符)的特性。
+        // 如果feature设置为false，则在遇到这样的字符时抛出异常。
+        jsonMapperBuilder.configure(ALLOW_UNESCAPED_CONTROL_CHARS, true);
+        // 有未知属性 要不要抛异常
+        jsonMapperBuilder.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // 确定解析器是否允许使用单引号(撇号，字符'\ ")引用字符串(名称和字符串值)的特性。
+        // 如果是，这是除了其他可接受的标记。但不是JSON规范)。
+        jsonMapperBuilder.configure(ALLOW_SINGLE_QUOTES, true);
+        // 生成 JsonMapper 对象
+        final JsonMapper jsonMapper = jsonMapperBuilder.build();
+        // 日期类型输出为时间戳格式
+        jsonMapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
         // 输出Json串时，将Long转换成String类型
-        objectMapper.registerModule(new JsonComponentModule() {{
+        jsonMapper.registerModule(new SimpleModule() {{
             this.addSerializer(Long.class, instance);
             addSerializer(Long.TYPE, instance);
         }});
-        // 日期类型输出为时间戳格式
-        objectMapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
-        return objectMapper;
+        return jsonMapper;
     }
 
     @Override
     public void addArgumentResolvers(@NotNull List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.addAll(asList(streamModelProcessor, pageModelProcessor, jsonModelProcessor));
-        resolvers.add(webSessionProcessor);
+        resolvers.add(applicationContext.getBean(StreamModelProcessor.class));
+        resolvers.add(applicationContext.getBean(WebSessionProcessor.class));
+        resolvers.add(applicationContext.getBean(PageModelProcessor.class));
+        resolvers.add(applicationContext.getBean(JsonModelProcessor.class));
     }
 
     /**

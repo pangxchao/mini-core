@@ -4,6 +4,7 @@ import com.mini.core.util.ThrowableKt;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 
 import static java.util.Objects.requireNonNullElse;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.MediaType.parseMediaType;
 
 @SuppressWarnings("UnusedReturnValue")
 public abstract class IModel<D, T extends IModel<D, T>> implements Serializable {
@@ -23,7 +25,8 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
     private final HttpServletRequest request;
     private String message;
 
-    protected IModel(HttpServletRequest request, HttpServletResponse response) {
+    protected IModel(HttpServletRequest request, HttpServletResponse response, MediaType mediaType) {
+        this.headers.setContentType(mediaType);
         this.response = response;
         this.request = request;
     }

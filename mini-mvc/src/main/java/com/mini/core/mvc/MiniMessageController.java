@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -79,8 +81,7 @@ public class MiniMessageController implements ErrorController {
         return map;
     }
 
-
-    @RequestMapping(produces = {"text/html"})
+    @RequestMapping(produces = {MediaType.TEXT_HTML_VALUE})
     public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
         HttpStatus status = MiniMessageController.this.getStatus(request);
         Map<String, Object> model = getAttr(request, status);
@@ -93,7 +94,6 @@ public class MiniMessageController implements ErrorController {
         var model = status != NO_CONTENT ? getAttr(request, status) : null;
         return new ResponseEntity<>(model, status);
     }
-
 
     @Nullable
     protected final <T extends IModel<?, T>> T getModel(HttpServletRequest request, Class<T> modelType) {
@@ -111,7 +111,7 @@ public class MiniMessageController implements ErrorController {
 
     @ResponseBody
     @RequestMapping(path = "json")
-    public ResponseEntity<Object> json(HttpServletRequest request) {
+    public ResponseEntity<ModelMap> json(HttpServletRequest request) {
         var model = getModel(request, JsonModel.class);
         return requireNonNull(model).build();
     }

@@ -2,6 +2,7 @@ package com.mini.core.mvc.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -21,7 +22,7 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
     private final ModelAndView mv = new ModelAndView();
 
     public PageModel(HttpServletRequest request, HttpServletResponse response) {
-        super(request, response);
+        super(request, response, MediaType.TEXT_HTML);
     }
 
     @Override

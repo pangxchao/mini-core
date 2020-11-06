@@ -2,6 +2,7 @@ package com.mini.core.mvc.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.ModelMap;
@@ -19,14 +20,14 @@ import java.util.Map;
  * @author xchao
  */
 @SuppressWarnings("UnusedReturnValue")
-public class JsonModel extends IModel<ResponseEntity<Object>, JsonModel> {
+public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
     private final ExtendedModelMap model = new ExtendedModelMap();
     private final ExtendedModelMap map = new ExtendedModelMap();
     private final List<Object> list = new ArrayList<>();
     private Object data = map;
 
     public JsonModel(HttpServletRequest request, HttpServletResponse response) {
-        super(request, response);
+        super(request, response, MediaType.APPLICATION_JSON);
         setStatus(HttpStatus.OK);
         setMessage("");
     }
@@ -193,7 +194,7 @@ public class JsonModel extends IModel<ResponseEntity<Object>, JsonModel> {
     }
 
     @Override
-    public final ResponseEntity<Object> build() {
+    public final ResponseEntity<ModelMap> build() {
         return ResponseEntity.status(getStatus())
                 .headers(getHeaders())
                 .body(model);

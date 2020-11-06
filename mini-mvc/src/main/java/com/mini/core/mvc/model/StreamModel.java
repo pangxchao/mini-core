@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.*;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -27,7 +28,7 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
     private Resource resource;
 
     public StreamModel(HttpServletRequest request, HttpServletResponse response) {
-        super(request, response);
+        super(request, response, MediaType.APPLICATION_OCTET_STREAM);
     }
 
     @Override

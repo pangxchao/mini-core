@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,7 +22,7 @@ public class UserController {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
+    public UserController(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -33,7 +34,7 @@ public class UserController {
 
     @RequestMapping(path = "/json")
     @Transactional(rollbackFor = Throwable.class)
-    public ResponseEntity<Object> json(JsonModel model, UserInfo userInfo) {
+    public ResponseEntity<ModelMap> json(JsonModel model, UserInfo userInfo) {
         model.setData(userRepository.findAll(PageRequest.of(0, 10)));
 
 //        UserInfo user = UserInfo.builder()
