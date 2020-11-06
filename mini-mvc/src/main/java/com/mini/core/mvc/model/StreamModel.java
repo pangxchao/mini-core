@@ -36,6 +36,10 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
         return this;
     }
 
+    public final Resource getResource() {
+        return resource;
+    }
+
     @Override
     public final StreamModel setStatus(@NotNull HttpStatus status) {
         return super.setStatus(status);
@@ -44,6 +48,11 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
     @Override
     public final StreamModel setMessage(String message) {
         return super.setMessage(message);
+    }
+
+    @Override
+    public final StreamModel setCode(Integer code) {
+        return super.setCode(code);
     }
 
     public final StreamModel setContentDisposition(boolean attachment, @Nullable String fileName) {
@@ -60,8 +69,9 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
         return this;
     }
 
-    public final Resource getResource() {
-        return resource;
+    public final StreamModel setContentLength(long contentLength) {
+        this.getHeaders().setContentLength(contentLength);
+        return this;
     }
 
     public final StreamModel setResource(Resource resource) {
