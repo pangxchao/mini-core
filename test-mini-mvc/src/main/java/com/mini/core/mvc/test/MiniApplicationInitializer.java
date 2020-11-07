@@ -15,10 +15,14 @@ import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
 @EnableWebMvc
@@ -35,18 +39,22 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
         run(MiniApplicationInitializer.class, args);
     }
 
-//    @Override
-//    public void onStartup(ServletContext context) throws ServletException {
-//        R.setLocationPath(context.getInitParameter("LOCATION_PATH"));
-//        super.onStartup(context);
-//    }
-//
-//    @Bean
-//    @Qualifier("dataSource")
-//    public DataSource dataSource() throws NamingException {
-//        InitialContext context = new InitialContext();
-//        return (DataSource) context.lookup(JNDI);
-//    }
+    @Override
+    public void onStartup(ServletContext context) throws ServletException {
+        R.setLocationPath(context.getInitParameter("LOCATION_PATH"));
+        super.onStartup(context);
+    }
+
+    @Bean
+    @Qualifier("dataSource")
+    public DataSource dataSource() throws IllegalArgumentException, NamingException {
+        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+        bean.setProxyInterface(DataSource.class);
+        bean.setLookupOnStartup(false);
+        bean.setJndiName(JNDI);
+        bean.afterPropertiesSet();
+        return (DataSource) bean.getObject();
+    }
 
     @Bean
     @Qualifier("namedParameterJdbcOperations")
