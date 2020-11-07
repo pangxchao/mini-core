@@ -14,7 +14,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.util.Locale;
 
-import static com.mini.core.mvc.validation.ValidateUtil.*;
+import static com.mini.core.mvc.validation.ValidatorUtil.*;
 
 @ControllerAdvice
 public class MiniMessageValidationHandler {
