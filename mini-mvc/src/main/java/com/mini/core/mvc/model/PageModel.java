@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -87,16 +88,6 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
     }
 
     /**
-     * 设置自定义分页数据结构
-     *
-     * @param page 自定义分页数据结构
-     * @return {this}
-     */
-    public PageModel putPage(Object page) {
-        return this.putObject(page);
-    }
-
-    /**
      * 设置返回视图路径/可以重定向和转发
      *
      * @param viewName 返回视图
@@ -139,12 +130,13 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
     }
 
     @Override
-    public final ModelAndView build() {
-        return mv;
-    }
-
-    @Override
     protected final String getDispatcherPath() {
         return "/h/page";
+    }
+
+    @Nonnull
+    @Override
+    public final ModelAndView build() {
+        return mv;
     }
 }

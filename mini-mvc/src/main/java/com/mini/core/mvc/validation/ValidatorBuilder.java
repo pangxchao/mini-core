@@ -1,20 +1,18 @@
 package com.mini.core.mvc.validation;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 
 import javax.validation.ValidationException;
-import javax.validation.Validator;
-import java.lang.reflect.Method;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static com.mini.core.mvc.validation.ValidatorUtil.getValidator;
 import static com.mini.core.util.StringKt.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @SuppressWarnings("UnusedReturnValue")
 public abstract class ValidatorBuilder {
+    private final List<Object> args = new ArrayList<>();
     private HttpStatus status = BAD_REQUEST;
     private String message;
     private Integer code;
@@ -37,12 +35,13 @@ public abstract class ValidatorBuilder {
         return this;
     }
 
+    public final ValidatorBuilder args(Object... args) {
+        Collections.addAll(this.args, args);
+        return this;
+    }
+
     public final ValidationException send() {
-        throw new ValidateException(
-                message,
-                status,
-                code
-        );
+        throw new ValidateException(message, status, code, args.toArray());
     }
 
     public void isTrue(boolean expression) {
@@ -103,29 +102,6 @@ public abstract class ValidatorBuilder {
 
     public void isRequire(String string) {
         isPattern(string, REQUIRE);
-    }
-
-    public <T> ValidatorBuilder validateParameters(@Nullable Locale locale, T obj, Method method, Object[] parameterValues, Class<?>... groups) {
-        Optional.of(getValidator(locale)).map(Validator::forExecutables)
-                .map(it -> it.validateParameters(obj, method, parameterValues, groups))
-                .map(ValidatorUtil::getConstraintViolationSetMessage)
-                .ifPresent(this::message);
-        return this;
-    }
-
-    public <T> ValidatorBuilder validateParameters(T obj, Method method, Object[] parameterValues, Class<?>... groups) {
-        return validateParameters(Locale.getDefault(), obj, method, parameterValues, groups);
-    }
-
-    public <T> ValidatorBuilder validate(@Nullable Locale locale, T obj, Class<?>... groups) {
-        Optional.of(getValidator(locale)).map(it -> it.validate(obj, groups))
-                .map(ValidatorUtil::getConstraintViolationSetMessage)
-                .ifPresent(this::message);
-        return this;
-    }
-
-    public <T> ValidatorBuilder validate(T obj, Class<?>... groups) {
-        return validate(Locale.getDefault(), obj, groups);
     }
 
     static final class ValidatorBuilderImpl extends ValidatorBuilder {

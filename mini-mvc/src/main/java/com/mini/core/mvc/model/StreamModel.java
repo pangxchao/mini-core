@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -99,6 +100,7 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
         return setResource(new UrlResource(url));
     }
 
+    @Nonnull
     @Override
     public final ResponseEntity<Resource> build() {
         return ResponseEntity.status(getStatus())

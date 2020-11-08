@@ -1,18 +1,18 @@
 package com.mini.core.mvc.model;
 
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.ModelMap;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JSON类型的数据实现
@@ -28,6 +28,7 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
 
     public JsonModel(HttpServletRequest request, HttpServletResponse response) {
         super(request, response, MediaType.APPLICATION_JSON);
+        this.model.put("timestamp", new Date());
         setStatus(HttpStatus.OK);
         setMessage("");
     }
@@ -93,16 +94,6 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
         JsonModel.this.data = object;
         model.put("data", data);
         return getThis();
-    }
-
-    /**
-     * 设置自定义分页数据结构
-     *
-     * @param page 自定义分页数据结构
-     * @return {this}
-     */
-    public JsonModel setPage(Object page) {
-        return this.setData(page);
     }
 
     /**
@@ -193,12 +184,14 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
      * @return {this}
      */
     public final JsonModel setAll(int index, Collection<?> values) {
+
         JsonModel.this.list.addAll(index, values);
         JsonModel.this.data = this.list;
         model.put("data", data);
         return getThis();
     }
 
+    @Nonnull
     @Override
     public final ResponseEntity<ModelMap> build() {
         return ResponseEntity.status(getStatus())
@@ -206,12 +199,12 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
                 .body(model);
     }
 
-    public final ExtendedModelMap model() {
-        return model;
-    }
-
     @Override
     protected final String getDispatcherPath() {
         return "/h/json";
+    }
+
+    public final ExtendedModelMap model() {
+        return model;
     }
 }
