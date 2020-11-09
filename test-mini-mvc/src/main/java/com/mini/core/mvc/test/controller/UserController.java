@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +30,13 @@ public class UserController {
     @RequestMapping(path = "page")
     public ModelAndView page(PageModel model, UserInfo userInfo) {
         System.out.println("---------page-----------");
+
         return model.build();
     }
 
     @RequestMapping(path = "/json")
     @Transactional(rollbackFor = Throwable.class)
-    public ResponseEntity<ModelMap> json(JsonModel model, UserInfo userInfo) {
+    public void json(JsonModel model, UserInfo userInfo) {
         model.setData(userRepository.findAll(PageRequest.of(0, 10)));
 
 //        UserInfo user = UserInfo.builder()
@@ -51,7 +53,7 @@ public class UserController {
 //        var list = userRepository.find();
 //        System.out.println(list);
 
-        return model.build();
+        // return model.build();
     }
 
     @RequestMapping(path = "stream")

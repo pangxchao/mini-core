@@ -30,7 +30,13 @@ public class Settings implements PersistentStateComponent<Settings>, Serializabl
         }
     }
 
+    private static final String KOTLIN_DEFAULT = "KotlinDefault";
+    private static final String JAVA_DEFAULT = "JavaDefault";
+    private static final String KOTLIN_JDBC = "KotlinJdbc";
+    private static final String KOTLIN_JPA = "KotlinJpa";
     private static final String DEFAULT_NAME = "Default";
+    private static final String JAVA_JDBC = "JavaJdbc";
+    private static final String JAVA_JPA = "JavaJpa";
     private DataTypeGroupMap dataTypeGroupMap;
     private TemplateGroupMap templateGroupMap;
     private DbTableGroupMap dbTableGroupMap;
@@ -103,7 +109,7 @@ public class Settings implements PersistentStateComponent<Settings>, Serializabl
     @NotNull
     public String getTemplateGroupName() {
         if (templateGroupName == null) {
-            return DEFAULT_NAME;
+            return JAVA_DEFAULT;
         }
         return templateGroupName;
     }
@@ -205,35 +211,35 @@ public class Settings implements PersistentStateComponent<Settings>, Serializabl
         }});
 
         //   Default 模板
-        getTemplateGroupMap().add(new TemplateGroup("JavaDefault") {{
+        getTemplateGroupMap().add(new TemplateGroup(JAVA_DEFAULT) {{
             add(new Template("Entity", load("Java-Default")));
         }});
 
         // Java Jdbc 模板
-        getTemplateGroupMap().add(new TemplateGroup("JavaJdbc") {{
+        getTemplateGroupMap().add(new TemplateGroup(JAVA_JDBC) {{
             add(new Template("Repository", load("Java-Jdbc-Repository")));
             add(new Template("Entity", load("Java-Jdbc-Entity")));
         }});
 
         // Java Jpa 模板
-        getTemplateGroupMap().add(new TemplateGroup("JavaJpa") {{
+        getTemplateGroupMap().add(new TemplateGroup(JAVA_JPA) {{
             add(new Template("Repository", load("Java-Jpa-Repository")));
             add(new Template("Entity", load("Java-Jpa-Entity")));
         }});
 
         //  Kotlin Default 模板
-        getTemplateGroupMap().add(new TemplateGroup("KotlinDefault") {{
+        getTemplateGroupMap().add(new TemplateGroup(KOTLIN_DEFAULT) {{
             add(new Template("Entity", load("Kotlin-Default")));
         }});
 
         // Kotlin Jdbc 模板
-        getTemplateGroupMap().add(new TemplateGroup("KotlinJdbc") {{
+        getTemplateGroupMap().add(new TemplateGroup(KOTLIN_JDBC) {{
             add(new Template("Repository", load("Kotlin-Jdbc-Repository")));
             add(new Template("Entity", load("Kotlin-Jdbc-Entity")));
         }});
 
         // Kotlin Jpa 模板
-        getTemplateGroupMap().add(new TemplateGroup("KotlinJpa") {{
+        getTemplateGroupMap().add(new TemplateGroup(KOTLIN_JPA) {{
             add(new Template("Repository", load("Kotlin-Jpa-Repository")));
             add(new Template("Entity", load("Kotlin-Jpa-Entity")));
         }});

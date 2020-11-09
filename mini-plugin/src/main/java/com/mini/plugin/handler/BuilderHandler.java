@@ -120,6 +120,8 @@ public final class BuilderHandler extends GenerateMembersHandlerBase /* implemen
         return Arrays.asList(
                 // 默认构造方法
                 new DefaultConstructorGenerationInfo(members),
+                // ToBuilder 方法
+                new ToBuilderMethodGenerationInfo(members),
                 // Builder构造方法
                 new BuilderConstructorGenerationInfo(members),
                 // Builder 方法
@@ -160,7 +162,7 @@ public final class BuilderHandler extends GenerateMembersHandlerBase /* implemen
         public final void insert(@NotNull PsiClass aClass, PsiElement anchor, boolean before) throws IncorrectOperationException {
             final PsiElementFactory factory = getInstance(aClass.getProject()).getElementFactory();
             final BuilderInfo info = new BuilderInfo(factory, aClass);
-            if ((this.psiMember = this.getPsiMember(aClass, factory, info)) == null) {
+            if ((psiMember = getPsiMember(aClass, factory, info)) == null) {
                 return;
             }
             addElement(info.psiClass, this.psiMember);
@@ -188,17 +190,32 @@ public final class BuilderHandler extends GenerateMembersHandlerBase /* implemen
             return null;
         }
 
-        @Nullable
-        @Override
-        public PsiElement findInsertionAnchor(@NotNull PsiClass aClass, @NotNull PsiElement leaf) {
-            return BuilderHandler.getFirstMethod(aClass);
-        }
-
-        protected void addElement(@NotNull PsiClass aClass,  @NotNull PsiMember psiMember) {
+        protected void addElement(@NotNull PsiClass aClass, @NotNull PsiMember psiMember) {
             final PsiMethod method = BuilderHandler.getFirstMethod(aClass);
             PsiClassBuilder.builder(aClass).addBefore(psiMember, it -> {
                 return method == null ? it.getRBrace() : method; //
             });
+        }
+    }
+
+    // toBuilder 方法生成
+    private static final class ToBuilderMethodGenerationInfo extends AbstractGenerationInfo {
+        public ToBuilderMethodGenerationInfo(ClassMember[] members) {
+            super(members);
+        }
+
+        @Nullable
+        @Override
+        protected PsiMember getPsiMember(@NotNull PsiClass aClass, PsiElementFactory factory, BuilderInfo info) {
+            return PsiMethodBuilder.builder(info.factory, "toBuilder", getBuilderReturnType(info))
+                    .addStatementFromText("return new %s(this);", info.builderImplClassName)
+                    .addModifiers(PUBLIC)
+                    .build();
+
+        }
+
+        protected void addElement(@NotNull PsiClass aClass, @NotNull PsiMember psiMember) {
+            PsiClassBuilder.builder(aClass).add(psiMember);
         }
 
     }
@@ -301,7 +318,7 @@ public final class BuilderHandler extends GenerateMembersHandlerBase /* implemen
                             }).build())
                     // 生成 Get This 方法
                     .ifAdd(info.superClass == null || info.superBuilderClass == null, it -> {
-                        final String method = "protected abstract B getThis();";
+                        final String method = "protected abstract B self();";
                         it.addMethod(PsiMethodBuilder.builderFromText(info.factory, method).build());
                     })
                     // 生成所有属性的设置方法
@@ -313,7 +330,7 @@ public final class BuilderHandler extends GenerateMembersHandlerBase /* implemen
                         it.addMethod(PsiMethodBuilder.builder(info.factory, field.getName(), returnType)
                                 .addModifiers(PUBLIC, FINAL).addParameter(psiParameter)
                                 .addStatementFromText("this.%s = %s;", field.getName(), fieldName)
-                                .addStatementFromText("return getThis();")
+                                .addStatementFromText("return self();")
                                 .build());
                     })
                     // 生成 build 方法
@@ -350,14 +367,14 @@ public final class BuilderHandler extends GenerateMembersHandlerBase /* implemen
                             .addModifiers(PROTECTED)
                             .build())
                     // 生成 Get This 方法
-                    .addMethod(PsiMethodBuilder.builder(info.factory, "getThis", PsiTypeBuilder.builder(info.factory, info.builderImplClassName).build())
+                    .addMethod(PsiMethodBuilder.builder(info.factory, "self", PsiTypeBuilder.builder(info.factory, info.builderImplClassName).build())
                             .addModifiers(PROTECTED, FINAL).addAnnotation("Override")
                             .addStatementFromText("return this;")
                             .build())
                     // 生成 build 方法
                     .addMethod(PsiMethodBuilder.builder(info.factory, "build", PsiTypeBuilder.builder(info.factory, info.entityClassName).build())
-                            .addStatementFromText("return new %s(this);", info.entityClassName)
                             .addModifiers(PUBLIC, FINAL).addAnnotation("Override")
+                            .addStatementFromText("return new %s(this);", info.entityClassName)
                             .build())
                     // 生成类对象
                     .build();

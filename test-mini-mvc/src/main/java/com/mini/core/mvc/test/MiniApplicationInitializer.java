@@ -58,7 +58,7 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
 
     @Bean
     @Qualifier("namedParameterJdbcOperations")
-    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
+    public NamedParameterJdbcOperations namedParameterJdbcOperations(@Qualifier("dataSource") DataSource dataSource) {
         return new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -70,7 +70,7 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
 
     @Bean
     @Qualifier("transactionManager")
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    public PlatformTransactionManager transactionManager(@Qualifier("dataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 

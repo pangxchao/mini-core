@@ -1,3 +1,4 @@
+import com.mini.plugin.extension.StringKt
 import com.mini.plugin.state.DbColumn
 import com.mini.plugin.state.DbTable
 import com.mini.plugin.util.BuilderWriter
@@ -34,7 +35,8 @@ out.println """import org.springframework.data.repository.PagingAndSortingReposi
 out.println """import org.springframework.stereotype.Repository; """
 out.println """ """
 
-
+out.println """ """
+out.println """@Repository("${StringKt.firstLowerCase(info.entityName)}Repository") """
 out.println """public interface ${info.entityName}Repository extends PagingAndSortingRepository<${info.entityName}, ${idType}> {  """
 out.println """ """
 out.println """} """

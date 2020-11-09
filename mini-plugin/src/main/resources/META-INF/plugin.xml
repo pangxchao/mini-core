@@ -13,7 +13,7 @@
 
     <!-- 插件介绍 -->
     <description><![CDATA[
-        <tag>MiniCode,Mini Code,mini,code,code generate,code tools</tag>
+        <tag>MiniCode,Mini Code,Builder,mini,build,code generate,code tools</tag>
         <h3>English:</h3>
         <ul>
             <li>The code generation plug-in based on Intellij IDEA is developed to support custom templates (Java, HTML, JS, XML).</li>

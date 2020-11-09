@@ -1,17 +1,18 @@
 package com.mini.core.mvc.test;
 
 import com.mini.core.jdbc.MiniIndexedRepositoryImpl;
-import lombok.NonNull;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
+import javax.annotation.Nonnull;
+
 public class MiniTestIndexedRepositoryImpl<E> extends MiniIndexedRepositoryImpl implements MiniTestIndexedRepository<E> {
-    @NonNull
+    @Nonnull
     private final JdbcAggregateOperations entityOperations;
 
     public MiniTestIndexedRepositoryImpl(NamedParameterJdbcOperations jdbcOperations, Dialect jdbcDialect,
-                                         @NonNull JdbcAggregateOperations entityOperations) {
+                                         @Nonnull JdbcAggregateOperations entityOperations) {
         super(jdbcOperations, jdbcDialect);
         this.entityOperations = entityOperations;
     }

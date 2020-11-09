@@ -64,13 +64,16 @@ out.setFileName("${info.entityName}.java")
 // 包名和导入语句
 out.println """package ${info.packageName}.entity;"""
 out.println """"""
-out.println """import java.io.Serializable;"""
+out.println """import lombok.*;"""
+out.println """import lombok.experimental.*;"""
 out.println """"""
-
+out.println """import java.io.Serializable;"""
 // 属性类型需要导入
 generateImports("", importColumnList, out)
 
 // 类签名
+out.println """@Data"""
+out.println """@SuperBuilder(toBuilder = true)"""
 out.println """public class ${info.entityName} implements Serializable { """
 
 // 生成字段属性
@@ -78,11 +81,12 @@ generateProperty(T, info.columnList, out)
 
 // 默认构造方法
 out.println """"""
+out.println """@Tolerate"""
 out.println """${T}public ${info.entityName}(){ """
 out.println """${T}} """
 
 // 生成Getter Setter
-generateGetterSetter(T, info.columnList, out)
+//generateGetterSetter(T, info.columnList, out)
 
 // 结尾
 out.println """ """

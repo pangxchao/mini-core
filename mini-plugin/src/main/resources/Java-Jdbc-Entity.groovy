@@ -62,6 +62,26 @@ static def generateProperty(String placeholder, Collection<DbColumn> columnList,
     }
 }
 
+// 定义多主键的ID类
+@SuppressWarnings('DuplicatedCode')
+static def generateIDClass(String placeholder, Collection<DbColumn> columnList, BuilderWriter out) {
+    out.println """ """
+    out.println """@Data"""
+    out.println """@SuperBuilder(toBuilder = true)"""
+    //noinspection DuplicatedCode
+    out.println """${placeholder}public static class ID implements Serializable { """
+    // 生成ID类的属性
+    generateProperty("${placeholder}${T}", columnList, out, false)
+    // 主键字段 Getter Setter 方法
+    //generateGetterSetter("${T}${T}", idColumnList, out)
+    // 默认构造方法
+    out.println """${placeholder}"""
+    out.println """${placeholder}${T}@Tolerate"""
+    out.println """${placeholder}${T}public ID(){ """
+    out.println """${placeholder}${T}} """
+    out.println """${placeholder}} """
+}
+
 // 定义Getter Setter生成的方法
 @SuppressWarnings('DuplicatedCode')
 static def generateGetterSetter(String placeholder, Collection<DbColumn> columnList, BuilderWriter out) {
@@ -90,7 +110,10 @@ out.println """package ${info.packageName}.entity; """
 out.println """"""
 out.println """import org.springframework.data.annotation.*; """
 out.println """import org.springframework.data.relational.core.mapping.*; """
-
+// 自动代码生成插件包
+out.println """"""
+out.println """import lombok.*;"""
+out.println """import lombok.experimental.*;"""
 // 序列化包导入
 out.println """ """
 out.println """import java.io.Serializable; """
@@ -100,6 +123,8 @@ generateImports("", importColumnList, out)
 
 // 类签名
 out.println """"""
+out.println """@Data"""
+out.println """@SuperBuilder(toBuilder = true)"""
 out.println """@Table(${info.entityName}.${info.tableName.toUpperCase()}) """
 out.println """public class ${info.entityName} implements Serializable { """
 
@@ -114,13 +139,7 @@ generateColumnConstant(T, info.columnList, out)
 // 多主键生成主键类
 //noinspection DuplicatedCode
 if (idColumnList != null && idColumnList.size() > 1) {
-    out.println """ """
-    out.println """${T}public static class ID implements Serializable { """
-    // 生成ID类的属性
-    generateProperty("${T}${T}", idColumnList, out, false)
-    // 主键字段 Getter Setter 方法
-    generateGetterSetter("${T}${T}", idColumnList, out)
-    out.println """${T}} """
+    generateIDClass(T, idColumnList, out)
 }
 
 // 多主键时，生成主所在字段的属性
@@ -140,29 +159,30 @@ else {
 
 // 默认构造方法
 out.println """"""
+out.println """${T}@Tolerate"""
 out.println """${T}public ${info.entityName}(){ """
 out.println """${T}} """
 
 // 多主键时，生成主所在字段的Getter Setter
 //noinspection DuplicatedCode
-if (idColumnList != null && idColumnList.size() > 1) {
-    // 主键的Getter方法
-    out.println """${T}"""
-    out.println """${T}public ID getId() {"""
-    out.println """${T}${T}return id; """
-    out.println """${T}} """
-    // 主键的 Setter 方法
-    out.println """${T}"""
-    out.println """${T}public void setId(ID id) {"""
-    out.println """${T}${T}this.id = id; """
-    out.println """${T}} """
-    // 生成其它字段的Getter Setter 方法
-    generateGetterSetter(T, otherColumnList, out)
-}
-// 单主键或者没有主键时，生成字段属性
-else {
-    generateGetterSetter(T, info.columnList, out)
-}
+//if (idColumnList != null && idColumnList.size() > 1) {
+//    // 主键的Getter方法
+//    out.println """${T}"""
+//    out.println """${T}public ID getId() {"""
+//    out.println """${T}${T}return id; """
+//    out.println """${T}} """
+//    // 主键的 Setter 方法
+//    out.println """${T}"""
+//    out.println """${T}public void setId(ID id) {"""
+//    out.println """${T}${T}this.id = id; """
+//    out.println """${T}} """
+//    // 生成其它字段的Getter Setter 方法
+//    generateGetterSetter(T, otherColumnList, out)
+//}
+//// 单主键或者没有主键时，生成字段属性
+//else {
+//    generateGetterSetter(T, info.columnList, out)
+//}
 
 // 结尾
 out.println """ """
