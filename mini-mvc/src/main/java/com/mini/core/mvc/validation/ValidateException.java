@@ -23,11 +23,12 @@ public class ValidateException extends RuntimeException {
     }
 
     public final String getMessage(@Nullable MessageSource source, @Nullable Locale locale) {
-        final String message = Optional.ofNullable(getMessage()).orElse("Bad Request");
+        String message = Optional.ofNullable(getMessage()).orElse("Bad Request");
         if (source == null || !message.startsWith("{") || !message.endsWith("}")) {
             return message;
         }
         locale = locale == null ? Locale.getDefault() : locale;
+        message = message.substring(1, message.length() - 1);
         return source.getMessage(message, args, locale);
     }
 
