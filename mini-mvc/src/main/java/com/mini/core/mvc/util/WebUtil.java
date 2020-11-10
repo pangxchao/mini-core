@@ -1,10 +1,8 @@
 package com.mini.core.mvc.util;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.Charset;
 import java.util.Optional;
 
 import static java.lang.String.format;

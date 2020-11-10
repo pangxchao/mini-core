@@ -39,6 +39,8 @@ public class UserController {
     public void json(JsonModel model, UserInfo userInfo) {
         model.setData(userRepository.findAll(PageRequest.of(0, 10)));
 
+
+
 //        UserInfo user = UserInfo.builder()
 //                .id(PKGenerator.id())
 //                .age(20)

@@ -1,10 +1,8 @@
 package com.mini.core.mvc.util;
 
-
 import com.mini.core.mvc.validation.ValidatorBuilder;
 import com.mini.core.mvc.validation.ValidatorUtil;
 import org.springframework.http.HttpStatus;
-
 
 public interface ResponseCode {
 

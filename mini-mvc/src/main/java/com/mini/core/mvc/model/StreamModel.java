@@ -2,13 +2,12 @@ package com.mini.core.mvc.model;
 
 import com.mini.core.util.ThrowableKt;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -100,7 +99,7 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
         return setResource(new UrlResource(url));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public final ResponseEntity<Resource> build() {
         return ResponseEntity.status(getStatus())

@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,7 +75,7 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
         return getThis();
     }
 
-    @Nonnull
+    @NotNull
     public abstract D build();
 
     public final void show() {

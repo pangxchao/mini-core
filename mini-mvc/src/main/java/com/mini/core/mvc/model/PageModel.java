@@ -1,13 +1,12 @@
 package com.mini.core.mvc.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -134,7 +133,7 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
         return "/h/page";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public final ModelAndView build() {
         return mv;

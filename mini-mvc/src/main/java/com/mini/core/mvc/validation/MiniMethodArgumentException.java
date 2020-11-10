@@ -1,8 +1,8 @@
 package com.mini.core.mvc.validation;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import javax.annotation.Nonnull;
 
 public class MiniMethodArgumentException extends MethodArgumentNotValidException {
     private final MiniValidationBindException e;
@@ -12,7 +12,7 @@ public class MiniMethodArgumentException extends MethodArgumentNotValidException
         e = new MiniValidationBindException(getBindingResult());
     }
 
-    @Nonnull
+    @NotNull
     public final String getFirstErrorMessage() {
         return e.getFirstErrorMessage();
     }

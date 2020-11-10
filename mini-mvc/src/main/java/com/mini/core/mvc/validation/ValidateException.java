@@ -1,10 +1,10 @@
 package com.mini.core.mvc.validation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Optional;
 

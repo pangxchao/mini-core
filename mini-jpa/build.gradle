@@ -9,7 +9,7 @@ apply plugin: "idea"
 dependencies {
     compile "org.springframework.data:spring-data-jpa:${spring_data}"
     compile "org.hibernate:hibernate-core:5.4.21.Final"
-    compile "com.mini:mini-jdbc:1.0"
+    compile "com.mini:mini-data:1.0"
 }
 
 publishing {

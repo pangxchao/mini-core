@@ -1,17 +1,17 @@
 package com.mini.core.mvc.validation;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.validation.ValidationException;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
 public class MiniValidationException extends ValidationException {
-    public MiniValidationException(@Nonnull ValidationException exception) {
+    public MiniValidationException(@NotNull ValidationException exception) {
         super(exception.getMessage(), exception.getCause());
     }
 
-    @Nonnull
+    @NotNull
     public final String getErrorMessage() throws RuntimeException {
         return ofNullable(getMessage()).orElse("Bad Request");
     }

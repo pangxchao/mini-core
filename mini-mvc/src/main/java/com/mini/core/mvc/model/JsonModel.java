@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.ModelMap;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -191,7 +190,7 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
         return getThis();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public final ResponseEntity<ModelMap> build() {
         return ResponseEntity.status(getStatus())
