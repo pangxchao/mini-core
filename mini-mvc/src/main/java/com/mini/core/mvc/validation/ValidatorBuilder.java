@@ -6,6 +6,7 @@ import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.mini.core.util.StringKt.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -44,64 +45,86 @@ public abstract class ValidatorBuilder {
         throw new ValidateException(message, status, code, args.toArray());
     }
 
-    public void isTrue(boolean expression) {
+    public final boolean isTrue(boolean expression) {
         if (!expression) throw send();
+        return true;
     }
 
-    public void isPattern(String string, String regex) {
+    public final String isPattern(String string, String regex) {
         isTrue(string != null && matches(string, regex));
+        return string;
     }
 
-    public void isNotBlank(String string) {
+    public final String isNotBlank(String string) {
         isTrue(string != null && !string.isBlank());
+        return string;
     }
 
-    public void isNotEmpty(String string) {
+    public final void isNotEmpty(String string) {
         isTrue(string != null && !string.isEmpty());
     }
 
-    public void isNotNull(Object object) {
+    public final <T> T isNotNull(T object) {
         isTrue(object != null);
+        return object;
     }
 
-    public void isNull(Object object) {
+    public final <T> T isNull(T object) {
         isTrue(object == null);
+        return null;
     }
 
-    public void isEmail(String string) {
+    public final String isEmail(String string) {
         isPattern(string, EMAIL);
+        return string;
     }
 
-    public void isPhone(String string) {
+    public final String isPhone(String string) {
         isPattern(string, PHONE);
+        return string;
     }
 
-    public void isMobile(String string) {
+    public final String isMobile(String string) {
         isPattern(string, MOBILE);
+        return string;
     }
 
-    public void isMobilePhone(String string) {
-        isTrue(string != null && (string.matches(MOBILE) || string.matches(PHONE)));
-    }
-
-    public void isLetter(String string) {
+    public final String isLetter(String string) {
         isPattern(string, LETTER);
+        return string;
     }
 
-    public void isNumber(String string) {
+    public final String isNumber(String string) {
         isPattern(string, NUMBER);
+        return string;
     }
 
-    public void isChinese(String string) {
-        isPattern(string, CHINESE);
-    }
-
-    public void isIdCard(String string) {
+    public final String isIdCard(String string) {
         isPattern(string, ID_CARD);
+        return string;
     }
 
-    public void isRequire(String string) {
+    public final String isChinese(String string) {
+        isPattern(string, CHINESE);
+        return string;
+    }
+
+    public final String isRequire(String string) {
         isPattern(string, REQUIRE);
+        return string;
+    }
+
+    public final String isMobilePhone(String string) {
+        if (Objects.isNull(string)) {
+            throw send();
+        }
+        if (string.matches(MOBILE)) {
+            return string;
+        }
+        if (string.matches(PHONE)) {
+            return string;
+        }
+        throw send();
     }
 
     static final class ValidatorBuilderImpl extends ValidatorBuilder {
