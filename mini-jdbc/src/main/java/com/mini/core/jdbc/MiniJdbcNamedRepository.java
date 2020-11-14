@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-public interface MiniJdbcNamedRepository<E, ID> extends MiniJdbcBaseRepository<E, ID> {
+public interface MiniJdbcNamedRepository extends MiniJdbcBaseRepository {
     /**
      * 执行SQL
      *

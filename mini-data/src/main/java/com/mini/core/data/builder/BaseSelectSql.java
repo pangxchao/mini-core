@@ -17,16 +17,21 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface BaseSelectSql<T extends BaseSelectSql<T>> {
 
     T SELECT(String... column);
 
+    <E> T SELECT(@NotNull Class<E> type);
+
     T SELECT(Consumer<SelectStatement> consumer);
 
     T FROM(String... tables);
+
+    <E> T FROM(@NotNull Class<E> type);
+
+    <E> T SELECT_FROM(@NotNull Class<E> type);
 
     T JOIN(String join);
 
@@ -60,8 +65,6 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
 
     T ORDER_BY(Consumer<OrderByStatement> consumer);
 
-    <E> T SELECT_FROM(@NotNull Class<E> type);
-
     abstract class SelectSql<T extends BaseSql<T> & BaseSelectSql<T>> extends BaseSql<T> implements BaseSelectSql<T> {
         private final GroupByStatementImpl groupBy = new GroupByStatementImpl();
         private final OrderByStatementImpl orderBy = new OrderByStatementImpl();
@@ -76,11 +79,27 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
 
         protected abstract T getSelectSql();
 
-
         public T SELECT(String... column) {
             this.select.SELECT(column);
             return getSelectSql();
         }
+
+        public final <E> T SELECT(@NotNull Class<E> type) {
+            ClassHolder<E> holder = ClassHolder.create(type);
+            holder.getFields().values().forEach(h -> {
+                Class<Column> clazz = Column.class;
+                var column = h.getAnnotation(clazz);
+                if (Objects.isNull(column)) {
+                    SELECT(h.getName());
+                    return;
+                }
+                SELECT(format("%s AS `%s`", //
+                        column.value(),  //
+                        h.getName()));
+            });
+            return getSelectSql();
+        }
+
 
         public T SELECT(Consumer<SelectStatement> consumer) {
             consumer.accept(this.select);
@@ -89,6 +108,23 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
 
         public T FROM(String... tables) {
             this.from.FROM(tables);
+            return getSelectSql();
+        }
+
+        public final <E> T FROM(@NotNull Class<E> type) {
+            ClassHolder<E> h = ClassHolder.create(type);
+            var table = h.getAnnotation(Table.class);
+            if (Objects.nonNull(table)) {
+                this.FROM(table.value());
+                return getSelectSql();
+            }
+            FROM(h.getSimpleName());
+            return getSelectSql();
+        }
+
+        public final <E> T SELECT_FROM(@NotNull Class<E> type) {
+            SelectSql.this.SELECT(type);
+            SelectSql.this.FROM(type);
             return getSelectSql();
         }
 
@@ -169,20 +205,6 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
 
         public T ORDER_BY(Consumer<OrderByStatement> consumer) {
             consumer.accept(this.orderBy);
-            return getSelectSql();
-        }
-
-        public final <E> T SELECT_FROM(@NotNull Class<E> type) {
-            final ClassHolder<? extends E> table = ClassHolder.create(type);
-            Table aTable = requireNonNull(table.getAnnotation(Table.class));
-            table.getFields().values().forEach(h -> {
-                var column = h.getAnnotation(Column.class);
-                if (Objects.isNull(column)) return;
-                // 查询语句
-                String c = column.value(), s = h.getName();
-                SELECT(format("%s AS `%s`", c, s));
-            });
-            this.from.FROM(aTable.value());
             return getSelectSql();
         }
 

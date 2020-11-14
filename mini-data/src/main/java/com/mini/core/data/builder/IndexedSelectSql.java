@@ -20,12 +20,24 @@ public final class IndexedSelectSql extends IndexedSql<IndexedSelectSql> impleme
         return impl.SELECT(column);
     }
 
+    public final <T> IndexedSelectSql SELECT(@NotNull Class<T> type) {
+        return impl.SELECT(type);
+    }
+
     public IndexedSelectSql SELECT(Consumer<SelectStatement> consumer) {
         return impl.SELECT(consumer);
     }
 
     public IndexedSelectSql FROM(String... tables) {
         return impl.FROM(tables);
+    }
+
+    public final <T> IndexedSelectSql FROM(@NotNull Class<T> type) {
+        return impl.FROM(type);
+    }
+
+    public <E> IndexedSelectSql SELECT_FROM(@NotNull Class<E> type) {
+        return impl.SELECT_FROM(type);
     }
 
     public IndexedSelectSql JOIN(String join) {
@@ -90,10 +102,6 @@ public final class IndexedSelectSql extends IndexedSql<IndexedSelectSql> impleme
 
     public IndexedSelectSql ORDER_BY(Consumer<OrderByStatement> consumer) {
         return impl.ORDER_BY(consumer);
-    }
-
-    public final <T> IndexedSelectSql SELECT_FROM(@NotNull Class<T> type) {
-        return impl.SELECT_FROM(type);
     }
 
     @Override

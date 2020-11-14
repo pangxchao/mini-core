@@ -23,7 +23,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.Optional.ofNullable;
 
-public class MiniJdbcIndexedRepositoryImpl<E, ID> extends MiniJdbcBaseRepositoryImpl<E, ID> implements MiniJdbcIndexedRepository<E, ID> {
+public class MiniJdbcIndexedRepositoryImpl extends MiniJdbcBaseRepositoryImpl implements MiniJdbcIndexedRepository {
     @NotNull
     private final JdbcOperations jdbcOperations;
     @NotNull
@@ -31,9 +31,8 @@ public class MiniJdbcIndexedRepositoryImpl<E, ID> extends MiniJdbcBaseRepository
 
     public MiniJdbcIndexedRepositoryImpl(@NotNull NamedParameterJdbcOperations jdbcOperations,
                                          @NotNull JdbcAggregateOperations entityOperations,
-                                         @NotNull PersistentEntity<E, ?> entity,
                                          @NotNull Dialect jdbcDialect) {
-        super(entityOperations, entity);
+        super(entityOperations);
         this.jdbcOperations = jdbcOperations.getJdbcOperations();
         this.jdbcDialect = jdbcDialect;
     }

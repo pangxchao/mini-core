@@ -12,7 +12,7 @@ dependencies {
         exclude module: "spring-boot-starter-tomcat"
     }
     compile "org.springframework.boot:spring-boot:$spring_boot_version"
-    compile "org.hibernate.validator:hibernate-validator:6.1.5.Final"
+    compile "org.hibernate.validator:hibernate-validator:6.1.6.Final"
     compile "org.springframework:spring-context:$spring_version"
     compile "org.springframework:spring-aspects:$spring_version"
     compile "org.springframework:spring-webmvc:$spring_version"

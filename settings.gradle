@@ -6,5 +6,6 @@ include 'mini-data'
 include 'mini-jdbc'
 include 'mini-jpa'
 include 'mini-mvc'
-include 'test-mini-mvc'
+include 'test-mvc-jdbc'
+include 'test-mvc-jpa'
 

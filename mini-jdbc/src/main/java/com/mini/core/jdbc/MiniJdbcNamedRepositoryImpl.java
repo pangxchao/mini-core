@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
-import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -25,7 +24,7 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.Optional.ofNullable;
 
-public class MiniJdbcNamedRepositoryImpl<E, ID> extends MiniJdbcBaseRepositoryImpl<E, ID> implements MiniJdbcNamedRepository<E, ID> {
+public class MiniJdbcNamedRepositoryImpl extends MiniJdbcBaseRepositoryImpl implements MiniJdbcNamedRepository {
     @NotNull
     private final NamedParameterJdbcOperations jdbcOperations;
     @NotNull
@@ -33,9 +32,8 @@ public class MiniJdbcNamedRepositoryImpl<E, ID> extends MiniJdbcBaseRepositoryIm
 
     public MiniJdbcNamedRepositoryImpl(@NotNull NamedParameterJdbcOperations jdbcOperations,
                                        @NotNull JdbcAggregateOperations entityOperations,
-                                       @NotNull PersistentEntity<E, ?> entity,
                                        @NotNull Dialect jdbcDialect) {
-        super(entityOperations, entity);
+        super(entityOperations);
         this.jdbcOperations = jdbcOperations;
         this.jdbcDialect = jdbcDialect;
     }

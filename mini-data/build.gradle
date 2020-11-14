@@ -1,0 +1,35 @@
+//noinspection SpellCheckingInspection
+apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: "maven-publish"
+apply plugin: "java-library"
+apply plugin: "kotlin"
+apply plugin: "java"
+apply plugin: "idea"
+
+dependencies {
+    compile "org.springframework.data:spring-data-relational:$spring_data_rel"
+    compile "org.springframework.data:spring-data-commons:$spring_data"
+    compile "org.springframework:spring-context:$spring_version"
+    compile "org.springframework:spring-aspects:$spring_version"
+    compile "org.springframework:spring-jdbc:$spring_version"
+    compile "org.springframework:spring-tx:$spring_version"
+    compile "com.mini:mini-util:1.0"
+}
+
+publishing {
+    publications {
+        //noinspection GroovyAssignabilityCheck
+        mavenJava(MavenPublication) {
+            //noinspection GroovyAssignabilityCheck
+            from components.java
+        }
+    }
+
+    //noinspection GroovyAssignabilityCheck
+    repositories {
+        maven {
+            url = "file:D:/workspace-maven-git/maven/"
+        }
+        mavenLocal()
+    }
+}

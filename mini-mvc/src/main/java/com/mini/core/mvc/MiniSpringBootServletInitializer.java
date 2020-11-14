@@ -19,9 +19,11 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.ServletContext;
 import java.util.List;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES;
@@ -31,8 +33,13 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 import static com.fasterxml.jackson.databind.ser.std.ToStringSerializer.instance;
 
 public abstract class MiniSpringBootServletInitializer extends SpringBootServletInitializer implements WebMvcConfigurer {
-    @Autowired
     protected ApplicationContext applicationContext;
+
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
+    public final void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     protected final SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -135,8 +142,19 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
      *
      * @author xchao
      */
+    public static class MiniServletContextAware implements ServletContextAware {
+        public void setServletContext(@NotNull ServletContext context) {
+
+        }
+    }
+
+    /**
+     * Spring 启动完成时调用
+     *
+     * @author xchao
+     */
     public static class MiniApplicationRunner implements ApplicationRunner {
-        public void run(ApplicationArguments arguments) {
+        public void run(@NotNull ApplicationArguments arguments) {
 
         }
     }

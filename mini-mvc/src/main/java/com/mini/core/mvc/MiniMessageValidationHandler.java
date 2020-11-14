@@ -1,9 +1,10 @@
 package com.mini.core.mvc;
 
-import com.mini.core.mvc.validation.*;
+import com.mini.core.mvc.validation.ValidateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.util.Locale;
-import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @ControllerAdvice
 public class MiniMessageValidationHandler {
@@ -28,42 +29,93 @@ public class MiniMessageValidationHandler {
         this.messageSource = messageSource;
     }
 
+    /**
+     * 异常处理
+     *
+     * @param e        异常信息
+     * @param request  HttpServletRequest 对象
+     * @param response HttpServletResponse 对象
+     * @param locale   区域信息
+     */
     @SuppressWarnings("SameParameterValue")
-    protected <T extends Exception> void handler(T exception, String message, HttpStatus status, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void handler(ValidateException e, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
+        ResourceBundleMessageSource source;
+        request.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage(messageSource, locale));
         request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI, request.getRequestURI());
-        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, status.value());
-        request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, exception);
-        request.setAttribute(RequestDispatcher.ERROR_MESSAGE, message);
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, e.getStatus().value());
+        request.removeAttribute(DefaultErrorAttributes.class.getName() + ".ERROR");
+        request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, e);
         var dispatcher = request.getRequestDispatcher("/error");
         dispatcher.forward(request, response);
     }
 
+    /**
+     * 自定义异常
+     *
+     * @param exception 异常信息
+     * @param request   HttpServletRequest 对象
+     * @param response  HttpServletResponse 对象
+     * @param locale    区域信息
+     */
     @ExceptionHandler(value = {ValidateException.class})
     public void validate(ValidateException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
-        handler(requireNonNull(exception), exception.getMessage(messageSource, locale), exception.getStatus(), request, response);
+        MiniMessageValidationHandler.this.handler(requireNonNull(exception), request, response, locale);
     }
 
+    /**
+     * 方法参数验证异常
+     *
+     * @param exception 异常信息
+     * @param request   HttpServletRequest 对象
+     * @param response  HttpServletResponse 对象
+     * @param locale    区域信息
+     */
     @ExceptionHandler(value = {ConstraintViolationException.class})
-    public void constraint(ConstraintViolationException exception, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        MiniConstraintViolationException e = new MiniConstraintViolationException(requireNonNull(exception));
-        handler(exception, e.getFirstErrorMessage(), HttpStatus.BAD_REQUEST, request, response);
+    public void constraint(ConstraintViolationException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
+        validate(new ValidateException(requireNonNull(exception).getConstraintViolations(), BAD_REQUEST), request, response, locale);
     }
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    public void method(MethodArgumentNotValidException exception, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        MiniMethodArgumentException e = new MiniMethodArgumentException(Objects.requireNonNull(exception));
-        handler(exception, e.getFirstErrorMessage(), HttpStatus.BAD_REQUEST, request, response);
-    }
-
+    /**
+     * 方法参数验证异常
+     *
+     * @param exception 异常信息
+     * @param request   HttpServletRequest 对象
+     * @param response  HttpServletResponse 对象
+     * @param locale    区域信息
+     */
     @ExceptionHandler(value = {ValidationException.class})
-    public void validation(ValidationException exception, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final MiniValidationException e = new MiniValidationException(Objects.requireNonNull(exception));
-        handler(exception, e.getErrorMessage(), HttpStatus.BAD_REQUEST, request, response);
+    public void validation(ValidationException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
+        validate(new ValidateException(requireNonNull(exception).getMessage(), BAD_REQUEST), request, response, locale);
     }
 
+    /**
+     * 实体验证异常
+     *
+     * @param exception 异常信息
+     * @param request   HttpServletRequest 对象
+     * @param response  HttpServletResponse 对象
+     * @param locale    区域信息
+     */
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    public void method(MethodArgumentNotValidException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
+        validate(new ValidateException(requireNonNull(exception).getBindingResult(), BAD_REQUEST), request, response, locale);
+    }
+
+    /**
+     * 实体验证异常
+     *
+     * @param exception 异常信息
+     * @param request   HttpServletRequest 对象
+     * @param response  HttpServletResponse 对象
+     * @param locale    区域信息
+     */
     @ExceptionHandler(value = {BindException.class})
-    public void bind(BindException exception, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        MiniValidationBindException e = new MiniValidationBindException(requireNonNull(exception));
-        handler(exception, e.getMessage(), HttpStatus.BAD_REQUEST, request, response);
+    public void bind(BindException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
+        exception.getBindingResult().getAllErrors().forEach(it -> {
+            for (String code : it.getCodes()) {
+                System.out.println(messageSource.getMessage(code, it.getArguments(), locale));
+            }
+        });
+        validate(new ValidateException(requireNonNull(exception), BAD_REQUEST), request, response, locale);
     }
 }

@@ -3,7 +3,6 @@ package com.mini.core.data.builder;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * SQL构建器
@@ -13,86 +12,86 @@ import java.util.function.Consumer;
 @SuppressWarnings({"UnusedReturnValue", "unchecked"})
 public abstract class BaseSql<T extends BaseSql<T>> implements Serializable {
 
-    public final T IF_NOT_EMPTY(Collection<Object> args, Consumer<Collection<Object>> consumer) {
+    public final T IF_NOT_EMPTY(Collection<Object> args, Runnable runnable) {
         if (Objects.nonNull(args) && !args.isEmpty()) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(Object[] args, Consumer<Object[]> consumer) {
+    public final T IF_NOT_EMPTY(Object[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(long[] args, Consumer<long[]> consumer) {
+    public final T IF_NOT_EMPTY(long[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(int[] args, Consumer<int[]> consumer) {
+    public final T IF_NOT_EMPTY(int[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(short[] args, Consumer<short[]> consumer) {
+    public final T IF_NOT_EMPTY(short[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(byte[] args, Consumer<byte[]> consumer) {
+    public final T IF_NOT_EMPTY(byte[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(double[] args, Consumer<double[]> consumer) {
+    public final T IF_NOT_EMPTY(double[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(float[] args, Consumer<float[]> consumer) {
+    public final T IF_NOT_EMPTY(float[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(boolean[] args, Consumer<boolean[]> consumer) {
+    public final T IF_NOT_EMPTY(boolean[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_EMPTY(char[] args, Consumer<char[]> consumer) {
+    public final T IF_NOT_EMPTY(char[] args, Runnable runnable) {
         if (Objects.nonNull(args) && args.length > 0) {
-            consumer.accept(args);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_BLANK(String arg, Consumer<String> consumer) {
+    public final T IF_NOT_BLANK(String arg, Runnable runnable) {
         if (Objects.nonNull(arg) && !arg.isBlank()) {
-            consumer.accept(arg);
+            runnable.run();
         }
         return (T) this;
     }
 
-    public final T IF_NOT_NULL(Object arg, Consumer<Object> consumer) {
+    public final T IF_NOT_NULL(Object arg, Runnable runnable) {
         if (Objects.nonNull(arg)) {
-            consumer.accept(arg);
+            runnable.run();
         }
         return (T) this;
     }

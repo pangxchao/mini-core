@@ -20,12 +20,24 @@ public final class NamedSelectSql extends NamedSql<NamedSelectSql> implements Ba
         return impl.SELECT(column);
     }
 
+    public final <T> NamedSelectSql SELECT(@NotNull Class<T> type) {
+        return impl.SELECT(type);
+    }
+
     public NamedSelectSql SELECT(Consumer<SelectStatement> consumer) {
         return impl.SELECT(consumer);
     }
 
     public NamedSelectSql FROM(String... tables) {
         return impl.FROM(tables);
+    }
+
+    public final <T> NamedSelectSql FROM(@NotNull Class<T> type) {
+        return impl.FROM(type);
+    }
+
+    public <E> NamedSelectSql SELECT_FROM(@NotNull Class<E> type) {
+        return impl.SELECT_FROM(type);
     }
 
     public NamedSelectSql JOIN(String join) {
@@ -90,10 +102,6 @@ public final class NamedSelectSql extends NamedSql<NamedSelectSql> implements Ba
 
     public NamedSelectSql ORDER_BY(Consumer<OrderByStatement> consumer) {
         return impl.ORDER_BY(consumer);
-    }
-
-    public final <T> NamedSelectSql SELECT_FROM(@NotNull Class<T> type) {
-        return impl.SELECT_FROM(type);
     }
 
     @Override

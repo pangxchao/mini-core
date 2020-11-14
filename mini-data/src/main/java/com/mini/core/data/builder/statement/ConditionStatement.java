@@ -2,8 +2,12 @@ package com.mini.core.data.builder.statement;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface ConditionStatement<T extends ConditionStatement<T>> {
@@ -78,6 +82,16 @@ public interface ConditionStatement<T extends ConditionStatement<T>> {
      */
     T LESS_THAN_EQUALS(@NotNull String column, @NotNull String paramName);
 
+
+    /**
+     * "IN" 条件
+     *
+     * @param column    字段名称
+     * @param paramName 参数名称
+     * @param size      参数个数
+     * @return {@code this}
+     */
+    T IN(@NotNull String column, @NotNull String paramName, int size);
 
     /**
      * "IN" 条件
@@ -193,6 +207,13 @@ public interface ConditionStatement<T extends ConditionStatement<T>> {
         @Override
         public T LESS_THAN_EQUALS(@NotNull String column, @NotNull String paramName) {
             addValues(format("%s <= %s", column, paramName));
+            return getThis();
+        }
+
+        @Override
+        public T IN(@NotNull String column, @NotNull String paramName, int size) {
+            addValues(format("%s IN (%s)", column, stream(new String[size]) //
+                    .map(it -> paramName).collect(joining(","))));
             return getThis();
         }
 
