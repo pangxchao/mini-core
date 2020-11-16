@@ -1,11 +1,10 @@
 package com.mini.core.jdbc;
 
-import com.mini.core.data.MiniBaseRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 
 
-public class MiniJdbcBaseRepositoryImpl implements MiniBaseRepository {
+public class MiniJdbcBaseRepositoryImpl implements MiniJdbcBaseRepository {
     @NotNull
     private final JdbcAggregateOperations entityOperations;
 
