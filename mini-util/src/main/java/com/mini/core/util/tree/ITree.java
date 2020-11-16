@@ -1,11 +1,12 @@
 package com.mini.core.util.tree;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public interface ITree<T extends ITree<T>> {
-    default void addChild(@Nonnull T child) {
+    default void addChild(@NotNull T child) {
         if (this.getChildren() == null) {
             var c = new ArrayList<T>();
             setChildren(c);
