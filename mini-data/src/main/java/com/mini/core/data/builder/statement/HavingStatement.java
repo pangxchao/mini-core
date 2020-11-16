@@ -37,10 +37,15 @@ public interface HavingStatement extends ConditionStatement<HavingStatement> {
 
         @Override
         public final HavingStatement HAVING(Consumer<HavingStatement> consumer) {
-            HavingStatementImpl where = new HavingStatementImpl("");
-            final StringBuilder builder = new StringBuilder();
-            addValues(where.builder(builder).toString());
-            return getThis();
+            var having = new HavingStatementImpl("");
+            var builder = new StringBuilder();
+            consumer.accept(having);
+            having.builder(builder);
+            return HAVING(builder);
+        }
+
+        private HavingStatement HAVING(StringBuilder children) {
+            return HAVING(children.toString());
         }
 
         @Override

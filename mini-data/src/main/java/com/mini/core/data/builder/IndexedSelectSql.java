@@ -20,10 +20,6 @@ public final class IndexedSelectSql extends IndexedSql<IndexedSelectSql> impleme
         return impl.SELECT(column);
     }
 
-    public final <T> IndexedSelectSql SELECT(@NotNull Class<T> type) {
-        return impl.SELECT(type);
-    }
-
     public IndexedSelectSql SELECT(Consumer<SelectStatement> consumer) {
         return impl.SELECT(consumer);
     }
@@ -32,40 +28,60 @@ public final class IndexedSelectSql extends IndexedSql<IndexedSelectSql> impleme
         return impl.FROM(tables);
     }
 
-    public final <T> IndexedSelectSql FROM(@NotNull Class<T> type) {
-        return impl.FROM(type);
-    }
-
-    public <E> IndexedSelectSql SELECT_FROM(@NotNull Class<E> type) {
-        return impl.SELECT_FROM(type);
-    }
-
     public IndexedSelectSql JOIN(String join) {
         return impl.JOIN(join);
+    }
+
+    public IndexedSelectSql JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.JOIN(table, consumer);
     }
 
     public IndexedSelectSql INNER_JOIN(String join) {
         return impl.INNER_JOIN(join);
     }
 
+    public IndexedSelectSql INNER_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.INNER_JOIN(table, consumer);
+    }
+
     public IndexedSelectSql LEFT_JOIN(String join) {
         return impl.LEFT_JOIN(join);
+    }
+
+    public IndexedSelectSql LEFT_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.LEFT_JOIN(table, consumer);
     }
 
     public IndexedSelectSql RIGHT_JOIN(String join) {
         return impl.RIGHT_JOIN(join);
     }
 
+    public IndexedSelectSql RIGHT_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.RIGHT_JOIN(table, consumer);
+    }
+
     public IndexedSelectSql LEFT_OUTER_JOIN(String join) {
         return impl.LEFT_OUTER_JOIN(join);
+    }
+
+    public IndexedSelectSql LEFT_OUTER_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.LEFT_OUTER_JOIN(table, consumer);
     }
 
     public IndexedSelectSql RIGHT_OUTER_JOIN(String join) {
         return impl.RIGHT_OUTER_JOIN(join);
     }
 
+    public IndexedSelectSql RIGHT_OUTER_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.RIGHT_OUTER_JOIN(table, consumer);
+    }
+
     public IndexedSelectSql CROSS_JOIN(String join) {
         return impl.CROSS_JOIN(join);
+    }
+
+    public IndexedSelectSql CROSS_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.CROSS_JOIN(table, consumer);
     }
 
     public IndexedSelectSql JOIN(Consumer<JoinStatement> consumer) {
@@ -102,6 +118,10 @@ public final class IndexedSelectSql extends IndexedSql<IndexedSelectSql> impleme
 
     public IndexedSelectSql ORDER_BY(Consumer<OrderByStatement> consumer) {
         return impl.ORDER_BY(consumer);
+    }
+
+    public <E> IndexedSelectSql SELECT_FROM_JOIN(@NotNull Class<E> type) {
+        return impl.SELECT_FROM_JOIN(type);
     }
 
     @Override

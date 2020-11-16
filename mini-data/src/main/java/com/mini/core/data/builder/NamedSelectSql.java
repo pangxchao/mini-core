@@ -20,10 +20,6 @@ public final class NamedSelectSql extends NamedSql<NamedSelectSql> implements Ba
         return impl.SELECT(column);
     }
 
-    public final <T> NamedSelectSql SELECT(@NotNull Class<T> type) {
-        return impl.SELECT(type);
-    }
-
     public NamedSelectSql SELECT(Consumer<SelectStatement> consumer) {
         return impl.SELECT(consumer);
     }
@@ -32,40 +28,60 @@ public final class NamedSelectSql extends NamedSql<NamedSelectSql> implements Ba
         return impl.FROM(tables);
     }
 
-    public final <T> NamedSelectSql FROM(@NotNull Class<T> type) {
-        return impl.FROM(type);
-    }
-
-    public <E> NamedSelectSql SELECT_FROM(@NotNull Class<E> type) {
-        return impl.SELECT_FROM(type);
-    }
-
     public NamedSelectSql JOIN(String join) {
         return impl.JOIN(join);
+    }
+
+    public NamedSelectSql JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.JOIN(table, consumer);
     }
 
     public NamedSelectSql INNER_JOIN(String join) {
         return impl.INNER_JOIN(join);
     }
 
+    public NamedSelectSql INNER_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.INNER_JOIN(table, consumer);
+    }
+
     public NamedSelectSql LEFT_JOIN(String join) {
         return impl.LEFT_JOIN(join);
+    }
+
+    public NamedSelectSql LEFT_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.LEFT_JOIN(table, consumer);
     }
 
     public NamedSelectSql RIGHT_JOIN(String join) {
         return impl.RIGHT_JOIN(join);
     }
 
+    public NamedSelectSql RIGHT_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.RIGHT_JOIN(table, consumer);
+    }
+
     public NamedSelectSql LEFT_OUTER_JOIN(String join) {
         return impl.LEFT_OUTER_JOIN(join);
+    }
+
+    public NamedSelectSql LEFT_OUTER_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.LEFT_OUTER_JOIN(table, consumer);
     }
 
     public NamedSelectSql RIGHT_OUTER_JOIN(String join) {
         return impl.RIGHT_OUTER_JOIN(join);
     }
 
+    public NamedSelectSql RIGHT_OUTER_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.RIGHT_OUTER_JOIN(table, consumer);
+    }
+
     public NamedSelectSql CROSS_JOIN(String join) {
         return impl.CROSS_JOIN(join);
+    }
+
+    public NamedSelectSql CROSS_JOIN(String table, Consumer<JoinStatement.JoinOnStatement> consumer) {
+        return impl.CROSS_JOIN(table, consumer);
     }
 
     public NamedSelectSql JOIN(Consumer<JoinStatement> consumer) {
@@ -102,6 +118,10 @@ public final class NamedSelectSql extends NamedSql<NamedSelectSql> implements Ba
 
     public NamedSelectSql ORDER_BY(Consumer<OrderByStatement> consumer) {
         return impl.ORDER_BY(consumer);
+    }
+
+    public <E> NamedSelectSql SELECT_FROM_JOIN(@NotNull Class<E> type) {
+        return impl.SELECT_FROM_JOIN(type);
     }
 
     @Override

@@ -2,8 +2,6 @@ package com.mini.core.data.builder.statement;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -160,7 +158,7 @@ public interface ConditionStatement<T extends ConditionStatement<T>> {
 
         @Override
         public final T AND() {
-            if (!values.isEmpty()) {
+            if (this.isNotEmpty()) {
                 addValues(AND);
             }
             return getThis();
@@ -168,7 +166,7 @@ public interface ConditionStatement<T extends ConditionStatement<T>> {
 
         @Override
         public final T OR() {
-            if (!this.values.isEmpty()) {
+            if (this.isNotEmpty()) {
                 this.addValues(OR);
             }
             return getThis();

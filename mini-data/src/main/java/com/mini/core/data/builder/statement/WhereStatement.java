@@ -37,10 +37,15 @@ public interface WhereStatement extends ConditionStatement<WhereStatement> {
 
         @Override
         public final WhereStatement WHERE(Consumer<WhereStatement> consumer) {
-            WhereStatementImpl where = new WhereStatementImpl("");
-            final StringBuilder builder = new StringBuilder();
-            addValues(where.builder(builder).toString());
-            return this;
+            var where = new WhereStatementImpl("");
+            var builder = new StringBuilder();
+            consumer.accept(where);
+            where.builder(builder);
+            return WHERE(builder);
+        }
+
+        private WhereStatement WHERE(StringBuilder children) {
+            return WHERE(children.toString());
         }
 
         @Override

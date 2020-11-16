@@ -4,48 +4,60 @@ import com.mini.core.data.builder.statement.FromStatement.FromStatementImpl;
 import com.mini.core.data.builder.statement.GroupByStatement.GroupByStatementImpl;
 import com.mini.core.data.builder.statement.*;
 import com.mini.core.data.builder.statement.HavingStatement.HavingStatementImpl;
+import com.mini.core.data.builder.statement.JoinStatement.JoinOnStatement;
 import com.mini.core.data.builder.statement.JoinStatement.JoinStatementImpl;
 import com.mini.core.data.builder.statement.OrderByStatement.OrderByStatementImpl;
 import com.mini.core.data.builder.statement.SelectStatement.SelectStatementImpl;
 import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
+import com.mini.core.data.builder.support.Join;
 import com.mini.core.util.holder.ClassHolder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface BaseSelectSql<T extends BaseSelectSql<T>> {
 
     T SELECT(String... column);
 
-    <E> T SELECT(@NotNull Class<E> type);
-
     T SELECT(Consumer<SelectStatement> consumer);
 
     T FROM(String... tables);
 
-    <E> T FROM(@NotNull Class<E> type);
-
-    <E> T SELECT_FROM(@NotNull Class<E> type);
-
     T JOIN(String join);
+
+    T JOIN(String table, Consumer<JoinOnStatement> consumer);
 
     T INNER_JOIN(String join);
 
+    T INNER_JOIN(String table, Consumer<JoinOnStatement> consumer);
+
     T LEFT_JOIN(String join);
+
+    T LEFT_JOIN(String table, Consumer<JoinOnStatement> consumer);
 
     T RIGHT_JOIN(String join);
 
+    T RIGHT_JOIN(String table, Consumer<JoinOnStatement> consumer);
+
     T LEFT_OUTER_JOIN(String join);
+
+    T LEFT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer);
 
     T RIGHT_OUTER_JOIN(String join);
 
+    T RIGHT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer);
+
     T CROSS_JOIN(String join);
+
+    T CROSS_JOIN(String table, Consumer<JoinOnStatement> consumer);
 
     T JOIN(Consumer<JoinStatement> consumer);
 
@@ -64,6 +76,8 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
     T ORDER_BY_DESC(String... columns);
 
     T ORDER_BY(Consumer<OrderByStatement> consumer);
+
+    <E> T SELECT_FROM_JOIN(@NotNull Class<E> type);
 
     abstract class SelectSql<T extends BaseSql<T> & BaseSelectSql<T>> extends BaseSql<T> implements BaseSelectSql<T> {
         private final GroupByStatementImpl groupBy = new GroupByStatementImpl();
@@ -84,22 +98,6 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
             return getSelectSql();
         }
 
-        public final <E> T SELECT(@NotNull Class<E> type) {
-            ClassHolder<E> holder = ClassHolder.create(type);
-            holder.getFields().values().forEach(h -> {
-                Class<Column> clazz = Column.class;
-                var column = h.getAnnotation(clazz);
-                if (Objects.isNull(column)) {
-                    SELECT(h.getName());
-                    return;
-                }
-                SELECT(format("%s AS `%s`", //
-                        column.value(),  //
-                        h.getName()));
-            });
-            return getSelectSql();
-        }
-
 
         public T SELECT(Consumer<SelectStatement> consumer) {
             consumer.accept(this.select);
@@ -111,25 +109,14 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
             return getSelectSql();
         }
 
-        public final <E> T FROM(@NotNull Class<E> type) {
-            ClassHolder<E> h = ClassHolder.create(type);
-            var table = h.getAnnotation(Table.class);
-            if (Objects.nonNull(table)) {
-                this.FROM(table.value());
-                return getSelectSql();
-            }
-            FROM(h.getSimpleName());
-            return getSelectSql();
-        }
-
-        public final <E> T SELECT_FROM(@NotNull Class<E> type) {
-            SelectSql.this.SELECT(type);
-            SelectSql.this.FROM(type);
-            return getSelectSql();
-        }
 
         public T JOIN(String join) {
             this.join.JOIN(join);
+            return getSelectSql();
+        }
+
+        public T JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.JOIN(table, consumer);
             return getSelectSql();
         }
 
@@ -138,8 +125,18 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
             return getSelectSql();
         }
 
+        public T INNER_JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.INNER_JOIN(table, consumer);
+            return getSelectSql();
+        }
+
         public T LEFT_JOIN(String join) {
             this.join.LEFT_JOIN(join);
+            return getSelectSql();
+        }
+
+        public T LEFT_JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.LEFT_JOIN(table, consumer);
             return getSelectSql();
         }
 
@@ -148,8 +145,18 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
             return getSelectSql();
         }
 
+        public T RIGHT_JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.RIGHT_JOIN(table, consumer);
+            return getSelectSql();
+        }
+
         public T LEFT_OUTER_JOIN(String join) {
             this.join.LEFT_OUTER_JOIN(join);
+            return getSelectSql();
+        }
+
+        public T LEFT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.LEFT_OUTER_JOIN(table, consumer);
             return getSelectSql();
         }
 
@@ -158,8 +165,18 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
             return getSelectSql();
         }
 
+        public T RIGHT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.RIGHT_OUTER_JOIN(table, consumer);
+            return getSelectSql();
+        }
+
         public T CROSS_JOIN(String join) {
             this.join.CROSS_JOIN(join);
+            return getSelectSql();
+        }
+
+        public T CROSS_JOIN(String table, Consumer<JoinOnStatement> consumer) {
+            this.join.CROSS_JOIN(table, consumer);
             return getSelectSql();
         }
 
@@ -207,6 +224,31 @@ public interface BaseSelectSql<T extends BaseSelectSql<T>> {
             consumer.accept(this.orderBy);
             return getSelectSql();
         }
+
+        public final <E> T SELECT_FROM_JOIN(@NotNull Class<E> type) {
+            ClassHolder<E> holder = ClassHolder.create(type);
+            holder.getFields().values().forEach(h -> {
+                Class<Column> clazz = Column.class;
+                var column = h.getAnnotation(clazz);
+                if (Objects.isNull(column)) {
+                    SELECT(h.getName());
+                    return;
+                }
+                SELECT(format("%s AS `%s`", //
+                        column.value(),  //
+                        h.getName()));
+            });
+            // 处理 From 语句
+            var table = holder.getAnnotation(Table.class);
+            FROM(ofNullable(table).map(Table::value)
+                    .orElse(holder.getName()));
+            // 处理Join语句
+            ofNullable(holder.getAnnotationsByType(Join.class)).stream()
+                    .flatMap(Arrays::stream).forEach(it -> //
+                    it.type().execute(this, it));
+            return getSelectSql();
+        }
+
 
         @Override
         public final String getSql() {

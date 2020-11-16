@@ -17,7 +17,7 @@ public final class ClassHolder<T> {
         this.type = type;
     }
 
-    public final String getSimpleName() {
+    public final String getName() {
         return type.getSimpleName();
     }
 

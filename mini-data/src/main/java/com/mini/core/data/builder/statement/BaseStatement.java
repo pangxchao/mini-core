@@ -10,7 +10,7 @@ import static java.util.Collections.addAll;
 
 @SuppressWarnings("UnusedReturnValue")
 public abstract class BaseStatement implements Serializable {
-    protected final List<String> values = new ArrayList<>();
+    private final List<String> values = new ArrayList<>();
     protected static final String AND = ") AND (";
     protected static final String OR = ") OR (";
     private final String keyWord, join;
@@ -28,6 +28,10 @@ public abstract class BaseStatement implements Serializable {
     @NotNull
     protected String getClose() {
         return "";
+    }
+
+    protected final boolean isNotEmpty() {
+        return !this.values.isEmpty();
     }
 
     protected final void addValues(String... values) {
