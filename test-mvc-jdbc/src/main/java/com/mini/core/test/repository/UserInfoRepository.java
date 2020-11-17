@@ -20,7 +20,7 @@ public interface UserInfoRepository extends PagingAndSortingRepository<UserInfo,
             // 表名可以带JOIN语句，比如：user_info JOIN region_info ON user_region_id = region_id
             // 表名带JOIN语句之后，sql就不能再设置FROM语句了，防止SQL错乱
             // 表名带JOIN语句后，sql依然可以设置JOIN语句
-            sql.SELECT_FROM(UserInfo.class);
+            sql.SELECT_FROM_JOIN(UserInfo.class);
             sql.WHERE(where -> {    //
                 sql.IF_NOT_EMPTY(idList, () -> {
                     where.IN(UserInfo.USER_ID, "?", idList.length);

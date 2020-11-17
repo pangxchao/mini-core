@@ -1,4 +1,4 @@
-package com.mini.core.data.jpa;
+package com.mini.core.jpa;
 
 import com.mini.core.util.PKGenerator;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;

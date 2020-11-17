@@ -1,6 +1,7 @@
 package com.mini.core.test.entity;
 
 import com.mini.core.data.common.LongId;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.Tolerate;
@@ -53,6 +54,7 @@ public class UserInfo implements LongId, Serializable {
 
     // createTime
     @CreatedDate
+    @Builder.Default
     @Column(USER_CREATE_TIME)
     private Date createTime = new Date();
 

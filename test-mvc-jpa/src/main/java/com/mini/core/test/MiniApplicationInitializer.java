@@ -1,16 +1,12 @@
 package com.mini.core.test;
 
-import com.mini.core.data.common.LongId;
-import com.mini.core.data.listener.LongIdBeforeSaveApplicationListener;
 import com.mini.core.mvc.MiniSpringBootServletInitializer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -60,12 +56,6 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     @Qualifier("namedParameterJdbcOperations")
     public NamedParameterJdbcOperations namedParameterJdbcOperations(@Qualifier("dataSource") DataSource dataSource) {
         return new NamedParameterJdbcTemplate(dataSource);
-    }
-
-    @Bean
-    @Qualifier("beforeSaveApplicationListener")
-    public ApplicationListener<BeforeSaveEvent<LongId>> beforeSaveApplicationListener() {
-        return new LongIdBeforeSaveApplicationListener();
     }
 
     @Bean

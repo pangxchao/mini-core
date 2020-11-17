@@ -100,7 +100,6 @@ out.println """package ${info.packageName}.entity;"""
 // spring jpa 相关包
 out.println """ """
 out.println """import javax.persistence.*;"""
-out.println """import org.springframework.data.relational.core.mapping.*; """
 // 自动代码生成插件包
 out.println """"""
 out.println """import lombok.*;"""

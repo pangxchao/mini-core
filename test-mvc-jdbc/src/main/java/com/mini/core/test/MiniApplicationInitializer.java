@@ -2,6 +2,11 @@ package com.mini.core.test;
 
 import com.mini.core.data.listener.BeforeSaveApplicationListener;
 import com.mini.core.mvc.MiniSpringBootServletInitializer;
+import com.querydsl.sql.MySQLTemplates;
+import com.querydsl.sql.SQLQueryFactory;
+import com.querydsl.sql.SQLTemplates;
+import com.querydsl.sql.spring.SpringConnectionProvider;
+import com.querydsl.sql.spring.SpringExceptionTranslator;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,11 +30,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.inject.Provider;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
+import java.sql.Connection;
 
 import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING;
 
@@ -85,5 +92,19 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     @Qualifier("beforeSaveApplicationListener")
     public ApplicationListener<BeforeSaveEvent<Object>> beforeSaveApplicationListener() {
         return new BeforeSaveApplicationListener();
+    }
+
+    @Bean
+    public com.querydsl.sql.Configuration querydslConfiguration() {
+        SQLTemplates templates = MySQLTemplates.builder().build();
+        var configuration = new com.querydsl.sql.Configuration(templates);
+        configuration.setExceptionTranslator(new SpringExceptionTranslator());
+        return configuration;
+    }
+
+    @Bean
+    public SQLQueryFactory queryFactory(@Qualifier("dataSource") DataSource dataSource) {
+        Provider<Connection> provider = new SpringConnectionProvider(dataSource);
+        return new SQLQueryFactory(querydslConfiguration(), provider);
     }
 }
