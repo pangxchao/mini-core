@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>mini-core</artifactId>
+    <groupId>com.mini</groupId>
+    <packaging>pom</packaging>
+    <name>mini-core</name>
+    <version>1.0</version>
+
+    <modules>
+        <module>mini-util</module>
+        <module>mini-data</module>
+        <module>mini-jdbc</module>
+        <module>mini-jpa</module>
+        <module>mini-mvc</module>
+        <module>mini-web</module>
+    </modules>
+
+    <!-- 私有仓库配置 -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>GitHub Private Maven</name>
+            <url>file:D:/workspace-maven-git/maven/</url>
+        </repository>
+    </distributionManagement>
+</project>
