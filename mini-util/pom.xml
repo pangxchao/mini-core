@@ -11,7 +11,7 @@
     <properties>
         <!-- 项目使用版本配置 -->
         <java.version>11</java.version>
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <kotlin.version>1.4.10</kotlin.version>
         <spring.version>5.2.10.RELEASE</spring.version>
         <spring.data.version>2.3.5.RELEASE</spring.data.version>
