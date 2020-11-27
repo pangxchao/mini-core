@@ -183,7 +183,6 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
      * @return {this}
      */
     public final JsonModel setAll(int index, Collection<?> values) {
-
         JsonModel.this.list.addAll(index, values);
         JsonModel.this.data = this.list;
         model.put("data", data);
