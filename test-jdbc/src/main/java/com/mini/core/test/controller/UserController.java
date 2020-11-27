@@ -5,14 +5,17 @@ import com.mini.core.mvc.util.ResponseCode;
 import com.mini.core.test.entity.UserInfo;
 import com.mini.core.test.form.UserSave;
 import com.mini.core.test.repository.UserInfoRepository;
+import com.querydsl.sql.SQLQueryFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Locale;
 
@@ -21,6 +24,12 @@ import java.util.Locale;
 @RequestMapping("/user")
 public class UserController implements ResponseCode {
     private final UserInfoRepository userInfoRepository;
+
+    @Autowired
+    private SQLQueryFactory sqlQueryFactory;
+
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
 
     public UserController(@Qualifier("userInfoRepository") UserInfoRepository userInfoRepository) {
         this.userInfoRepository = userInfoRepository;
@@ -34,11 +43,12 @@ public class UserController implements ResponseCode {
         return model.build();
     }
 
+    @Transactional(readOnly = true)
     @RequestMapping(path = "/id_list")
     public ResponseEntity<ModelMap> id_list(JsonModel model, Long[] idList) {
-        var list = userInfoRepository.findByIdList(idList);
-        System.out.println(list);
-        model.setData(list);
+//        var list = userInfoRepository.findByIdList(idList);
+//        System.out.println(list);
+//        model.setData(list);
         return model.build();
     }
 
@@ -57,7 +67,7 @@ public class UserController implements ResponseCode {
     }
 
     @RequestMapping(path = "/save")
-    public ResponseEntity<ModelMap> save(JsonModel model, @Valid UserSave userSave/*, BindingResult result*/) {
+    public ResponseEntity<ModelMap> save(JsonModel model, @Validated UserSave userSave/*, BindingResult result*/) {
         // 1. 保存时，UserSave 不能直接继承UserInfo，非要这样需要在每个字段上加注解，保存与数据库的对应关系
         // 2. MappedCollection 注解关联保存时，只会保存关联的实体信息，不会修改当前对象的外键值
         // 3. 测试时发现验证对象后面紧跟BindingResult，返回的是ConstraintViolationException异常

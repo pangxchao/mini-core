@@ -1,16 +1,19 @@
 package com.mini.core.data.builder.statement;
 
+import com.mini.core.data.builder.AbstractSql;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface HavingStatement extends ConditionStatement<HavingStatement> {
+public interface HavingStatement extends FilterStatement<HavingStatement> {
     /**
      * 子条件
      *
      * @param consumer 回调
      * @return {@code this}
      */
-    HavingStatement HAVING(Consumer<HavingStatement> consumer);
+    HavingStatement having(Consumer<HavingStatement> consumer);
 
     /**
      * 子条件
@@ -18,40 +21,48 @@ public interface HavingStatement extends ConditionStatement<HavingStatement> {
      * @param children 子条件
      * @return {@code this}
      */
-    HavingStatement HAVING(String children);
+    HavingStatement having(String children);
 
-    final class HavingStatementImpl extends ConditionStatementImpl<HavingStatement> implements HavingStatement {
+    final class HavingStatementImpl extends FilterStatementImpl<HavingStatement> implements HavingStatement {
+        private final String keyword;
 
-        protected HavingStatementImpl(String word) {
-            super(word);
+        private HavingStatementImpl(AbstractSql<?> sql, String keyword) {
+            super(sql);
+            this.keyword = keyword;
         }
 
-        public HavingStatementImpl() {
-            super("\nHAVING ");
+        public HavingStatementImpl(AbstractSql<?> sql) {
+            this(sql, "\nHAVING ");
+        }
+
+        @NotNull
+        @Override
+        protected final String getKeyword() {
+            return keyword;
         }
 
         @Override
-        protected final HavingStatement getThis() {
+        protected final HavingStatement self() {
             return this;
         }
 
         @Override
-        public final HavingStatement HAVING(Consumer<HavingStatement> consumer) {
-            var having = new HavingStatementImpl("");
+        public final HavingStatement having(Consumer<HavingStatement> consumer) {
+            var having = new HavingStatementImpl(sql, "");
             var builder = new StringBuilder();
             consumer.accept(having);
             having.builder(builder);
-            return HAVING(builder);
+            return having(builder);
         }
 
-        private HavingStatement HAVING(StringBuilder children) {
-            return HAVING(children.toString());
+        private HavingStatement having(StringBuilder children) {
+            return having(children.toString());
         }
 
         @Override
-        public final HavingStatement HAVING(String children) {
+        public final HavingStatement having(String children) {
             this.addValues(children);
-            return getThis();
+            return self();
         }
     }
 }

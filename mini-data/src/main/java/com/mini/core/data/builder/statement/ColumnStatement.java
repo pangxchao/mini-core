@@ -1,37 +1,21 @@
 package com.mini.core.data.builder.statement;
 
 
+import com.mini.core.data.builder.AbstractSql;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface ColumnStatement {
-    /**
-     * 新增字段
-     *
-     * @param columns 字段列表
-     * @return {@code this}
-     */
-    ColumnStatement COLUMN(String... columns);
+public interface ColumnStatement extends BaseStatement<ColumnStatement> {
 
-    final class ColumnStatementImpl extends BaseStatement implements ColumnStatement {
-        public ColumnStatementImpl() {
-            super("", ", ");
+    final class ColumnStatementImpl extends BaseStatementImpl<ColumnStatement> implements ColumnStatement {
+        public ColumnStatementImpl(AbstractSql<?> sql) {
+            super(sql, ", ", "(", ")");
         }
 
         @NotNull
-        public final String getOpen() {
-            return "(";
-        }
-
-        @NotNull
-        public final String getClose() {
-            return ") ";
-        }
-
         @Override
-        public final ColumnStatement COLUMN(String... columns) {
-            addValues(columns);
-            return this;
+        protected final String getKeyword() {
+            return "";
         }
     }
 }

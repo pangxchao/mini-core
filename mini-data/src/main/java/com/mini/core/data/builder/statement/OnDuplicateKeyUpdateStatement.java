@@ -1,18 +1,16 @@
 package com.mini.core.data.builder.statement;
 
+import com.mini.core.data.builder.AbstractSql;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface OnDuplicateKeyUpdateStatement {
-    /**
-     * 修改字段内容
-     *
-     * @param set 修改字段内容
-     * @return {@code this}
-     */
-    OnDuplicateKeyUpdateStatement SET(@NotNull String set);
+public interface OnDuplicateKeyUpdateStatement extends BaseStatement<OnDuplicateKeyUpdateStatement> {
+
+    OnDuplicateKeyUpdateStatement setNative(String column, String value, Object... args);
+
+    OnDuplicateKeyUpdateStatement set(String column, Object arg);
 
     /**
      * 修改成 Insert 设置的值
@@ -20,66 +18,50 @@ public interface OnDuplicateKeyUpdateStatement {
      * @param column 字段名称
      * @return {@code this}
      */
-    OnDuplicateKeyUpdateStatement FROM_INSERT(@NotNull String column);
-
-    /**
-     * 修改成指定值
-     *
-     * @param column    字段名称
-     * @param paramName 参数名称
-     * @return {@code this}
-     */
-    OnDuplicateKeyUpdateStatement EQUALS(@NotNull String column, @NotNull String paramName);
+    OnDuplicateKeyUpdateStatement setFromInsert(@NotNull String column);
 
     /**
      * 值自增处理
      *
-     * @param column    字段名称
-     * @param paramName 参数名称
+     * @param column 字段名称
+     * @param arg    参数值
      * @return {@code this}
      */
-    OnDuplicateKeyUpdateStatement INCREASE(@NotNull String column, @NotNull String paramName);
+    OnDuplicateKeyUpdateStatement setIncrease(@NotNull String column, Number arg);
 
 
-    final class OnDuplicateKeyUpdateStatementImpl extends BaseStatement implements OnDuplicateKeyUpdateStatement {
+    final class OnDuplicateKeyUpdateStatementImpl extends BaseStatementImpl<OnDuplicateKeyUpdateStatement> implements OnDuplicateKeyUpdateStatement {
 
-        public OnDuplicateKeyUpdateStatementImpl() {
-            super("\nON DUPLICATE KEY UPDATE ", ",");
+        public OnDuplicateKeyUpdateStatementImpl(AbstractSql<?> sql) {
+            super(sql, ",", "", "");
         }
 
         @NotNull
-        protected final String getOpen() {
-            return "";
-        }
-
-        @NotNull
-        protected final String getClose() {
-            return " ";
+        @Override
+        protected final String getKeyword() {
+            return "\nON DUPLICATE KEY UPDATE ";
         }
 
         @Override
-        public final OnDuplicateKeyUpdateStatement SET(@NotNull String set) {
-            this.addValues(set);
+        public OnDuplicateKeyUpdateStatement setNative(String column, String value, Object... args) {
+            addValues(format("%s = %s", column, value));
+            this.sql.args(args);
             return this;
         }
 
         @Override
-        public final OnDuplicateKeyUpdateStatement FROM_INSERT(@NotNull String column) {
-            addValues(format("%s = VALUES(%s)", column, column));
-            return this;
-        }
-
-
-        @Override
-        public OnDuplicateKeyUpdateStatement EQUALS(@NotNull String column, @NotNull String paramName) {
-            addValues(format("%s = %s", column, paramName));
-            return this;
+        public OnDuplicateKeyUpdateStatement set(String column, Object arg) {
+            return setNative(column, "?", arg);
         }
 
         @Override
-        public OnDuplicateKeyUpdateStatement INCREASE(@NotNull String column, @NotNull String paramName) {
-            addValues(format("%s = %s + %s", column, column, paramName));
-            return this;
+        public final OnDuplicateKeyUpdateStatement setFromInsert(@NotNull String column) {
+            return setNative(column, format("VALUES(%s)", column));
+        }
+
+        @Override
+        public OnDuplicateKeyUpdateStatement setIncrease(@NotNull String column, Number arg) {
+            return setNative(column, format("%s + ?", column), arg);
         }
     }
 }

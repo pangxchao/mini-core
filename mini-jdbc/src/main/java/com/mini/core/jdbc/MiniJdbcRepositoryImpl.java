@@ -1,14 +1,20 @@
 package com.mini.core.jdbc;
 
+import com.mini.core.data.MiniBaseRepositoryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.data.relational.core.dialect.Dialect;
+
+import javax.sql.DataSource;
 
 
-public class MiniJdbcBaseRepositoryImpl implements MiniJdbcBaseRepository {
+public class MiniJdbcRepositoryImpl extends MiniBaseRepositoryImpl implements MiniJdbcRepository {
     @NotNull
     private final JdbcAggregateOperations entityOperations;
 
-    public MiniJdbcBaseRepositoryImpl(@NotNull JdbcAggregateOperations entityOperations) {
+    public MiniJdbcRepositoryImpl(@NotNull DataSource dataSource, @NotNull Dialect jdbcDialect,
+                                  @NotNull JdbcAggregateOperations entityOperations) {
+        super(dataSource, jdbcDialect);
         this.entityOperations = entityOperations;
     }
 

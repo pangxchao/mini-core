@@ -1,5 +1,6 @@
 package com.mini.core.data.builder.statement;
 
+import com.mini.core.data.builder.AbstractSql;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -9,58 +10,60 @@ import java.util.List;
 import static java.util.Collections.addAll;
 
 @SuppressWarnings("UnusedReturnValue")
-public abstract class BaseStatement implements Serializable {
-    private final List<String> values = new ArrayList<>();
-    protected static final String AND = ") AND (";
-    protected static final String OR = ") OR (";
-    private final String keyWord, join;
+public interface BaseStatement<T extends BaseStatement<T>> {
+    T addValues(String... values);
 
-    public BaseStatement(String keyWord, String join) {
-        this.keyWord = keyWord;
-        this.join = join;
-    }
+    void builder(StringBuilder builder);
 
-    @NotNull
-    protected String getOpen() {
-        return "";
-    }
+    abstract class BaseStatementImpl<T extends BaseStatement<T>> implements BaseStatement<T>, Serializable {
+        private final List<String> values = new ArrayList<>();
+        protected static final String AND = ") AND (";
+        protected static final String OR = ") OR (";
+        private final String join, open, close;
+        protected final AbstractSql<?> sql;
 
-    @NotNull
-    protected String getClose() {
-        return "";
-    }
-
-    protected final boolean isNotEmpty() {
-        return !this.values.isEmpty();
-    }
-
-    protected final void addValues(String... values) {
-        if (values != null && values.length > 0) {
-            addAll(this.values, values);
+        public BaseStatementImpl(AbstractSql<?> sql, String join, String open, String close) {
+            this.close = close;
+            this.join = join;
+            this.open = open;
+            this.sql = sql;
         }
-    }
 
-    public final StringBuilder builder(StringBuilder builder) {
-        if (this.values.isEmpty()) {
-            return builder;
+        @NotNull
+        protected abstract String getKeyword();
+
+        protected final boolean isNotEmpty() {
+            return !this.values.isEmpty();
         }
-        builder.append(keyWord).append(getOpen());
-        String last = "_________________________";
-        for (int i = 0; i < values.size(); i++) {
-            String part = this.values.get(i);
-            if (this.isJoin(i, part, last)) {
-                builder.append(join);
+
+        @SuppressWarnings("unchecked")
+        public final T addValues(String... values) {
+            if (values != null && values.length > 0) {
+                addAll(this.values, values);
             }
-            builder.append(part);
-            last = part;
+            return (T) this;
         }
-        builder.append(getClose());
-        return builder;
+
+        public final void builder(StringBuilder builder) {
+            if (!BaseStatementImpl.this.isNotEmpty()) return;
+            builder.append(getKeyword()).append(open);
+            String last = "_________________________";
+            for (int i = 0; i < values.size(); i++) {
+                String part = this.values.get(i);
+                if (this.isJoin(i, part, last)) {
+                    builder.append(join);
+                }
+                builder.append(part);
+                last = part;
+            }
+            builder.append(close);
+        }
+
+        private boolean isJoin(int index, String part, String last) {
+            var b = index > 0 && !OR.equals(part) && !OR.equals(last);
+            return b && !AND.equals(part) && !AND.equals(last);
+        }
     }
 
-    private boolean isJoin(int index, String part, String last) {
-        var b = index > 0 && !OR.equals(part) && !OR.equals(last);
-        return b && !AND.equals(part) && !AND.equals(last);
-    }
 
 }

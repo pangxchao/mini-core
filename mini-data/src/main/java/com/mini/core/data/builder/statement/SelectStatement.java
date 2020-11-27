@@ -1,26 +1,21 @@
 package com.mini.core.data.builder.statement;
 
+import com.mini.core.data.builder.AbstractSql;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface SelectStatement {
+public interface SelectStatement extends BaseStatement<SelectStatement> {
+
 
     /**
      * 去重查询
      *
+     * @param columns 字段名称
      * @return {@code this}
      */
-    SelectStatement DISTINCT();
-
-    /**
-     * 指定查询字段
-     *
-     * @param columns 字段名称
-     * @return @return {@code this}
-     */
-    SelectStatement SELECT(String... columns);
+    SelectStatement distinct(String... columns);
 
     /**
      * 查询条数
@@ -29,7 +24,7 @@ public interface SelectStatement {
      * @param alias  字段别名
      * @return @return {@code this}
      */
-    SelectStatement COUNT(@NotNull String column, @NotNull String alias);
+    SelectStatement count(@NotNull String column, @NotNull String alias);
 
     /**
      * 查询条数
@@ -37,7 +32,7 @@ public interface SelectStatement {
      * @param column 字段名称
      * @return @return {@code this}
      */
-    SelectStatement COUNT(@NotNull String column);
+    SelectStatement count(@NotNull String column);
 
     /**
      * 查询和值
@@ -46,7 +41,7 @@ public interface SelectStatement {
      * @param alias  字段别名
      * @return @return {@code this}
      */
-    SelectStatement SUM(@NotNull String column, @NotNull String alias);
+    SelectStatement sum(@NotNull String column, @NotNull String alias);
 
     /**
      * 查询和值
@@ -54,7 +49,7 @@ public interface SelectStatement {
      * @param column 字段名称
      * @return @return {@code this}
      */
-    SelectStatement SUM(@NotNull String column);
+    SelectStatement sum(@NotNull String column);
 
     /**
      * 查询平均值
@@ -63,7 +58,7 @@ public interface SelectStatement {
      * @param alias  字段别名
      * @return @return {@code this}
      */
-    SelectStatement AVG(@NotNull String column, @NotNull String alias);
+    SelectStatement avg(@NotNull String column, @NotNull String alias);
 
     /**
      * 查询平均值
@@ -71,7 +66,7 @@ public interface SelectStatement {
      * @param column 字段名称
      * @return @return {@code this}
      */
-    SelectStatement AVG(@NotNull String column);
+    SelectStatement avg(@NotNull String column);
 
     /**
      * 查询最大值
@@ -80,7 +75,7 @@ public interface SelectStatement {
      * @param alias  字段别名
      * @return @return {@code this}
      */
-    SelectStatement MAX(@NotNull String column, @NotNull String alias);
+    SelectStatement max(@NotNull String column, @NotNull String alias);
 
     /**
      * 查询最大值
@@ -88,7 +83,7 @@ public interface SelectStatement {
      * @param column 字段名称
      * @return @return {@code this}
      */
-    SelectStatement MAX(@NotNull String column);
+    SelectStatement max(@NotNull String column);
 
     /**
      * 查询最小值
@@ -97,7 +92,7 @@ public interface SelectStatement {
      * @param alias  字段别名
      * @return @return {@code this}
      */
-    SelectStatement MIN(@NotNull String column, @NotNull String alias);
+    SelectStatement min(@NotNull String column, @NotNull String alias);
 
     /**
      * 查询最小值
@@ -105,89 +100,76 @@ public interface SelectStatement {
      * @param column 字段名称
      * @return @return {@code this}
      */
-    SelectStatement MIN(@NotNull String column);
+    SelectStatement min(@NotNull String column);
 
 
-    final class SelectStatementImpl extends BaseStatement implements SelectStatement {
-        private boolean distinct = false;
+    final class SelectStatementImpl extends BaseStatementImpl<SelectStatement> implements SelectStatement {
+        private String keyword = "SELECT \n";
 
-        public SelectStatementImpl() {
-            super("SELECT ", ", ");
+        public SelectStatementImpl(AbstractSql<?> sql) {
+            super(sql, ", ", "", "");
         }
 
         @NotNull
-        public final String getOpen() {
-            return distinct ? "DISTINCT " : "";
-        }
-
-        @NotNull
-        public final String getClose() {
-            return " ";
+        @Override
+        protected final String getKeyword() {
+            return keyword;
         }
 
         @Override
-        public final SelectStatement DISTINCT() {
-            distinct = true;
-            return this;
+        public final SelectStatement distinct(String... columns) {
+            this.keyword = "SELECT DISTINCT \n";
+            return addValues(columns);
         }
 
         @Override
-        public final SelectStatement SELECT(String... columns) {
-            if (columns != null && columns.length > 0) {
-                columns[0] = "\n\t" + columns[0];
-                super.addValues(columns);
-            }
-            return this;
+        public final SelectStatement count(@NotNull String column, @NotNull String alias) {
+            return addValues(format("COUNT(%s) as `%s`", column, alias));
         }
 
         @Override
-        public final SelectStatement COUNT(@NotNull String column, @NotNull String alias) {
-            return SELECT(format("COUNT(%s) as `%s`", column, alias));
+        public final SelectStatement count(@NotNull String column) {
+            return count(column, column);
         }
 
         @Override
-        public final SelectStatement COUNT(@NotNull String column) {
-            return COUNT(column, column);
+        public final SelectStatement sum(@NotNull String column, @NotNull String alias) {
+            return addValues(format("SUM(%s) as `%s`", column, alias));
         }
 
         @Override
-        public final SelectStatement SUM(@NotNull String column, @NotNull String alias) {
-            return SELECT(format("SUM(%s) as `%s`", column, alias));
+        public final SelectStatement sum(@NotNull String column) {
+            return sum(column, column);
         }
 
         @Override
-        public final SelectStatement SUM(@NotNull String column) {
-            return SUM(column, column);
+        public final SelectStatement avg(@NotNull String column, @NotNull String alias) {
+            return addValues(format("AVG(%s) as `%s`", column, alias));
         }
 
         @Override
-        public final SelectStatement AVG(@NotNull String column, @NotNull String alias) {
-            return SELECT(format("AVG(%s) as `%s`", column, alias));
+        public final SelectStatement avg(@NotNull String column) {
+            return avg(column, column);
         }
 
         @Override
-        public final SelectStatement AVG(@NotNull String column) {
-            return AVG(column, column);
+        public SelectStatement max(@NotNull String column, @NotNull String alias) {
+            return addValues(format("MAX(%s) as `%s`", column, alias));
         }
 
         @Override
-        public SelectStatement MAX(@NotNull String column, @NotNull String alias) {
-            return SELECT(format("MAX(%s) as `%s`", column, alias));
+        public final SelectStatement max(@NotNull String column) {
+            return max(column, column);
         }
 
         @Override
-        public final SelectStatement MAX(@NotNull String column) {
-            return MAX(column, column);
+        public final SelectStatement min(@NotNull String column, @NotNull String alias) {
+            return addValues(format("MIN(%s) as `%s`", column, alias));
         }
 
         @Override
-        public final SelectStatement MIN(@NotNull String column, @NotNull String alias) {
-            return SELECT(format("MIN(%s) as `%s`", column, alias));
-        }
-
-        @Override
-        public final SelectStatement MIN(@NotNull String column) {
-            return MIN(column, column);
+        public final SelectStatement min(@NotNull String column) {
+            return min(column, column);
         }
     }
 }

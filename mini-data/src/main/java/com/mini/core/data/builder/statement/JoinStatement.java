@@ -1,268 +1,146 @@
 package com.mini.core.data.builder.statement;
 
 
-import com.mini.core.data.builder.statement.ConditionStatement.ConditionStatementImpl;
+import com.mini.core.data.builder.AbstractSql;
+import com.mini.core.data.builder.statement.JoinOnStatement.JoinOnStatementImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
+
 @SuppressWarnings("UnusedReturnValue")
-public interface JoinStatement {
+public interface JoinStatement extends BaseStatement<JoinStatement> {
+
+    /**
+     * Join 默认连接
+     *
+     * @param table  目标表名
+     * @param column 字段名
+     * @param target 目标字段名
+     * @return {@code this}
+     */
+    JoinStatement join(String table, String column, String target);
 
     /**
      * Join
      *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement JOIN(String join);
-
-    /**
-     * Join
-     *
-     * @param table    表名称
+     * @param table    目标表名
      * @param consumer 回调方法
      * @return {@code this}
      */
-    JoinStatement JOIN(String table, Consumer<JoinOnStatement> consumer);
+    JoinStatement join(String table, Consumer<JoinOnStatement> consumer);
 
-    /**
-     * Inner Join
-     *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement INNER_JOIN(String join);
 
-    /**
-     * Inner Join
-     *
-     * @param table    表名称
-     * @param consumer 回调方法
-     * @return {@code this}
-     */
-    JoinStatement INNER_JOIN(String table, Consumer<JoinOnStatement> consumer);
-
-    /**
-     * Left Join
-     *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement LEFT_JOIN(String join);
-
-    /**
-     * Left Join
-     *
-     * @param table    表名称
-     * @param consumer 回调方法
-     * @return {@code this}
-     */
-    JoinStatement LEFT_JOIN(String table, Consumer<JoinOnStatement> consumer);
-
-    /**
-     * Right Join
-     *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement RIGHT_JOIN(String join);
-
-    /**
-     * Right Join
-     *
-     * @param table    表名称
-     * @param consumer 回调方法
-     * @return {@code this}
-     */
-    JoinStatement RIGHT_JOIN(String table, Consumer<JoinOnStatement> consumer);
-
-    /**
-     * Left Outer Join
-     *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement LEFT_OUTER_JOIN(String join);
-
-    /**
-     * Left Outer Join
-     *
-     * @param table    表名称
-     * @param consumer 回调方法
-     * @return {@code this}
-     */
-    JoinStatement LEFT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer);
-
-    /**
-     * Right Outer Join
-     *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement RIGHT_OUTER_JOIN(String join);
-
-    /**
-     * Right Outer Join
-     *
-     * @param table    表名称
-     * @param consumer 回调方法
-     * @return {@code this}
-     */
-    JoinStatement RIGHT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer);
-
-    /**
-     * Cross Join
-     *
-     * @param join 连接字符串
-     * @return {@code this}
-     */
-    JoinStatement CROSS_JOIN(String join);
-
-    /**
-     * Cross Join
-     *
-     * @param table    表名称
-     * @param consumer 回调方法
-     * @return {@code this}
-     */
-    JoinStatement CROSS_JOIN(String table, Consumer<JoinOnStatement> consumer);
-
-    interface JoinOnStatement extends ConditionStatement<JoinOnStatement> {
-        JoinOnStatement ON(String on);
-
-        JoinOnStatement AND();
-
-        JoinOnStatement OR();
-    }
-
-    final class JoinStatementImpl extends BaseStatement implements JoinStatement {
-        private String word = "\nJOIN ";
-
-        public JoinStatementImpl() {
-            super("", "");
+    abstract class JoinStatementBase extends BaseStatementImpl<JoinStatement> implements JoinStatement {
+        public JoinStatementBase(AbstractSql<?> sql) {
+            super(sql, "", "", "");
         }
 
-        @NotNull
-        protected final String getOpen() {
-            return word;
+        @Override
+        public JoinStatement join(String table, String column, String target) {
+            addValues(format("%s ON %s = %s", table, column, target));
+            return this;
         }
 
-        @NotNull
-        protected final String getClose() {
-            return "";
-        }
-
-        private StringBuilder getJoinString(String table, Consumer<JoinOnStatement> consumer) {
-            var statement = new JoinOnStatementImpl();
+        @Override
+        public JoinStatement join(String table, Consumer<JoinOnStatement> consumer) {
+            var statement = new JoinOnStatementImpl(sql);
             var builder = new StringBuilder(table);
             consumer.accept(statement);
             statement.builder(builder);
-            return builder;
+            return addValues(builder.toString());
         }
-
-        @Override
-        public final JoinStatement JOIN(String join) {
-            this.word = "\nJOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return JOIN(getJoinString(table, consumer).toString());
-        }
-
-        @Override
-        public final JoinStatement INNER_JOIN(String join) {
-            this.word = "\nINNER JOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement INNER_JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return INNER_JOIN(getJoinString(table, consumer).toString());
-        }
-
-        @Override
-        public final JoinStatement LEFT_JOIN(String join) {
-            this.word = "\nLEFT JOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement LEFT_JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return LEFT_JOIN(getJoinString(table, consumer).toString());
-        }
-
-        @Override
-        public final JoinStatement RIGHT_JOIN(String join) {
-            this.word = "\nRIGHT JOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement RIGHT_JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return RIGHT_JOIN(getJoinString(table, consumer).toString());
-        }
-
-        @Override
-        public final JoinStatement LEFT_OUTER_JOIN(String join) {
-            this.word = "\nLEFT OUTER JOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement LEFT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return LEFT_OUTER_JOIN(getJoinString(table, consumer).toString());
-        }
-
-        @Override
-        public final JoinStatement RIGHT_OUTER_JOIN(String join) {
-            this.word = "\nRIGHT OUTER JOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement RIGHT_OUTER_JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return RIGHT_OUTER_JOIN(getJoinString(table, consumer).toString());
-        }
-
-        @Override
-        public final JoinStatement CROSS_JOIN(String join) {
-            this.word = "\nCROSS JOIN ";
-            this.addValues(join);
-            return this;
-        }
-
-        @Override
-        public final JoinStatement CROSS_JOIN(String table, Consumer<JoinOnStatement> consumer) {
-            return CROSS_JOIN(getJoinString(table, consumer).toString());
-        }
-
-
     }
 
-    final class JoinOnStatementImpl extends ConditionStatementImpl<JoinOnStatement> implements JoinOnStatement {
+    final class JoinStatementImpl extends JoinStatementBase implements JoinStatement {
 
-        public JoinOnStatementImpl() {
-            super(" ON ");
+        public JoinStatementImpl(AbstractSql<?> sql) {
+            super(sql);
         }
 
+        @NotNull
         @Override
-        protected final JoinOnStatementImpl getThis() {
-            return this;
+        protected final String getKeyword() {
+            return "\nJOIN ";
+        }
+    }
+
+    final class InnerJoinStatementImpl extends JoinStatementBase implements JoinStatement {
+
+        public InnerJoinStatementImpl(AbstractSql<?> sql, String keyword) {
+            super(sql);
         }
 
+        @NotNull
         @Override
-        public final JoinOnStatement ON(String on) {
-            this.addValues(on);
-            return this;
+        protected final String getKeyword() {
+            return "\nINNER JOIN";
+        }
+    }
+
+    final class LeftJoinStatementImpl extends JoinStatementBase implements JoinStatement {
+
+        public LeftJoinStatementImpl(AbstractSql<?> sql) {
+            super(sql);
+        }
+
+        @NotNull
+        @Override
+        protected final String getKeyword() {
+            return "\nLEFT JOIN";
+        }
+    }
+
+    final class RightJoinStatementImpl extends JoinStatementBase implements JoinStatement {
+
+        public RightJoinStatementImpl(AbstractSql<?> sql) {
+            super(sql);
+        }
+
+        @NotNull
+        @Override
+        protected final String getKeyword() {
+            return "\nRIGHT JOIN";
+        }
+    }
+
+    final class LeftOuterJoinStatementImpl extends JoinStatementBase implements JoinStatement {
+
+        public LeftOuterJoinStatementImpl(AbstractSql<?> sql) {
+            super(sql);
+        }
+
+        @NotNull
+        @Override
+        protected final String getKeyword() {
+            return "\nLEFT OUTER JOIN";
+        }
+    }
+
+    final class RightOuterJoinStatementImpl extends JoinStatementBase implements JoinStatement {
+
+        public RightOuterJoinStatementImpl(AbstractSql<?> sql) {
+            super(sql);
+        }
+
+        @NotNull
+        @Override
+        protected final String getKeyword() {
+            return "\nRIGHT OUTER JOIN";
+        }
+    }
+
+    final class CrossJoinStatementImpl extends JoinStatementBase implements JoinStatement {
+
+        public CrossJoinStatementImpl(AbstractSql<?> sql) {
+            super(sql);
+        }
+
+        @NotNull
+        @Override
+        protected final String getKeyword() {
+            return "\nCROSS JOIN";
         }
     }
 }

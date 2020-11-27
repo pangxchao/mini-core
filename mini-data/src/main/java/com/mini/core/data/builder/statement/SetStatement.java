@@ -1,69 +1,46 @@
 package com.mini.core.data.builder.statement;
 
+import com.mini.core.data.builder.AbstractSql;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
 
 @SuppressWarnings("UnusedReturnValue")
-public interface SetStatement {
-    /**
-     * 修改字段内容
-     *
-     * @param set 修改字段内容
-     * @return {@code this}
-     */
-    SetStatement SET(@NotNull String set);
+public interface SetStatement extends BaseStatement<SetStatement> {
 
-    /**
-     * 修改成指定值
-     *
-     * @param column    字段名称
-     * @param paramName 参数名称
-     * @return {@code this}
-     */
-    SetStatement EQUALS(@NotNull String column, String paramName);
+    SetStatement setNative(String column, String value, Object... args);
 
-    /**
-     * 值自增处理
-     *
-     * @param column    字段名称
-     * @param paramName 参数名称
-     * @return {@code this}
-     */
-    SetStatement INCREASE(@NotNull String column, String paramName);
+    SetStatement set(String column, Object arg);
 
-    final class SetStatementImpl extends BaseStatement implements SetStatement {
+    SetStatement setIncrease(@NotNull String column, Object arg);
 
-        public SetStatementImpl() {
-            super("\nSET ", ", ");
+    final class SetStatementImpl extends BaseStatementImpl<SetStatement> implements SetStatement {
+
+        public SetStatementImpl(AbstractSql<?> sql) {
+            super(sql, ", ", "", " ");
         }
 
         @NotNull
-        protected final String getOpen() {
-            return "";
-        }
-
-        @NotNull
-        protected final String getClose() {
-            return " ";
+        @Override
+        protected final String getKeyword() {
+            return "\nSET ";
         }
 
         @Override
-        public final SetStatement SET(@NotNull String set) {
-            this.addValues(set);
-            return this;
+        public SetStatement setNative(String column, String value, Object... args) {
+            this.addValues(format("%s = %s", column, value));
+            this.sql.args(args);
+            return null;
         }
 
         @Override
-        public SetStatement EQUALS(@NotNull String column, String paramName) {
-            addValues(format("%s = %s", column, paramName));
-            return this;
+        public SetStatement set(String column, Object arg) {
+            return setNative(column, "?", arg);
         }
 
         @Override
-        public SetStatement INCREASE(@NotNull String column, String paramName) {
-            addValues(format("%s = %s + %s", column, column, paramName));
-            return this;
+        public SetStatement setIncrease(@NotNull String column, Object arg) {
+            return setNative(column, column + " + ?", arg);
         }
     }
 }

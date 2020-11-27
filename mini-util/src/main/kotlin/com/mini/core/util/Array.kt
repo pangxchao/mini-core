@@ -3,7 +3,9 @@
 
 package com.mini.core.util
 
+
 fun IntArray.toObject(): Array<Int> {
+    this.joinToString()
     return asList().toTypedArray()
 }
 
