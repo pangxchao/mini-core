@@ -64,8 +64,6 @@ public class UserInfo implements LongId, Serializable {
     @Tolerate
     public UserInfo() {
     }
-
-
 }
  
  

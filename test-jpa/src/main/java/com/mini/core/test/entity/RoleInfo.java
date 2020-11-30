@@ -4,11 +4,9 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.Tolerate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
@@ -25,6 +23,9 @@ public class RoleInfo implements Serializable {
     // name
     @Column(name = "role_name")
     private String name;
+
+    @ManyToMany(targetEntity = UserInfo.class, mappedBy = "roleInfoList")
+    private List<UserInfo> userInfoList;
 
     @Tolerate
     public RoleInfo() {

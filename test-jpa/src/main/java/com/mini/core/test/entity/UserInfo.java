@@ -4,12 +4,10 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.Tolerate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -38,13 +36,21 @@ public class UserInfo implements Serializable {
     @Column(name = "user_age")
     private Integer age;
 
-    // regionId
-    @Column(name = "user_region_id")
-    private Long regionId;
-
     // createTime
     @Column(name = "user_create_time")
     private Date createTime;
+
+    @ManyToOne
+    @JoinColumn(name = "user_region_id", referencedColumnName = "region_id")
+    private RegionInfo regionInfo;
+
+    @ManyToMany(targetEntity = RoleInfo.class)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "role_id")}
+    )
+    public List<RoleInfo> roleInfoList;
 
     @Tolerate
     public UserInfo() {

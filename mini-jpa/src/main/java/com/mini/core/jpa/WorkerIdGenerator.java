@@ -10,7 +10,6 @@ import java.io.Serializable;
 @Component
 public class WorkerIdGenerator extends IdentityGenerator {
 
-
     public final void setWorkerId(long workerId) {
         PKGenerator.setWorkerId(workerId);
     }

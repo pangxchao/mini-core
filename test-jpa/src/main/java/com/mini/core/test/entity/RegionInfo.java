@@ -4,11 +4,9 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.Tolerate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
@@ -29,6 +27,17 @@ public class RegionInfo implements Serializable {
     // parentId
     @Column(name = "region_parent_id")
     private Long parentId;
+
+    @ManyToOne
+    @JoinColumn(name = "region_parent_id", referencedColumnName = "region_id")
+    private RegionInfo regionInfo;
+
+    @OneToMany(mappedBy = "regionInfo")
+    //@JoinColumn(name = "region_parent_id", referencedColumnName = "region_id")
+    private List<RegionInfo> children;
+
+    @OneToMany(targetEntity = UserInfo.class, mappedBy = "")
+    private List<UserInfo> userInfoList;
 
     @Tolerate
     public RegionInfo() {

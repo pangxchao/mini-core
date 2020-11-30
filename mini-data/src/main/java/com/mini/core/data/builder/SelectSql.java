@@ -11,7 +11,14 @@ import com.mini.core.data.builder.statement.SelectStatement;
 import com.mini.core.data.builder.statement.SelectStatement.SelectStatementImpl;
 import com.mini.core.data.builder.statement.WhereStatement;
 import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
+import com.mini.core.data.builder.support.Join;
+import com.mini.core.util.holder.ClassHolder;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.util.StringUtils;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -253,6 +260,36 @@ public final class SelectSql extends AbstractSql<SelectSql> implements JoinFragm
         this.having.builder(builder);
         this.orderBy.builder(builder);
         return builder.toString();
+    }
+
+    public static <T> SelectSql select(Class<T> type, Consumer<SelectSql> consumer) {
+        final ClassHolder<? extends T> holder = ClassHolder.create(type);
+        final Table aTable = holder.getAnnotation(Table.class);
+        Objects.requireNonNull(aTable);
+        // 创建Sql 实例
+        final SelectSql sql = new SelectSql();
+        // 生成查询字段
+        holder.getFields().values().forEach(it -> {
+            var column = it.getAnnotation(Column.class);
+            if (column == null) return;
+
+            String columnName = column.value();
+            if (!StringUtils.hasText(columnName)) {
+                columnName = it.getName();
+            }
+            sql.select(columnName, it.getName());
+        });
+        // 生成查询表名
+        sql.from(Optional.of(aTable).map(Table::value)
+                .filter(it -> !it.isBlank())
+                .orElse(holder.getName()));
+        // 生成联合查询表名
+        for (Join join : holder.getAnnotationsByType(Join.class)) {
+            join.type().exe(sql, join.table(), join.on());
+        }
+        // 生成自定义信息
+        consumer.accept(sql);
+        return sql;
     }
 
     public static SelectSql of(Consumer<SelectSql> consumer) {

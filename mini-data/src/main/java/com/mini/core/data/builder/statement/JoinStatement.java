@@ -68,7 +68,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
 
     final class InnerJoinStatementImpl extends JoinStatementBase implements JoinStatement {
 
-        public InnerJoinStatementImpl(AbstractSql<?> sql, String keyword) {
+        public InnerJoinStatementImpl(AbstractSql<?> sql) {
             super(sql);
         }
 

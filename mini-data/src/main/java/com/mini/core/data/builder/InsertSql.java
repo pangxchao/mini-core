@@ -8,9 +8,16 @@ import com.mini.core.data.builder.statement.TableStatement;
 import com.mini.core.data.builder.statement.TableStatement.TableStatementImpl;
 import com.mini.core.data.builder.statement.ValuesStatement;
 import com.mini.core.data.builder.statement.ValuesStatement.ValuesStatementImpl;
+import com.mini.core.util.holder.ClassHolder;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.EventListener;
 import java.util.function.Consumer;
+
+import static java.util.Optional.ofNullable;
+import static org.springframework.util.StringUtils.hasText;
 
 @SuppressWarnings("UnusedReturnValue")
 public final class InsertSql extends AbstractSql<InsertSql> implements EventListener {

@@ -179,31 +179,4 @@ public final class UpdateSql extends AbstractSql<UpdateSql> implements JoinFragm
     public static UpdateSql of() {
         return new UpdateSql();
     }
-
-
-    public interface BaseName {
-
-    }
-
-    public interface TableName extends BaseName {
-
-    }
-
-    public interface ColumnName extends BaseName {
-
-    }
-
-    public interface EntityName<T> extends BaseName {
-        List<ColumnName> getColumnNameList();
-
-        TableName getTableName();
-
-        Class<T> getEntityType();
-    }
-
-    public interface FilterBuilder {
-
-    }
-
-
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static java.util.Arrays.deepToString;
 import static java.util.Collections.addAll;
 
 @SuppressWarnings({"unchecked", "UnusedReturnValue"})
@@ -175,4 +176,9 @@ public abstract class AbstractSql<T extends AbstractSql<T>> {
     }
 
     public abstract String getSql();
+
+    @Override
+    public final String toString() {
+        return String.format("%s\n%s", getSql(), deepToString(getArgs()));
+    }
 }

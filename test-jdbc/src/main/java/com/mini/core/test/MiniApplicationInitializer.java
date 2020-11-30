@@ -9,7 +9,6 @@ import com.querydsl.sql.spring.SpringExceptionTranslator;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +70,6 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
         bean.setLookupOnStartup(false);
         bean.setJndiName(JNDI);
         bean.afterPropertiesSet();
-        ValidationAutoConfiguration v;
         return (DataSource) bean.getObject();
     }
 

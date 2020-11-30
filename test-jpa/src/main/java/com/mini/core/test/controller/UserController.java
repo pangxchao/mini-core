@@ -5,7 +5,6 @@ import com.mini.core.mvc.util.ResponseCode;
 import com.mini.core.test.entity.UserInfo;
 import com.mini.core.test.form.UserSave;
 import com.mini.core.test.repository.UserInfoRepository;
-import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -16,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.Locale;
 
@@ -24,9 +24,6 @@ import java.util.Locale;
 @RequestMapping("/user")
 public class UserController implements ResponseCode {
     private final UserInfoRepository userInfoRepository;
-
-    @Autowired
-    private SQLQueryFactory sqlQueryFactory;
 
     @Autowired
     private ResourceBundleMessageSource messageSource;
@@ -40,19 +37,15 @@ public class UserController implements ResponseCode {
         // 1. spring data jdbc 原生支持的查询不好处理动态条件
         // 2. 使用IN 条件时，需要注意要把IN里面的参数拆分成多个参数
         model.setData(userInfoRepository.findAll());
-
-        var list = userInfoRepository.findByEmailStartsWith("12345");
-        System.out.println(list);
-        list.forEach(it -> System.out.println(it.getRegionInfo()));
         return model.build();
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(path = "/id_list")
     public ResponseEntity<ModelMap> id_list(JsonModel model, Long[] idList) {
-        var list = userInfoRepository.findByIdList(idList);
-        System.out.println(list);
-        model.setData(list);
+//        var list = userInfoRepository.findByIdList(idList);
+//        System.out.println(list);
+//        model.setData(list);
         return model.build();
     }
 
@@ -84,13 +77,13 @@ public class UserController implements ResponseCode {
         System.out.println(userSave);
         UserInfo userInfo = userSave.toUserInfo();
         System.out.println(userInfo);
-        userInfoRepository.insert(userInfo);
+        userInfoRepository.save(userInfo);
         System.out.println(userInfo);
         return model.build();
     }
 
     @RequestMapping(path = "/remove")
-    public ResponseEntity<ModelMap> remove(JsonModel model, @Positive Long id) {
+    public ResponseEntity<ModelMap> remove(JsonModel model, @NotNull @Positive Long id) {
         userInfoRepository.findById(id).ifPresent(userinfo -> {
             System.out.println(userinfo);
             userInfoRepository.delete(userinfo);
@@ -99,7 +92,7 @@ public class UserController implements ResponseCode {
     }
 
     @RequestMapping(path = "/delete")
-    public ResponseEntity<ModelMap> delete(JsonModel model, @Positive Long id) {
+    public ResponseEntity<ModelMap> delete(JsonModel model, @NotNull @Positive Long id) {
         userInfoRepository.deleteById(id);
         return model.build();
     }

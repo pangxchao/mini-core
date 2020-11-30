@@ -3,10 +3,8 @@ package com.mini.core.test;
 import com.mini.core.test.entity.UserInfo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpSession;
 import java.util.Optional;

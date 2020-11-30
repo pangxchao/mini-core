@@ -12,11 +12,15 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.naming.NamingException;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.sql.DataSource;
@@ -53,15 +57,11 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     }
 
     @Bean
-    @Qualifier("namedParameterJdbcOperations")
-    public NamedParameterJdbcOperations namedParameterJdbcOperations(@Qualifier("dataSource") DataSource dataSource) {
-        return new NamedParameterJdbcTemplate(dataSource);
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
     }
 
-    @Bean
-    @Qualifier("transactionManager")
-    public PlatformTransactionManager transactionManager(@Qualifier("dataSource") DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
 
 }
