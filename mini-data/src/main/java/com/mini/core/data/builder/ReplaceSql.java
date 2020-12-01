@@ -8,37 +8,33 @@ import com.mini.core.data.builder.statement.ValuesStatement;
 import com.mini.core.data.builder.statement.ValuesStatement.ValuesStatementImpl;
 
 import java.util.EventListener;
-import java.util.function.Consumer;
 
 @SuppressWarnings("UnusedReturnValue")
-public abstract class ReplaceSql extends AbstractSql<ReplaceSql> implements EventListener {
+public class ReplaceSql extends AbstractSql<ReplaceSql> implements EventListener {
     private final ColumnStatement column = new ColumnStatementImpl(this);
     private final ValuesStatement values = new ValuesStatementImpl(this);
     private final TableStatement table = new TableStatementImpl(this);
 
-    protected ReplaceSql() {
-    }
-
-    public ReplaceSql replaceInto(String table) {
+    public final ReplaceSql replaceInto(String table) {
         this.table.addValues(table);
         return this;
     }
 
-    public ReplaceSql column(String... columns) {
+    public final ReplaceSql column(String... columns) {
         this.column.addValues(columns);
         return this;
     }
 
-    public ReplaceSql values(String... values) {
+    public final ReplaceSql values(String... values) {
         this.values.addValues(values);
         return this;
     }
 
-    public ReplaceSql setNative(String column, String values, Object... value) {
+    public final ReplaceSql setNative(String column, String values, Object... value) {
         return column(column).values(values).args(value);
     }
 
-    public ReplaceSql set(String column, Object value) {
+    public final ReplaceSql set(String column, Object value) {
         return setNative(column, "?", value);
     }
 

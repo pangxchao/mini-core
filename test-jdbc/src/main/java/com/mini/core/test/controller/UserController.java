@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Positive;
+import java.util.Arrays;
 import java.util.Locale;
 
 @Validated
@@ -43,14 +44,17 @@ public class UserController implements ResponseCode {
 
         var list = userInfoRepository.findByEmailStartsWith("12345");
         System.out.println(list);
-        list.forEach(it -> System.out.println(it.getRegionInfo()));
+        System.out.println(list.size());
+        list = userInfoRepository.findByEmailStartsWith("");
+        System.out.println(list);
+        System.out.println(list.size());
         return model.build();
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(path = "/id_list")
     public ResponseEntity<ModelMap> id_list(JsonModel model, Long[] idList) {
-        var list = userInfoRepository.findByIdList(idList);
+        var list = userInfoRepository.findByIdIn(Arrays.asList(idList));
         System.out.println(list);
         model.setData(list);
         return model.build();
