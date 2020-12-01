@@ -10,13 +10,13 @@ import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnusedReturnValue")
-public final class DeleteSql extends AbstractSql<DeleteSql> implements JoinFragment<DeleteSql> {
+public abstract class DeleteSql extends AbstractSql<DeleteSql> implements JoinFragment<DeleteSql> {
     private final WhereStatementImpl where = new WhereStatementImpl(this);
     private final TableStatementImpl table = new TableStatementImpl(this);
     private final FromStatementImpl from = new FromStatementImpl(this);
     private final JoinFragmentImpl join = new JoinFragmentImpl(this);
 
-    private DeleteSql() {
+    protected DeleteSql() {
     }
 
     public final DeleteSql delete(String... tables) {
@@ -152,13 +152,5 @@ public final class DeleteSql extends AbstractSql<DeleteSql> implements JoinFragm
         return builder.toString();
     }
 
-    public static DeleteSql of(Consumer<DeleteSql> consumer) {
-        DeleteSql builder = new DeleteSql();
-        consumer.accept(builder);
-        return builder;
-    }
 
-    public static DeleteSql of() {
-        return new DeleteSql();
-    }
 }

@@ -8,27 +8,18 @@ import com.mini.core.data.builder.statement.TableStatement;
 import com.mini.core.data.builder.statement.TableStatement.TableStatementImpl;
 import com.mini.core.data.builder.statement.ValuesStatement;
 import com.mini.core.data.builder.statement.ValuesStatement.ValuesStatementImpl;
-import com.mini.core.util.holder.ClassHolder;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.EventListener;
 import java.util.function.Consumer;
 
-import static java.util.Optional.ofNullable;
-import static org.springframework.util.StringUtils.hasText;
-
 @SuppressWarnings("UnusedReturnValue")
-public final class InsertSql extends AbstractSql<InsertSql> implements EventListener {
+public abstract class InsertSql extends AbstractSql<InsertSql> implements EventListener {
     private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatementImpl(this);
     private final ColumnStatement column = new ColumnStatementImpl(this);
     private final ValuesStatement values = new ValuesStatementImpl(this);
     private final TableStatement table = new TableStatementImpl(this);
 
-    private String tableName;
-
-    private InsertSql() {
+    protected InsertSql() {
     }
 
     public InsertSql insertInto(String table) {
@@ -68,15 +59,5 @@ public final class InsertSql extends AbstractSql<InsertSql> implements EventList
         this.values.builder(builder);
         onDuplicateKeyUpdate.builder(builder);
         return builder.toString();
-    }
-
-    public static InsertSql of(Consumer<InsertSql> consumer) {
-        InsertSql builder = new InsertSql();
-        consumer.accept(builder);
-        return builder;
-    }
-
-    public static InsertSql of() {
-        return new InsertSql();
     }
 }

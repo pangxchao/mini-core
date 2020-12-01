@@ -8,12 +8,12 @@ import com.mini.core.data.builder.statement.WhereStatement
 
 
 fun delete(vararg tables: String, init: DeleteSql.() -> Unit): DeleteSql {
-    return DeleteSql.of().delete(*tables).apply(init)
+    return object : DeleteSql() {}.delete(*tables).apply(init)
 }
 
 fun DeleteSql.where(init: WhereStatement.() -> Unit): DeleteSql {
     this.where { it.apply(init) }
-    return this;
+    return this
 }
 
 

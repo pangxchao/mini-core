@@ -11,14 +11,12 @@ import java.util.EventListener;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnusedReturnValue")
-public final class ReplaceSql extends AbstractSql<ReplaceSql> implements EventListener {
+public abstract class ReplaceSql extends AbstractSql<ReplaceSql> implements EventListener {
     private final ColumnStatement column = new ColumnStatementImpl(this);
     private final ValuesStatement values = new ValuesStatementImpl(this);
     private final TableStatement table = new TableStatementImpl(this);
 
-    private String tableName;
-
-    private ReplaceSql() {
+    protected ReplaceSql() {
     }
 
     public ReplaceSql replaceInto(String table) {
@@ -52,15 +50,5 @@ public final class ReplaceSql extends AbstractSql<ReplaceSql> implements EventLi
         this.column.builder(builder);
         this.values.builder(builder);
         return builder.toString();
-    }
-
-    public static ReplaceSql of(Consumer<ReplaceSql> consumer) {
-        ReplaceSql builder = new ReplaceSql();
-        consumer.accept(builder);
-        return builder;
-    }
-
-    public static ReplaceSql of() {
-        return new ReplaceSql();
     }
 }

@@ -1,5 +1,5 @@
 @file:Suppress("unused", "FunctionName", "RedundantLambdaArrow")
-@file:JvmName("UpdateBuilderKt")
+@file:JvmName("UpdateSqlKt")
 
 package com.mini.core.data.builder
 
@@ -7,7 +7,7 @@ import com.mini.core.data.builder.statement.SetStatement
 import com.mini.core.data.builder.statement.WhereStatement
 
 fun update(vararg tables: String, init: UpdateSql.() -> Unit): UpdateSql {
-    return UpdateSql.of().update(*tables).apply(init)
+    return object : UpdateSql() {}.update(*tables).apply(init)
 }
 
 fun UpdateSql.where(init: WhereStatement.() -> Unit): UpdateSql {

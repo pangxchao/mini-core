@@ -16,7 +16,7 @@ public @interface Join {
 
     On[] on();
 
-    JoinType type() default JoinType.INNER;
+    JoinType type() default JoinType.LEFT_OUTER;
 
     enum JoinType {
         DEF {

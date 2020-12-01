@@ -8,17 +8,16 @@ import com.mini.core.data.builder.statement.TableStatement.TableStatementImpl;
 import com.mini.core.data.builder.statement.WhereStatement;
 import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnusedReturnValue")
-public final class UpdateSql extends AbstractSql<UpdateSql> implements JoinFragment<UpdateSql> {
+public abstract class UpdateSql extends AbstractSql<UpdateSql> implements JoinFragment<UpdateSql> {
     private final WhereStatementImpl where = new WhereStatementImpl(this);
     private final TableStatementImpl table = new TableStatementImpl(this);
     private final JoinFragmentImpl join = new JoinFragmentImpl(this);
     private final SetStatementImpl set = new SetStatementImpl(this);
 
-    private UpdateSql() {
+    protected UpdateSql() {
     }
 
     public UpdateSql update(String... tables) {
@@ -170,13 +169,4 @@ public final class UpdateSql extends AbstractSql<UpdateSql> implements JoinFragm
         return builder.toString();
     }
 
-    public static UpdateSql of(Consumer<UpdateSql> consumer) {
-        UpdateSql builder = new UpdateSql();
-        consumer.accept(builder);
-        return builder;
-    }
-
-    public static UpdateSql of() {
-        return new UpdateSql();
-    }
 }

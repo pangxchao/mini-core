@@ -1,5 +1,5 @@
 @file:Suppress("unused", "FunctionName", "RedundantLambdaArrow")
-@file:JvmName("SelectBuilderKt")
+@file:JvmName("SelectSqlKt")
 
 package com.mini.core.data.builder
 
@@ -9,7 +9,7 @@ import com.mini.core.data.builder.statement.WhereStatement
 
 
 fun select(vararg columns: String, init: SelectStatement.() -> Unit): SelectSql {
-    return SelectSql.of().selects(*columns).apply {
+    return object : SelectSql() {}.selects(*columns).apply{
         select { it.apply(init) }
     }
 }

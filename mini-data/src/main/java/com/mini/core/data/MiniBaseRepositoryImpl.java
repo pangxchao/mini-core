@@ -116,7 +116,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
     @NotNull
     @Override
     public final <T> List<T> queryList(long offset, int limit, @NotNull String sql, Object[] params, @NotNull RowMapper<T> mapper) {
-        sql = sql + this.jdbcDialect.limit().getLimitOffset(limit, offset);
+        sql = sql + " " + this.jdbcDialect.limit().getLimitOffset(limit, offset);
         return queryList(sql, params, mapper);
     }
 

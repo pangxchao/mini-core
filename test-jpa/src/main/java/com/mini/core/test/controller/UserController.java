@@ -5,7 +5,6 @@ import com.mini.core.mvc.util.ResponseCode;
 import com.mini.core.test.entity.UserInfo;
 import com.mini.core.test.form.UserSave;
 import com.mini.core.test.repository.UserInfoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +24,19 @@ import java.util.Locale;
 public class UserController implements ResponseCode {
     private final UserInfoRepository userInfoRepository;
 
-    @Autowired
-    private ResourceBundleMessageSource messageSource;
+    private final ResourceBundleMessageSource messageSource;
 
-    public UserController(@Qualifier("userInfoRepository") UserInfoRepository userInfoRepository) {
+    public UserController(@Qualifier("userInfoRepository") UserInfoRepository userInfoRepository,
+                          ResourceBundleMessageSource messageSource) {
         this.userInfoRepository = userInfoRepository;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping(path = "/list")
     public ResponseEntity<ModelMap> list(JsonModel model, int page, int limit) {
         // 1. spring data jdbc 原生支持的查询不好处理动态条件
         // 2. 使用IN 条件时，需要注意要把IN里面的参数拆分成多个参数
+        System.out.println(messageSource);
         model.setData(userInfoRepository.findAll());
         return model.build();
     }

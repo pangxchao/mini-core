@@ -13,6 +13,7 @@ import com.mini.core.data.builder.statement.WhereStatement;
 import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
 import com.mini.core.data.builder.support.Join;
 import com.mini.core.util.holder.ClassHolder;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.util.StringUtils;
@@ -21,10 +22,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static com.mini.core.util.holder.ClassHolder.create;
 import static java.lang.String.format;
 
 @SuppressWarnings({"UnusedReturnValue"})
-public final class SelectSql extends AbstractSql<SelectSql> implements JoinFragment<SelectSql> {
+public abstract class SelectSql extends AbstractSql<SelectSql> implements JoinFragment<SelectSql> {
     private final GroupByStatementImpl groupBy = new GroupByStatementImpl(this);
     private final OrderByStatementImpl orderBy = new OrderByStatementImpl(this);
     private final SelectStatementImpl select = new SelectStatementImpl(this);
@@ -33,7 +35,32 @@ public final class SelectSql extends AbstractSql<SelectSql> implements JoinFragm
     private final FromStatementImpl from = new FromStatementImpl(this);
     private final JoinFragmentImpl join = new JoinFragmentImpl(this);
 
-    private SelectSql() {
+    protected <T> SelectSql(@NotNull Class<T> type) {
+        ClassHolder<? extends T> holder = create(type);
+        var aTable = holder.getAnnotation(Table.class);
+        Objects.requireNonNull(aTable);
+        // 生成查询字段
+        holder.getFields().values().forEach(it -> {
+            var column = it.getAnnotation(Column.class);
+            if (column == null) return;
+
+            String columnName = column.value();
+            if (!StringUtils.hasText(columnName)) {
+                columnName = it.getName();
+            }
+            this.select(columnName, it.getName());
+        });
+        // 生成查询表名
+        this.from(Optional.of(aTable).map(Table::value)
+                .filter(it -> !it.isBlank())
+                .orElse(holder.getName()));
+        // 生成联合查询表名
+        for (Join join : holder.getAnnotationsByType(Join.class)) {
+            join.type().exe(this, join.table(), join.on());
+        }
+    }
+
+    protected SelectSql() {
     }
 
     public SelectSql selects(String... columns) {
@@ -262,43 +289,5 @@ public final class SelectSql extends AbstractSql<SelectSql> implements JoinFragm
         return builder.toString();
     }
 
-    public static <T> SelectSql select(Class<T> type, Consumer<SelectSql> consumer) {
-        final ClassHolder<? extends T> holder = ClassHolder.create(type);
-        final Table aTable = holder.getAnnotation(Table.class);
-        Objects.requireNonNull(aTable);
-        // 创建Sql 实例
-        final SelectSql sql = new SelectSql();
-        // 生成查询字段
-        holder.getFields().values().forEach(it -> {
-            var column = it.getAnnotation(Column.class);
-            if (column == null) return;
 
-            String columnName = column.value();
-            if (!StringUtils.hasText(columnName)) {
-                columnName = it.getName();
-            }
-            sql.select(columnName, it.getName());
-        });
-        // 生成查询表名
-        sql.from(Optional.of(aTable).map(Table::value)
-                .filter(it -> !it.isBlank())
-                .orElse(holder.getName()));
-        // 生成联合查询表名
-        for (Join join : holder.getAnnotationsByType(Join.class)) {
-            join.type().exe(sql, join.table(), join.on());
-        }
-        // 生成自定义信息
-        consumer.accept(sql);
-        return sql;
-    }
-
-    public static SelectSql of(Consumer<SelectSql> consumer) {
-        SelectSql builder = new SelectSql();
-        consumer.accept(builder);
-        return builder;
-    }
-
-    public static SelectSql of() {
-        return new SelectSql();
-    }
 }
