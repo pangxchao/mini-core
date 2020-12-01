@@ -79,7 +79,7 @@ public abstract class SelectSql extends AbstractSql<SelectSql> implements JoinFr
     }
 
     public SelectSql select(String column) {
-        return select(column, column);
+        return selects(column);
     }
 
     public SelectSql selectCount(String column, String alias) {
