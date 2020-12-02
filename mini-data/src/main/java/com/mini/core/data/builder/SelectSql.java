@@ -35,7 +35,7 @@ public class SelectSql extends AbstractSql<SelectSql> implements JoinFragment<Se
     private final FromStatementImpl from = new FromStatementImpl(this);
     private final JoinFragmentImpl join = new JoinFragmentImpl(this);
 
-    protected <T> SelectSql(@NotNull Class<T> type) {
+    public <T> SelectSql(@NotNull Class<T> type) {
         ClassHolder<? extends T> holder = create(type);
         var aTable = holder.getAnnotation(Table.class);
         Objects.requireNonNull(aTable);
