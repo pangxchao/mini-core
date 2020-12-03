@@ -7,10 +7,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.data.relational.core.conversion.DbAction;
 import org.springframework.data.relational.core.conversion.DbAction.WithGeneratedId;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
+import org.springframework.stereotype.Component;
 
 import static com.mini.core.util.PKGenerator.id;
 import static com.mini.core.util.PKGenerator.uuid;
 
+@Component
 public class BeforeSaveApplicationListener implements ApplicationListener<BeforeSaveEvent<Object>> {
     @Override
     public void onApplicationEvent(@NotNull BeforeSaveEvent<Object> beforeSaveEvent) {

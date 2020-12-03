@@ -2,10 +2,12 @@ package com.mini.core.test;
 
 import com.mini.core.data.listener.BeforeSaveApplicationListener;
 import com.mini.core.mvc.MiniSpringBootServletInitializer;
+import com.mini.core.test.interceptor.MiniHandlerInterceptor;
 import com.querydsl.sql.MySQLTemplates;
 import com.querydsl.sql.SQLQueryFactory;
 import com.querydsl.sql.spring.SpringConnectionProvider;
 import com.querydsl.sql.spring.SpringExceptionTranslator;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +16,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
@@ -26,7 +27,7 @@ import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import javax.inject.Provider;
 import javax.naming.NamingException;
@@ -38,7 +39,6 @@ import java.sql.Connection;
 
 import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING;
 
-@EnableWebMvc
 @EnableJdbcAuditing
 @ServletComponentScan
 @SpringBootApplication
@@ -58,7 +58,6 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     }
 
     public static void main(@Nullable String[] args) {
-        DefaultMessageSourceResolvable a;
         run(MiniApplicationInitializer.class, args);
     }
 
@@ -92,6 +91,11 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     }
 
     @Bean
+    public MiniHandlerInterceptor miniHandlerInterceptor() {
+        return new MiniHandlerInterceptor();
+    }
+
+    @Bean
     public com.querydsl.sql.Configuration querydslConfiguration() {
         var configuration = new com.querydsl.sql.Configuration(MySQLTemplates.builder().build());
         configuration.setExceptionTranslator(new SpringExceptionTranslator());
@@ -102,5 +106,12 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     public SQLQueryFactory queryFactory(@Qualifier("dataSource") DataSource dataSource) {
         Provider<Connection> provider = new SpringConnectionProvider(dataSource);
         return new SQLQueryFactory(querydslConfiguration(), provider);
+    }
+
+    @Override
+    public void addInterceptors(@NotNull InterceptorRegistry registry) {
+        registry.addInterceptor(miniHandlerInterceptor())
+                .addPathPatterns("/**");
+        super.addInterceptors(registry);
     }
 }

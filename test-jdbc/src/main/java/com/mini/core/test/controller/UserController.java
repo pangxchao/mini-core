@@ -8,6 +8,7 @@ import com.mini.core.test.repository.UserInfoRepository;
 import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import javax.validation.constraints.Positive;
 import java.util.Arrays;
 import java.util.Locale;
 
+@Primary
 @Validated
 @RestController
 @RequestMapping("/user")

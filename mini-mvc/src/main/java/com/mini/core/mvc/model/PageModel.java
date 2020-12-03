@@ -30,8 +30,19 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
         return this;
     }
 
+    /**
+     * 获取 ModelAndView 对象
+     *
+     * @return ModelAndView 对象
+     */
     public final ModelAndView getModelAndView() {
         return mv;
+    }
+
+
+    @Override
+    protected final String getDispatcherPath() {
+        return "/h/page";
     }
 
     @Override
@@ -128,14 +139,9 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
         return getThis();
     }
 
-    @Override
-    protected final String getDispatcherPath() {
-        return "/h/page";
-    }
-
     @NotNull
     @Override
-    public final ModelAndView build() {
+    public ModelAndView build() {
         return mv;
     }
 }

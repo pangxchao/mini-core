@@ -36,7 +36,6 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     protected ApplicationContext applicationContext;
 
     @Autowired
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     public final void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }

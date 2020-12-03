@@ -1,6 +1,5 @@
 package com.mini.core.mvc.model;
 
-import com.mini.core.util.ThrowableKt;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,6 +58,15 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
         return code;
     }
 
+    protected abstract String getDispatcherPath();
+
+    public final void show() throws ServletException, IOException {
+        final String path = IModel.this.getDispatcherPath();
+        final HttpServletRequest request = getRequest();
+        var rd = request.getRequestDispatcher(path);
+        rd.forward(request, getResponse());
+    }
+
     public T setStatus(@NotNull HttpStatus status) {
         this.status = status;
         return getThis();
@@ -69,7 +77,6 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
         return getThis();
     }
 
-
     public T setCode(Integer code) {
         this.code = code;
         return getThis();
@@ -78,16 +85,4 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
     @NotNull
     public abstract D build();
 
-    public final void show() {
-        try {
-            final String path = IModel.this.getDispatcherPath();
-            final HttpServletRequest request = getRequest();
-            var rd = request.getRequestDispatcher(path);
-            rd.forward(request, getResponse());
-        } catch (ServletException | IOException e) {
-            throw ThrowableKt.hidden(e);
-        }
-    }
-
-    protected abstract String getDispatcherPath();
 }

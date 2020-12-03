@@ -1,8 +1,6 @@
 package com.mini.core.mvc.model;
 
-import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +10,8 @@ import org.springframework.ui.ModelMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+
+import static org.springframework.http.ResponseEntity.status;
 
 /**
  * JSON类型的数据实现
@@ -37,6 +37,47 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
         return this;
     }
 
+    /**
+     * 获取所有的数据-List结构的数据
+     *
+     * @return 所有数据
+     */
+    public final List<Object> getListData() {
+        return this.list;
+    }
+
+    /**
+     * 获取所有数据-Map结构的数据
+     *
+     * @return 所有数据
+     */
+    public final ModelMap getMapData() {
+        return map;
+    }
+
+    /**
+     * 获取所有的数据-有效的数据
+     *
+     * @return data 数据
+     */
+    public final Object getData() {
+        return this.data;
+    }
+
+    /**
+     * 获取 Model 数据
+     *
+     * @return Model 数据
+     */
+    public final ExtendedModelMap model() {
+        return model;
+    }
+
+    @Override
+    protected final String getDispatcherPath() {
+        return "/h/json";
+    }
+
     @Override
     public final JsonModel setStatus(@NotNull HttpStatus status) {
         model.put("error", status.getReasonPhrase());
@@ -54,33 +95,6 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
     public final JsonModel setCode(Integer code) {
         model.addAttribute("code", code);
         return super.setCode(code);
-    }
-
-    /**
-     * 获取所有的数据-有效的数据
-     *
-     * @return 所有数据
-     */
-    public final Object getData() {
-        return this.data;
-    }
-
-    /**
-     * 获取所有的数据-List结构的数据
-     *
-     * @return 所有数据
-     */
-    public final List<Object> getListData() {
-        return this.list;
-    }
-
-    /**
-     * 获取所有数据-Map结构的数据
-     *
-     * @return 所有数据
-     */
-    public final ModelMap getMapData() {
-        return map;
     }
 
     /**
@@ -191,18 +205,10 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
 
     @NotNull
     @Override
-    public final ResponseEntity<ModelMap> build() {
-        return ResponseEntity.status(getStatus())
+    public ResponseEntity<ModelMap> build() {
+        return status(this.getStatus())
                 .headers(getHeaders())
                 .body(model);
     }
 
-    @Override
-    protected final String getDispatcherPath() {
-        return "/h/json";
-    }
-
-    public final ExtendedModelMap model() {
-        return model;
-    }
 }

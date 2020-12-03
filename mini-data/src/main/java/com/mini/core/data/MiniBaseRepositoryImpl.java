@@ -50,7 +50,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
 
     @Override
     public final int execute(@NotNull AbstractSql<?> sql) {
-        return execute(sql.getSql(), sql.getArgs());
+        return MiniBaseRepository.super.execute(sql);
     }
 
     @NotNull

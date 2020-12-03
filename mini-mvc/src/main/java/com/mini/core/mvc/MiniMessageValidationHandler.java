@@ -4,7 +4,6 @@ import com.mini.core.mvc.validation.ValidateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.MessageSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,7 +38,6 @@ public class MiniMessageValidationHandler {
      */
     @SuppressWarnings("SameParameterValue")
     protected void handler(ValidateException e, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
-        ResourceBundleMessageSource source;
         request.setAttribute(RequestDispatcher.ERROR_MESSAGE, e.getMessage(messageSource, locale));
         request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI, request.getRequestURI());
         request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, e.getStatus().value());
@@ -111,11 +109,6 @@ public class MiniMessageValidationHandler {
      */
     @ExceptionHandler(value = {BindException.class})
     public void bind(BindException exception, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
-        exception.getBindingResult().getAllErrors().forEach(it -> {
-            for (String code : it.getCodes()) {
-                System.out.println(messageSource.getMessage(code, it.getArguments(), locale));
-            }
-        });
         validate(new ValidateException(requireNonNull(exception), BAD_REQUEST), request, response, locale);
     }
 }

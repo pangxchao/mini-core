@@ -18,8 +18,10 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
+import static org.springframework.http.ResponseEntity.status;
+
 @SuppressWarnings("UnusedReturnValue")
-public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamModel> {
+public class StreamModel extends IModel<ResponseEntity<Resource>, StreamModel> {
     private Resource resource;
 
     public StreamModel(HttpServletRequest request, HttpServletResponse response) {
@@ -27,12 +29,17 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
     }
 
     @Override
-    protected StreamModel getThis() {
+    protected final StreamModel getThis() {
         return this;
     }
 
     public final Resource getResource() {
         return resource;
+    }
+
+    @Override
+    protected final String getDispatcherPath() {
+        return "/h/stream";
     }
 
     @Override
@@ -101,14 +108,9 @@ public final class StreamModel extends IModel<ResponseEntity<Resource>, StreamMo
 
     @NotNull
     @Override
-    public final ResponseEntity<Resource> build() {
-        return ResponseEntity.status(getStatus())
-                .headers(this.getHeaders())
+    public ResponseEntity<Resource> build() {
+        return status(this.getStatus())
+                .headers(getHeaders())
                 .body(resource);
-    }
-
-    @Override
-    protected final String getDispatcherPath() {
-        return "/h/stream";
     }
 }

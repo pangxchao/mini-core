@@ -29,7 +29,9 @@ public interface MiniBaseRepository {
      * @param sql SQL和参数
      * @return 执行结果 - 影响条数
      */
-    int execute(@NotNull AbstractSql<?> sql);
+    default int execute(@NotNull AbstractSql<?> sql) {
+        return execute(sql.getSql(), sql.getArgs());
+    }
 
     /**
      * 指执行SQL
