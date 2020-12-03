@@ -113,6 +113,7 @@ fun join(array: CharArray, separator: CharSequence = ", ", prefix: CharSequence 
  * @param format 字符串格式
  * @return 日期
  */
+@JvmOverloads
 fun String.toDate(format: String = DATE_TIME): Date {
     return Format(format).parse(this)
 }
@@ -129,6 +130,7 @@ fun String.toURL(): URL {
  * 将字符串转换成URI
  * @return URI
  */
+
 fun String.toURI(): URI {
     return URI(this)
 }
@@ -219,6 +221,7 @@ fun String.isRequire(): Boolean {
  * 将字符串转成URL编码
  * @param charset 编码方式
  */
+@JvmOverloads
 fun String.urlEncode(charset: String = "UTF-8"): String {
     return URLEncoder.encode(this, charset)
 }
@@ -235,6 +238,7 @@ fun String.urlEncode(charset: Charset = UTF_8): String {
  * - 将URL编码还原成原来的字符串
  * @param charset 编码
  */
+@JvmOverloads
 fun String.urlDecode(charset: String = "UTF-8"): String {
     return URLDecoder.decode(this, charset)
 }
@@ -267,6 +271,7 @@ fun String.firstLowerCase() = firstOrNull()?.let {
  * 把字符串改写成java的驼峰命名法
  * @return 驼峰命名字符串
  */
+@JvmOverloads
 fun String.toJavaName(firstUpperCase: Boolean = false) = split("_").joinToString {
     return@joinToString it.firstUpperCase()
 }.let { if (firstUpperCase) it else it.firstLowerCase() }

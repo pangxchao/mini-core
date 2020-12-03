@@ -17,6 +17,7 @@ fun Long.toDate(): Date {
  * 将日期格式化为 时间 (format) 格式
  * @param format 时间格式
  */
+@JvmOverloads
 fun Long.dateFormat(format: String = DATE_TIME): String {
     return toDate().format(format)
 }
