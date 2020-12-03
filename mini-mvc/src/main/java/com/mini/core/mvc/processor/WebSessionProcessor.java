@@ -15,14 +15,14 @@ import java.util.Objects;
 import static com.mini.core.mvc.util.WebSession.SESSION_KEY;
 import static org.springframework.web.util.WebUtils.getSessionAttribute;
 
-public final class WebSessionProcessor implements HandlerMethodArgumentResolver {
+public class WebSessionProcessor implements HandlerMethodArgumentResolver {
     @Override
     public final boolean supportsParameter(@NotNull MethodParameter parameter) {
         return WebSession.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
-    public final Object resolveArgument(@Nullable MethodParameter parameter, ModelAndViewContainer mavContainer, @NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public Object resolveArgument(@Nullable MethodParameter parameter, ModelAndViewContainer mavContainer, @NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         return getSessionAttribute(Objects.requireNonNull(request), SESSION_KEY);
     }

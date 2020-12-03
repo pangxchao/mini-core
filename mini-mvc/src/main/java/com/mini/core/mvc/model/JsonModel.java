@@ -206,9 +206,9 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
     @NotNull
     @Override
     public ResponseEntity<ModelMap> build() {
-        return status(this.getStatus())
-                .headers(getHeaders())
-                .body(model);
+        var body = status(this.getStatus());
+        body.headers(this.getHeaders());
+        return body.body(model);
     }
 
 }
