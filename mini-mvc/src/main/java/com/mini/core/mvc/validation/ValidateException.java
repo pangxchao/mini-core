@@ -9,7 +9,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import javax.validation.ConstraintViolation;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -45,14 +48,12 @@ public class ValidateException extends RuntimeException {
                 .orElse("Bad Request"), status);
     }
 
-
-    public final String getMessage(@Nullable MessageSource source, @Nullable Locale locale) {
-        String message = Optional.ofNullable(getMessage()).orElse("Bad Request");
-        if (source == null || !message.startsWith("{") || !message.endsWith("}")) {
-            return message;
+    public final String getMessage(@Nullable MessageSource source, Locale locale) {
+        String msg = ofNullable(getMessage()).orElse("Bad Request").strip();
+        if (source == null || !msg.startsWith("{") || !msg.endsWith("}")) {
+            return msg;
         }
-        locale = locale == null ? Locale.getDefault() : locale;
-        message = message.substring(1, message.length() - 1);
+        String message = msg.substring(1, msg.length() - 1);
         return source.getMessage(message, args, locale);
     }
 
