@@ -11,9 +11,9 @@ public class MiniJpaRepositoryImpl extends MiniBaseRepositoryImpl implements Min
     @NotNull
     private final EntityManager em;
 
-    public MiniJpaRepositoryImpl(@NotNull DataSource dataSource, @NotNull Dialect jdbcDialect,
+    public MiniJpaRepositoryImpl(@NotNull DataSource dataSource, @NotNull Dialect dialect,
                                  @NotNull EntityManager entityManager) {
-        super(dataSource, jdbcDialect);
+        super(dataSource, dialect);
         em = entityManager;
     }
 

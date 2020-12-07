@@ -12,9 +12,9 @@ public class MiniJdbcRepositoryImpl extends MiniBaseRepositoryImpl implements Mi
     @NotNull
     private final JdbcAggregateOperations entityOperations;
 
-    public MiniJdbcRepositoryImpl(@NotNull DataSource dataSource, @NotNull Dialect jdbcDialect,
+    public MiniJdbcRepositoryImpl(@NotNull DataSource dataSource, @NotNull Dialect dialect,
                                   @NotNull JdbcAggregateOperations entityOperations) {
-        super(dataSource, jdbcDialect);
+        super(dataSource, dialect);
         this.entityOperations = entityOperations;
     }
 

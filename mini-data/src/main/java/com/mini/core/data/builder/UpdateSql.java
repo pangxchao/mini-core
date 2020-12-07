@@ -1,6 +1,6 @@
 package com.mini.core.data.builder;
 
-import com.mini.core.data.builder.fragment.JoinFragment;
+import com.mini.core.data.builder.fragment.UpdateFragment;
 import com.mini.core.data.builder.statement.JoinOnStatement;
 import com.mini.core.data.builder.statement.SetStatement;
 import com.mini.core.data.builder.statement.SetStatement.SetStatementImpl;
@@ -8,10 +8,11 @@ import com.mini.core.data.builder.statement.TableStatement.TableStatementImpl;
 import com.mini.core.data.builder.statement.WhereStatement;
 import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnusedReturnValue")
-public class UpdateSql extends AbstractSql<UpdateSql> implements JoinFragment<UpdateSql> {
+public class UpdateSql extends AbstractSql<UpdateSql> implements UpdateFragment<UpdateSql> {
     private final WhereStatementImpl where = new WhereStatementImpl(this);
     private final TableStatementImpl table = new TableStatementImpl(this);
     private final JoinFragmentImpl join = new JoinFragmentImpl(this);
@@ -152,6 +153,366 @@ public class UpdateSql extends AbstractSql<UpdateSql> implements JoinFragment<Up
 
     public final UpdateSql where(Consumer<WhereStatement> consumer) {
         consumer.accept(this.where);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql and() {
+        this.where.and();
+        return this;
+    }
+
+    @Override
+    public final UpdateSql or() {
+        this.where.or();
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereEqNative(String column, String target, Object... args) {
+        this.where.eqNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereEq(String column, Object arg) {
+        this.where.eq(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotEqNative(String column, String target, Object... args) {
+        this.where.notEqNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotEq(String column, Object arg) {
+        this.where.notEq(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIsNull(String column) {
+        this.where.isNull(column);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIsNotNull(String column) {
+        this.where.isNotNull(column);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereGtNative(String column, String target, Object... args) {
+        this.where.gtNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereGt(String column, Object arg) {
+        this.where.gt(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereLtNative(String column, String target, Object... args) {
+        this.where.ltNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereLt(String column, Object arg) {
+        this.where.lt(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereGteNative(String column, String target, Object... args) {
+        this.where.gteNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereGte(String column, Object arg) {
+        this.where.gte(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereLteNative(String column, String target, Object... args) {
+        this.where.lteNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereLte(String column, Object arg) {
+        this.where.lte(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereInNative(String column, String target, Object... args) {
+        this.where.inNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public <O, C extends Collection<O>> UpdateSql whereIn(String column, C args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public <O> UpdateSql whereIn(String column, O[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, long[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, int[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, short[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, byte[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, double[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, float[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, boolean[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereIn(String column, char[] args) {
+        this.where.in(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotInNative(String column, String target, Object... args) {
+        this.where.notInNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public <O, C extends Collection<O>> UpdateSql whereNotIn(String column, C args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public <O> UpdateSql whereNotIn(String column, O[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, long[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, int[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, short[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, byte[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, double[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, float[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, boolean[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotIn(String column, char[] args) {
+        this.where.notIn(column, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereLikeNative(String column, String target, Object... args) {
+        this.where.likeNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereLike(String column, Object arg) {
+        this.where.like(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereContain(String column, Object arg) {
+        this.where.contain(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereStartWith(String column, Object arg) {
+        this.where.startWith(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereEndWith(String column, Object arg) {
+        this.where.endWith(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotLikeNative(String column, String target, Object... args) {
+        this.where.notLikeNative(column, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotLike(String column, Object arg) {
+        this.where.notLike(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotContain(String column, Object arg) {
+        this.where.notContain(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotStartWith(String column, Object arg) {
+        this.where.notStartWith(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotEndWith(String column, Object arg) {
+        this.where.notEndWith(column, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereMatchNative(String[] columns, String target, Object... args) {
+        this.where.matchNative(columns, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereMatch(String[] columns, Object arg) {
+        this.where.match(columns, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotMatchNative(String[] columns, String target, Object... args) {
+        this.where.notMatchInBoolNative(columns, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotMatch(String[] columns, Object arg) {
+        this.where.notMatch(columns, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereMatchInBoolNative(String[] columns, String target, Object... args) {
+        this.where.matchInBoolNative(columns, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereMatchInBool(String[] columns, Object arg) {
+        this.where.matchInBool(columns, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotMatchInBoolNative(String[] columns, String target, Object... args) {
+        this.where.notMatchInBoolNative(columns, target, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotMatchInBool(String[] columns, Object arg) {
+        this.where.notMatchInBool(columns, arg);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereBetweenNative(String column, String targetMin, String targetMax, Object... args) {
+        this.where.betweenNative(column, targetMin, targetMax, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereBetween(String column, Object min, Object max) {
+        this.where.between(column, min, max);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotBetweenNative(String column, String targetMin, String targetMax, Object... args) {
+        this.where.notBetweenNative(column, targetMin, targetMax, args);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql whereNotBetween(String column, Object min, Object max) {
+        this.where.notBetween(column, min, max);
         return this;
     }
 

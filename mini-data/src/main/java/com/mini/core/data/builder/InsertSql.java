@@ -1,5 +1,6 @@
 package com.mini.core.data.builder;
 
+import com.mini.core.data.builder.fragment.InsertFragment;
 import com.mini.core.data.builder.statement.ColumnStatement;
 import com.mini.core.data.builder.statement.ColumnStatement.ColumnStatementImpl;
 import com.mini.core.data.builder.statement.OnDuplicateKeyUpdateStatement;
@@ -8,12 +9,10 @@ import com.mini.core.data.builder.statement.TableStatement;
 import com.mini.core.data.builder.statement.TableStatement.TableStatementImpl;
 import com.mini.core.data.builder.statement.ValuesStatement;
 import com.mini.core.data.builder.statement.ValuesStatement.ValuesStatementImpl;
-
-import java.util.EventListener;
-import java.util.function.Consumer;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnusedReturnValue")
-public class InsertSql extends AbstractSql<InsertSql> implements EventListener {
+public class InsertSql extends AbstractSql<InsertSql> implements InsertFragment<InsertSql> {
     private final OnDuplicateKeyUpdateStatement onDuplicateKeyUpdate = new OnDuplicateKeyUpdateStatementImpl(this);
     private final ColumnStatement column = new ColumnStatementImpl(this);
     private final ValuesStatement values = new ValuesStatementImpl(this);
@@ -34,16 +33,37 @@ public class InsertSql extends AbstractSql<InsertSql> implements EventListener {
         return this;
     }
 
+    @Override
     public final InsertSql setNative(String column, String value, Object... arg) {
         return column(column).values(value).args(arg);
     }
 
+    @Override
     public final InsertSql set(String column, Object arg) {
         return setNative(column, "?", arg);
     }
 
-    public final InsertSql onDuplicateKeyUpdate(Consumer<OnDuplicateKeyUpdateStatement> consumer) {
-        consumer.accept(onDuplicateKeyUpdate);
+    @Override
+    public InsertSql onKeyNative(String column, String value, Object... args) {
+        onDuplicateKeyUpdate.setNative(column, value, args);
+        return this;
+    }
+
+    @Override
+    public InsertSql onKey(String column, Object arg) {
+        onDuplicateKeyUpdate.set(column, arg);
+        return this;
+    }
+
+    @Override
+    public InsertSql onKeyFromInsert(@NotNull String column) {
+        onDuplicateKeyUpdate.setFromInsert(column);
+        return this;
+    }
+
+    @Override
+    public InsertSql onKeyIncrease(@NotNull String column, Number arg) {
+        onDuplicateKeyUpdate.setIncrease(column, arg);
         return this;
     }
 

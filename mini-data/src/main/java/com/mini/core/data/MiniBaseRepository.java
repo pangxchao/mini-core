@@ -1,9 +1,10 @@
 package com.mini.core.data;
 
-import com.mini.core.data.builder.AbstractSql;
-import org.jetbrains.annotations.NotNull;
+import com.mini.core.data.builder.*;
+import com.mini.core.data.builder.fragment.*;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -12,6 +13,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface MiniBaseRepository {
     /**
@@ -21,7 +23,7 @@ public interface MiniBaseRepository {
      * @param params 参数
      * @return 执行结果 - 影响条数
      */
-    int execute(@NotNull String sql, @Nullable Object[] params);
+    int execute(String sql, @Nullable Object[] params);
 
     /**
      * 执行SQL
@@ -29,7 +31,7 @@ public interface MiniBaseRepository {
      * @param sql SQL和参数
      * @return 执行结果 - 影响条数
      */
-    default int execute(@NotNull AbstractSql<?> sql) {
+    default int execute(AbstractSql<?> sql) {
         return execute(sql.getSql(), sql.getArgs());
     }
 
@@ -39,8 +41,7 @@ public interface MiniBaseRepository {
      * @param sql SQL
      * @return 执行结果 - 影响条数
      */
-    @NotNull
-    int[] executeBatch(@NotNull String... sql);
+    int[] executeBatch(String... sql);
 
     /**
      * 指执行SQL
@@ -49,8 +50,7 @@ public interface MiniBaseRepository {
      * @param paramsList 数据
      * @return 执行结果 - 影响条数
      */
-    @NotNull
-    int[] executeBatch(@NotNull String sql, List<Object[]> paramsList);
+    int[] executeBatch(String sql, List<Object[]> paramsList);
 
     /**
      * 查询列表
@@ -61,8 +61,7 @@ public interface MiniBaseRepository {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryList(@NotNull String sql, @Nullable Object[] params, RowMapper<T> mapper);
+    <T> List<T> queryList(String sql, @Nullable Object[] params, RowMapper<T> mapper);
 
     /**
      * 查询列表
@@ -72,8 +71,9 @@ public interface MiniBaseRepository {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryList(@NotNull AbstractSql<?> sql, @NotNull RowMapper<T> mapper);
+    default <T> List<T> queryList(AbstractSql<?> sql, RowMapper<T> mapper) {
+        return queryList(sql.getSql(), sql.getArgs(), mapper);
+    }
 
     /**
      * 查询列表
@@ -84,8 +84,7 @@ public interface MiniBaseRepository {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryList(@NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> List<T> queryList(String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询列表
@@ -95,8 +94,117 @@ public interface MiniBaseRepository {
      * @param <T>  解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryList(@NotNull AbstractSql<?> sql, @NotNull Class<T> type);
+    default <T> List<T> queryList(AbstractSql<?> sql, Class<T> type) {
+        return queryList(sql.getSql(), sql.getArgs(), type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param offset 跳过的数据条数
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    <T> List<T> queryList(long offset, int size, String sql, @Nullable Object[] params, RowMapper<T> mapper);
+
+    /**
+     * 查询列表
+     *
+     * @param offset 跳过的数据条数
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> List<T> queryList(long offset, int size, AbstractSql<?> sql, RowMapper<T> mapper) {
+        return queryList(offset, size, sql.getSql(), sql.getArgs(), mapper);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param offset 跳过的数据条数
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param type   类型类对象
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    <T> List<T> queryList(long offset, int size, String sql, @Nullable Object[] params, Class<T> type);
+
+    /**
+     * 查询列表
+     *
+     * @param offset 跳过的数据条数
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param type   类型类对象
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> List<T> queryList(long offset, int size, AbstractSql<?> sql, Class<T> type) {
+        return queryList(offset, size, sql.getSql(), sql.getArgs(), type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> List<T> queryList(int size, String sql, @Nullable Object[] params, RowMapper<T> mapper) {
+        return queryList(0, size, sql, params, mapper);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> List<T> queryList(int size, AbstractSql<?> sql, RowMapper<T> mapper) {
+        return queryList(0, size, sql, mapper);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param type   类型类对象
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> List<T> queryList(int size, String sql, @Nullable Object[] params, Class<T> type) {
+        return queryList(0, size, sql, params, type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param size 获取指定的条数
+     * @param sql  SQL
+     * @param type 类型类对象
+     * @param <T>  解析器类型
+     * @return 查询结果
+     */
+    default <T> List<T> queryList(int size, AbstractSql<?> sql, Class<T> type) {
+        return queryList(0, size, sql, type);
+    }
 
     /**
      * 查询列表
@@ -105,8 +213,7 @@ public interface MiniBaseRepository {
      * @param params 参数
      * @return 查询结果
      */
-    @NotNull
-    List<Map<String, Object>> queryListMap(@NotNull String sql, @Nullable Object[] params);
+    List<Map<String, Object>> queryListMap(String sql, @Nullable Object[] params);
 
     /**
      * 查询列表
@@ -114,8 +221,55 @@ public interface MiniBaseRepository {
      * @param sql SQL
      * @return 查询结果
      */
-    @NotNull
-    List<Map<String, Object>> queryListMap(@NotNull AbstractSql<?> sql);
+    default List<Map<String, Object>> queryListMap(AbstractSql<?> sql) {
+        return queryListMap(sql.getSql(), sql.getArgs());
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param offset 跳过的数据条数
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    List<Map<String, Object>> queryListMap(long offset, int size, String sql, @Nullable Object[] params);
+
+    /**
+     * 查询列表
+     *
+     * @param offset 跳过的数据条数
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @return 查询结果
+     */
+    default List<Map<String, Object>> queryListMap(long offset, int size, AbstractSql<?> sql) {
+        return queryListMap(offset, size, sql.getSql(), sql.getArgs());
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param size   获取指定的条数
+     * @param sql    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default List<Map<String, Object>> queryListMap(int size, String sql, @Nullable Object[] params) {
+        return queryListMap(0, size, sql, params);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param size 获取指定的条数
+     * @param sql  SQL
+     * @return 查询结果
+     */
+    default List<Map<String, Object>> queryListMap(int size, AbstractSql<?> sql) {
+        return queryListMap(0, size, sql);
+    }
 
     /**
      * 查询列表
@@ -126,8 +280,7 @@ public interface MiniBaseRepository {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryListSingle(@NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> List<T> queryListSingle(String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询列表
@@ -137,209 +290,63 @@ public interface MiniBaseRepository {
      * @param <T>  解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryListSingle(@NotNull AbstractSql<?> sql, Class<T> type);
+    default <T> List<T> queryListSingle(AbstractSql<?> sql, Class<T> type) {
+        return queryListSingle(sql.getSql(), sql.getArgs(), type);
+    }
 
     /**
      * 查询列表
      *
      * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param params 参数
-     * @param mapper 映射器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryList(long offset, int limit, @NotNull String sql, @Nullable Object[] params, @NotNull RowMapper<T> mapper);
-
-    /**
-     * 查询列表
-     *
-     * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryList(long offset, int limit, @NotNull AbstractSql<?> sql, RowMapper<T> mapper);
-
-    /**
-     * 查询列表
-     *
-     * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
+     * @param size   获取指定的条数
      * @param sql    SQL
      * @param params 参数
      * @param type   类型类对象
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryList(long offset, int limit, @NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> List<T> queryListSingle(long offset, int size, String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询列表
      *
      * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
+     * @param size   获取指定的条数
      * @param sql    SQL
      * @param type   类型类对象
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryList(long offset, int limit, @NotNull AbstractSql<?> sql, @NotNull Class<T> type);
+    default <T> List<T> queryListSingle(long offset, int size, AbstractSql<?> sql, Class<T> type) {
+        return queryListSingle(offset, size, sql.getSql(), sql.getArgs(), type);
+    }
 
     /**
      * 查询列表
      *
-     * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    @NotNull
-    List<Map<String, Object>> queryListMap(long offset, int limit, @NotNull String sql, @Nullable Object[] params);
-
-    /**
-     * 查询列表
-     *
-     * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @return 查询结果
-     */
-    @NotNull
-    List<Map<String, Object>> queryListMap(long offset, int limit, @NotNull AbstractSql<?> sql);
-
-    /**
-     * 查询列表
-     *
-     * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
+     * @param size   获取指定的条数
      * @param sql    SQL
      * @param params 参数
      * @param type   类型类对象
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryListSingle(long offset, int limit, @NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    default <T> List<T> queryListSingle(int size, String sql, @Nullable Object[] params, Class<T> type) {
+        return queryListSingle(0, size, sql, params, type);
+    }
 
     /**
      * 查询列表
      *
-     * @param offset 跳过的数据条数
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param type   类型类对象
-     * @param <T>    解析器类型
+     * @param size 获取指定的条数
+     * @param sql  SQL
+     * @param type 类型类对象
+     * @param <T>  解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> List<T> queryListSingle(long offset, int limit, @NotNull AbstractSql<?> sql, @NotNull Class<T> type);
-
-    /**
-     * 查询列表
-     *
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param params 参数
-     * @param mapper 映射器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryList(int limit, @NotNull String sql, @Nullable Object[] params, @NotNull RowMapper<T> mapper);
-
-    /**
-     * 查询列表
-     *
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param mapper 映射器
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryList(int limit, @NotNull AbstractSql<?> sql, @NotNull RowMapper<T> mapper);
-
-    /**
-     * 查询列表
-     *
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param params 参数
-     * @param type   类型类对象
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryList(int limit, String sql, @Nullable Object[] params, @NotNull Class<T> type);
-
-    /**
-     * 查询列表
-     *
-     * @param limit 获取指定的条数
-     * @param sql   SQL
-     * @param type  类型类对象
-     * @param <T>   解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryList(int limit, @NotNull AbstractSql<?> sql, @NotNull Class<T> type);
-
-    /**
-     * 查询列表
-     *
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param params 参数
-     * @return 查询结果
-     */
-    @NotNull
-    List<Map<String, Object>> queryListMap(int limit, @NotNull String sql, @Nullable Object[] params);
-
-    /**
-     * 查询列表
-     *
-     * @param limit 获取指定的条数
-     * @param sql   SQL
-     * @return 查询结果
-     */
-    @NotNull
-    List<Map<String, Object>> queryListMap(int limit, @NotNull AbstractSql<?> sql);
-
-
-    /**
-     * 查询列表
-     *
-     * @param limit  获取指定的条数
-     * @param sql    SQL
-     * @param params 参数
-     * @param type   类型类对象
-     * @param <T>    解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryListSingle(int limit, @NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
-
-    /**
-     * 查询列表
-     *
-     * @param limit 获取指定的条数
-     * @param sql   SQL
-     * @param type  类型类对象
-     * @param <T>   解析器类型
-     * @return 查询结果
-     */
-    @NotNull
-    <T> List<T> queryListSingle(int limit, @NotNull AbstractSql<?> sql, @NotNull Class<T> type);
+    default <T> List<T> queryListSingle(int size, AbstractSql<?> sql, Class<T> type) {
+        return queryListSingle(0, size, sql, type);
+    }
 
     /**
      * 查询对象
@@ -351,7 +358,7 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObject(@NotNull String sql, @Nullable Object[] params, @NotNull RowMapper<T> mapper);
+    <T> T queryObject(String sql, @Nullable Object[] params, RowMapper<T> mapper);
 
     /**
      * 查询对象
@@ -362,7 +369,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObject(@NotNull AbstractSql<?> sql, @NotNull RowMapper<T> mapper);
+    default <T> T queryObject(AbstractSql<?> sql, RowMapper<T> mapper) {
+        return queryObject(sql.getSql(), sql.getArgs(), mapper);
+    }
 
     /**
      * 查询对象
@@ -373,7 +382,7 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObject(@NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> T queryObject(String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询对象
@@ -383,7 +392,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObject(@NotNull AbstractSql<?> sql, @NotNull Class<T> type);
+    default <T> T queryObject(AbstractSql<?> sql, Class<T> type) {
+        return queryObject(sql.getSql(), sql.getArgs(), type);
+    }
 
     /**
      * 查询对象
@@ -393,7 +404,7 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Map<String, Object> queryObjectMap(@NotNull String sql, @Nullable Object[] params);
+    Map<String, Object> queryObjectMap(String sql, @Nullable Object[] params);
 
     /**
      * 查询对象
@@ -402,7 +413,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Map<String, Object> queryObjectMap(@NotNull AbstractSql<?> sql);
+    default Map<String, Object> queryObjectMap(AbstractSql<?> sql) {
+        return queryObjectMap(sql.getSql(), sql.getArgs());
+    }
 
     /**
      * 查询对象
@@ -413,7 +426,7 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObjectSingle(@NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> T queryObjectSingle(String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询对象
@@ -423,7 +436,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObjectSingle(@NotNull AbstractSql<?> sql, @NotNull Class<T> type);
+    default <T> T queryObjectSingle(AbstractSql<?> sql, Class<T> type) {
+        return queryObjectSingle(sql.getSql(), sql.getArgs(), type);
+    }
 
     /**
      * 查询 String 对象
@@ -433,7 +448,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    String queryString(String sql, @Nullable Object[] params);
+    default String queryString(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, String.class);
+    }
 
     /**
      * 查询 String 对象
@@ -442,7 +459,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    String queryString(@NotNull AbstractSql<?> sql);
+    default String queryString(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, String.class);
+    }
 
     /**
      * 查询 Long 对象
@@ -452,7 +471,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Long queryLong(@NotNull String sql, @Nullable Object[] params);
+    default Long queryLong(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Long.class);
+    }
 
     /**
      * 查询 Long 对象
@@ -461,7 +482,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Long queryLong(@NotNull AbstractSql<?> sql);
+    default Long queryLong(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Long.class);
+    }
 
     /**
      * 查询 Integer 对象
@@ -471,7 +494,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Integer queryInt(@NotNull String sql, @Nullable Object[] params);
+    default Integer queryInt(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Integer.class);
+    }
 
     /**
      * 查询 Integer 对象
@@ -480,7 +505,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Integer queryInt(@NotNull AbstractSql<?> sql);
+    default Integer queryInt(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Integer.class);
+    }
 
     /**
      * 查询 Short 对象
@@ -490,7 +517,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Short queryShort(@NotNull String sql, @Nullable Object[] params);
+    default Short queryShort(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Short.class);
+    }
 
     /**
      * 查询 Short 对象
@@ -499,7 +528,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Short queryShort(@NotNull AbstractSql<?> sql);
+    default Short queryShort(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Short.class);
+    }
 
     /**
      * 查询 Byte 对象
@@ -509,7 +540,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Byte queryByte(@NotNull String sql, @Nullable Object[] params);
+    default Byte queryByte(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Byte.class);
+    }
 
     /**
      * 查询 Byte 对象
@@ -518,7 +551,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Byte queryByte(@NotNull AbstractSql<?> sql);
+    default Byte queryByte(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Byte.class);
+    }
 
     /**
      * 查询 Double 对象
@@ -528,7 +563,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Double queryDouble(@NotNull String sql, @Nullable Object[] params);
+    default Double queryDouble(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Double.class);
+    }
 
     /**
      * 查询 Double 对象
@@ -537,7 +574,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Double queryDouble(@NotNull AbstractSql<?> sql);
+    default Double queryDouble(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Double.class);
+    }
 
     /**
      * 查询 Float 对象
@@ -547,7 +586,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Float queryFloat(@NotNull String sql, @Nullable Object[] params);
+    default Float queryFloat(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Float.class);
+    }
 
     /**
      * 查询 Float 对象
@@ -556,7 +597,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Float queryFloat(@NotNull AbstractSql<?> sql);
+    default Float queryFloat(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Float.class);
+    }
 
     /**
      * 查询 Boolean 对象
@@ -566,7 +609,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Boolean queryBoolean(@NotNull String sql, @Nullable Object[] params);
+    default Boolean queryBoolean(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Boolean.class);
+    }
 
     /**
      * 查询 Boolean 对象
@@ -575,7 +620,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Boolean queryBoolean(@NotNull AbstractSql<?> sql);
+    default Boolean queryBoolean(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Boolean.class);
+    }
 
     /**
      * 查询 Timestamp 对象
@@ -585,7 +632,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Timestamp queryTimestamp(@NotNull String sql, @Nullable Object[] params);
+    default Timestamp queryTimestamp(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Timestamp.class);
+    }
 
     /**
      * 查询 Timestamp 对象
@@ -594,7 +643,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Timestamp queryTimestamp(@NotNull AbstractSql<?> sql);
+    default Timestamp queryTimestamp(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Timestamp.class);
+    }
 
     /**
      * 查询 Date 对象
@@ -604,7 +655,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Date queryDate(@NotNull String sql, @Nullable Object[] params);
+    default Date queryDate(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Date.class);
+    }
 
     /**
      * 查询 Date 对象
@@ -613,7 +666,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Date queryDate(@NotNull AbstractSql<?> sql);
+    default Date queryDate(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Date.class);
+    }
 
     /**
      * 查询 Time 对象
@@ -623,7 +678,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Time queryTime(@NotNull String sql, @Nullable Object[] params);
+    default Time queryTime(String sql, @Nullable Object[] params) {
+        return queryObjectSingle(sql, params, Time.class);
+    }
 
     /**
      * 查询 Time 对象
@@ -632,7 +689,9 @@ public interface MiniBaseRepository {
      * @return 查询结果
      */
     @Nullable
-    Time queryTime(@NotNull AbstractSql<?> sql);
+    default Time queryTime(AbstractSql<?> sql) {
+        return queryObjectSingle(sql, Time.class);
+    }
 
     /**
      * 查询列表
@@ -644,8 +703,7 @@ public interface MiniBaseRepository {
      * @param <T>      解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> Page<T> queryPage(@NotNull Pageable pageable, @NotNull String sql, @Nullable Object[] params, @NotNull RowMapper<T> mapper);
+    <T> Page<T> queryPage(Pageable pageable, String sql, @Nullable Object[] params, RowMapper<T> mapper);
 
     /**
      * 查询列表
@@ -656,8 +714,9 @@ public interface MiniBaseRepository {
      * @param <T>      解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> Page<T> queryPage(@NotNull Pageable pageable, @NotNull AbstractSql<?> sql, @NotNull RowMapper<T> mapper);
+    default <T> Page<T> queryPage(Pageable pageable, AbstractSql<?> sql, RowMapper<T> mapper) {
+        return queryPage(pageable, sql.getSql(), sql.getArgs(), mapper);
+    }
 
     /**
      * 查询列表
@@ -669,8 +728,7 @@ public interface MiniBaseRepository {
      * @param <T>      解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> Page<T> queryPage(@NotNull Pageable pageable, String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> Page<T> queryPage(Pageable pageable, String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询列表
@@ -681,8 +739,67 @@ public interface MiniBaseRepository {
      * @param <T>      解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> Page<T> queryPage(@NotNull Pageable pageable, @NotNull AbstractSql<?> sql, Class<T> type);
+    default <T> Page<T> queryPage(Pageable pageable, AbstractSql<?> sql, Class<T> type) {
+        return queryPage(pageable, sql.getSql(), sql.getArgs(), type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page   页码数，第一页为0
+     * @param size   分页数据 每页条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> Page<T> queryPage(int page, int size, String sql, @Nullable Object[] params, RowMapper<T> mapper) {
+        return queryPage(PageRequest.of(page, size), sql, params, mapper);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page   页码数，第一页为0
+     * @param size   分页数据 每页条数
+     * @param sql    SQL
+     * @param mapper 映射器
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> Page<T> queryPage(int page, int size, AbstractSql<?> sql, RowMapper<T> mapper) {
+        return queryPage(PageRequest.of(page, size), sql, mapper);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page   页码数，第一页为0
+     * @param size   分页数据 每页条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param type   类型类对象
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> Page<T> queryPage(int page, int size, String sql, @Nullable Object[] params, Class<T> type) {
+        return queryPage(PageRequest.of(page, size), sql, params, type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page 页码数，第一页为0
+     * @param size 分页数据 每页条数
+     * @param sql  SQL
+     * @param type 类型类对象
+     * @param <T>  解析器类型
+     * @return 查询结果
+     */
+    default <T> Page<T> queryPage(int page, int size, AbstractSql<?> sql, Class<T> type) {
+        return queryPage(PageRequest.of(page, size), sql, type);
+    }
 
     /**
      * 查询列表
@@ -692,8 +809,7 @@ public interface MiniBaseRepository {
      * @param params   参数
      * @return 查询结果
      */
-    @NotNull
-    Page<Map<String, Object>> queryPageMap(@NotNull Pageable pageable, @NotNull String sql, @Nullable Object[] params);
+    Page<Map<String, Object>> queryPageMap(Pageable pageable, String sql, @Nullable Object[] params);
 
     /**
      * 查询列表
@@ -702,8 +818,34 @@ public interface MiniBaseRepository {
      * @param sql      SQL
      * @return 查询结果
      */
-    @NotNull
-    Page<Map<String, Object>> queryPageMap(@NotNull Pageable pageable, @NotNull AbstractSql<?> sql);
+    default Page<Map<String, Object>> queryPageMap(Pageable pageable, AbstractSql<?> sql) {
+        return queryPageMap(pageable, sql.getSql(), sql.getArgs());
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page   页码数，第一页为0
+     * @param size   分页数据 每页条数
+     * @param sql    SQL
+     * @param params 参数
+     * @return 查询结果
+     */
+    default Page<Map<String, Object>> queryPageMap(int page, int size, String sql, @Nullable Object[] params) {
+        return queryPageMap(PageRequest.of(page, size), sql, params);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page 页码数，第一页为0
+     * @param size 分页数据 每页条数
+     * @param sql  SQL
+     * @return 查询结果
+     */
+    default Page<Map<String, Object>> queryPageMap(int page, int size, AbstractSql<?> sql) {
+        return queryPageMap(PageRequest.of(page, size), sql);
+    }
 
     /**
      * 查询列表
@@ -715,8 +857,7 @@ public interface MiniBaseRepository {
      * @param <T>      解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> Page<T> queryPageSingle(@NotNull Pageable pageable, @NotNull String sql, @Nullable Object[] params, @NotNull Class<T> type);
+    <T> Page<T> queryPageSingle(Pageable pageable, String sql, @Nullable Object[] params, Class<T> type);
 
     /**
      * 查询列表
@@ -727,6 +868,134 @@ public interface MiniBaseRepository {
      * @param <T>      解析器类型
      * @return 查询结果
      */
-    @NotNull
-    <T> Page<T> queryPageSingle(@NotNull Pageable pageable, @NotNull AbstractSql<?> sql, @NotNull Class<T> type);
+    default <T> Page<T> queryPageSingle(Pageable pageable, AbstractSql<?> sql, Class<T> type) {
+        return queryPageSingle(pageable, sql.getSql(), sql.getArgs(), type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page   页码数，第一页为0
+     * @param size   分页数据 每页条数
+     * @param sql    SQL
+     * @param params 参数
+     * @param type   类型类对象
+     * @param <T>    解析器类型
+     * @return 查询结果
+     */
+    default <T> Page<T> queryPageSingle(int page, int size, String sql, @Nullable Object[] params, Class<T> type) {
+        return queryPageSingle(PageRequest.of(page, size), sql, params, type);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @param page 页码数，第一页为0
+     * @param size 分页数据 每页条数
+     * @param sql  SQL
+     * @param type 类型类对象
+     * @param <T>  解析器类型
+     * @return 查询结果
+     */
+    default <T> Page<T> queryPageSingle(int page, int size, AbstractSql<?> sql, Class<T> type) {
+        return queryPageSingle(PageRequest.of(page, size), sql, type);
+    }
+
+    /**
+     * 添加数据
+     *
+     * @param table    添加表
+     * @param consumer 添加字段设置回调
+     * @return 执行结果 - 影响条数
+     */
+    default int insert(String table, Consumer<InsertFragment<?>> consumer) {
+        return this.execute(new InsertSql() {{
+            this.insertInto(table);
+            consumer.accept(this);
+        }});
+    }
+
+    /**
+     * 添加数据-如果唯一索引重复则替换
+     *
+     * @param table    添加表
+     * @param consumer 添加字段设置回调
+     * @return 执行结果 - 影响条数
+     */
+    default int replace(String table, Consumer<SetFragment<?>> consumer) {
+        return this.execute(new ReplaceSql() {{
+            this.replaceInto(table);
+            consumer.accept(this);
+        }});
+    }
+
+    /**
+     * 添加数据-如果唯一索引重复则替换
+     *
+     * @param table    添加表
+     * @param consumer 添加字段设置回调
+     * @return 执行结果 - 影响条数
+     */
+    default int delete(String table, Consumer<DeleteFragment<?>> consumer) {
+        return this.execute(new DeleteSql() {{
+            this.delete().from(table);
+            consumer.accept(this);
+        }});
+    }
+
+    /**
+     * 添加数据-如果唯一索引重复则替换
+     *
+     * @param table    添加表
+     * @param consumer 添加字段设置回调
+     * @return 执行结果 - 影响条数
+     */
+    default int update(String table, Consumer<UpdateFragment<?>> consumer) {
+        return this.execute(new UpdateSql() {{
+            consumer.accept(update(table));
+        }});
+    }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param pageable 分页工具
+     * @param type     实体类型
+     * @param consumer SQL 回调
+     * @return 查询结果
+     */
+    default <T> Page<T> select(Pageable pageable, Class<T> type, Consumer<SelectFragment<?>> consumer) {
+        return this.queryPage(pageable, new SelectSql(type) {{
+            consumer.accept(this);
+        }}, type);
+    }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param page     分页-页码数，0为第一页
+     * @param size     分页-每页条数
+     * @param type     实体类型
+     * @param consumer SQL 回调
+     * @return 查询结果
+     */
+    default <T> Page<T> select(int page, int size, Class<T> type, Consumer<SelectFragment<?>> consumer) {
+        return this.queryPage(page, size, new SelectSql(type) {{
+            consumer.accept(this);
+        }}, type);
+    }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param type     实体类型
+     * @param consumer SQL 回调
+     * @return 查询结果
+     */
+    default <T> List<T> select(Class<T> type, Consumer<SelectFragment<?>> consumer) {
+        return this.queryList(new SelectSql(type) {{
+            consumer.accept(this);
+        }}, type);
+    }
+
 }

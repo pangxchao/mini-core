@@ -91,7 +91,7 @@ public abstract class AbstractSql<T extends AbstractSql<T>> {
         return (T) this;
     }
 
-    public final T isNotNull(Object arg, Consumer<Object> consumer) {
+    public final <O> T isNotNull(O arg, Consumer<O> consumer) {
         if (Objects.nonNull(arg)) {
             consumer.accept(arg);
         }

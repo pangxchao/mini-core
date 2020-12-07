@@ -8,7 +8,6 @@ import static java.lang.String.format;
 @SuppressWarnings("UnusedReturnValue")
 public interface SelectStatement extends BaseStatement<SelectStatement> {
 
-
     /**
      * 去重查询
      *
