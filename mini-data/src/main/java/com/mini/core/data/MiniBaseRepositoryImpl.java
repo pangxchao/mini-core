@@ -1,6 +1,6 @@
 package com.mini.core.data;
 
-import com.mini.core.data.builder.*;
+import com.mini.core.data.builder.AbstractSql;
 import com.mini.core.data.builder.fragment.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
     }
 
     @NotNull
-    protected <T> RowMapper<T> getBeanPropertyRowMapper(@NotNull Class<T> requiredType) {
+    protected <T> RowMapper<T> getBeanMapper(@NotNull Class<T> requiredType) {
         return new BeanPropertyRowMapper<>(requiredType);
     }
 
@@ -45,7 +45,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
     }
 
     @Override
-    public int execute(String sql, @Nullable Object[] params) {
+    public final int execute(String sql, @Nullable Object[] params) {
         return super.update(sql, params);
     }
 
@@ -76,7 +76,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
 
     @Override
     public final <T> List<T> queryList(String sql, Object[] params, Class<T> type) {
-        return queryList(sql, params, getBeanPropertyRowMapper(type));
+        return queryList(sql, params, getBeanMapper(type));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
 
     @Override
     public final <T> List<T> queryList(long offset, int size, String sql, Object[] params, Class<T> type) {
-        return queryList(offset, size, sql, params, getBeanPropertyRowMapper(type));
+        return queryList(offset, size, sql, params, getBeanMapper(type));
     }
 
     @Override
@@ -199,7 +199,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
     @Nullable
     @Override
     public final <T> T queryObject(String sql, Object[] params, Class<T> type) {
-        return queryObject(sql, params, getBeanPropertyRowMapper(type));
+        return queryObject(sql, params, getBeanMapper(type));
     }
 
     @Nullable
@@ -378,7 +378,7 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
 
     @Override
     public final <T> Page<T> queryPage(Pageable pageable, String sql, Object[] params, Class<T> type) {
-        return queryPage(pageable, sql, params, getBeanPropertyRowMapper(type));
+        return queryPage(pageable, sql, params, getBeanMapper(type));
     }
 
     @Override
@@ -467,17 +467,32 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
     }
 
     @Override
-    public <T> Page<T> select(Pageable pageable, Class<T> type, Consumer<SelectFragment<?>> consumer) {
+    public final <T> Page<T> select(Pageable pageable, Class<T> type, Consumer<SelectFragment<?>> consumer) {
         return MiniBaseRepository.super.select(pageable, type, consumer);
     }
 
     @Override
-    public <T> Page<T> select(int page, int size, Class<T> type, Consumer<SelectFragment<?>> consumer) {
+    public final <T> Page<T> select(int page, int size, Class<T> type, Consumer<SelectFragment<?>> consumer) {
         return MiniBaseRepository.super.select(page, size, type, consumer);
     }
 
     @Override
-    public <T> List<T> select(Class<T> type, Consumer<SelectFragment<?>> consumer) {
+    public final <T> List<T> select(Class<T> type, Consumer<SelectFragment<?>> consumer) {
         return MiniBaseRepository.super.select(type, consumer);
+    }
+
+    @Override
+    public final <T> Page<T> select(Pageable pageable, Class<T> type) {
+        return MiniBaseRepository.super.select(pageable,type);
+    }
+
+    @Override
+    public final <T> Page<T> select(int page, int size, Class<T> type) {
+        return MiniBaseRepository.super.select(page,size,type);
+    }
+
+    @Override
+    public final <T> List<T> select(Class<T> type) {
+        return MiniBaseRepository.super.select(type);
     }
 }

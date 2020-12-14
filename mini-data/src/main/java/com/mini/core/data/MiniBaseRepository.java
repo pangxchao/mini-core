@@ -998,4 +998,36 @@ public interface MiniBaseRepository {
         }}, type);
     }
 
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param pageable 分页工具
+     * @param type     实体类型
+     * @return 查询结果
+     */
+    default <T> Page<T> select(Pageable pageable, Class<T> type) {
+        return queryPage(pageable, new SelectSql(type), type);
+    }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param page 分页-页码数，0为第一页
+     * @param size 分页-每页条数
+     * @param type 实体类型
+     * @return 查询结果
+     */
+    default <T> Page<T> select(int page, int size, Class<T> type) {
+        return queryPage(page, size, new SelectSql(type), type);
+    }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param type 实体类型
+     * @return 查询结果
+     */
+    default <T> List<T> select(Class<T> type) {
+        return queryList(new SelectSql(type), type);
+    }
 }
