@@ -1030,4 +1030,29 @@ public interface MiniBaseRepository {
     default <T> List<T> select(Class<T> type) {
         return queryList(new SelectSql(type), type);
     }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param type     实体类型
+     * @param consumer SQL 回调
+     * @return 查询结果
+     */
+    @Nullable
+    default <T> T selectOne(Class<T> type, Consumer<SelectFragment<?>> consumer) {
+        return this.queryObject(new SelectSql(type) {{
+            consumer.accept(this);
+        }}, type);
+    }
+
+    /**
+     * 根据实体和注解，查询实体对应的数据库信息
+     *
+     * @param type 实体类型
+     * @return 查询结果
+     */
+    @Nullable
+    default <T> T selectOne(Class<T> type) {
+        return queryObject(new SelectSql(type), type);
+    }
 }

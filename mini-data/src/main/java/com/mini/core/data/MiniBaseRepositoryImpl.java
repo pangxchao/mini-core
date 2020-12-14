@@ -495,4 +495,16 @@ public class MiniBaseRepositoryImpl extends JdbcTemplate implements MiniBaseRepo
     public final <T> List<T> select(Class<T> type) {
         return MiniBaseRepository.super.select(type);
     }
+
+    @Nullable
+    @Override
+    public final <T> T selectOne(Class<T> type, Consumer<SelectFragment<?>> consumer) {
+        return  MiniBaseRepository.super.selectOne(type, consumer);
+    }
+
+    @Nullable
+    @Override
+    public final <T> T selectOne(Class<T> type) {
+        return MiniBaseRepository.super.selectOne(type);
+    }
 }
