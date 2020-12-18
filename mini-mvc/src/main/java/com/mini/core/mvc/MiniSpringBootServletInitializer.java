@@ -33,11 +33,11 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 import static com.fasterxml.jackson.databind.ser.std.ToStringSerializer.instance;
 
 public abstract class MiniSpringBootServletInitializer extends SpringBootServletInitializer implements WebMvcConfigurer {
-    protected ApplicationContext applicationContext;
+    protected ApplicationContext context;
 
     @Autowired
-    public final void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public final void setContext(ApplicationContext context) {
+        this.context = context;
     }
 
     @Override
@@ -61,43 +61,49 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
 
     @Bean
     @Qualifier("jsonModelProcessor")
+    @ConditionalOnMissingBean(value = JsonModelProcessor.class, name = "jsonModelProcessor")
     public JsonModelProcessor jsonModelProcessor() {
         return new JsonModelProcessor();
     }
 
     @Bean
     @Qualifier("pageModelProcessor")
+    @ConditionalOnMissingBean(value = PageModelProcessor.class, name = "pageModelProcessor")
     public PageModelProcessor pageModelProcessor() {
         return new PageModelProcessor();
     }
 
     @Bean
     @Qualifier("streamModelProcessor")
+    @ConditionalOnMissingBean(value = StreamModelProcessor.class, name = "streamModelProcessor")
     public StreamModelProcessor streamModelProcessor() {
         return new StreamModelProcessor();
     }
 
     @Bean
     @Qualifier("webSessionProcessor")
+    @ConditionalOnMissingBean(value = WebSessionProcessor.class, name = "webSessionProcessor")
     public WebSessionProcessor webSessionProcessor() {
         return new WebSessionProcessor();
     }
 
     @Bean
     @Qualifier("miniControllerInterceptor")
+    @ConditionalOnMissingBean(value = MiniControllerInterceptor.class, name = "miniControllerInterceptor")
     public MiniControllerInterceptor miniControllerInterceptor() {
         return new MiniControllerInterceptor();
     }
 
     @Bean
     @Qualifier("MiniMessageSupportController")
-    @ConditionalOnMissingBean(MiniMessageSupportController.class)
+    @ConditionalOnMissingBean(value = MiniMessageSupportController.class, name = "MiniMessageSupportController")
     public MiniMessageSupportController miniMessageSupportController() {
         return new MiniMessageSupportController();
     }
 
     @Bean
     @Qualifier("miniMessageValidationHandler")
+    @ConditionalOnMissingBean(value = MiniMessageValidationHandler.class, name = "miniMessageValidationHandler")
     public MiniMessageValidationHandler miniMessageValidationHandler() {
         return new MiniMessageValidationHandler();
     }
@@ -105,7 +111,7 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     @Bean
     @Primary
     @Qualifier("objectMapper")
-    @ConditionalOnMissingBean(ObjectMapper.class)
+    @ConditionalOnMissingBean(value = ObjectMapper.class, name = "objectMapper")
     public ObjectMapper objectMapper() throws RuntimeException, Error {
         final JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder();
         // 是否允许JSON字符串包含未转义的控制字符(值小于32的ASCII字符，包括制表符和换行符)的特性。
@@ -130,10 +136,10 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
 
     @Override
     public void addArgumentResolvers(@NotNull List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(applicationContext.getBean(StreamModelProcessor.class));
-        resolvers.add(applicationContext.getBean(WebSessionProcessor.class));
-        resolvers.add(applicationContext.getBean(PageModelProcessor.class));
-        resolvers.add(applicationContext.getBean(JsonModelProcessor.class));
+        resolvers.add(context.getBean(StreamModelProcessor.class));
+        resolvers.add(context.getBean(WebSessionProcessor.class));
+        resolvers.add(context.getBean(PageModelProcessor.class));
+        resolvers.add(context.getBean(JsonModelProcessor.class));
     }
 
     /**

@@ -29,7 +29,6 @@ public class ValidateException extends RuntimeException {
         this.args = args;
     }
 
-
     public ValidateException(String message, HttpStatus status) {
         this(message, status, null, new Object[0]);
     }
