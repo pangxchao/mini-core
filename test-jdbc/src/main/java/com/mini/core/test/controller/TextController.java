@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequestMapping("/text")
-public class TextController implements ResponseCode {
+public class TextController   {
     private final TextInfoRepository textInfoRepository;
 
     @Autowired

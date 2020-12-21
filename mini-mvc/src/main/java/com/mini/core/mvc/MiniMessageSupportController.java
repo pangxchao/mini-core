@@ -4,7 +4,6 @@ import com.mini.core.mvc.model.IModel;
 import com.mini.core.mvc.model.JsonModel;
 import com.mini.core.mvc.model.PageModel;
 import com.mini.core.mvc.model.StreamModel;
-import com.mini.core.mvc.util.ResponseCode;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,7 @@ import static java.util.Objects.requireNonNull;
 
 @Controller
 @RequestMapping("/h")
-public class MiniMessageSupportController implements ResponseCode, EventListener {
+public class MiniMessageSupportController implements EventListener {
     @Nullable
     protected final <T extends IModel<?, T>> T getModel(HttpServletRequest request, Class<T> modelType) {
         return Optional.ofNullable(request.getAttribute(MODEL_KEY))
