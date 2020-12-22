@@ -1,7 +1,6 @@
 package com.mini.core.test.controller;
 
 import com.mini.core.mvc.model.JsonModel;
-import com.mini.core.mvc.util.ResponseCode;
 import com.mini.core.test.entity.UserInfo;
 import com.mini.core.test.form.UserSave;
 import com.mini.core.test.repository.UserInfoRepository;
@@ -21,7 +20,7 @@ import java.util.Locale;
 @Validated
 @RestController
 @RequestMapping("/user")
-public class UserController implements ResponseCode {
+public class UserController {
     private final UserInfoRepository userInfoRepository;
 
     private final ResourceBundleMessageSource messageSource;
