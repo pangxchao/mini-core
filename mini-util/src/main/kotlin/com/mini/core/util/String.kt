@@ -14,12 +14,10 @@ import java.util.*
 
 // *: 0 次或者多次, +: 一次或者多次, ?: 0次或者1次, {n}:刚刚n次, {n,m}: n到m次
 // \d: [0-9], \D: [^0-9], \w:[a-zA-Z_0-9], \W:[^a-zA-Z_0-9], \s: [\t\n\r\f], \S: [^\t\n\r\f]
-const val PHONE = "((010|02[0-9]|0[3-9]{2,3})[-])?[0-9]{6,8}"
 const val ID_CARD = "\\d{15}(\\d{2}[A-Za-z0-9])?"
 const val EMAIL = "\\S+[@]\\S+[.]\\S+"
 const val CHINESE = "[\u4E00-\u9FA5]+"
 const val REQUIRE = "[a-z_][a-z0-9_]*"
-const val MOBILE = "1\\d{10}"
 const val NUMBER = "\\d+"
 const val LETTER = "\\w+"
 
@@ -150,30 +148,6 @@ fun String.matches(pattern: String): Boolean {
  */
 fun String.isEmail(): Boolean {
     return matches(EMAIL)
-}
-
-/**
- * 验证传入字符串是否为电话号码
- * @return true-是
- */
-fun String.isPhone(): Boolean {
-    return matches(PHONE)
-}
-
-/**
- * 验证传入字符串是否为手机号
- * @return true-是
- */
-fun String.isMobile(): Boolean {
-    return matches(MOBILE)
-}
-
-/**
- * 验证传入字符串是否为手机号或者电话号码
- * @return true-是
- */
-fun String.isMobilePhone(): Boolean {
-    return matches(MOBILE) || matches(PHONE)
 }
 
 /**

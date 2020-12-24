@@ -2,13 +2,15 @@ package com.mini.core.mvc.validation;
 
 import org.springframework.http.HttpStatus;
 
-import javax.validation.ValidationException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import static com.mini.core.util.StringKt.*;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @SuppressWarnings("UnusedReturnValue")
@@ -21,27 +23,32 @@ public abstract class ValidatorBuilder {
     private ValidatorBuilder() {
     }
 
+    @Nonnull
     public final ValidatorBuilder message(String message) {
         this.message = message;
         return this;
     }
 
+    @Nonnull
     public final ValidatorBuilder status(HttpStatus status) {
         this.status = status;
         return this;
     }
 
+    @Nonnull
     public final ValidatorBuilder code(Integer code) {
         this.code = code;
         return this;
     }
 
+    @Nonnull
     public final ValidatorBuilder args(Object... args) {
         Collections.addAll(this.args, args);
         return this;
     }
 
-    public final ValidationException send() {
+    @Nonnull
+    public final ValidateException send() {
         throw new ValidateException(message, status, code, args.toArray());
     }
 
@@ -50,81 +57,64 @@ public abstract class ValidatorBuilder {
         return true;
     }
 
-    public final String isPattern(String string, String regex) {
-        isTrue(string != null && matches(string, regex));
-        return string;
+    @Nonnull
+    public final String isPattern(@Nullable String string, String regex) {
+        this.isTrue(string != null && matches(string, regex));
+        return requireNonNull(string);
     }
 
-    public final String isNotBlank(String string) {
+    @Nonnull
+    public final String isNotBlank(@Nullable String string) {
         isTrue(string != null && !string.isBlank());
-        return string;
+        return requireNonNull(string);
     }
 
-    public final void isNotEmpty(String string) {
-        isTrue(string != null && !string.isEmpty());
+    @Nonnull
+    public final String isNotEmpty(@Nullable String string) {
+        this.isTrue(string != null && !string.isEmpty());
+        return requireNonNull(string);
     }
 
-    public final <T> T isNotNull(T object) {
-        isTrue(object != null);
-        return object;
+    @Nonnull
+    public final <T> T isNotNull(@Nullable T object) {
+        isTrue(Objects.nonNull(object));
+        return requireNonNull(object);
     }
 
-    public final <T> T isNull(T object) {
-        isTrue(object == null);
+    @Nullable
+    public final <T> T isNull(@Nullable T object) {
+        isTrue(Objects.isNull(object));
         return null;
     }
 
-    public final String isEmail(String string) {
-        isPattern(string, EMAIL);
-        return string;
+    @Nonnull
+    public final String isEmail(@Nullable String string) {
+        return isPattern(string, EMAIL);
     }
 
-    public final String isPhone(String string) {
-        isPattern(string, PHONE);
-        return string;
+    @Nonnull
+    public final String isLetter(@Nullable String string) {
+        return isPattern(string, LETTER);
     }
 
-    public final String isMobile(String string) {
-        isPattern(string, MOBILE);
-        return string;
+    @Nonnull
+    public final String isNumber(@Nullable String string) {
+        return isPattern(string, NUMBER);
     }
 
-    public final String isLetter(String string) {
-        isPattern(string, LETTER);
-        return string;
+    @Nonnull
+    public final String isIdCard(@Nullable String string) {
+        return isPattern(string, ID_CARD);
     }
 
-    public final String isNumber(String string) {
-        isPattern(string, NUMBER);
-        return string;
+    @Nonnull
+    public final String isChinese(@Nullable String string) {
+        return isPattern(string, CHINESE);
     }
 
-    public final String isIdCard(String string) {
-        isPattern(string, ID_CARD);
-        return string;
-    }
-
-    public final String isChinese(String string) {
-        isPattern(string, CHINESE);
-        return string;
-    }
-
-    public final String isRequire(String string) {
-        isPattern(string, REQUIRE);
-        return string;
-    }
-
-    public final String isMobilePhone(String string) {
-        if (Objects.isNull(string)) {
-            throw send();
-        }
-        if (string.matches(MOBILE)) {
-            return string;
-        }
-        if (string.matches(PHONE)) {
-            return string;
-        }
-        throw send();
+    @Nonnull
+    public final String isRequire(@Nullable String string) {
+        return isPattern(string, REQUIRE);
     }
 
     static final class ValidatorBuilderImpl extends ValidatorBuilder {
