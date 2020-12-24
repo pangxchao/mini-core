@@ -11,7 +11,6 @@ import com.mini.core.data.builder.statement.WhereStatement.WhereStatementImpl;
 import com.mini.core.data.builder.support.Join;
 import com.mini.core.util.holder.ClassHolder;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.util.StringUtils;
@@ -35,9 +34,23 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
     private final JoinFragmentImpl join = new JoinFragmentImpl(this);
     private FilterStatement<?> filter = null;
 
-    public static void main(String[] args) {
-        System.out.println(boolean.class.isPrimitive());
-        System.out.println(Boolean.class.isPrimitive());
+    private void addSelect(ClassHolder<?> holder, SelectSql sql) {
+        holder.getFields().values().forEach(it -> {
+            var column = it.getAnnotation(Column.class);
+            if (column == null) {
+                if (it.getType().isPrimitive()) {
+                    return;
+                }
+                addSelect(create(it.getType()), sql);
+                return;
+            }
+
+            String columnName = column.value();
+            if (!StringUtils.hasText(columnName)) {
+                columnName = it.getName();
+            }
+            sql.select(columnName, it.getName());
+        });
     }
 
     public <T> SelectSql(@NotNull Class<T> type) {

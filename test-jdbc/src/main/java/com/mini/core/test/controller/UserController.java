@@ -4,6 +4,7 @@ import com.mini.core.mvc.model.JsonModel;
 import com.mini.core.test.entity.UserInfo;
 import com.mini.core.test.form.UserSave;
 import com.mini.core.test.repository.UserInfoRepository;
+import com.mini.core.test.repository.UserRoleRepository;
 import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,6 +27,7 @@ import java.util.Locale;
 @RequestMapping("/user")
 public class UserController {
     private final UserInfoRepository userInfoRepository;
+    private final UserRoleRepository userRoleRepository;
 
     @Autowired
     private SQLQueryFactory sqlQueryFactory;
@@ -33,8 +35,10 @@ public class UserController {
     @Autowired
     private ResourceBundleMessageSource messageSource;
 
-    public UserController(@Qualifier("userInfoRepository") UserInfoRepository userInfoRepository) {
+    public UserController(@Qualifier("userInfoRepository") UserInfoRepository userInfoRepository,
+                          @Qualifier("userRoleRepository") UserRoleRepository userRoleRepository) {
         this.userInfoRepository = userInfoRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @RequestMapping(path = "/list")
@@ -42,6 +46,9 @@ public class UserController {
         // 1. spring data jdbc 原生支持的查询不好处理动态条件
         // 2. 使用IN 条件时，需要注意要把IN里面的参数拆分成多个参数
         model.setData(userInfoRepository.findAll());
+
+        System.out.println(userRoleRepository.findByUserId(1L));
+        System.out.println(userRoleRepository.findById(1L, 1L).orElse(null));
 
         var list = userInfoRepository.findByEmailStartsWith("12345");
         System.out.println(list);
