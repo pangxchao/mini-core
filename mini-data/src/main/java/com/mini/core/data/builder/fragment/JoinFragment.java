@@ -18,6 +18,12 @@ public interface JoinFragment<T extends JoinFragment<T>> {
 
     T join(String table, Consumer<JoinOnStatement> consumer);
 
+    T innerJoin(String join);
+
+    T innerJoin(String table, String column, String target);
+
+    T innerJoin(String table, Consumer<JoinOnStatement> consumer);
+
     T leftJoin(String join);
 
     T leftJoin(String table, String column, String target);
@@ -77,6 +83,30 @@ public interface JoinFragment<T extends JoinFragment<T>> {
         @Override
         public JoinFragmentImpl join(String table, Consumer<JoinOnStatement> consumer) {
             var impl = new JoinStatementImpl(sql);
+            impl.join(table, consumer);
+            joinList.add(impl);
+            return this;
+        }
+
+        @Override
+        public JoinFragmentImpl innerJoin(String join) {
+            var impl = new InnerJoinStatementImpl(sql);
+            impl.addValues(join);
+            joinList.add(impl);
+            return this;
+        }
+
+        @Override
+        public JoinFragmentImpl innerJoin(String table, String column, String target) {
+            var impl = new InnerJoinStatementImpl(sql);
+            impl.join(table, column, target);
+            joinList.add(impl);
+            return this;
+        }
+
+        @Override
+        public JoinFragmentImpl innerJoin(String table, Consumer<JoinOnStatement> consumer) {
+            var impl = new InnerJoinStatementImpl(sql);
             impl.join(table, consumer);
             joinList.add(impl);
             return this;
@@ -207,5 +237,6 @@ public interface JoinFragment<T extends JoinFragment<T>> {
         public final void builder(StringBuilder builder) {
             joinList.forEach(it -> it.builder(builder));
         }
+
     }
 }

@@ -75,7 +75,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
         @NotNull
         @Override
         protected final String getKeyword() {
-            return "\nINNER JOIN";
+            return "\nINNER JOIN ";
         }
     }
 
@@ -88,7 +88,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
         @NotNull
         @Override
         protected final String getKeyword() {
-            return "\nLEFT JOIN";
+            return "\nLEFT JOIN ";
         }
     }
 
@@ -101,7 +101,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
         @NotNull
         @Override
         protected final String getKeyword() {
-            return "\nRIGHT JOIN";
+            return "\nRIGHT JOIN ";
         }
     }
 
@@ -114,7 +114,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
         @NotNull
         @Override
         protected final String getKeyword() {
-            return "\nLEFT OUTER JOIN";
+            return "\nLEFT OUTER JOIN ";
         }
     }
 
@@ -127,7 +127,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
         @NotNull
         @Override
         protected final String getKeyword() {
-            return "\nRIGHT OUTER JOIN";
+            return "\nRIGHT OUTER JOIN ";
         }
     }
 
@@ -140,7 +140,7 @@ public interface JoinStatement extends BaseStatement<JoinStatement> {
         @NotNull
         @Override
         protected final String getKeyword() {
-            return "\nCROSS JOIN";
+            return "\nCROSS JOIN ";
         }
     }
 }

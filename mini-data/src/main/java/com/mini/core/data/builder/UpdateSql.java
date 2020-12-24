@@ -42,6 +42,24 @@ public class UpdateSql extends AbstractSql<UpdateSql> implements UpdateFragment<
     }
 
     @Override
+    public final UpdateSql innerJoin(String join) {
+        this.join.innerJoin(join);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql innerJoin(String table, String column, String target) {
+        this.join.innerJoin(table, column, table);
+        return this;
+    }
+
+    @Override
+    public final UpdateSql innerJoin(String table, Consumer<JoinOnStatement> consumer) {
+        this.join.innerJoin(table, consumer);
+        return this;
+    }
+
+    @Override
     public final UpdateSql leftJoin(String join) {
         this.join.leftJoin(join);
         return this;

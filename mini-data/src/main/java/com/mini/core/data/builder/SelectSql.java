@@ -162,6 +162,24 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
     }
 
     @Override
+    public final SelectSql innerJoin(String join) {
+        this.join.innerJoin(join);
+        return this;
+    }
+
+    @Override
+    public final SelectSql innerJoin(String table, String column, String target) {
+        this.join.innerJoin(table, column, table);
+        return this;
+    }
+
+    @Override
+    public final SelectSql innerJoin(String table, Consumer<JoinOnStatement> consumer) {
+        this.join.innerJoin(table, consumer);
+        return this;
+    }
+
+    @Override
     public final SelectSql leftJoin(String join) {
         this.join.leftJoin(join);
         return this;

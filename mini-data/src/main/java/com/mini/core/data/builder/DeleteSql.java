@@ -46,6 +46,24 @@ public class DeleteSql extends AbstractSql<DeleteSql> implements DeleteFragment<
     }
 
     @Override
+    public final DeleteSql innerJoin(String join) {
+        this.join.innerJoin(join);
+        return this;
+    }
+
+    @Override
+    public final DeleteSql innerJoin(String table, String column, String target) {
+        this.join.innerJoin(table, column, table);
+        return this;
+    }
+
+    @Override
+    public final DeleteSql innerJoin(String table, Consumer<JoinOnStatement> consumer) {
+        this.join.innerJoin(table, consumer);
+        return this;
+    }
+
+    @Override
     public final DeleteSql leftJoin(String join) {
         this.join.leftJoin(join);
         return this;

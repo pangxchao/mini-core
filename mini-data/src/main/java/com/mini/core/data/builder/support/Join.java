@@ -1,10 +1,10 @@
 package com.mini.core.data.builder.support;
 
-import com.mini.core.data.builder.AbstractSql;
-import com.mini.core.data.builder.statement.JoinStatement.*;
+import com.mini.core.data.builder.fragment.SelectFragment;
 
 import java.lang.annotation.*;
-import java.util.Arrays;
+
+import static java.util.Arrays.stream;
 
 @Documented
 @Target({ElementType.TYPE})
@@ -21,76 +21,48 @@ public @interface Join {
     enum JoinType {
         DEF {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new JoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.join(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         },
         INNER {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new InnerJoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.join(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         },
         LEFT {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new LeftJoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.leftJoin(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         },
         RIGHT {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new RightJoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.rightJoin(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         },
         LEFT_OUTER {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new LeftOuterJoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.leftOuterJoin(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         },
         RIGHT_OUTER {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new RightOuterJoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.rightOuterJoin(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         },
         CROSS {
             @Override
-            public final void exe(AbstractSql<?> sql, String table, On[] ons) {
-                new CrossJoinStatementImpl(sql).join(table, it -> { //
-                    Arrays.stream(ons).forEach(on -> { //
-                        on.join().exe(it, on);
-                    });
-                });
+            public final void exe(SelectFragment<?> sql, String table, On[] ons) {
+                sql.crossJoin(table, it -> stream(ons).forEach(on -> on.join().exe(it, on)));
             }
         };
 
-        public abstract void exe(AbstractSql<?> sql, String table, On[] ons);
+        public abstract void exe(SelectFragment<?> sql, String table, On[] ons);
 
     }
 
