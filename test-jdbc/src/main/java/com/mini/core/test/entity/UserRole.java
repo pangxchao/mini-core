@@ -21,23 +21,6 @@ public class UserRole implements Serializable {
     //
     public static final String ROLE_ID = "role_id";
 
-    @Data
-    @SuperBuilder(toBuilder = true)
-    public static class ID implements Serializable {
-
-        // userId
-        @Column(USER_ID)
-        private Long userId;
-
-        // roleId
-        @Column(ROLE_ID)
-        private Long roleId;
-
-        @Tolerate
-        public ID() {
-        }
-    }
-
     // userId
     @Column(USER_ID)
     private Long userId;

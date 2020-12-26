@@ -1,6 +1,6 @@
 package com.mini.core.test.entity;
 
-import com.mini.core.data.common.LongId;
+import com.mini.core.jdbc.common.LongId;
 import org.springframework.data.annotation.*;
 import org.springframework.data.relational.core.mapping.*;
 

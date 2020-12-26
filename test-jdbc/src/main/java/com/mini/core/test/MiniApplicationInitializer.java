@@ -1,12 +1,8 @@
 package com.mini.core.test;
 
-import com.mini.core.data.listener.BeforeSaveApplicationListener;
+import com.mini.core.jdbc.listener.BeforeSaveApplicationListener;
 import com.mini.core.mvc.MiniSpringBootServletInitializer;
 import com.mini.core.test.interceptor.MiniHandlerInterceptor;
-import com.querydsl.sql.MySQLTemplates;
-import com.querydsl.sql.SQLQueryFactory;
-import com.querydsl.sql.spring.SpringConnectionProvider;
-import com.querydsl.sql.spring.SpringExceptionTranslator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,13 +25,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
-import javax.inject.Provider;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
-import java.sql.Connection;
 
 import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING;
 
@@ -93,19 +87,6 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     @Bean
     public MiniHandlerInterceptor miniHandlerInterceptor() {
         return new MiniHandlerInterceptor();
-    }
-
-    @Bean
-    public com.querydsl.sql.Configuration querydslConfiguration() {
-        var configuration = new com.querydsl.sql.Configuration(MySQLTemplates.builder().build());
-        configuration.setExceptionTranslator(new SpringExceptionTranslator());
-        return configuration;
-    }
-
-    @Bean
-    public SQLQueryFactory queryFactory(@Qualifier("dataSource") DataSource dataSource) {
-        Provider<Connection> provider = new SpringConnectionProvider(dataSource);
-        return new SQLQueryFactory(querydslConfiguration(), provider);
     }
 
     @Override

@@ -2,14 +2,12 @@ package com.mini.core.test.controller;
 
 import com.mini.core.mvc.model.JsonModel;
 import com.mini.core.test.entity.UserInfo;
+import com.mini.core.test.entity.UserRole;
 import com.mini.core.test.form.UserSave;
 import com.mini.core.test.repository.UserInfoRepository;
 import com.mini.core.test.repository.UserRoleRepository;
-import com.querydsl.sql.SQLQueryFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -29,11 +27,6 @@ public class UserController {
     private final UserInfoRepository userInfoRepository;
     private final UserRoleRepository userRoleRepository;
 
-    @Autowired
-    private SQLQueryFactory sqlQueryFactory;
-
-    @Autowired
-    private ResourceBundleMessageSource messageSource;
 
     public UserController(@Qualifier("userInfoRepository") UserInfoRepository userInfoRepository,
                           @Qualifier("userRoleRepository") UserRoleRepository userRoleRepository) {
@@ -44,8 +37,16 @@ public class UserController {
     @RequestMapping(path = "/list")
     public ResponseEntity<ModelMap> list(JsonModel model, int page, int limit) {
         // 1. spring data jdbc 原生支持的查询不好处理动态条件
-        // 2. 使用IN 条件时，需要注意要把IN里面的参数拆分成多个参数
+        // 2. spring data jdbc 对联合主键支持不好，查询、新增都有些问题
+        // 3. 使用IN 条件时，需要注意要把IN里面的参数拆分成多个参数
         model.setData(userInfoRepository.findAll());
+
+        UserRole userRole = UserRole.builder()
+                .userId(1L).roleId(1L)
+                .build();
+
+        userRoleRepository.insertOrUpdate(userRole);
+        userRoleRepository.insertOrUpdate(userRole);
 
         System.out.println(userRoleRepository.findByUserId(1L));
         System.out.println(userRoleRepository.findById(1L, 1L).orElse(null));
@@ -67,7 +68,6 @@ public class UserController {
         model.setData(list);
         return model.build();
     }
-
 
     @RequestMapping(path = "/info")
     public ResponseEntity<ModelMap> info(JsonModel model, @Positive(message = "{Positive}") Long id, Locale locale) {

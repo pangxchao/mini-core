@@ -1,9 +1,8 @@
 package com.mini.core.test.repository;
 
-import com.mini.core.data.builder.SelectSql;
-import com.mini.core.jdbc.MiniJdbcRepository;
+import com.mini.core.jdbc.MiniRepository;
+import com.mini.core.jdbc.builder.SelectSql;
 import com.mini.core.test.entity.TextInfo;
-import org.springframework.data.domain.Page;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,11 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.data.domain.PageRequest.of;
-
 
 @Repository("textInfoRepository")
-public interface TextInfoRepository extends PagingAndSortingRepository<TextInfo, Long>, MiniJdbcRepository {
+public interface TextInfoRepository extends PagingAndSortingRepository<TextInfo, Long>, MiniRepository {
 
     default List<Map<String, Object>> queryAll_All() {
         return queryList(0, 10000, new SelectSql() {{
@@ -45,6 +42,7 @@ public interface TextInfoRepository extends PagingAndSortingRepository<TextInfo,
             return map;
         });
     }
+
     default List<Map<String, Object>> queryAll_TIT() {
         return queryList(0, 10000, new SelectSql() {{
             select(TextInfo.TEXT_TITLE);

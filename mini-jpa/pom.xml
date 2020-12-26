@@ -12,7 +12,7 @@
         <!-- 项目使用版本配置 -->
         <java.version>11</java.version>
         <junit.version>4.13</junit.version>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.21</kotlin.version>
         <spring.version>5.2.12.RELEASE</spring.version>
         <spring.data.version>2.3.6.RELEASE</spring.data.version>
         <spring.boot.version>2.3.6.RELEASE</spring.boot.version>
@@ -45,8 +45,19 @@
         <!-- Com Mini Data 依赖包-->
         <dependency>
             <groupId>com.mini</groupId>
-            <artifactId>mini-data</artifactId>
+            <artifactId>mini-jdbc</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -88,6 +99,30 @@
 <!--                    <jvmTarget>${java.version}</jvmTarget>-->
 <!--                </configuration>-->
 <!--            </plugin>-->
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

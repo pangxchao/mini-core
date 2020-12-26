@@ -1,6 +1,6 @@
 package com.mini.core.test.entity;
 
-import com.mini.core.data.common.LongId;
+import com.mini.core.jdbc.common.LongId;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
