@@ -915,51 +915,40 @@ public final class ResponseCode {
     // -----------------下面是自定义的快捷错误消息------------------------------
     // ---------------------------------------------------------------------
 
-    public static ValidatorBuilder BadRequest() {
-        return badRequest("{Bad.Request}");
+
+    public static ValidatorBuilder noLogin() {
+        return unauthorized("No Login");
     }
 
-    public static ValidatorBuilder BadRequest(String message) {
-        return badRequest(message);
-    }
-
-    public static ValidatorBuilder BadRequest(String message, Integer code) {
-        return badRequest(message, code);
-    }
-
-    public static ValidatorBuilder NoLogin() {
-        return unauthorized("{No.Login}");
-    }
-
-    public static ValidatorBuilder NoLogin(String message) {
+    public static ValidatorBuilder noLogin(String message) {
         return unauthorized(message);
     }
 
-    public static ValidatorBuilder NoLogin(String message, Integer code) {
+    public static ValidatorBuilder noLogin(String message, Integer code) {
         return unauthorized(message, code);
     }
 
-    public static ValidatorBuilder NoPermission() {
-        return forbidden("{No.Permission}");
+    public static ValidatorBuilder noPermission() {
+        return forbidden("No Permission");
     }
 
-    public static ValidatorBuilder NoPermission(String message) {
+    public static ValidatorBuilder noPermission(String message) {
         return forbidden(message);
     }
 
-    public static ValidatorBuilder NoPermission(String message, Integer code) {
+    public static ValidatorBuilder noPermission(String message, Integer code) {
         return forbidden(message, code);
     }
 
-    public static ValidatorBuilder ServerError() {
-        return internalServerError("{Server.Error}");
+    public static ValidatorBuilder serverError() {
+        return internalServerError("Server Error");
     }
 
-    public static ValidatorBuilder ServerError(String message) {
+    public static ValidatorBuilder serverError(String message) {
         return forbidden(message);
     }
 
-    public static ValidatorBuilder ServerError(String message, Integer code) {
+    public static ValidatorBuilder serverError(String message, Integer code) {
         return forbidden(message, code);
     }
 
