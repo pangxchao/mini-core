@@ -1,5 +1,6 @@
 package com.mini.core.mvc;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -30,6 +31,7 @@ import java.util.List;
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static com.fasterxml.jackson.databind.ser.std.ToStringSerializer.instance;
 
@@ -123,21 +125,22 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     @ConditionalOnMissingBean(value = ObjectMapper.class, name = "objectMapper")
     public ObjectMapper objectMapper() throws RuntimeException, Error {
         final JsonMapper.Builder jsonMapperBuilder = JsonMapper.builder();
-        // 是否允许JSON字符串包含未转义的控制字符(值小于32的ASCII字符，包括制表符和换行符)的特性。
-        // 如果feature设置为false，则在遇到这样的字符时抛出异常。
+        // 否允许JSON字符串包含未转义的控制字符,值小于32的ASCII字符。
         jsonMapperBuilder.configure(ALLOW_UNESCAPED_CONTROL_CHARS, true);
         // 有未知属性 要不要抛异常
         jsonMapperBuilder.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // 确定解析器是否允许使用单引号(撇号，字符'\ ")引用字符串(名称和字符串值)的特性。
-        // 如果是，这是除了其他可接受的标记。但不是JSON规范)。
-        jsonMapperBuilder.configure(ALLOW_SINGLE_QUOTES, true);
-        // 生成 JsonMapper 对象
-        final JsonMapper jsonMapper = jsonMapperBuilder.build();
         // 日期类型输出为时间戳格式
-        jsonMapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
-        // 输出Json串时，将Long转换成String类型
+        jsonMapperBuilder.configure(WRITE_DATES_AS_TIMESTAMPS, true);
+        // 属性为Null的不进行序列化，只对pojo起作用，对map和list不起作用
+        jsonMapperBuilder.serializationInclusion(Include.NON_NULL);
+        // json是否允许属性名为单引号 ，默认是false
+        jsonMapperBuilder.configure(ALLOW_SINGLE_QUOTES, true);
+        // 对Json进行缩进等格式化操作
+        jsonMapperBuilder.configure(INDENT_OUTPUT, true);
+        // 生成 JsonMapper对象,将Long转换成String类型
+        JsonMapper jsonMapper = jsonMapperBuilder.build();
         jsonMapper.registerModule(new SimpleModule() {{
-            this.addSerializer(Long.class, instance);
+            addSerializer(Long.class, instance);
             addSerializer(Long.TYPE, instance);
         }});
         return jsonMapper;
