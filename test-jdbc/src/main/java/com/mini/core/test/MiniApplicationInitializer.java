@@ -1,6 +1,6 @@
 package com.mini.core.test;
 
-import com.mini.core.jdbc.listener.BeforeSaveApplicationListener;
+import com.mini.core.jdbc.listener.MiniGeneratedIdListener;
 import com.mini.core.mvc.MiniSpringBootServletInitializer;
 import com.mini.core.test.interceptor.MiniHandlerInterceptor;
 import org.jetbrains.annotations.NotNull;
@@ -8,14 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -79,9 +77,9 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     }
 
     @Bean
-    @Qualifier("beforeSaveApplicationListener")
-    public ApplicationListener<BeforeSaveEvent<Object>> beforeSaveApplicationListener() {
-        return new BeforeSaveApplicationListener();
+    @Qualifier("miniGeneratedIdListener")
+    public MiniGeneratedIdListener miniGeneratedIdListener() {
+        return new MiniGeneratedIdListener();
     }
 
     @Bean

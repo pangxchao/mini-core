@@ -1,14 +1,27 @@
 package com.mini.core.jdbc;
 
 import com.mini.core.jdbc.builder.AbstractSql;
+import com.mini.core.jdbc.builder.SelectSql;
 import com.mini.core.jdbc.builder.fragment.*;
+import com.mini.core.jdbc.builder.support.Join;
+import com.mini.core.util.holder.ClassHolder;
+import com.mini.core.util.holder.FieldHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.dialect.Dialect;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.jdbc.core.*;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -16,16 +29,19 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
 
 public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
-
+    private final ApplicationContext context;
     private final Dialect dialect;
 
-    public MiniRepositoryImpl(DataSource dataSource, Dialect dialect) {
+    public MiniRepositoryImpl(ApplicationContext context, DataSource dataSource, Dialect dialect) {
         super(dataSource);
+        this.context = context;
         this.dialect = dialect;
     }
 
@@ -411,8 +427,40 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "DuplicatedCode"})
     public final <T> int insertOrUpdate(T entity, boolean includeNull) {
-        return MiniRepository.super.insertOrUpdate(entity, includeNull);
+        Class<? extends T> type = (Class<? extends T>) entity.getClass();
+        ClassHolder<? extends T> holder = ClassHolder.create(type);
+        return this.insert(getTableName(holder), builder -> { //
+            holder.getFields().values().forEach(field -> {
+                var column = field.getAnnotation(Column.class);
+                if (Objects.isNull(column)) return;
+                // ID字段的值的生成
+                if (field.getAnnotation(Id.class) != null) {
+                    var miniId = new MiniId(field, entity);
+                    context.publishEvent(miniId);
+                }
+                // 处理版本字段 @Version
+                if (versionSetHandler(builder, entity, field, column)) {
+                    builder.onKeyFromInsert(column.value());
+                    return;
+                }
+                // 处理创建时间字体 @CreatedDate
+                if (createdDateHandler(builder, field, column)) {
+                    builder.onKeyFromInsert(column.value());
+                    return;
+                }
+                // 处理修改时间字段  @LastModifiedDate
+                if (lastModifiedDateHandler(builder, field, column)) {
+                    builder.onKeyFromInsert(column.value());
+                    return;
+                }
+                // 其它普通字段处理
+                if (otherSetHandler(entity, includeNull, builder, field, column)) {
+                    builder.onKeyFromInsert(column.value());
+                }
+            });
+        });
     }
 
     @Override
@@ -426,8 +474,35 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "DuplicatedCode"})
     public final <T> int replace(T entity, boolean includeNull) {
-        return MiniRepository.super.replace(entity, includeNull);
+        Class<? extends T> type = (Class<? extends T>) entity.getClass();
+        ClassHolder<? extends T> holder = ClassHolder.create(type);
+        return this.replace(getTableName(holder), builder -> { //
+            holder.getFields().values().forEach(field -> {
+                var column = field.getAnnotation(Column.class);
+                if (Objects.isNull(column)) return;
+                // ID字段的值的生成
+                if (field.getAnnotation(Id.class) != null) {
+                    var miniId = new MiniId(field, entity);
+                    context.publishEvent(miniId);
+                }
+                // 处理版本字段 @Version
+                if (versionSetHandler(builder, entity, field, column)) {
+                    return;
+                }
+                // 处理创建时间字体 @CreatedDate
+                if (createdDateHandler(builder, field, column)) {
+                    return;
+                }
+                // 处理修改时间字段  @LastModifiedDate
+                if (lastModifiedDateHandler(builder, field, column)) {
+                    return;
+                }
+                // 其它普通字段处理
+                otherSetHandler(entity, includeNull, builder, field, column);
+            });
+        });
     }
 
     @Override
@@ -436,8 +511,35 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "DuplicatedCode"})
     public final <T> int insert(T entity, boolean includeNull) {
-        return MiniRepository.super.insert(entity, includeNull);
+        Class<? extends T> type = (Class<? extends T>) entity.getClass();
+        ClassHolder<? extends T> holder = ClassHolder.create(type);
+        return this.insert(getTableName(holder), builder -> { //
+            holder.getFields().values().forEach(field -> {
+                var column = field.getAnnotation(Column.class);
+                if (Objects.isNull(column)) return;
+                // ID字段的值的生成
+                if (field.getAnnotation(Id.class) != null) {
+                    var miniId = new MiniId(field, entity);
+                    context.publishEvent(miniId);
+                }
+                // 处理版本字段 @Version
+                if (versionSetHandler(builder, entity, field, column)) {
+                    return;
+                }
+                // 处理创建时间字体 @CreatedDate
+                if (createdDateHandler(builder, field, column)) {
+                    return;
+                }
+                // 处理修改时间字段  @LastModifiedDate
+                if (lastModifiedDateHandler(builder, field, column)) {
+                    return;
+                }
+                // 其它普通字段处理
+                otherSetHandler(entity, includeNull, builder, field, column);
+            });
+        });
     }
 
     @Override
@@ -451,8 +553,48 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "DuplicatedCode"})
     public final <T> int update(T entity, boolean includeNull) {
-        return MiniRepository.super.update(entity, includeNull);
+        Class<? extends T> type = (Class<? extends T>) entity.getClass();
+        ClassHolder<? extends T> holder = ClassHolder.create(type);
+        return MiniRepository.super.update(getTableName(holder), builder -> {
+            Assert.isTrue(holder.getFields().values().stream().noneMatch(it -> {
+                // 为了数据安全，修改时必须有ID字段并且ID字段值不能为空，否则报错
+                return Objects.nonNull(it.getAnnotation(Id.class));
+            }), "No @Id in the " + type.getName());
+            holder.getFields().values().forEach(field -> {
+                var column = field.getAnnotation(Column.class);
+                if (Objects.isNull(column)) return;
+                //  有ID注解的字段，修改时不修改其值
+                if (field.getAnnotation(Id.class) != null) {
+                    return;
+                }
+                // 处理版本字段 @Version
+                if (versionSetHandler(builder, entity, field, column)) {
+                    return;
+                }
+                // 处理创建时间字体 @CreatedDate
+                if (createdDateHandler(builder, field, column)) {
+                    return;
+                }
+                // 处理修改时间字段  @LastModifiedDate
+                if (lastModifiedDateHandler(builder, field, column)) {
+                    return;
+                }
+                // 其它普通字段处理
+                otherSetHandler(entity, includeNull, builder, field, column);
+            });
+            holder.getFields().values().forEach(field -> {
+                var column = field.getAnnotation(Column.class);
+                if (Objects.isNull(column)) return;
+                // 处理ID条件
+                if (idWhereHandler(entity, builder, field, column)) {
+                    return;
+                }
+                // 处理版本条件
+                versionWhereHandler(builder, entity, field, column);
+            });
+        });
     }
 
     @Override
@@ -467,43 +609,155 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
 
     @Override
     public final <T> List<T> select(int offset, int size, Class<T> type, Consumer<SelectFragment<?>> consumer) {
-        return MiniRepository.super.select(offset, size, type, consumer);
+        return queryList(offset, size, getSelectSql(type, consumer), type);
     }
 
     @Override
     public final <T> Page<T> select(Pageable pageable, Class<T> type, Consumer<SelectFragment<?>> consumer) {
-        return MiniRepository.super.select(pageable, type, consumer);
+        return queryPage(pageable, getSelectSql(type, consumer), type);
     }
 
     @Override
     public final <T> List<T> select(Class<T> type, Consumer<SelectFragment<?>> consumer) {
-        return MiniRepository.super.select(type, consumer);
+        return queryList(getSelectSql(type, consumer), type);
     }
 
     @Override
     public final <T> Page<T> select(Pageable pageable, Class<T> type) {
-        return MiniRepository.super.select(pageable, type);
+        final SelectSql sql = getSelectSql(type, null);
+        return queryPage(pageable, sql, type);
     }
 
     @Override
     public final <T> List<T> select(int offset, int size, Class<T> type) {
-        return MiniRepository.super.select(offset, size, type);
+        final SelectSql sql = getSelectSql(type, null);
+        return queryList(offset, size, sql, type);
     }
 
     @Override
     public final <T> List<T> select(Class<T> type) {
-        return MiniRepository.super.select(type);
+        var sql = getSelectSql(type, null);
+        return queryList(sql, type);
     }
 
     @Nullable
     @Override
     public final <T> T selectOne(Class<T> type, Consumer<SelectFragment<?>> consumer) {
-        return MiniRepository.super.selectOne(type, consumer);
+        return this.queryObject(getSelectSql(type, consumer), type);
     }
 
     @Nullable
     @Override
     public final <T> T selectOne(Class<T> type) {
-        return MiniRepository.super.selectOne(type);
+        var sql = getSelectSql(type, null);
+        return queryObject(sql, type);
+    }
+
+    // 获取表名称
+    private String getTableName(ClassHolder<?> holder) {
+        var table = holder.getAnnotation(Table.class);
+        Objects.requireNonNull(table);
+
+        if (StringUtils.hasText(table.value())) {
+            return table.value();
+        }
+        return holder.getName();
+    }
+
+    private static boolean checkVersionType(Class<?> type) {
+        return type == Long.class || type == long.class || type == Integer.class || type == int.class;
+    }
+
+    // 处理设置中的版本字段 @Version
+    @SuppressWarnings("DuplicatedCode")
+    private boolean versionSetHandler(SetFragment<?> builder, Object entity, FieldHolder<?> field, Column column) {
+        if (Objects.isNull(field.getAnnotation(Version.class))) {
+            return false;
+        }
+        Assert.isTrue(checkVersionType(field.getType()), "@Version must be of type long or int");
+        Object value = field.getValue(entity), nextValue = 1;
+        if (value instanceof Integer) {
+            nextValue = ((Integer) value) + 1;
+        } else if (value instanceof Long) {
+            nextValue = ((Long) value) + 1;
+        }
+        builder.set(column.value(), nextValue);
+        return true;
+    }
+
+    // 处理条件中的版本字段 @Version
+    @SuppressWarnings({"DuplicatedCode", "UnusedReturnValue"})
+    private boolean versionWhereHandler(WhereFragment<?> builder, Object entity, FieldHolder<?> field, Column column) {
+        if (Objects.isNull(field.getAnnotation(Version.class))) {
+            return false;
+        }
+        Assert.isTrue(checkVersionType(field.getType()), "@Version must be of type long or int");
+        Optional.ofNullable(field.getValue(entity)).ifPresentOrElse(it -> builder.whereEq(column.value(), it),
+                () -> builder.whereIsNull(column.value()));
+        return true;
+    }
+
+    // 处理创建时间字段 @CreatedDate
+    private boolean createdDateHandler(SetFragment<?> builder, FieldHolder<?> field, Column column) {
+        if (Objects.isNull(field.getAnnotation(CreatedDate.class))) {
+            return false;
+        }
+        builder.set(column.value(), new java.util.Date());
+        return true;
+    }
+
+    // 处理修改时间字段  @LastModifiedDate
+    private boolean lastModifiedDateHandler(SetFragment<?> builder, FieldHolder<?> field, Column column) {
+        if (Objects.isNull(field.getAnnotation(LastModifiedDate.class))) {
+            return false;
+        }
+        builder.set(column.value(), new java.util.Date());
+        return true;
+    }
+
+    // 其它普通字段处理
+    private <T> boolean otherSetHandler(T entity, boolean includeNull, SetFragment<?> builder, FieldHolder<? extends T> field, Column column) {
+        final Object value = field.getValue(entity);
+        if (includeNull || Objects.nonNull(value)) {
+            builder.set(column.value(), value);
+            return true;
+        }
+        return false;
+    }
+
+    // 处理ID条件 @ID
+    private <T> boolean idWhereHandler(T entity, WhereFragment<?> builder, FieldHolder<? extends T> field, Column column) {
+        if (Objects.isNull(field.getAnnotation(Id.class))) {
+            return false;
+        }
+        Object value = field.getValue(entity);
+        builder.whereEq(column.value(), value);
+        return true;
+    }
+
+    // 获取查询Sql
+    private <T> SelectSql getSelectSql(Class<T> type, @javax.annotation.Nullable Consumer<SelectFragment<?>> consumer) {
+        ClassHolder<? extends T> holder = ClassHolder.create(type);
+        return new SelectSql() {{
+            holder.getFields().values().forEach(field -> {
+                var column = field.getAnnotation(Column.class);
+                if (Objects.isNull(column)) return;
+
+                if (StringUtils.hasText(column.value())) {
+                    select(column.value(), field.getName());
+                } else select(field.getName());
+
+            });
+            // 生成查询表名
+            this.from(MiniRepositoryImpl.this.getTableName(holder));
+            // 生成联合查询表名
+            for (Join join : holder.getAnnotationsByType(Join.class)) {
+                join.type().exe(this, join.table(), join.on());
+            }
+            // 添加其它条件
+            if (Objects.nonNull(consumer)) {
+                consumer.accept(this);
+            }
+        }};
     }
 }
