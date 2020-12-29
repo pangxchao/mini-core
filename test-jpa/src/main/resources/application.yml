@@ -2,10 +2,20 @@
 #  config: classpath:logback.xml
 server:
   servlet:
+    ## 统一编码处理
     encoding:
-      enabled: false
+      enabled: true
       charset: UTF-8
       force: true
+  ## tomcat编码处理
+  tomcat:
+    uri-encoding: utf-8
+  ## 错误信息处理
+  error:
+    include-binding-errors=never
+    include-stacktrace=never
+    include-exception=false
+
 spring:
   application:
     name: mini-mvc
@@ -24,6 +34,7 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
         format_sql: true
+
 
 
 
