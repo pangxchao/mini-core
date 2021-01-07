@@ -1,5 +1,5 @@
 @file:JvmName("LongKt")
-@file:Suppress("unused")
+@file:Suppress("unused", "HasPlatformType")
 
 package com.mini.core.util
 
@@ -18,6 +18,48 @@ fun Long.toDate(): Date {
  * @param format 时间格式
  */
 @JvmOverloads
-fun Long.dateFormat(format: String = DATE_TIME): String {
+fun Long.format(format: String = DATE_TIME): String {
     return toDate().format(format)
 }
+
+fun Long.formatDateTime(): String {
+    return this.format(DATE_TIME)
+}
+
+fun Long.formatDate(): String {
+    return this.format(DATE)
+}
+
+fun Long.formatTime(): String {
+    return this.format(TIME)
+}
+
+@JvmOverloads
+fun Long.toStart(
+    clearMonth: Boolean = false,
+    clearDayOfMonth: Boolean = false,
+    clearHour: Boolean = true,
+    clearMinute: Boolean = true,
+    clearSecond: Boolean = true
+) = toDate().toStart(
+    clearMonth = clearMonth,
+    clearDayOfMonth = clearDayOfMonth,
+    clearHour = clearHour,
+    clearMinute = clearMinute,
+    clearSecond = clearSecond
+)
+
+@JvmOverloads
+fun Long.toEnd(
+    maximumMonth: Boolean = false,
+    maximumDayOfMonth: Boolean = false,
+    maximumHour: Boolean = true,
+    maximumMinute: Boolean = true,
+    maximumSecond: Boolean = true
+) = toDate().toEnd(
+    maximumMonth = maximumMonth,
+    maximumDayOfMonth = maximumDayOfMonth,
+    maximumHour = maximumHour,
+    maximumMinute = maximumMinute,
+    maximumSecond = maximumSecond
+)

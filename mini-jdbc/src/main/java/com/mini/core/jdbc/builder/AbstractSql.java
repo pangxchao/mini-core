@@ -85,6 +85,7 @@ public abstract class AbstractSql<T extends AbstractSql<T>> {
 
     @Override
     public final String toString() {
-        return String.format("%s\n%s", getSql(), deepToString(getArgs()));
+        return String.format("\n%s\n%s\n", getSql(),
+                deepToString(getArgs()));
     }
 }

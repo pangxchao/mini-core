@@ -19,6 +19,7 @@ public abstract class ValidatorBuilder {
     private HttpStatus status = BAD_REQUEST;
     private String message;
     private Integer code;
+    private String field;
 
     private ValidatorBuilder() {
     }
@@ -48,8 +49,14 @@ public abstract class ValidatorBuilder {
     }
 
     @Nonnull
+    public final ValidatorBuilder field(String field) {
+        this.field = field;
+        return this;
+    }
+
+    @Nonnull
     public final ValidateException send() {
-        throw new ValidateException(message, status, code, args.toArray());
+        throw new ValidateException(message, status, code, args.toArray(), field);
     }
 
     public final boolean isTrue(boolean expression) {

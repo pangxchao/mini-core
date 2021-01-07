@@ -1,5 +1,5 @@
 @file:JvmName("DateKt")
-@file:Suppress("unused")
+@file:Suppress("unused", "HasPlatformType")
 
 package com.mini.core.util
 
@@ -9,7 +9,7 @@ import java.util.Calendar.getInstance
 
 const val DATE_TIME: String = "yyyy-MM-dd HH:mm:ss"
 const val DATE: String = "yyyy-MM-dd"
-const val TIME: String = "yyyy-MM-dd"
+const val TIME: String = "HH:mm:ss"
 
 // 一秒的时间戳
 const val SECOND: Long = 1000L
@@ -30,6 +30,13 @@ const val WEEK = DAY * 7
 typealias Format = SimpleDateFormat
 
 /**
+ * 获取日期的时间戳
+ * @param date 日期
+ * @return 日期的时间戳
+ **/
+fun getTime(date: Date?): Long = date?.time ?: 0
+
+/**
  * 将日期格式化为 时间 (format) 格式
  * @param format 时间格式
  */
@@ -38,12 +45,55 @@ fun Date.format(format: String = DATE_TIME): String {
     return Format(format).format(this)
 }
 
+
+fun Date.formatDateTime(): String {
+    return this.format(DATE_TIME)
+}
+
+fun Date.formatDate(): String {
+    return this.format(DATE)
+}
+
+fun Date.formatTime(): String {
+    return this.format(TIME)
+}
+
 fun Date.toCalendar(): Calendar = getInstance().let {
     it.time = this
     it
 }
 
 fun Date.toLong() = this.time
+
+@JvmOverloads
+fun Date.toStart(
+    clearMonth: Boolean = false,
+    clearDayOfMonth: Boolean = false,
+    clearHour: Boolean = true,
+    clearMinute: Boolean = true,
+    clearSecond: Boolean = true
+) = this.toCalendar().toStart(
+    clearMonth = clearMonth,
+    clearDayOfMonth = clearDayOfMonth,
+    clearHour = clearHour,
+    clearMinute = clearMinute,
+    clearSecond = clearSecond
+).time
+
+@JvmOverloads
+fun Date.toEnd(
+    maximumMonth: Boolean = false,
+    maximumDayOfMonth: Boolean = false,
+    maximumHour: Boolean = true,
+    maximumMinute: Boolean = true,
+    maximumSecond: Boolean = true
+) = this.toCalendar().toEnd(
+    maximumMonth = maximumMonth,
+    maximumDayOfMonth = maximumDayOfMonth,
+    maximumHour = maximumHour,
+    maximumMinute = maximumMinute,
+    maximumSecond = maximumSecond
+).time
 
 /**
  * 获取毫秒偏移

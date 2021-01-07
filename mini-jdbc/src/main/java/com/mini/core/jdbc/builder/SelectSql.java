@@ -45,7 +45,6 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
     }
 
     public final SelectSql selectCount(String column, String alias) {
-        this.select(column, alias);
         this.select.count(column, alias);
         return this;
     }
@@ -108,7 +107,7 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
 
     @Override
     public final SelectSql join(String table, String column, String target) {
-        this.join.join(table, column, table);
+        this.join.join(table, column, target);
         return this;
     }
 
@@ -126,7 +125,7 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
 
     @Override
     public final SelectSql innerJoin(String table, String column, String target) {
-        this.join.innerJoin(table, column, table);
+        this.join.innerJoin(table, column, target);
         return this;
     }
 

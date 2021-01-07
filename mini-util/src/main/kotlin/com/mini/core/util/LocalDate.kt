@@ -1,4 +1,5 @@
 @file:JvmName("LocalDateKt")
+@file:Suppress("unused")
 
 package com.mini.core.util
 
@@ -12,4 +13,16 @@ import java.time.format.DateTimeFormatter.ofPattern
 @JvmOverloads
 fun LocalDate.format(format: String = DATE): String {
     return format(ofPattern(format))
+}
+
+fun LocalDate.formatDateTime(): String {
+    return this.format(DATE_TIME)
+}
+
+fun LocalDate.formatDate(): String {
+    return this.format(DATE)
+}
+
+fun LocalDate.formatTime(): String {
+    return this.format(TIME)
 }

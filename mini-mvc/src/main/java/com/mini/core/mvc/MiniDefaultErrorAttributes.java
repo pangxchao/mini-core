@@ -17,12 +17,18 @@ public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
         Object exception = webRequest.getAttribute(ERROR_EXCEPTION, SCOPE_REQUEST);
         if (exception instanceof ValidateException) {
             var e = (ValidateException) exception;
+            map.put(getFieldName(), e.getField());
             map.put(getCodeName(), e.getCode());
         }
         return map;
     }
 
+    protected String getFieldName() {
+        return "field";
+    }
+
     protected String getCodeName() {
         return "code";
     }
+
 }

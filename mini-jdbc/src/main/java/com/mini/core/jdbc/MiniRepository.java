@@ -12,9 +12,12 @@ import javax.annotation.Nullable;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static java.util.Optional.ofNullable;
 
 public interface MiniRepository {
     /**
@@ -359,7 +362,10 @@ public interface MiniRepository {
      * @return 查询结果
      */
     @Nullable
-    <T> T queryObject(String sql, @Nullable Object[] params, RowMapper<T> mapper);
+    default <T> T queryObject(String sql, @Nullable Object[] params, RowMapper<T> mapper) {
+        return ofNullable(queryList(0, 1, sql, params, mapper)).map(List::iterator)
+                .filter(Iterator::hasNext).map(Iterator::next).orElse(null);
+    }
 
     /**
      * 查询对象

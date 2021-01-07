@@ -20,4 +20,9 @@ public final class ValidatorUtil {
     public static ValidatorBuilder code(Integer code) {
         return new ValidatorBuilderImpl().code(code);
     }
+
+    @Nonnull
+    public static ValidatorBuilder field(String field) {
+        return new ValidatorBuilderImpl().field(field);
+    }
 }

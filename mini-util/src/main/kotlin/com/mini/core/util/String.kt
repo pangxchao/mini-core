@@ -25,86 +25,228 @@ const val LETTER = "\\w+"
  * 字符串连接
  */
 @JvmOverloads
-fun <T> join(collection: Collection<T>, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((T) -> CharSequence)? = null): String {
-    return collection.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun <T> join(
+    collection: Collection<T>,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((T) -> CharSequence)? = null
+) = collection.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 @JvmOverloads
-fun <T> join(iterable: Iterable<T>, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((T) -> CharSequence)? = null): String {
-    return iterable.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
-
-/**
- * 字符串连接
- */
-@JvmOverloads
-fun <T> join(array: Array<T>, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((T) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
-
-/**
- * 字符串连接
- */
-@JvmOverloads
-fun join(array: LongArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Long) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
-
-/**
- * 字符串连接
- */
-@JvmOverloads
-fun join(array: IntArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Int) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
-
-/**
- * 字符串连接
- */
-@JvmOverloads
-fun join(array: ShortArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Short) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun <T> join(
+    iterable: Iterable<T>,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((T) -> CharSequence)? = null
+) = iterable.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 /**
  * 字符串连接
  */
 @JvmOverloads
-fun join(array: ByteArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Byte) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun <T> join(
+    array: Array<T>,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((T) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 /**
  * 字符串连接
  */
 @JvmOverloads
-fun join(array: DoubleArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Double) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun join(
+    array: LongArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Long) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 /**
  * 字符串连接
  */
 @JvmOverloads
-fun join(array: FloatArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Float) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun join(
+    array: IntArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Int) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 /**
  * 字符串连接
  */
 @JvmOverloads
-fun join(array: BooleanArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Boolean) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun join(
+    array: ShortArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Short) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 /**
  * 字符串连接
  */
 @JvmOverloads
-fun join(array: CharArray, separator: CharSequence = ", ", prefix: CharSequence = "", postfix: CharSequence = "", limit: Int = -1, truncated: CharSequence = "...", transform: ((Char) -> CharSequence)? = null): String {
-    return array.joinToString(separator, prefix, postfix, limit, truncated, transform)
-}
+fun join(
+    array: ByteArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Byte) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
+
+/**
+ * 字符串连接
+ */
+@JvmOverloads
+fun join(
+    array: DoubleArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Double) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
+
+/**
+ * 字符串连接
+ */
+@JvmOverloads
+fun join(
+    array: FloatArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Float) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
+
+/**
+ * 字符串连接
+ */
+@JvmOverloads
+fun join(
+    array: BooleanArray,
+    separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Boolean) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
+
+/**
+ * 字符串连接
+ */
+@JvmOverloads
+fun join(
+    array: CharArray, separator: CharSequence = ", ",
+    prefix: CharSequence = "",
+    postfix: CharSequence = "",
+    limit: Int = -1,
+    truncated: CharSequence = "...",
+    transform: ((Char) -> CharSequence)? = null
+) = array.joinToString(
+    separator = separator,
+    prefix = prefix,
+    postfix = postfix,
+    limit = limit,
+    truncated = truncated,
+    transform = transform
+)
 
 /**
  * 将日期格式的字符串转化成日期

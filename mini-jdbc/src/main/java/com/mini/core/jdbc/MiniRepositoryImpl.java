@@ -91,7 +91,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
 
     @Override
     public final <T> List<T> queryList(String sql, Object[] params, Class<T> type) {
-        return queryList(sql, params, getBeanMapper(type));
+        return this.queryList(sql, params, getBeanMapper(type));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
 
     @Override
     public final <T> List<T> queryList(long offset, int size, String sql, Object[] params, RowMapper<T> mapper) {
-        return queryList(sql + " " + dialect.limit().getLimitOffset(size, offset), params, mapper);
+        return this.queryList(sql + " " + dialect.limit().getLimitOffset(size, offset), params, mapper);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
 
     @Override
     public final <T> List<T> queryList(long offset, int size, String sql, Object[] params, Class<T> type) {
-        return queryList(offset, size, sql, params, getBeanMapper(type));
+        return this.queryList(offset, size, sql, params, getBeanMapper(type));
     }
 
     @Override
@@ -141,7 +141,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
 
     @Override
     public final List<Map<String, Object>> queryListMap(String sql, Object[] params) {
-        return queryList(sql, params, getColumnMapRowMapper());
+        return this.queryList(sql, params, getColumnMapRowMapper());
     }
 
     @Override
@@ -151,12 +151,12 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
 
     @Override
     public final List<Map<String, Object>> queryListMap(long offset, int size, String sql, Object[] params) {
-        return queryList(offset, size, sql, params, getColumnMapRowMapper());
+        return this.queryList(offset, size, sql, params, getColumnMapRowMapper());
     }
 
     @Override
     public final List<Map<String, Object>> queryListMap(long offset, int size, AbstractSql<?> sql) {
-        return queryList(offset, size, sql, getColumnMapRowMapper());
+        return MiniRepository.super.queryListMap(offset, size, sql);
     }
 
     @Override
@@ -202,7 +202,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     @Nullable
     @Override
     public final <T> T queryObject(String sql, Object[] params, RowMapper<T> mapper) {
-        return super.queryForObject(sql, params, mapper);
+        return MiniRepository.super.queryObject(sql, params, mapper);
     }
 
     @Nullable
@@ -214,7 +214,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     @Nullable
     @Override
     public final <T> T queryObject(String sql, Object[] params, Class<T> type) {
-        return queryObject(sql, params, getBeanMapper(type));
+        return this.queryObject(sql, params, getBeanMapper(type));
     }
 
     @Nullable
@@ -226,7 +226,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     @Nullable
     @Override
     public final Map<String, Object> queryObjectMap(String sql, Object[] params) {
-        return queryObject(sql, params, getColumnMapRowMapper());
+        return this.queryObject(sql, params, getColumnMapRowMapper());
     }
 
     @Nullable
@@ -238,7 +238,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     @Nullable
     @Override
     public final <T> T queryObjectSingle(String sql, Object[] params, Class<T> type) {
-        return queryObject(sql, params, getSingleColumnRowMapper(type));
+        return this.queryObject(sql, params, getSingleColumnRowMapper(type));
     }
 
     @Nullable
