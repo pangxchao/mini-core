@@ -4,6 +4,7 @@ package com.mini.core.mvc.converters;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -22,6 +23,9 @@ public class StringToLocalDateConverter extends AbstractDateConverter<LocalDate>
 
     @Override
     public LocalDate convert(@NotNull String source) {
+        if (!StringUtils.hasText(source)) {
+            return null;
+        }
         try {
             var format = ofPattern(getDateFormat());
             return LocalDate.parse(source, format);

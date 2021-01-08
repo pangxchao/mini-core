@@ -3,6 +3,7 @@ package com.mini.core.mvc.converters;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +21,9 @@ public class StringToJavaUtilDateConverter extends AbstractDateConverter<java.ut
 
     @Override
     public java.util.Date convert(@NotNull String source) {
+        if (!StringUtils.hasText(source)) {
+            return null;
+        }
         try {
             DateTimeFormatter format = ofPattern(getDateTimeFormat());
             LocalDateTime date = LocalDateTime.parse(source, format);

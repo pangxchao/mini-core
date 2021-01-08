@@ -3,6 +3,7 @@ package com.mini.core.mvc.converters;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +20,9 @@ public class StringToJavaSqlTimestampConverter extends AbstractDateConverter<jav
 
     @Override
     public java.sql.Timestamp convert(@NotNull String source) {
+        if (!StringUtils.hasText(source)) {
+            return null;
+        }
         try {
             DateTimeFormatter format = ofPattern(this.getDateTimeFormat());
             LocalDateTime date = LocalDateTime.parse(source, format);
