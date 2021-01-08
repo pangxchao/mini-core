@@ -8,7 +8,8 @@ import javax.annotation.Nonnull;
 public final class ValidatorUtil {
     @Nonnull
     public static ValidatorBuilder status(HttpStatus status) {
-        return new ValidatorBuilderImpl().status(status);
+        return new ValidatorBuilderImpl().status(status)
+                .message(status.getReasonPhrase());
     }
 
     @Nonnull
