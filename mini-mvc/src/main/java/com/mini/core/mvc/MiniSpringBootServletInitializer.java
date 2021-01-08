@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.mini.core.mvc.converters.*;
 import com.mini.core.mvc.processor.JsonModelProcessor;
 import com.mini.core.mvc.processor.PageModelProcessor;
 import com.mini.core.mvc.processor.StreamModelProcessor;
@@ -97,7 +98,6 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
         return new MiniControllerInterceptor();
     }
 
-
     @Bean
     @Qualifier("MiniMessageSupportController")
     @ConditionalOnMissingBean(value = MiniMessageSupportController.class, name = "MiniMessageSupportController")
@@ -117,6 +117,69 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     @ConditionalOnMissingBean(value = ErrorAttributes.class, name = "miniDefaultErrorAttributes")
     public MiniDefaultErrorAttributes miniDefaultErrorAttributes() {
         return new MiniDefaultErrorAttributes();
+    }
+
+    @Bean
+    @Qualifier("dataConvertersFormat")
+    @ConditionalOnMissingBean(value = DataConvertersFormat.class, name = "dataConvertersFormat")
+    public DataConvertersFormat dataConvertersFormat() {
+        return new DataConvertersFormat();
+    }
+
+    @Bean
+    @Qualifier("stringToInstantConverter")
+    @ConditionalOnMissingBean(value = StringToInstantConverter.class, name = "stringToInstantConverter")
+    public StringToInstantConverter stringToInstantConverter() {
+        return new StringToInstantConverter();
+    }
+
+    @Bean
+    @Qualifier("stringToJavaUtilDateConverter")
+    @ConditionalOnMissingBean(value = StringToJavaUtilDateConverter.class, name = "stringToJavaUtilDateConverter")
+    public StringToJavaUtilDateConverter stringToJavaUtilDateConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToJavaUtilDateConverter(dataConvertersFormat);
+    }
+
+    @Bean
+    @Qualifier("stringToLocalDateTimeConverter")
+    @ConditionalOnMissingBean(value = StringToLocalDateTimeConverter.class, name = "stringToLocalDateTimeConverter")
+    public StringToLocalDateTimeConverter stringToLocalDateTimeConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToLocalDateTimeConverter(dataConvertersFormat);
+    }
+
+    @Bean
+    @Qualifier("stringToLocalDateConverter")
+    @ConditionalOnMissingBean(value = StringToLocalDateConverter.class, name = "stringToLocalDateConverter")
+    public StringToLocalDateConverter stringToLocalDateConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToLocalDateConverter(dataConvertersFormat);
+    }
+
+    @Bean
+    @Qualifier("stringToLocalTimeConverter")
+    @ConditionalOnMissingBean(value = StringToLocalTimeConverter.class, name = "stringToLocalTimeConverter")
+    public StringToLocalTimeConverter stringToLocalTimeConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToLocalTimeConverter(dataConvertersFormat);
+    }
+
+    @Bean
+    @Qualifier("stringToJavaSqlTimestampConverter")
+    @ConditionalOnMissingBean(value = StringToJavaSqlTimestampConverter.class, name = "stringToJavaSqlTimestampConverter")
+    public StringToJavaSqlTimestampConverter stringToJavaSqlTimestampConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToJavaSqlTimestampConverter(dataConvertersFormat);
+    }
+
+    @Bean
+    @Qualifier("stringToJavaSqlDateConverter")
+    @ConditionalOnMissingBean(value = StringToJavaSqlDateConverter.class, name = "stringToJavaSqlDateConverter")
+    public StringToJavaSqlDateConverter stringToJavaSqlDateConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToJavaSqlDateConverter(dataConvertersFormat);
+    }
+
+    @Bean
+    @Qualifier("stringToJavaSqlTimeConverter")
+    @ConditionalOnMissingBean(value = StringToJavaSqlTimeConverter.class, name = "stringToJavaSqlTimeConverter")
+    public StringToJavaSqlTimeConverter stringToJavaSqlTimeConverter(DataConvertersFormat dataConvertersFormat) {
+        return new StringToJavaSqlTimeConverter(dataConvertersFormat);
     }
 
     @Bean
