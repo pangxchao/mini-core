@@ -6,7 +6,6 @@ import com.mini.core.jdbc.builder.fragment.*;
 import com.mini.core.jdbc.builder.support.Join;
 import com.mini.core.util.holder.ClassHolder;
 import com.mini.core.util.holder.FieldHolder;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -45,18 +46,10 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
         this.dialect = dialect;
     }
 
-    @NotNull
-    protected <T> RowMapper<T> getSingleColumnRowMapper(@NotNull Class<T> requiredType) {
-        return new SingleColumnRowMapper<>(requiredType);
-    }
-
     protected <T> RowMapper<T> getBeanMapper(Class<T> requiredType) {
-        return new BeanPropertyRowMapper<>(requiredType);
-    }
-
-    @NotNull
-    protected RowMapper<Map<String, Object>> getColumnMapRowMapper() {
-        return new ColumnMapRowMapper();
+        var mapper = new BeanPropertyRowMapper<>(requiredType);
+        mapper.setPrimitivesDefaultedForNullValue(true);
+        return mapper;
     }
 
     @Override
