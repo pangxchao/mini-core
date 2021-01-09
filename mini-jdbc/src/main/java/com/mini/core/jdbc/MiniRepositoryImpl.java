@@ -18,9 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.util.Optional.ofNullable;
 
 public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
@@ -53,8 +56,23 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     }
 
     @Override
+    public final int execute(String sql, @Nullable Object[] params, GeneratedKeyHolder keyHolder) {
+        return MiniRepositoryImpl.super.update(con -> {
+            var statement = con.prepareStatement(sql, RETURN_GENERATED_KEYS);
+            var setter = new ArgumentPreparedStatementSetter(params);
+            setter.setValues(statement);
+            return statement;
+        }, keyHolder);
+    }
+
+    @Override
     public final int execute(String sql, @Nullable Object[] params) {
         return super.update(sql, params);
+    }
+
+    @Override
+    public final int execute(AbstractSql<?> sql, GeneratedKeyHolder keyHolder) {
+        return MiniRepository.super.execute(sql, keyHolder);
     }
 
     @Override
@@ -415,6 +433,11 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     }
 
     @Override
+    public final int insert(String table, GeneratedKeyHolder keyHolder, Consumer<InsertFragment<?>> consumer) {
+        return MiniRepository.super.insert(table, keyHolder, consumer);
+    }
+
+    @Override
     public final int insert(String table, Consumer<InsertFragment<?>> consumer) {
         return MiniRepository.super.insert(table, consumer);
     }
@@ -422,9 +445,10 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     @Override
     @SuppressWarnings({"unchecked", "DuplicatedCode"})
     public final <T> int insertOrUpdate(T entity, boolean includeNull) {
-        Class<? extends T> type = (Class<? extends T>) entity.getClass();
-        ClassHolder<? extends T> holder = ClassHolder.create(type);
-        return this.insert(getTableName(holder), builder -> { //
+        final Class<? extends T> type = (Class<? extends T>) entity.getClass();
+        final ClassHolder<? extends T> holder = ClassHolder.create(type);
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        int res = insert(getTableName(holder), keyHolder, builder -> { //
             holder.getFields().values().forEach(field -> {
                 var column = field.getAnnotation(Column.class);
                 if (Objects.isNull(column)) return;
@@ -440,7 +464,6 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
                 }
                 // 处理创建时间字体 @CreatedDate
                 if (createdDateHandler(builder, field, column)) {
-                    builder.onKeyFromInsert(column.value());
                     return;
                 }
                 // 处理修改时间字段  @LastModifiedDate
@@ -454,11 +477,19 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
                 }
             });
         });
+        var autoMiniId = new AutoMiniId(entity, keyHolder);
+        this.context.publishEvent(autoMiniId);
+        return res;
     }
 
     @Override
     public final <T> int insertOrUpdate(T entity) {
         return MiniRepository.super.insertOrUpdate(entity);
+    }
+
+    @Override
+    public final int replace(String table, GeneratedKeyHolder keyHolder, Consumer<ReplaceFragment<?>> consumer) {
+        return MiniRepository.super.replace(table, keyHolder, consumer);
     }
 
     @Override
@@ -469,9 +500,10 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
     @Override
     @SuppressWarnings({"unchecked", "DuplicatedCode"})
     public final <T> int replace(T entity, boolean includeNull) {
-        Class<? extends T> type = (Class<? extends T>) entity.getClass();
-        ClassHolder<? extends T> holder = ClassHolder.create(type);
-        return this.replace(getTableName(holder), builder -> { //
+        final Class<? extends T> type = (Class<? extends T>) entity.getClass();
+        final ClassHolder<? extends T> holder = ClassHolder.create(type);
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        int res = replace(getTableName(holder), builder -> { //
             holder.getFields().values().forEach(field -> {
                 var column = field.getAnnotation(Column.class);
                 if (Objects.isNull(column)) return;
@@ -496,6 +528,9 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
                 otherSetHandler(entity, includeNull, builder, field, column);
             });
         });
+        var autoMiniId = new AutoMiniId(entity, keyHolder);
+        this.context.publishEvent(autoMiniId);
+        return res;
     }
 
     @Override
@@ -551,7 +586,7 @@ public class MiniRepositoryImpl extends JdbcTemplate implements MiniRepository {
         Class<? extends T> type = (Class<? extends T>) entity.getClass();
         ClassHolder<? extends T> holder = ClassHolder.create(type);
         return MiniRepository.super.update(getTableName(holder), builder -> {
-            Assert.isTrue(holder.getFields().values().stream().noneMatch(it -> {
+            Assert.isTrue(holder.getFields().values().stream().anyMatch(it -> {
                 // 为了数据安全，修改时必须有ID字段并且ID字段值不能为空，否则报错
                 return Objects.nonNull(it.getAnnotation(Id.class));
             }), "No @Id in the " + type.getName());

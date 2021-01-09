@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 
 import javax.annotation.Nullable;
 import java.sql.Date;
@@ -23,11 +24,32 @@ public interface MiniRepository {
     /**
      * 执行SQL
      *
+     * @param sql       SQL
+     * @param params    参数
+     * @param keyHolder 自增ID获取
+     * @return 执行结果 - 影响条数
+     */
+    int execute(String sql, @Nullable Object[] params, GeneratedKeyHolder keyHolder);
+
+    /**
+     * 执行SQL
+     *
      * @param sql    SQL
      * @param params 参数
      * @return 执行结果 - 影响条数
      */
     int execute(String sql, @Nullable Object[] params);
+
+    /**
+     * 执行SQL
+     *
+     * @param sql       SQL和参数
+     * @param keyHolder 自增ID获取
+     * @return 执行结果 - 影响条数
+     */
+    default int execute(AbstractSql<?> sql, GeneratedKeyHolder keyHolder) {
+        return execute(sql.getSql(), sql.getArgs(), keyHolder);
+    }
 
     /**
      * 执行SQL
@@ -800,6 +822,20 @@ public interface MiniRepository {
     /**
      * 添加数据
      *
+     * @param table     添加表
+     * @param keyHolder 自增ID获取
+     * @param consumer  添加字段设置回调
+     * @return 执行结果 - 影响条数
+     */
+    default int insert(String table, GeneratedKeyHolder keyHolder, Consumer<InsertFragment<?>> consumer) {
+        return MiniRepository.this.execute(new InsertSql() {{
+            consumer.accept(insertInto(table));
+        }}, keyHolder);
+    }
+
+    /**
+     * 添加数据
+     *
      * @param table    添加表
      * @param consumer 添加字段设置回调
      * @return 执行结果 - 影响条数
@@ -830,6 +866,20 @@ public interface MiniRepository {
      */
     default <T> int insertOrUpdate(T entity) {
         return insertOrUpdate(entity, false);
+    }
+
+    /**
+     * 添加数据-如果唯一索引重复则替换
+     *
+     * @param table    添加表
+     *                 keyHolder 自增ID获取
+     * @param consumer 添加字段设置回调
+     * @return 执行结果 - 影响条数
+     */
+    default int replace(String table, GeneratedKeyHolder keyHolder, Consumer<ReplaceFragment<?>> consumer) {
+        return MiniRepository.this.execute(new ReplaceSql() {{
+            consumer.accept(replaceInto(table));
+        }}, keyHolder);
     }
 
     /**
@@ -1016,6 +1066,22 @@ public interface MiniRepository {
     @Nullable
     <T> T selectOne(Class<T> type);
 
+    class AutoMiniId extends ApplicationEvent {
+        private final GeneratedKeyHolder holder;
+
+        public AutoMiniId(Object source, GeneratedKeyHolder holder) {
+            super(source);
+            this.holder = holder;
+        }
+
+        public GeneratedKeyHolder getHolder() {
+            return holder;
+        }
+
+        public final Class<?> getType() {
+            return getSource().getClass();
+        }
+    }
 
     class MiniId extends ApplicationEvent {
         private final FieldHolder<?> field;
