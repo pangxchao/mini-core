@@ -663,7 +663,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T gte(String column, Object arg) {
-            return ltNative(column, "?", arg);
+            return gteNative(column, "?", arg);
         }
 
         @Override
@@ -675,7 +675,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T lte(String column, Object arg) {
-            return ltNative(column, "?", arg);
+            return lteNative(column, "?", arg);
         }
 
         private void $InNative(String column, String target) {
