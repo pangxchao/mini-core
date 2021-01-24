@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -39,8 +40,12 @@ public final class FieldHolder<T> implements Serializable {
      */
     public final void setValue(Object instance, Object value) {
         try {
-            if (this.setter == null) return;
-            setter.invoke(instance, value);
+            if (Objects.nonNull(this.setter)) {
+                setter.invoke(instance, value);
+                return;
+            }
+            field.setAccessible(true);
+            field.set(instance, value);
         } catch (ReflectiveOperationException e) {
             throw ThrowableKt.hidden(e);
         }
