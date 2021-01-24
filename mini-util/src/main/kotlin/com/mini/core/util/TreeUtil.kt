@@ -10,7 +10,7 @@ object TreeUtil {
     @JvmStatic
     @JvmOverloads
     fun <T : ITree<T>> buildTree(list: List<T>?, parentId: Long? = null): List<T>? {
-        return list?.filter { parentId?.equals(it.parentId) != false }?.map {
+        return list?.filter { parentId ?: 0 == it.parentId ?: 0 }?.map {
             it.children = buildTree(list, it.id)
             return@map it
         }?.takeIf { it.isNotEmpty() }
