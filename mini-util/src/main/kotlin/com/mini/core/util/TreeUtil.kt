@@ -16,6 +16,7 @@ object TreeUtil {
         }?.takeIf { it.isNotEmpty() }
     }
 
+    @JvmStatic
     fun <T : ITree<T>> getList(tree: List<T>?): List<T> {
         val list: MutableList<T> = mutableListOf()
         tree?.forEachIndexed { _: Int, child: T ->
