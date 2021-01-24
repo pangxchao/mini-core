@@ -896,7 +896,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T matchNative(String[] columns, String target, Object... args) {
-            String column = join(columns, ", ", "", "", -1, "", it -> "?");
+            String column = join(columns, ", ", "", "", -1, "", it -> it);
             addValues(format("MATCH(%s) AGAINST(%s)", column, target));
             this.sql.args(args);
             return self();
@@ -909,7 +909,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T notMatchNative(String[] columns, String target, Object... args) {
-            String column = join(columns, ", ", "", "", -1, "", it -> "?");
+            String column = join(columns, ", ", "", "", -1, "", it -> it);
             addValues(format("NOT MATCH(%s) AGAINST(%s)", column, target));
             this.sql.args(args);
             return self();
@@ -922,7 +922,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T matchInBoolNative(String[] columns, String target, Object... args) {
-            final String column = join(columns, ", ", "", "", -1, "", it -> "?");
+            final String column = join(columns, ", ", "", "", -1, "", it -> it);
             addValues(format("MATCH(%s) AGAINST(%s IN BOOLEAN MODE)", column, target));
             this.sql.args(args);
             return self();
@@ -935,7 +935,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T notMatchInBoolNative(String[] columns, String target, Object... args) {
-            final String column = join(columns, ", ", "", "", -1, "", it -> "?");
+            final String column = join(columns, ", ", "", "", -1, "", it -> it);
             addValues(format("NOT MATCH(%s) AGAINST(%s IN BOOLEAN MODE)", column, target));
             this.sql.args(args);
             return self();

@@ -1,4 +1,4 @@
-package com.mini.core.util.threed;
+package com.mini.core.util.thread;
 
 import org.slf4j.Logger;
 
@@ -7,23 +7,23 @@ import java.util.EventListener;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.mini.core.util.threed.ScheduledThreadExecutor.execute;
+import static com.mini.core.util.thread.ThreadExecutor.post;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public final class RunnableLinkedBlockingQueue implements EventListener, Serializable {
+public final class RunnableQueue implements EventListener, Serializable {
     private static final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
-    private static final Logger log = getLogger(RunnableLinkedBlockingQueue.class);
+    private static final Logger log = getLogger(RunnableQueue.class);
     private static boolean flag = false;
 
     // 队列监听启动
     private synchronized static void start() {
-        if (!RunnableLinkedBlockingQueue.flag) {
-            ScheduledThreadExecutor.thread(() -> {
+        if (!RunnableQueue.flag) {
+            ThreadExecutor.thread(() -> {
                 try {
                     flag = true;
                     for (Runnable runnable; flag; ) {
                         runnable = queue.take();
-                        execute(runnable);
+                        post(runnable);
                     }
                 } catch (InterruptedException e) {
                     log.error(e.getMessage(), e);
@@ -41,8 +41,8 @@ public final class RunnableLinkedBlockingQueue implements EventListener, Seriali
      */
     public synchronized static void put(Runnable runnable) {
         try {
-            RunnableLinkedBlockingQueue.queue.put(runnable);
-            RunnableLinkedBlockingQueue.start();
+            RunnableQueue.queue.put(runnable);
+            RunnableQueue.start();
         } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
         }
