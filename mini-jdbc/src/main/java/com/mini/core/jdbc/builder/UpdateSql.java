@@ -170,7 +170,7 @@ public class UpdateSql extends AbstractSql<UpdateSql> implements UpdateFragment<
     }
 
     public final UpdateSql where(Consumer<WhereStatement> consumer) {
-        consumer.accept(this.where);
+        this.where.where(consumer);
         return this;
     }
 

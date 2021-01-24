@@ -226,7 +226,7 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
     }
 
     public final SelectSql where(Consumer<WhereStatement> consumer) {
-        consumer.accept(this.where);
+        this.where.where(consumer);
         return this;
     }
 
@@ -658,7 +658,7 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
     }
 
     public final SelectSql having(Consumer<HavingStatement> consumer) {
-        consumer.accept(this.having);
+        this.having.having(consumer);
         return this;
     }
 

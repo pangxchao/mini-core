@@ -572,7 +572,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
     abstract class FilterStatementImpl<T extends FilterStatement<T>> extends BaseStatementImpl<T> implements FilterStatement<T> {
         protected FilterStatementImpl(AbstractSql<?> sql) {
-            super(sql, AND, "(", ") ");
+            super(sql, AND, "(", ")");
         }
 
         protected abstract T self();

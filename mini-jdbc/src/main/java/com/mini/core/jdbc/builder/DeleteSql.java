@@ -154,7 +154,7 @@ public class DeleteSql extends AbstractSql<DeleteSql> implements DeleteFragment<
     }
 
     public final DeleteSql where(Consumer<WhereStatement> consumer) {
-        consumer.accept(this.where);
+        this.where.where(consumer);
         return this;
     }
 
