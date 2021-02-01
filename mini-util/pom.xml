@@ -191,7 +191,7 @@
         <repository>
             <id>releases</id>
             <name>GitHub Private Maven</name>
-            <url>file:D:/workspace-maven-git/maven/</url>
+            <url>file:/Users/pangchao/Workspace/mini-maven</url>
         </repository>
     </distributionManagement>
 </project>
