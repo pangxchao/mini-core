@@ -11,7 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.mini.core.mvc.util.WebUtil.getRequestPath;
+import static com.mini.core.mvc.util.WebUtil.getRequestUri;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
@@ -29,7 +29,7 @@ public class PageModelProcessor extends IModelProcessor implements HandlerMethod
             HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
             HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
             var model = createModel(requireNonNull(request), requireNonNull(response));
-            model.setViewName(getRequestPath(request));
+            model.setViewName(getRequestUri(request));
             return model;
         }));
     }
