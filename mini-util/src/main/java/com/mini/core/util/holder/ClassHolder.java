@@ -5,10 +5,11 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClassHolder<T> {
-    private static final Map<Class<?>, ClassHolder<?>> M = new HashMap<>();
-    private final Map<String, FieldHolder<T>> fields = new HashMap<>();
+    private static final Map<Class<?>, ClassHolder<?>> M = new ConcurrentHashMap<>();
+    private final Map<String, FieldHolder<T>> fields = new ConcurrentHashMap<>();
     private final Class<T> type;
     private T instance;
 
