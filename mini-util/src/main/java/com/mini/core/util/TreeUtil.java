@@ -12,15 +12,29 @@ import static java.util.Objects.requireNonNullElse;
 import static java.util.Optional.ofNullable;
 
 public class TreeUtil {
-
     @Nonnull
-    public static <T extends ITree<T>> List<T> build(@Nullable List<T> list, Long parentId) {
+    private static <T extends ITree<T>> List<T> doBuild(@Nullable List<T> list, Long parentId) {
         final java.util.ArrayList<T> result = new java.util.ArrayList<>();
         ofNullable(list).stream().flatMap(Collection::stream).forEach(item -> {
             Long itemParentId = requireNonNullElse(item.getParentId(), 0L);
             Long targetParentId = requireNonNullElse(parentId, 0L);
             if (Objects.equals(itemParentId, targetParentId)) {
-                item.setChildren(build(list, item.getId()));
+                item.setChildren(doBuild(list, item.getId()));
+                result.add(item);
+            }
+        });
+        return result;
+    }
+
+    @Nonnull
+    public static <T extends ITree<T>> List<T> build(@Nullable List<T> list, Long parentId) {
+        if (parentId == null || parentId == 0) {
+            return doBuild(list, parentId);
+        }
+        final java.util.ArrayList<T> result = new java.util.ArrayList<>();
+        ofNullable(list).stream().flatMap(Collection::stream).forEach(item -> {
+            if (Objects.equals(parentId, item.getId())) {
+                item.setChildren(doBuild(list, item.getId()));
                 result.add(item);
             }
         });
@@ -29,7 +43,7 @@ public class TreeUtil {
 
     @Nonnull
     public static <T extends ITree<T>> List<T> build(@Nullable List<T> list) {
-        return build(list, null);
+        return doBuild(list, null);
     }
 
     @Nonnull
