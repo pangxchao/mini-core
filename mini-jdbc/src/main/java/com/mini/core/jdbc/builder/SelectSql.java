@@ -1095,6 +1095,4 @@ public class SelectSql extends AbstractSql<SelectSql> implements SelectFragment<
         this.orderBy.builder(builder);
         return builder.toString();
     }
-
-
 }

@@ -14,8 +14,3 @@ fun DeleteSql.where(init: WhereStatement.() -> Unit): DeleteSql {
     this.where { it.apply(init) }
     return this
 }
-
-
-
-
-

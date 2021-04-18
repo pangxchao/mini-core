@@ -1,4 +1,4 @@
-package com.mini.core.util;
+package com.mini.core.util.model;
 
 import java.io.Serializable;
 import java.util.EventListener;

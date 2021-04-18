@@ -1,6 +1,8 @@
 package com.mini.core.util;
 
 
+import com.mini.core.util.model.WorkerId;
+
 import java.util.Random;
 
 import static java.util.UUID.randomUUID;

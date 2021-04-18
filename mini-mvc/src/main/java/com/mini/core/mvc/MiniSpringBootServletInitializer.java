@@ -1,5 +1,9 @@
 package com.mini.core.mvc;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -22,6 +26,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -29,6 +34,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.ServletContext;
 import java.util.List;
 
+import static com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat;
+import static com.alibaba.fastjson.serializer.SerializerFeature.WriteEnumUsingToString;
 import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES;
 import static com.fasterxml.jackson.core.json.JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
@@ -207,6 +214,28 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
             addSerializer(Long.TYPE, instance);
         }});
         return jsonMapper;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // 枚举类转JSON时使用 ToString 方法，并输出格式化配置
+        final FastJsonConfig fastJsonConfig = new FastJsonConfig();
+        fastJsonConfig.setSerializerFeatures(WriteEnumUsingToString);
+        fastJsonConfig.setSerializerFeatures(PrettyFormat);
+
+        // 枚举类转JSON时使用 ToString 方法，并输出格式化配置
+        JSON.DEFAULT_GENERATE_FEATURE |= WriteEnumUsingToString.mask;
+        JSON.DEFAULT_GENERATE_FEATURE |= PrettyFormat.mask;
+
+        // 对象转JSON时 Long 转换成 String 对象
+        final var config = fastJsonConfig.getSerializeConfig();
+        config.put(Long.class, ToStringSerializer.instance);
+        config.put(Long.TYPE, ToStringSerializer.instance);
+
+        // 转换器
+        var converter = new FastJsonHttpMessageConverter();
+        converter.setFastJsonConfig(fastJsonConfig);
+        converters.add(converter);
     }
 
     @Override
