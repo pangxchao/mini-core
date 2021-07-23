@@ -52,6 +52,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- 公共工具包依赖 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
+
         <!-- Idea默认代码检查工具包 -->
         <dependency>
             <groupId>org.jetbrains</groupId>
