@@ -3,6 +3,7 @@ package com.mini.core.mybatis;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Param;
 
@@ -187,5 +188,24 @@ public interface MiniMybatisMapper<T> extends BaseMapper<T> {
      */
     default List<T> findByWrapper(QueryWrapper<T> queryWrapper) {
         return selectList(queryWrapper);
+    }
+
+    /**
+     * 查询所有实体列表
+     *
+     * @param page 分页工具
+     * @return 查询结果
+     */
+    default <P extends IPage<T>> P finalAll(P page) {
+        return selectPage(page, null);
+    }
+
+    /**
+     * 查询所有实体列表
+     *
+     * @return 查询结果
+     */
+    default List<T> findAll() {
+        return selectList(null);
     }
 }
