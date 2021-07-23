@@ -70,10 +70,16 @@ public class UserController {
         return model.build();
     }
 
-    @Transactional(readOnly = true)
     @RequestMapping(path = "/id_list")
     public ResponseEntity<ModelMap> id_list(JsonModel model, Long[] idList) {
-
+        final UserInfo userInfo = new UserInfo();
+        //userInfo.setCreateTime(new Date());
+        userInfo.setFullName("fullName8");
+        userInfo.setEmail("823456@qq.com");
+        userInfo.setName("name8");
+        userInfo.setAge(25);
+        userInfo.setId(8L);
+        System.out.println(userInfoMapper.insert(userInfo));
         return model.build();
     }
 

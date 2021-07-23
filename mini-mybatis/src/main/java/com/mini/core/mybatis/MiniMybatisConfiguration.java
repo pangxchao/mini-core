@@ -1,6 +1,5 @@
 package com.mini.core.mybatis;
 
-import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.mini.core.mybatis.injector.MiniSqlInjector;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +17,11 @@ public class MiniMybatisConfiguration {
     @Bean
     public MiniMybatisIdGenerator miniMybatisIdGenerator() {
         return new MiniMybatisIdGenerator();
+    }
+
+    @Bean
+    public MiniMetaObjectHandler miniMetaObjectHandler() {
+        return new MiniMetaObjectHandler();
     }
 
     @Bean
