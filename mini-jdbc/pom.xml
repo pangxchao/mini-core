@@ -10,66 +10,33 @@
 
     <properties>
         <!-- 项目使用版本配置 -->
-        <java.version>11</java.version>
         <junit.version>4.13</junit.version>
-        <kotlin.version>1.4.21</kotlin.version>
-        <spring.version>5.2.12.RELEASE</spring.version>
-        <spring.data.version>2.3.6.RELEASE</spring.data.version>
-        <spring.boot.version>2.3.6.RELEASE</spring.boot.version>
-        <spring.data.rel.version>2.0.6.RELEASE</spring.data.rel.version>
+        <spring.version>5.2.15.RELEASE</spring.version>
+        <spring.data.jdbc.version>2.0.9.RELEASE</spring.data.jdbc.version>
 
         <!-- 项目基础属性设置 -->
+        <java.version>11</java.version>
         <maven.test.skip>true</maven.test.skip>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
-        <!-- Kotlin 反射依赖  -->
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-
-        <!-- Kotlin 基础包依赖  -->
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-
-        <!-- Kotlin 测试依赖  -->
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Spring data relational 依赖包-->
         <dependency>
             <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-relational</artifactId>
-            <version>${spring.data.rel.version}</version>
+            <artifactId>spring-data-jdbc</artifactId>
+            <version>${spring.data.jdbc.version}</version>
         </dependency>
 
-        <!-- Spring data commons 依赖包-->
+        <!-- MyBatis 数据库框架 -->
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons</artifactId>
-            <version>${spring.data.version}</version>
-        </dependency>
-
-        <!-- Spring context 依赖包-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.2.0</version>
         </dependency>
 
         <!-- Spring aspects 依赖包-->
@@ -79,59 +46,16 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!-- Spring jdbc 依赖包-->
+        <!-- Com Mini Util 依赖包-->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- Spring tx 依赖包-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- Com Mini Data 依赖包-->
-        <dependency>
-            <groupId>com.mini</groupId>
             <artifactId>mini-util</artifactId>
+            <groupId>com.mini</groupId>
             <version>1.0</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>${java.version}</jvmTarget>
-                    <sourceDirs>
-                        <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                        <sourceDir>${project.basedir}/src/main/java</sourceDir>
-                    </sourceDirs>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -140,35 +64,6 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
-                <executions>
-                    <!-- 替换会被 maven 特别处理的 default-compile -->
-                    <execution>
-                        <id>default-compile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <!-- 替换会被 maven 特别处理的 default-testCompile -->
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>java-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>java-test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${maven.test.skip}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>

@@ -12,11 +12,8 @@
         <!-- 项目使用版本配置 -->
         <java.version>11</java.version>
         <junit.version>4.13</junit.version>
-        <kotlin.version>1.4.21</kotlin.version>
-        <spring.version>5.2.12.RELEASE</spring.version>
-        <spring.data.version>2.3.6.RELEASE</spring.data.version>
-        <spring.boot.version>2.3.6.RELEASE</spring.boot.version>
-        <spring.data.rel.version>2.0.6.RELEASE</spring.data.rel.version>
+        <spring.version>5.2.15.RELEASE</spring.version>
+        <spring.boot.version>2.3.11.RELEASE</spring.boot.version>
 
         <!-- 项目基础属性设置 -->
         <maven.test.skip>true</maven.test.skip>
@@ -29,26 +26,11 @@
     </properties>
 
     <dependencies>
-        <!-- Kotlin 反射依赖  -->
+        <!-- Spring Boot Core 依赖包-->
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-
-        <!-- Kotlin 基础包依赖  -->
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-
-        <!-- Kotlin 测试依赖  -->
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
 
         <!-- Spring Boot Web 依赖包-->
@@ -58,53 +40,11 @@
             <version>${spring.boot.version}</version>
         </dependency>
 
-        <!-- Spring Boot Core 依赖包-->
+        <!-- spring boot validation 依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
+            <artifactId>spring-boot-starter-validation</artifactId>
             <version>${spring.boot.version}</version>
-        </dependency>
-
-        <!-- Spring Boot Devtools 依赖包-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-
-        <!-- Hibernate Validator 依赖包-->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>6.1.6.Final</version>
-        </dependency>
-
-        <!-- Spring Context 依赖包-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- Spring Aspects 依赖包-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- Spring Webmvc 依赖包-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <!-- Spring Web 依赖包-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
         </dependency>
 
         <!-- Servlet Api -->
@@ -132,35 +72,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>${java.version}</jvmTarget>
-                    <sourceDirs>
-                        <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                        <sourceDir>${project.basedir}/src/main/java</sourceDir>
-                    </sourceDirs>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

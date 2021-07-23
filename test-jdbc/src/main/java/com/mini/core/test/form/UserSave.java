@@ -37,14 +37,14 @@ public class UserSave implements Serializable {
     private Long regionId;
 
     public UserInfo toUserInfo() {
-        return UserInfo.builder()
-                .createTime(new Date())
-                .regionId(regionId)
-                .fullName(fullName)
-                .email(email)
-                .name(name)
-                .age(age)
-                .id(id)
-                .build();
+        UserInfo userInfo = new UserInfo();
+        userInfo.setCreateTime(new Date());
+       //ß userInfo.setRegionId(regionId);
+        userInfo.setFullName(fullName);
+        userInfo.setEmail(email);
+        userInfo.setName(name);
+        userInfo.setAge(age);
+        userInfo.setId(id);
+        return userInfo;
     }
 }

@@ -2,21 +2,13 @@ package com.mini.core.jdbc.builder;
 
 
 import com.mini.core.jdbc.builder.fragment.InsertFragment;
-
 import com.mini.core.jdbc.builder.statement.ColumnStatement;
-
 import com.mini.core.jdbc.builder.statement.ColumnStatement.ColumnStatementImpl;
-
 import com.mini.core.jdbc.builder.statement.OnDuplicateKeyUpdateStatement;
-
 import com.mini.core.jdbc.builder.statement.OnDuplicateKeyUpdateStatement.OnDuplicateKeyUpdateStatementImpl;
-
 import com.mini.core.jdbc.builder.statement.TableStatement;
-
 import com.mini.core.jdbc.builder.statement.TableStatement.TableStatementImpl;
-
 import com.mini.core.jdbc.builder.statement.ValuesStatement;
-
 import com.mini.core.jdbc.builder.statement.ValuesStatement.ValuesStatementImpl;
 import org.jetbrains.annotations.NotNull;
 

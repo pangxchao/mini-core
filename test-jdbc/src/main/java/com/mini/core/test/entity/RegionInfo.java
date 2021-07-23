@@ -1,42 +1,28 @@
 package com.mini.core.test.entity;
 
-import com.mini.core.jdbc.common.LongId;
-import org.springframework.data.annotation.*;
-import org.springframework.data.relational.core.mapping.*;
-
-import lombok.*;
-import lombok.experimental.*;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serializable;
 
 
 @Data
-@SuperBuilder(toBuilder = true)
-@Table(RegionInfo.REGION_INFO)
-public class RegionInfo implements LongId, Serializable {
-    public static final String REGION_INFO = "region_info";
-    public static final String REGION_ID = "region_id";
-    public static final String REGION_NAME = "region_name";
-    public static final String REGION_PARENT_ID = "region_parent_id";
-
+@Table("region_info")
+public class RegionInfo implements Serializable {
     // id
     @Id
-    @Column(REGION_ID)
+    @Column("region_id")
     private Long id;
 
     // name
-    @Column(REGION_NAME)
+    @Column("region_name")
     private String name;
 
     // parentId
-    @Column(REGION_PARENT_ID)
+    @Column("region_parent_id")
     private Long parentId;
-
-    @Tolerate
-    public RegionInfo() {
-    }
-
-
 }
  
  

@@ -39,12 +39,6 @@ public class PageModel extends IModel<ModelAndView, PageModel> {
         return mv;
     }
 
-
-    @Override
-    protected final String getDispatcherPath() {
-        return "/h/page";
-    }
-
     @Override
     public final PageModel setStatus(@NotNull HttpStatus status) {
         PageModel.this.mv.setStatus(status);

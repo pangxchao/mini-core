@@ -1,6 +1,7 @@
 package com.mini.core.mvc.validation;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

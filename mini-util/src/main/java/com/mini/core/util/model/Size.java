@@ -98,6 +98,6 @@ public class Size implements Serializable {
 
     @Override
     public String toString() {
-        return "Size{ width=" + width + ", height=" + height + "}";
+        return "Size{width=" + width + ", height=" + height + "}";
     }
 }

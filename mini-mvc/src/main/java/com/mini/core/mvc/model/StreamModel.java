@@ -38,11 +38,6 @@ public class StreamModel extends IModel<ResponseEntity<Resource>, StreamModel> {
     }
 
     @Override
-    protected final String getDispatcherPath() {
-        return "/h/stream";
-    }
-
-    @Override
     public final StreamModel setStatus(@NotNull HttpStatus status) {
         return super.setStatus(status);
     }

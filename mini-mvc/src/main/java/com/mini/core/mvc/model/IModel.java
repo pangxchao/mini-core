@@ -58,15 +58,6 @@ public abstract class IModel<D, T extends IModel<D, T>> implements Serializable 
         return code;
     }
 
-    protected abstract String getDispatcherPath();
-
-    public final void show() throws ServletException, IOException {
-        final String path = IModel.this.getDispatcherPath();
-        final HttpServletRequest request = getRequest();
-        var rd = request.getRequestDispatcher(path);
-        rd.forward(request, getResponse());
-    }
-
     public T setStatus(@NotNull HttpStatus status) {
         this.status = status;
         return getThis();

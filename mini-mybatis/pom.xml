@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>mini-mybatis</artifactId>
+    <groupId>com.mini</groupId>
+    <packaging>jar</packaging>
+    <name>mini-mybatis</name>
+    <version>1.0</version>
+
+    <properties>
+        <!-- 项目使用版本配置 -->
+        <junit.version>4.13</junit.version>
+        <spring.version>5.2.15.RELEASE</spring.version>
+        <mybatis.plus.version>3.4.3.1</mybatis.plus.version>
+
+        <!-- 项目基础属性设置 -->
+        <java.version>11</java.version>
+        <maven.test.skip>true</maven.test.skip>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- MyBatis Plus 数据库框架 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis.plus.version}</version>
+        </dependency>
+
+        <!-- Spring aspects 依赖包-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- Com Mini Util 依赖包-->
+        <dependency>
+            <artifactId>mini-util</artifactId>
+            <groupId>com.mini</groupId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- 私有仓库配置 -->
+    <repositories>
+        <repository>
+            <id>repositories</id>
+            <url>https://maven.aliyun.com/repository/releases</url>
+        </repository>
+
+        <repository>
+            <id>GitHubPrivateMaven</id>
+            <url>https://raw.github.com/pangxchao/maven/master/</url>
+        </repository>
+    </repositories>
+
+    <!-- 私有仓库配置 -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>GitHub Private Maven</name>
+            <url>file:/Users/pangchao/Workspace/mini-maven</url>
+        </repository>
+    </distributionManagement>
+</project>

@@ -12,9 +12,8 @@
     <modules>
         <module>mini-util</module>
         <module>mini-jdbc</module>
-        <module>mini-jpa</module>
         <module>mini-mvc</module>
-        <module>mini-web</module>
+        <module>mini-mybatis</module>
     </modules>
 
 </project>

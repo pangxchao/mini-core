@@ -18,7 +18,7 @@ public class TextController   {
     private final TextInfoRepository textInfoRepository;
 
     @Autowired
-    public TextController(@Qualifier("textInfoRepository") TextInfoRepository textInfoRepository) {
+    public TextController( TextInfoRepository textInfoRepository) {
         this.textInfoRepository = textInfoRepository;
     }
 
@@ -27,20 +27,20 @@ public class TextController   {
     // SQL中没有大字段的比SQL中有大字段但结果集不处理的也会节省很多效率
     @RequestMapping(path = "test")
     public ResponseEntity<ModelMap> test(JsonModel model) {
-        System.out.println();
-        System.out.println("------------------------------");
-        long start = System.currentTimeMillis();
-        var l1 = textInfoRepository.queryAll_All();
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
-        start = end;
-        var l2 = textInfoRepository.queryAll_CON();
-        end = System.currentTimeMillis();
-        System.out.println(end - start);
-        start = end;
-        var l3 = textInfoRepository.queryAll_TIT();
-        end = System.currentTimeMillis();
-        System.out.println(end - start);
+//        System.out.println();
+//        System.out.println("------------------------------");
+//        long start = System.currentTimeMillis();
+//        var l1 = textInfoRepository.queryAll_All();
+//        long end = System.currentTimeMillis();
+//        System.out.println(end - start);
+//        start = end;
+//        var l2 = textInfoRepository.queryAll_CON();
+//        end = System.currentTimeMillis();
+//        System.out.println(end - start);
+//        start = end;
+//        var l3 = textInfoRepository.queryAll_TIT();
+//        end = System.currentTimeMillis();
+//        System.out.println(end - start);
 
         return model.build();
     }

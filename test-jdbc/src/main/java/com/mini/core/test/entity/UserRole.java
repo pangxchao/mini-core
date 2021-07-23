@@ -1,39 +1,28 @@
 package com.mini.core.test.entity;
 
-import org.springframework.data.annotation.*;
-import org.springframework.data.relational.core.mapping.*;
-
-import lombok.*;
-import lombok.experimental.*;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serializable;
 
 
 @Data
-@SuperBuilder(toBuilder = true)
-@Table(UserRole.USER_ROLE)
+@Table("user_role")
 public class UserRole implements Serializable {
 
-    //
-    public static final String USER_ROLE = "user_role";
-    //
-    public static final String USER_ID = "user_id";
-    //
-    public static final String ROLE_ID = "role_id";
+    @Id
+    @Column("user_role_id")
+    private Long id;
 
     // userId
-    @Column(USER_ID)
+    @Column("user_role_user_id")
     private Long userId;
 
     // roleId
-    @Column(ROLE_ID)
+    @Column("user_role_role_id")
     private Long roleId;
-
-    @Tolerate
-    public UserRole() {
-    }
-
-
 }
  
  

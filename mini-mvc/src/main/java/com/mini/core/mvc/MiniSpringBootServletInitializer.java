@@ -24,6 +24,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -99,31 +100,10 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     }
 
     @Bean
-    @Qualifier("miniControllerInterceptor")
-    @ConditionalOnMissingBean(value = MiniControllerInterceptor.class, name = "miniControllerInterceptor")
-    public MiniControllerInterceptor miniControllerInterceptor() {
-        return new MiniControllerInterceptor();
-    }
-
-    @Bean
-    @Qualifier("MiniMessageSupportController")
-    @ConditionalOnMissingBean(value = MiniMessageSupportController.class, name = "MiniMessageSupportController")
-    public MiniMessageSupportController miniMessageSupportController() {
-        return new MiniMessageSupportController();
-    }
-
-    @Bean
-    @Qualifier("miniMessageValidationHandler")
-    @ConditionalOnMissingBean(value = MiniMessageValidationHandler.class, name = "miniMessageValidationHandler")
-    public MiniMessageValidationHandler miniMessageValidationHandler() {
-        return new MiniMessageValidationHandler();
-    }
-
-    @Bean
     @Qualifier("miniDefaultErrorAttributes")
     @ConditionalOnMissingBean(value = ErrorAttributes.class, name = "miniDefaultErrorAttributes")
-    public MiniDefaultErrorAttributes miniDefaultErrorAttributes() {
-        return new MiniDefaultErrorAttributes();
+    public MiniDefaultErrorAttributes miniDefaultErrorAttributes(MessageSource messageSource) {
+        return new MiniDefaultErrorAttributes(messageSource);
     }
 
     @Bean

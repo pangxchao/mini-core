@@ -1,6 +1,5 @@
 package com.mini.core.test.entity;
 
-import com.mini.core.jdbc.common.LongId;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.experimental.Tolerate;
@@ -12,9 +11,8 @@ import java.io.Serializable;
 
 
 @Data
-@SuperBuilder(toBuilder = true)
 @Table(RoleInfo.ROLE_INFO)
-public class RoleInfo implements LongId, Serializable {
+public class RoleInfo implements  Serializable {
     public static final String ROLE_INFO = "role_info";
     public static final String ROLE_ID = "role_id";
     public static final String ROLE_NAME = "role_name";
@@ -27,11 +25,6 @@ public class RoleInfo implements LongId, Serializable {
     // name
     @Column(ROLE_NAME)
     private String name;
-
-    @Tolerate
-    public RoleInfo() {
-    }
-
 
 }
  

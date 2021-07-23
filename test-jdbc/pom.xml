@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.6.RELEASE</version>
+        <version>2.3.11.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -20,10 +20,8 @@
         <java.version>11</java.version>
         <junit.version>4.13</junit.version>
         <kotlin.version>1.4.21</kotlin.version>
-        <spring.version>5.2.12.RELEASE</spring.version>
-        <spring.data.version>2.3.6.RELEASE</spring.data.version>
-        <spring.boot.version>2.3.6.RELEASE</spring.boot.version>
-        <spring.data.rel.version>2.0.6.RELEASE</spring.data.rel.version>
+        <spring.version>5.2.15.RELEASE</spring.version>
+        <spring.boot.version>2.3.11.RELEASE</spring.boot.version>
 
         <!-- 项目基础属性设置 -->
         <maven.test.skip>true</maven.test.skip>
@@ -31,7 +29,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <!-- kotlin 增量编译 -->
-        <!--<kotlin.compiler.incremental>true</kotlin.compiler.incremental>-->
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -59,12 +57,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- spring boot jpa 依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jdbc</artifactId>
-        </dependency>
-
         <!-- spring boot validation 依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -75,6 +67,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- MyBatis 数据库框架 -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.2.0</version>
         </dependency>
 
         <!-- spring boot 内置 tomcat -->
@@ -119,14 +118,14 @@
             <version>3.9</version>
         </dependency>
 
-        <!-- 公共工具类依赖 -->
+        <!-- Mini Mvc 依赖 -->
         <dependency>
             <artifactId>mini-mvc</artifactId>
             <groupId>com.mini</groupId>
             <version>1.0</version>
         </dependency>
 
-        <!-- Mini jpa 依赖 -->
+        <!-- Mini Jdbc 依赖 -->
         <dependency>
             <artifactId>mini-jdbc</artifactId>
             <groupId>com.mini</groupId>
@@ -139,6 +138,7 @@
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
         </dependency>
+
     </dependencies>
 
     <build>

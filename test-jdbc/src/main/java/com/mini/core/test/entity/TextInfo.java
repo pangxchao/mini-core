@@ -1,45 +1,28 @@
 package com.mini.core.test.entity;
 
-import org.springframework.data.annotation.*;
-import org.springframework.data.relational.core.mapping.*;
-
-import lombok.*;
-import lombok.experimental.*;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serializable;
 
 
 @Data
-@SuperBuilder(toBuilder = true)
-@Table(TextInfo.TEXT_INFO)
+@Table("text_info")
 public class TextInfo implements Serializable {
-
-    //
-    public static final String TEXT_INFO = "text_info";
-    //
-    public static final String TEXT_ID = "text_id";
-    //
-    public static final String TEXT_TITLE = "text_title";
-    //
-    public static final String TEXT_CONTENT = "text_content";
-
     // textId
     @Id
-    @Column(TEXT_ID)
-    private Long textId;
+    @Column("text_id")
+    private Long id;
 
     // textTitle
-    @Column(TEXT_TITLE)
-    private String textTitle;
+    @Column("text_title")
+    private String title;
 
     // textContent
-    @Column(TEXT_CONTENT)
-    private String textContent;
-
-    @Tolerate
-    public TextInfo() {
-    }
-
+    @Column("text_content")
+    private String content;
 
 }
  

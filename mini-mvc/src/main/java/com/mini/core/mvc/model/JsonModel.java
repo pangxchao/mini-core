@@ -74,11 +74,6 @@ public class JsonModel extends IModel<ResponseEntity<ModelMap>, JsonModel> {
     }
 
     @Override
-    protected final String getDispatcherPath() {
-        return "/h/json";
-    }
-
-    @Override
     public final JsonModel setStatus(@NotNull HttpStatus status) {
         model.put("error", status.getReasonPhrase());
         model.put("status", status.value());

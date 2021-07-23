@@ -5,15 +5,16 @@ import com.mini.core.mvc.MiniSpringBootServletInitializer;
 import com.mini.core.test.interceptor.MiniHandlerInterceptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
-import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
+import org.springframework.data.jdbc.repository.config.MyBatisJdbcConfiguration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -35,9 +36,9 @@ import static org.springframework.jmx.support.RegistrationPolicy.IGNORE_EXISTING
 @ServletComponentScan
 @SpringBootApplication
 @EnableTransactionManagement
-@Import({AbstractJdbcConfiguration.class})
+@Import(MyBatisJdbcConfiguration.class)
+@MapperScan(basePackages = "com.mini.core.test")
 @EnableMBeanExport(registration = IGNORE_EXISTING)
-@EnableJdbcRepositories({"com.mini.core.jdbc", "com.mini.core.test"})
 public class MiniApplicationInitializer extends MiniSpringBootServletInitializer {
     private static final String JNDI = "java:/comp/env/jdbc/mini";
 
@@ -65,19 +66,16 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
     }
 
     @Bean
-    @Qualifier("namedParameterJdbcOperations")
-    public NamedParameterJdbcOperations namedParameterJdbcOperations(@Qualifier("dataSource") DataSource dataSource) {
+    public NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
         return new NamedParameterJdbcTemplate(dataSource);
     }
 
     @Bean
-    @Qualifier("transactionManager")
-    public PlatformTransactionManager transactionManager(@Qualifier("dataSource") DataSource dataSource) {
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
     @Bean
-    @Qualifier("miniGeneratedIdListener")
     public MiniGeneratedIdListener miniGeneratedIdListener() {
         return new MiniGeneratedIdListener();
     }
@@ -94,3 +92,5 @@ public class MiniApplicationInitializer extends MiniSpringBootServletInitializer
         super.addInterceptors(registry);
     }
 }
+
+
