@@ -196,7 +196,7 @@ public interface MiniMybatisMapper<T> extends BaseMapper<T> {
      * @param page 分页工具
      * @return 查询结果
      */
-    default <P extends IPage<T>> P finalAll(P page) {
+    default <P extends IPage<T>> P findAll(P page) {
         return selectPage(page, null);
     }
 

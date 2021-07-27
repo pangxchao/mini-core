@@ -16,9 +16,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 @ConfigurationPropertiesBinding
 public class StringToLocalTimeConverter extends AbstractDateConverter<LocalTime> {
-    public StringToLocalTimeConverter(DataConvertersFormat convertersFormat) {
-        super(convertersFormat);
-    }
 
     @Override
     public LocalTime convert(@NotNull String source) {

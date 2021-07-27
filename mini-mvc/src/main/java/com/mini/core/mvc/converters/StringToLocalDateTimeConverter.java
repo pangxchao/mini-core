@@ -2,6 +2,7 @@ package com.mini.core.mvc.converters;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.util.StringUtils;
 
@@ -16,9 +17,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 @ConfigurationPropertiesBinding
 public class StringToLocalDateTimeConverter extends AbstractDateConverter<LocalDateTime> {
-    public StringToLocalDateTimeConverter(DataConvertersFormat convertersFormat) {
-        super(convertersFormat);
-    }
 
     @Override
     public LocalDateTime convert(@NotNull String source) {

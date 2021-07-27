@@ -2,6 +2,7 @@ package com.mini.core.mvc.converters;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.util.StringUtils;
 
@@ -14,9 +15,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 @ConfigurationPropertiesBinding
 public class StringToJavaSqlTimestampConverter extends AbstractDateConverter<java.sql.Timestamp> {
-    public StringToJavaSqlTimestampConverter(DataConvertersFormat convertersFormat) {
-        super(convertersFormat);
-    }
 
     @Override
     public java.sql.Timestamp convert(@NotNull String source) {

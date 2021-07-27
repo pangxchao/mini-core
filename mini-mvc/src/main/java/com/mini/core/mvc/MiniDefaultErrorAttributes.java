@@ -1,6 +1,7 @@
 package com.mini.core.mvc;
 
 import com.mini.core.mvc.validation.ValidateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.MessageSource;
@@ -13,10 +14,11 @@ import java.util.Map;
 import static org.springframework.util.StringUtils.trimWhitespace;
 
 public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
-    private final MessageSource ms;
+    private MessageSource messageSource;
 
-    public MiniDefaultErrorAttributes(MessageSource messageSource) {
-        this.ms = messageSource;
+    @Autowired
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -35,9 +37,9 @@ public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
                 message = "Bad Request";
             }
             // 国际化消息
-            else if (message.startsWith("{") && message.endsWith("}")) {
+            else if (messageSource != null && message.startsWith("{") && message.endsWith("}")) {
                 String key = message.substring(1, message.length() - 1);
-                message = ms.getMessage(key, e.getArgs(), locale);
+                message = messageSource.getMessage(key, e.getArgs(), locale);
             }
             // 消息内容
             map.put("message", message);

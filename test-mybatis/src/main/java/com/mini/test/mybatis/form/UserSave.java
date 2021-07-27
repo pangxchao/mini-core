@@ -1,6 +1,7 @@
 package com.mini.test.mybatis.form;
 
-import com.mini.test.mybatis.entity.UserInfo;
+import com.mini.test.mybatis.domain.UserInfo;
+import com.mini.test.mybatis.enums.GenderEnum;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -25,7 +26,7 @@ public class UserSave implements Serializable {
     private String fullName;
 
     // 邮箱
-    @Email(message = "{Email}")
+    @Email
     @NotBlank
     private String email;
 
@@ -34,13 +35,18 @@ public class UserSave implements Serializable {
     @Positive
     private Integer age;
 
+    @NotNull
+    private GenderEnum gender;
+
+    @Positive
     private Long regionId;
 
     public UserInfo toUserInfo() {
         UserInfo userInfo = new UserInfo();
         userInfo.setCreateTime(new Date());
-       //ß userInfo.setRegionId(regionId);
         userInfo.setFullName(fullName);
+        userInfo.setRegionId(regionId);
+        userInfo.setGender(gender);
         userInfo.setEmail(email);
         userInfo.setName(name);
         userInfo.setAge(age);

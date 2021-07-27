@@ -2,6 +2,7 @@ package com.mini.core.mvc.converters;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.util.StringUtils;
 
@@ -15,9 +16,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 @ConfigurationPropertiesBinding
 public class StringToJavaUtilDateConverter extends AbstractDateConverter<java.util.Date> {
-    public StringToJavaUtilDateConverter(DataConvertersFormat convertersFormat) {
-        super(convertersFormat);
-    }
 
     @Override
     public java.util.Date convert(@NotNull String source) {

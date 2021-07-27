@@ -1,24 +1,40 @@
 package com.mini.core.mvc.converters;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.core.convert.converter.Converter;
 
+import javax.annotation.Nonnull;
+
+import static java.util.Optional.ofNullable;
+
 public abstract class AbstractDateConverter<T> implements Converter<String, T> {
-    private final DataConvertersFormat format;
+    private WebMvcProperties webMvcProperties;
 
-    public AbstractDateConverter(DataConvertersFormat convertersFormat) {
-        this.format = convertersFormat;
+    @Autowired(required = false)
+    public void setWebMvcProperties(WebMvcProperties webMvcProperties) {
+        this.webMvcProperties = webMvcProperties;
     }
 
-    protected String getDateTimeFormat() {
-        return format.getDateTimeFormat();
+    @Nonnull
+    public final String getDateTimeFormat() {
+        return ofNullable(webMvcProperties).map(WebMvcProperties::getFormat)
+                .map(WebMvcProperties.Format::getDateTime)
+                .orElse("yyyy-MM-dd HH[:mm[:ss]]");
     }
 
-    protected String getDateFormat() {
-        return format.getDateFormat();
+    @Nonnull
+    public final String getDateFormat() {
+        return ofNullable(webMvcProperties).map(WebMvcProperties::getFormat)
+                .map(WebMvcProperties.Format::getDateTime)
+                .orElse("yyyy-MM-dd");
     }
 
-    protected String getTimeFormat() {
-        return format.getTimeFormat();
+    @Nonnull
+    public final String getTimeFormat() {
+        return ofNullable(webMvcProperties).map(WebMvcProperties::getFormat)
+                .map(WebMvcProperties.Format::getDateTime)
+                .orElse("HH[:mm[:ss]]");
     }
 }
