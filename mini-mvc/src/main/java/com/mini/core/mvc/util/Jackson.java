@@ -361,7 +361,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(String text, Class<T> type) {
-        return Jackson.jsonMapper.readValue(text, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(text, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -373,7 +373,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(String text, JavaType type) {
-        return Jackson.jsonMapper.readValue(text, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(text, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -385,7 +385,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(Reader reader, Class<T> type) {
-        return Jackson.jsonMapper.readValue(reader, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(reader, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -397,7 +397,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(Reader reader, JavaType type) {
-        return Jackson.jsonMapper.readValue(reader, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(reader, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -409,7 +409,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(File file, Class<T> type) {
-        return Jackson.jsonMapper.readValue(file, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(file, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -421,7 +421,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(File file, JavaType type) {
-        return Jackson.jsonMapper.readValue(file, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(file, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -433,7 +433,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(URL source, Class<T> type) {
-        return Jackson.jsonMapper.readValue(source, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(source, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -445,7 +445,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(URL source, JavaType type) {
-        return Jackson.jsonMapper.readValue(source, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(source, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -459,7 +459,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(byte[] bytes, int offset, int length, Class<T> type) {
-        return Jackson.jsonMapper.readValue(bytes, offset, length, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(bytes, offset, length, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -473,7 +473,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(byte[] bytes, int offset, int length, JavaType type) {
-        return Jackson.jsonMapper.readValue(bytes, offset, length, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(bytes, offset, length, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -485,7 +485,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(byte[] bytes, Class<T> type) {
-        return Jackson.jsonMapper.readValue(bytes, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(bytes, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -497,7 +497,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(byte[] bytes, JavaType type) {
-        return Jackson.jsonMapper.readValue(bytes, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(bytes, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -509,7 +509,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(InputStream input, Class<T> type) {
-        return Jackson.jsonMapper.readValue(input, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(input, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -521,7 +521,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(InputStream input, JavaType type) {
-        return Jackson.jsonMapper.readValue(input, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(input, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -533,7 +533,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(JsonParser parser, Class<T> type) {
-        return Jackson.jsonMapper.readValue(parser, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(parser, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
@@ -545,7 +545,7 @@ public final class Jackson {
      */
     @SneakyThrows
     public static <T> List<T> parseArray(JsonParser parser, JavaType type) {
-        return Jackson.jsonMapper.readValue(parser, getTypeFactory().constructCollectionType(List.class, type));
+        return jsonMapper.readValue(parser, getTypeFactory().constructCollectionType(List.class, type));
     }
 
     /**
