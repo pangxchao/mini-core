@@ -1,11 +1,15 @@
 package com.mini.core.jdbc.builder.statement;
 
 import com.mini.core.jdbc.builder.AbstractSql;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Collection;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
-import static com.mini.core.util.StringKt.join;
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
 
 @SuppressWarnings("UnusedReturnValue")
 public interface FilterStatement<T extends FilterStatement<T>> extends BaseStatement<T> {
@@ -691,70 +695,70 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final <O, C extends Collection<O>> T in(String column, C args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(args.stream(), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final <O> T in(String column, O[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(args), ", ", "", "", it -> "?"));
             this.sql.args((Object[]) args);
             return self();
         }
 
         @Override
         public final T in(String column, long[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, int[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, short[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, byte[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, double[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, float[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, boolean[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T in(String column, char[] args) {
-            $InNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $InNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
@@ -772,70 +776,70 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final <O, C extends Collection<O>> T notIn(String column, C args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(args.stream(), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final <O> T notIn(String column, O[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(args), ", ", "", "", it -> "?"));
             this.sql.args((Object[]) args);
             return self();
         }
 
         @Override
         public final T notIn(String column, long[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, int[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, short[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, byte[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, double[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, float[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, boolean[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
 
         @Override
         public final T notIn(String column, char[] args) {
-            $NotInNative(column, join(args, ", ", "", "", -1, "", it -> "?"));
+            $NotInNative(column, join(stream(ArrayUtils.toObject(args)), ", ", "", "", it -> "?"));
             this.sql.args(args);
             return self();
         }
@@ -896,7 +900,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T matchNative(String[] columns, String target, Object... args) {
-            String column = join(columns, ", ", "", "", -1, "", it -> it);
+            String column = join(stream(columns), ", ", "", "", it -> it);
             addValues(format("MATCH(%s) AGAINST(%s)", column, target));
             this.sql.args(args);
             return self();
@@ -909,7 +913,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T notMatchNative(String[] columns, String target, Object... args) {
-            String column = join(columns, ", ", "", "", -1, "", it -> it);
+            String column = join(stream(columns), ", ", "", "", it -> it);
             addValues(format("NOT MATCH(%s) AGAINST(%s)", column, target));
             this.sql.args(args);
             return self();
@@ -922,7 +926,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T matchInBoolNative(String[] columns, String target, Object... args) {
-            final String column = join(columns, ", ", "", "", -1, "", it -> it);
+            final String column = join(stream(columns), ", ", "", "", it -> it);
             addValues(format("MATCH(%s) AGAINST(%s IN BOOLEAN MODE)", column, target));
             this.sql.args(args);
             return self();
@@ -935,7 +939,7 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
 
         @Override
         public final T notMatchInBoolNative(String[] columns, String target, Object... args) {
-            final String column = join(columns, ", ", "", "", -1, "", it -> it);
+            final String column = join(stream(columns), ", ", "", "", it -> it);
             addValues(format("NOT MATCH(%s) AGAINST(%s IN BOOLEAN MODE)", column, target));
             this.sql.args(args);
             return self();
@@ -968,6 +972,13 @@ public interface FilterStatement<T extends FilterStatement<T>> extends BaseState
         @Override
         public final T notBetween(String column, Object min, Object max) {
             return notBetweenNative(column, "?", "?", min, max);
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private <S> String join(Stream<S> stream, CharSequence delimiter, CharSequence prefix, CharSequence suffix, Function<S, String> function) {
+            StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);
+            stream.forEach(it -> joiner.add(function.apply(it)));
+            return joiner.toString();
         }
     }
 }

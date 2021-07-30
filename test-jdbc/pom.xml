@@ -111,13 +111,6 @@
             <version>2.8.0</version>
         </dependency>
 
-        <!-- 公共工具包依赖 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.9</version>
-        </dependency>
-
         <!-- Mini Mvc 依赖 -->
         <dependency>
             <artifactId>mini-mvc</artifactId>
@@ -130,13 +123,6 @@
             <artifactId>mini-jdbc</artifactId>
             <groupId>com.mini</groupId>
             <version>1.0</version>
-        </dependency>
-
-        <!-- 自动生成 Getter Setter 依赖-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
         </dependency>
 
     </dependencies>

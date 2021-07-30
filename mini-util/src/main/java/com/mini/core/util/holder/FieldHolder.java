@@ -1,10 +1,9 @@
 package com.mini.core.util.holder;
 
-import com.mini.core.util.ThrowableKt;
+import lombok.SneakyThrows;
 
 import javax.annotation.Nonnull;
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
@@ -38,17 +37,14 @@ public final class FieldHolder<T> implements Serializable {
      * @param instance 属性对象
      * @param value    属性值
      */
+    @SneakyThrows
     public final void setValue(Object instance, Object value) {
-        try {
-            if (Objects.nonNull(this.setter)) {
-                setter.invoke(instance, value);
-                return;
-            }
-            field.setAccessible(true);
-            field.set(instance, value);
-        } catch (ReflectiveOperationException e) {
-            throw ThrowableKt.hidden(e);
+        if (Objects.nonNull(this.setter)) {
+            setter.invoke(instance, value);
+            return;
         }
+        field.setAccessible(true);
+        field.set(instance, value);
     }
 
     /**
@@ -57,13 +53,10 @@ public final class FieldHolder<T> implements Serializable {
      * @param instance 属性对象
      * @return 方法返回值
      */
+    @SneakyThrows
     public final Object getValue(Object instance) {
-        try {
-            if (getter == null) return null;
-            return getter.invoke(instance);
-        } catch (ReflectiveOperationException e) {
-            throw ThrowableKt.hidden(e);
-        }
+        if (getter == null) return null;
+        return getter.invoke(instance);
     }
 
     /**
@@ -96,17 +89,14 @@ public final class FieldHolder<T> implements Serializable {
         return descriptor.getName();
     }
 
+    @SneakyThrows
     static synchronized <T> void create(@Nonnull ClassHolder<T> h) {
-        try {
-            ofNullable(Introspector.getBeanInfo(h.getType()))
-                    .map(BeanInfo::getPropertyDescriptors).stream()
-                    .flatMap(Stream::of)
-                    .filter(des -> !"class".equals(des.getName()))
-                    .map(d -> new FieldHolder<>(h.getType(), d))
-                    .forEach(h::addField);
-        } catch (IntrospectionException e) {
-            throw ThrowableKt.hidden(e);
-        }
+        ofNullable(Introspector.getBeanInfo(h.getType()))
+                .map(BeanInfo::getPropertyDescriptors).stream()
+                .flatMap(Stream::of)
+                .filter(des -> !"class".equals(des.getName()))
+                .map(d -> new FieldHolder<>(h.getType(), d))
+                .forEach(h::addField);
     }
 
     private static Field findField(PropertyDescriptor des, Class<?> type) {

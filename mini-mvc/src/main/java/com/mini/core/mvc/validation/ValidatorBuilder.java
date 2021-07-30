@@ -1,7 +1,6 @@
 package com.mini.core.mvc.validation;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.mini.core.util.StringKt.*;
+import static com.mini.core.util.Utils.*;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -67,7 +66,7 @@ public abstract class ValidatorBuilder {
 
     @Nonnull
     public final String isPattern(@Nullable String string, String regex) {
-        this.isTrue(string != null && matches(string, regex));
+        isTrue(string != null && string.matches(regex));
         return requireNonNull(string);
     }
 
@@ -97,32 +96,32 @@ public abstract class ValidatorBuilder {
 
     @Nonnull
     public final String isEmail(@Nullable String string) {
-        return isPattern(string, EMAIL);
+        return isPattern(string, EMAIL_REGEX);
     }
 
     @Nonnull
     public final String isLetter(@Nullable String string) {
-        return isPattern(string, LETTER);
+        return isPattern(string, LETTER_REGEX);
     }
 
     @Nonnull
     public final String isNumber(@Nullable String string) {
-        return isPattern(string, NUMBER);
+        return isPattern(string, NUMBER_REGEX);
     }
 
     @Nonnull
     public final String isIdCard(@Nullable String string) {
-        return isPattern(string, ID_CARD);
+        return isPattern(string, ID_CARD_REGEX);
     }
 
     @Nonnull
     public final String isChinese(@Nullable String string) {
-        return isPattern(string, CHINESE);
+        return isPattern(string, CHINESE_REGEX);
     }
 
     @Nonnull
     public final String isRequire(@Nullable String string) {
-        return isPattern(string, REQUIRE);
+        return isPattern(string, REQUIRE_REGEX);
     }
 
     static final class ValidatorBuilderImpl extends ValidatorBuilder {

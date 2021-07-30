@@ -1,6 +1,6 @@
 package com.mini.core.mvc.model;
 
-import com.mini.core.util.ThrowableKt;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.*;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystem;
@@ -89,12 +88,9 @@ public class StreamModel extends IModel<ResponseEntity<Resource>, StreamModel> {
         return setResource(new ByteArrayResource(byteArray));
     }
 
+    @SneakyThrows
     public final StreamModel setUriResource(URI uri) {
-        try {
-            return setResource(new UrlResource(uri));
-        } catch (MalformedURLException e) {
-            throw ThrowableKt.hidden(e);
-        }
+        return setResource(new UrlResource(uri));
     }
 
     public final StreamModel setUrlResource(URL url) {
