@@ -26,7 +26,7 @@ public class NumberToIEnumConvertFactory implements ConverterFactory<Number, IEn
                     return enumInstance;
                 }
             }
-            return null;
+            throw new IllegalArgumentException("No enum value " + enumClass.getCanonicalName() + "." + value);
         }
     }
 

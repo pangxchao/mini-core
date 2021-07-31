@@ -30,7 +30,7 @@ public class ValueToIEnumConvertFactory implements ConverterFactory<String, IEnu
                     return enumInstance;
                 }
             }
-            return null;
+            throw new IllegalArgumentException("No enum value " + enumClass.getCanonicalName() + "." + value);
         }
     }
 
