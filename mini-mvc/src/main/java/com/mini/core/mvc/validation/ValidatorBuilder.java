@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.mini.core.util.Utils.*;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -92,36 +91,6 @@ public abstract class ValidatorBuilder {
     public final <T> T isNull(@Nullable T object) {
         isTrue(Objects.isNull(object));
         return null;
-    }
-
-    @Nonnull
-    public final String isEmail(@Nullable String string) {
-        return isPattern(string, EMAIL_REGEX);
-    }
-
-    @Nonnull
-    public final String isLetter(@Nullable String string) {
-        return isPattern(string, LETTER_REGEX);
-    }
-
-    @Nonnull
-    public final String isNumber(@Nullable String string) {
-        return isPattern(string, NUMBER_REGEX);
-    }
-
-    @Nonnull
-    public final String isIdCard(@Nullable String string) {
-        return isPattern(string, ID_CARD_REGEX);
-    }
-
-    @Nonnull
-    public final String isChinese(@Nullable String string) {
-        return isPattern(string, CHINESE_REGEX);
-    }
-
-    @Nonnull
-    public final String isRequire(@Nullable String string) {
-        return isPattern(string, REQUIRE_REGEX);
     }
 
     static final class ValidatorBuilderImpl extends ValidatorBuilder {

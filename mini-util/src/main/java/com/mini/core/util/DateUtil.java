@@ -1,71 +1,26 @@
 package com.mini.core.util;
 
-import java.util.Base64;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.HOUR_OF_DAY;
-import static org.apache.commons.lang3.time.DateFormatUtils.format;
 import static org.apache.commons.lang3.time.DateUtils.*;
 
 /**
- * Mini Utils 工具类
- * <p>
- * 正则表达式匹配规则
- * </p>
- * <ul>
- *     <li>*: 0 次或者多次</li>
- *     <li>+: 一次或者多次</li>
- *     <li>+: 一次或者多次</li>
- *     <li>?: 0次或者1次</li>
- *     <li>{n}:刚刚n次</li>
- *     <li>{n,m}: n到m次</li>
- * </ul>
- * <p>正则表达式快速匹配</p>
- * <ul>
- *     <li>\d: [0-9]</li>
- *     <li>\D: [^0-9]</li>
- *     <li>\w:[a-zA-Z_0-9]</li>
- *     <li>\W:[^a-zA-Z_0-9]</li>
- *     <li>\s: [\t\n\r\f]</li>
- *     <li>\S: [^\t\n\r\f]</li>
- * </ul>
+ * Mini Date Utils 工具类
  *
  * @author pangchao
  */
-public final class Utils {
-
-
-    /**
-     * 中国大陆身份证号正则表达式
-     */
-    public static final String ID_CARD_REGEX = "^\\d{15}(\\d{2}[A-Za-z0-9])?$";
-
-    /**
-     * 能用邮件地址正则表达式
-     */
-    public static final String EMAIL_REGEX = "^\\S+[@]\\S+[.]\\S+$";
-
-    /**
-     * 中文正则表达式
-     */
-    public static final String CHINESE_REGEX = "^[\u4E00-\u9FA5]+$";
-
-    /**
-     * 一般用户名正则表达式
-     */
-    public static final String REQUIRE_REGEX = "^[a-z_][a-z0-9_]*$";
-
-    /**
-     * 纯数字正则表达式
-     */
-    public static final String NUMBER_REGEX = "^\\d+$";
-
-    /**
-     * 纯英文正则表达式
-     */
-    public static final String LETTER_REGEX = "^\\w+$";
+public final class DateUtil extends DateFormatUtils {
 
     /**
      * 日期-时间默认格式化字符串
@@ -107,96 +62,195 @@ public final class Utils {
      */
     public static final long WEEK = DAY * 7;
 
+    /**
+     * 将日期格式化为 时间 (format) 格式
+     *
+     * @param date   日期
+     * @param format 时间格式
+     */
+    public static String format(LocalDateTime date, String format) {
+        return date.format(ofPattern(format));
+    }
 
     /**
-     * 日期-时间格式化
+     * 将日期格式化为 时间 (format) 格式
      *
-     * @param date 日期-时间对象
-     * @return 结果化结果
+     * @param date   日期
+     * @param format 时间格式
      */
-    public static String formatDatetime(Calendar date) {
+    public static String format(LocalDate date, String format) {
+        return date.format(ofPattern(format));
+    }
+
+    /**
+     * 将日期格式化为 时间 (format) 格式
+     *
+     * @param date   日期
+     * @param format 时间格式
+     */
+    public static String format(LocalTime date, String format) {
+        return date.format(ofPattern(format));
+    }
+
+    /**
+     * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
+     *
+     * @param date 日期
+     * @return 格式化结果
+     */
+    public static String formatDateTime(LocalDateTime date) {
         return format(date, DATETIME_PATTERN);
     }
 
     /**
-     * 日期-时间格式化
+     * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
      *
-     * @param date 日期-时间对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
-    public static String formatDatetime(Date date) {
+    public static String formatDateTime(Calendar date) {
         return format(date, DATETIME_PATTERN);
     }
 
     /**
-     * 日期-时间格式化
+     * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
      *
-     * @param date 日期-时间对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
-    public static String formatDatetime(long date) {
+    public static String formatDateTime(Date date) {
         return format(date, DATETIME_PATTERN);
     }
 
+    /**
+     * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
+     *
+     * @param date 日期
+     * @return 格式化结果
+     */
+    public static String formatDateTime(Long date) {
+        return format(date, DATETIME_PATTERN);
+    }
 
     /**
-     * 日期格式化
+     * 将日期格式化为 时间 (format) 格式
      *
-     * @param date 日期对象
-     * @return 结果化结果
+     * @param date 日期
      */
-    public static String formatData(Calendar date) {
+    public static String formatDate(LocalDate date) {
         return format(date, DATE_PATTERN);
     }
 
     /**
-     * 日期格式化
+     * 将日期格式化成：yyyy-MM-dd 格式
      *
-     * @param date 日期对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
-    public static String formatData(Date date) {
+    public static String formatDate(Calendar date) {
         return format(date, DATE_PATTERN);
     }
 
     /**
-     * 日期格式化
+     * 将日期格式化成：yyyy-MM-dd 格式
      *
-     * @param date 日期对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
-    public static String formatData(long date) {
+    public static String formatDate(Long date) {
         return format(date, DATE_PATTERN);
     }
 
     /**
-     * 时间格式化
+     * 将日期格式化成：yyyy-MM-dd 格式
      *
-     * @param date 时间对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
-    public static String formatTime(Calendar date) {
+    public static String formatDate(Date date) {
+        return format(date, DATE_PATTERN);
+    }
+
+    /**
+     * 将日期格式化成：yyyy-MM-dd HH:mm:ss 格式
+     *
+     * @param date 日期
+     * @return 格式化结果
+     */
+    public static String formatTime(LocalTime date) {
         return format(date, TIME_PATTERN);
     }
 
     /**
-     * 时间格式化
+     * 将日期格式化成：HH:mm:ss 格式
      *
-     * @param date 时间对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
     public static String formatTime(Date date) {
         return format(date, TIME_PATTERN);
     }
 
     /**
-     * 时间格式化
+     * 将日期格式化成：HH:mm:ss 格式
      *
-     * @param date 时间对象
-     * @return 结果化结果
+     * @param date 日期
+     * @return 格式化结果
      */
-    public static String formatTime(long date) {
+    public static String formatTime(Long date) {
         return format(date, TIME_PATTERN);
+    }
+
+    /**
+     * 将日期格式化成：HH:mm:ss 格式
+     *
+     * @param date 日期
+     * @return 格式化结果
+     */
+    public static String formatTime(Calendar date) {
+        return format(date, TIME_PATTERN);
+    }
+
+    /**
+     * 将给定格式的日期字符串转换成日期对象
+     *
+     * @param date   日期字符串
+     * @param format 格式化字符串
+     * @return 转换结果
+     */
+    @SneakyThrows
+    public static Date parse(String date, String format) {
+        return DateUtils.parseDate(date, format);
+    }
+
+    /**
+     * 将yyyy-MM-dd HH:mm:ss时间格式的字符串转换成日期格式
+     *
+     * @param date 日期字符串
+     * @return 日期
+     */
+    public static Date parseDateTime(String date) {
+        return parse(date, DATETIME_PATTERN);
+    }
+
+    /**
+     * 将yyyy-MM-dd日期格式的字符串转换成日期格式
+     *
+     * @param date 日期字符串
+     * @return 转换结果
+     */
+    public static Date parseDate(String date) {
+        return parse(date, DATE_PATTERN);
+    }
+
+    /**
+     * 将HH:mm:ss时间格式的字符串转换成日期格式
+     *
+     * @param date 日期字符串
+     * @return 转换结果
+     */
+    public static Date parseTime(String date) {
+        return parse(date, TIME_PATTERN);
     }
 
     /**
@@ -398,15 +452,8 @@ public final class Utils {
     }
 
     /**
-     * 将byte数组转换成base64的字符串编码
-     *
-     * @param bytes byte数组
-     * @return 转换结果
+     * 私有构造方法
      */
-    public static String base64Encoder(byte[] bytes) {
-        Base64.Encoder code = Base64.getEncoder();
-        return code.encodeToString(bytes);
+    private DateUtil() {
     }
-
-
 }
