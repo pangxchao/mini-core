@@ -1,5 +1,7 @@
 package com.mini.core.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Base64;
 
 /**
@@ -27,7 +29,7 @@ import java.util.Base64;
  *
  * @author pangchao
  */
-public final class StringUtil {
+public final class StringUtil extends StringUtils {
     /**
      * 中国大陆身份证号正则表达式
      */
