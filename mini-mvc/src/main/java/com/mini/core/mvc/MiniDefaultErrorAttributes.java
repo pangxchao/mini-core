@@ -29,18 +29,27 @@ public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
         if (exception instanceof ValidateException) {
             Locale locale = webRequest.getLocale();
             var e = (ValidateException) exception;
+
+            // 重新设置错误状态码
+            map.put("error", e.getStatus().getReasonPhrase());
+            map.put("status", e.getStatus().value());
+
+            // 设置错误码和错误字段
             map.put(getFieldName(), e.getField());
             map.put(getCodeName(), e.getCode());
+
             // 空消息
             var message = trimWhitespace(e.getMessage());
             if (!StringUtils.hasText(message)) {
                 message = "Bad Request";
             }
+
             // 国际化消息
             else if (messageSource != null && message.startsWith("{") && message.endsWith("}")) {
                 String key = message.substring(1, message.length() - 1);
                 message = messageSource.getMessage(key, e.getArgs(), locale);
             }
+
             // 消息内容
             map.put("message", message);
         }
