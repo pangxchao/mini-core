@@ -156,7 +156,7 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     }
 
     @Override
-    public void addFormatters(@NotNull FormatterRegistry registry) {
+    public void addFormatters(@NotNull final FormatterRegistry registry) {
         registry.addConverterFactory(context.getBean(NumberToIEnumConvertFactory.class));
         registry.addConverterFactory(context.getBean(ValueToIEnumConvertFactory.class));
         registry.addConverter(context.getBean(StringToJavaSqlTimestampConverter.class));

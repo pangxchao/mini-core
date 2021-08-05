@@ -35,6 +35,13 @@
             <version>3.12.0</version>
         </dependency>
 
+        <!-- MD5等加密库 -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
+
         <!-- 自动生成 Getter Setter 依赖-->
         <dependency>
             <groupId>org.projectlombok</groupId>
