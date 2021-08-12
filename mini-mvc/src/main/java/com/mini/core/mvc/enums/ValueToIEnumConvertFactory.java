@@ -12,7 +12,7 @@ public class ValueToIEnumConvertFactory implements ConverterFactory<String, IEnu
         return new ValueToIEnumConvert<>(targetType);
     }
 
-    private static class ValueToIEnumConvert<T extends IEnum> implements Converter<String, T> {
+    public static class ValueToIEnumConvert<T extends IEnum> implements Converter<String, T> {
         private final Class<T> enumClass;
 
         public ValueToIEnumConvert(Class<T> enumClass) {
@@ -24,13 +24,16 @@ public class ValueToIEnumConvertFactory implements ConverterFactory<String, IEnu
             if (!StringUtils.hasText(source)) {
                 return null;
             }
+            // 读取枚举值生成枚举对象
             final int value = Integer.parseInt(source);
             for (T enumInstance : enumClass.getEnumConstants()) {
                 if (value == enumInstance.getValue()) {
                     return enumInstance;
                 }
             }
-            throw new IllegalArgumentException("No enum value " + enumClass.getCanonicalName() + "." + value);
+            // 枚举值错误，无法创建枚举对象
+            var message = "No enum value " + enumClass.getCanonicalName() + "." + value;
+            throw new IllegalArgumentException(message);
         }
     }
 

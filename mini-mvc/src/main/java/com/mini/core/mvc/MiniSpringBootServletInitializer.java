@@ -3,6 +3,7 @@ package com.mini.core.mvc;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.mini.core.mvc.converters.*;
 import com.mini.core.mvc.enums.NumberToIEnumConvertFactory;
+import com.mini.core.mvc.enums.ValueToEnumArgumentResolver;
 import com.mini.core.mvc.enums.ValueToIEnumConvertFactory;
 import com.mini.core.mvc.processor.JsonModelProcessor;
 import com.mini.core.mvc.processor.PageModelProcessor;
@@ -141,6 +142,12 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     }
 
     @Bean
+    @ConditionalOnMissingBean(value = ValueToEnumArgumentResolver.class)
+    public ValueToEnumArgumentResolver valueToEnumArgumentResolver() {
+        return new ValueToEnumArgumentResolver();
+    }
+
+    @Bean
     @Primary
     @ConditionalOnMissingBean(value = JsonMapper.class)
     public JsonMapper jsonMapper() throws RuntimeException, Error {
@@ -149,6 +156,7 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
 
     @Override
     public void addArgumentResolvers(@NotNull List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(context.getBean(ValueToEnumArgumentResolver.class));
         resolvers.add(context.getBean(StreamModelProcessor.class));
         resolvers.add(context.getBean(WebSessionProcessor.class));
         resolvers.add(context.getBean(PageModelProcessor.class));

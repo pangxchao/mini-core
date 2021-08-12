@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mini.test.mybatis.mapper.RegionInfoMapper">
+
+    <!-- 基础Map映射 -->
+    <resultMap id="BaseResultMap" type="com.mini.test.mybatis.domain.RegionInfo">
+            <id property="id" column="region_id" jdbcType="BIGINT"/>
+            <result property="name" column="region_name" jdbcType="VARCHAR"/>
+            <result property="parentId" column="region_parent_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!-- 基础查询字段 -->
+    <sql id="Base_Column_List">
+        region_id,region_name,region_parent_id
+    </sql>
+
+
+</mapper>

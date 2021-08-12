@@ -20,13 +20,16 @@ public class NumberToIEnumConvertFactory implements ConverterFactory<Number, IEn
 
         @Override
         public final T convert(@NotNull Number source) {
+            // 读取枚举值生成枚举对象
             final int value = source.intValue();
             for (T enumInstance : enumClass.getEnumConstants()) {
                 if (value == enumInstance.getValue()) {
                     return enumInstance;
                 }
             }
-            throw new IllegalArgumentException("No enum value " + enumClass.getCanonicalName() + "." + value);
+            // 枚举值错误，无法创建枚举对象
+            var message = "No enum value " + enumClass.getCanonicalName() + "." + value;
+            throw new IllegalArgumentException(message);
         }
     }
 
