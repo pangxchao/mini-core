@@ -97,11 +97,6 @@
             <id>repositories</id>
             <url>https://maven.aliyun.com/repository/releases</url>
         </repository>
-
-        <repository>
-            <id>GitHubPrivateMaven</id>
-            <url>https://raw.github.com/pangxchao/maven/master/</url>
-        </repository>
     </repositories>
 
     <!-- 私有仓库配置 -->
@@ -109,7 +104,7 @@
         <repository>
             <id>releases</id>
             <name>GitHub Private Maven</name>
-            <url>file:/Users/pangchao/Workspace/mini-maven</url>
+            <url>file:C:/Workspace/mini-maven</url>
         </repository>
     </distributionManagement>
 </project>

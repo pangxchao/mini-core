@@ -216,16 +216,4 @@
         </plugins>
     </build>
 
-    <!-- 私有仓库配置 -->
-    <repositories>
-        <repository>
-            <id>repositories</id>
-            <url>https://maven.aliyun.com/repository/releases</url>
-        </repository>
-
-        <repository>
-            <id>GitHubPrivateMaven</id>
-            <url>https://raw.github.com/pangxchao/maven/master/</url>
-        </repository>
-    </repositories>
 </project>
