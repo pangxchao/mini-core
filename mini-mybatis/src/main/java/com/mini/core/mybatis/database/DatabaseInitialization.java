@@ -15,42 +15,44 @@ public abstract class DatabaseInitialization {
      * @param databaseTableList 初始化表实现
      */
     public final void initialization(final List<DatabaseTable> databaseTableList) {
-        int current = getCurrentVersion(), targetVersion = getTargetVersion();
+        // 配置表初始化并获取当前数据库版本和升级目标版本
+        DatabaseInitialization.this.initialization();
+        final int current = getCurrentVersion();
 
         // 初始化数据库
-        DatabaseInitialization.this.initialization(current, targetVersion);
-        for (final DatabaseTable databaseTable : databaseTableList) {
-            databaseTable.initialization(current, targetVersion);
+        if (current < 1 && current < getTargetVersion()) {
+            for (var databaseTable : databaseTableList) {
+                databaseTable.initialization();
+            }
         }
 
         // 升级数据库版本
-        DatabaseInitialization.this.upgrade(current, targetVersion);
-        for (DatabaseTable databaseTable : databaseTableList) {
-            databaseTable.upgrade(current, targetVersion);
+        if (current < DatabaseInitialization.this.getTargetVersion()) {
+            DatabaseInitialization.this.upgrade(current);
+            for (var databaseTable : databaseTableList) {
+                databaseTable.upgrade(current);
+            }
         }
 
         // 保存目标版本号到数据库
-        saveTargetVersion(targetVersion);
+        saveTargetVersion(getTargetVersion());
     }
 
     /**
      * 数据库初始化创建表结构
-     * <p>
-     * 创建表时可以创建一些表的索引
-     * </p>
-     *
-     * @param currentVersion 当前数据库版本
-     * @param targetVersion  升级到目标版本
+     * <ul>
+     * <li>创建表时可以创建一些表的索引</li>
+     * <li>因为顺序关系，外键关系需要在升级版本中创建</li>
+     * </ul>
      */
-    public abstract void initialization(int currentVersion, int targetVersion);
+    public abstract void initialization();
 
     /**
      * 数据库升级
      *
      * @param currentVersion 当前数据库版本
-     * @param targetVersion  升级到目标版本
      */
-    public abstract void upgrade(int currentVersion, int targetVersion);
+    public abstract void upgrade(int currentVersion);
 
     /**
      * 保存目标版本号到数据库

@@ -12,18 +12,14 @@ public interface DatabaseTable {
      * <p>
      * 创建表时可以创建一些表的索引
      * </p>
-     *
-     * @param currentVersion 当前数据库版本
-     * @param targetVersion  升级到目标版本
      */
-    void initialization(int currentVersion, int targetVersion);
+    void initialization();
 
     /**
      * 数据库升级
      *
      * @param currentVersion 当前数据库版本
-     * @param targetVersion  升级到目标版本
      */
-    void upgrade(int currentVersion, int targetVersion);
+    void upgrade(int currentVersion);
 
 }
