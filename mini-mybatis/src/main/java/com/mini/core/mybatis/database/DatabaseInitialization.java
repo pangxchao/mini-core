@@ -6,6 +6,9 @@ import java.util.List;
 
 /**
  * 数据库初始化
+ * <p>
+ * 配置信息初始化，初始化时需要根据方法调用时机来确保配置信息表字段的存在
+ * </p>
  *
  * @author pangchao
  */
