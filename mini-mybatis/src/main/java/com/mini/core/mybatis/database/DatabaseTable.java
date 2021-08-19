@@ -10,9 +10,9 @@ public interface DatabaseTable {
     /**
      * 数据库升级
      *
-     * @param currentVersion 当前数据库版本
-     * @param targetVersion  升级目标版本
+     * @param oldVersion 数据库数据旧版本
+     * @param newVersion 升级目标新版本
      */
-    void upgrade(int currentVersion, int targetVersion);
+    void upgrade(int oldVersion, int newVersion);
 
 }

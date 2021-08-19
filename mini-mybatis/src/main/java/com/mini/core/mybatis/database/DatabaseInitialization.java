@@ -36,15 +36,15 @@ public abstract class DatabaseInitialization {
             getJdbcTemplate().execute(checks);
             // 配置表初始化并获取当前数据库版本和升级目标版本
             DatabaseInitialization.this.upgrade(0, 1);
-            final int current = getCurrentVersion();
-            final int version = getTargetVersion();
+            final int oldVersion = getOldVersion();
+            final int newVersion = getNewVersion();
             // 升级数据库版本
-            DatabaseInitialization.this.upgrade(1, version);
+            DatabaseInitialization.this.upgrade(1, newVersion);
             for (final var databaseTable : databaseTableList) {
-                databaseTable.upgrade(current, version);
+                databaseTable.upgrade(oldVersion, newVersion);
             }
             // 保存目标版本号到数据库
-            saveTargetVersion(version);
+            saveNewVersion(newVersion);
         }
         // 恢复外键检查
         finally {
@@ -56,10 +56,10 @@ public abstract class DatabaseInitialization {
     /**
      * 数据库升级
      *
-     * @param currentVersion 当前数据库版本
-     * @param targetVersion  升级目标版本
+     * @param oldVersion 数据库数据旧版本
+     * @param newVersion 升级目标新版本
      */
-    public abstract void upgrade(int currentVersion, int targetVersion);
+    public abstract void upgrade(int oldVersion, int newVersion);
 
     /**
      * 保存目标版本号到数据库
@@ -69,7 +69,7 @@ public abstract class DatabaseInitialization {
      *
      * @param targetVersion 目标版本号
      */
-    public abstract void saveTargetVersion(int targetVersion);
+    public abstract void saveNewVersion(int targetVersion);
 
     /**
      * 获取数据库的初始版本
@@ -79,14 +79,14 @@ public abstract class DatabaseInitialization {
      *
      * @return 数据库初始版本
      */
-    public abstract int getCurrentVersion();
+    public abstract int getOldVersion();
 
     /**
      * 获取数据库要升级的目标版本
      *
      * @return 数据库升级的目标版本
      */
-    public abstract int getTargetVersion();
+    public abstract int getNewVersion();
 
 
 }
