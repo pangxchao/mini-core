@@ -1,5 +1,6 @@
 package com.mini.core.mybatis.database;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,50 +16,61 @@ import java.util.List;
 public abstract class DatabaseInitialization {
 
     /**
+     * 获取数据库操作类
+     *
+     * @return 数据库操作类
+     */
+    protected abstract JdbcTemplate getJdbcTemplate();
+
+    /**
      * 数据库初始化程序
      *
      * @param databaseTableList 初始化表实现
      */
     @Transactional
     public void initialization(final List<DatabaseTable> databaseTableList) {
-        // 配置表初始化并获取当前数据库版本和升级目标版本
-        DatabaseInitialization.this.createTable();
-        final int current = getCurrentVersion();
+        try {
+            // 暂时禁用外键检查
+            getJdbcTemplate().execute("SET FOREIGN_KEY_CHECKS = 0");
 
-        // 初始化数据库
-        if (current < 1 && current < getTargetVersion()) {
-            for (var databaseTable : databaseTableList) {
-                databaseTable.createTable();
+            // 配置表初始化并获取当前数据库版本和升级目标版本
+            DatabaseInitialization.this.createTable();
+            final int current = getCurrentVersion();
+
+            // 初始化数据库
+            if (current < 1 && current < getTargetVersion()) {
+                for (var databaseTable : databaseTableList) {
+                    databaseTable.createTable();
+                }
             }
-        }
 
-        // 升级数据库版本
-        if (current < DatabaseInitialization.this.getTargetVersion()) {
-            DatabaseInitialization.this.upgrade(current);
-            for (var databaseTable : databaseTableList) {
-                databaseTable.upgrade(current);
+            // 升级数据库版本
+            if (current < DatabaseInitialization.this.getTargetVersion()) {
+                DatabaseInitialization.this.upgrade(current);
+                for (var databaseTable : databaseTableList) {
+                    databaseTable.upgrade(current);
+                }
             }
-        }
 
-        // 保存目标版本号到数据库
-        saveTargetVersion(getTargetVersion());
+            // 保存目标版本号到数据库
+            saveTargetVersion(getTargetVersion());
+        } finally {
+            // 恢复外键检查
+            getJdbcTemplate().execute("SET FOREIGN_KEY_CHECKS = 1");
+        }
     }
 
     /**
      * 数据库初始化创建表结构
-     * <ul>
-     * <li>创建表时可以创建一些表的索引</li>
-     * <li>因为顺序关系，外键关系需要在升级版本中创建</li>
-     * </ul>
      */
-    public abstract void createTable();
+    protected abstract void createTable();
 
     /**
      * 数据库升级
      *
      * @param currentVersion 当前数据库版本
      */
-    public abstract void upgrade(int currentVersion);
+    protected abstract void upgrade(int currentVersion);
 
     /**
      * 保存目标版本号到数据库
@@ -68,7 +80,7 @@ public abstract class DatabaseInitialization {
      *
      * @param targetVersion 目标版本号
      */
-    public abstract void saveTargetVersion(int targetVersion);
+    protected abstract void saveTargetVersion(int targetVersion);
 
     /**
      * 获取数据库的初始版本
