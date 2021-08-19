@@ -90,14 +90,14 @@ public abstract class DatabaseInitialization {
      *
      * @return 数据库初始版本
      */
-    public abstract int getCurrentVersion();
+    protected abstract int getCurrentVersion();
 
     /**
      * 获取数据库要升级的目标版本
      *
      * @return 数据库升级的目标版本
      */
-    public abstract int getTargetVersion();
+    protected abstract int getTargetVersion();
 
 
 }
