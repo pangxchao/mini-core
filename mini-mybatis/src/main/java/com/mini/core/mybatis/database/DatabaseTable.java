@@ -8,15 +8,11 @@ package com.mini.core.mybatis.database;
 public interface DatabaseTable {
 
     /**
-     * 数据库初始化创建表结构
-     */
-    void createTable();
-
-    /**
      * 数据库升级
      *
      * @param currentVersion 当前数据库版本
+     * @param targetVersion  升级目标版本
      */
-    void upgrade(int currentVersion);
+    void upgrade(int currentVersion, int targetVersion);
 
 }

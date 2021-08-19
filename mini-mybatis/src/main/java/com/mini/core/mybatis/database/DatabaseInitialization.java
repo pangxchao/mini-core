@@ -27,50 +27,39 @@ public abstract class DatabaseInitialization {
      *
      * @param databaseTableList 初始化表实现
      */
+
     @Transactional
     public void initialization(final List<DatabaseTable> databaseTableList) {
         try {
             // 暂时禁用外键检查
-            getJdbcTemplate().execute("SET FOREIGN_KEY_CHECKS = 0");
-
+            var checks = "SET FOREIGN_KEY_CHECKS = 0;";
+            getJdbcTemplate().execute(checks);
             // 配置表初始化并获取当前数据库版本和升级目标版本
-            DatabaseInitialization.this.createTable();
+            DatabaseInitialization.this.upgrade(0, 1);
             final int current = getCurrentVersion();
-
-            // 初始化数据库
-            if (current < 1 && current < getTargetVersion()) {
-                for (var databaseTable : databaseTableList) {
-                    databaseTable.createTable();
-                }
-            }
-
+            final int version = getTargetVersion();
             // 升级数据库版本
-            if (current < DatabaseInitialization.this.getTargetVersion()) {
-                DatabaseInitialization.this.upgrade(current);
-                for (var databaseTable : databaseTableList) {
-                    databaseTable.upgrade(current);
-                }
+            DatabaseInitialization.this.upgrade(1, version);
+            for (final var databaseTable : databaseTableList) {
+                databaseTable.upgrade(current, version);
             }
-
             // 保存目标版本号到数据库
-            saveTargetVersion(getTargetVersion());
-        } finally {
-            // 恢复外键检查
-            getJdbcTemplate().execute("SET FOREIGN_KEY_CHECKS = 1");
+            saveTargetVersion(version);
+        }
+        // 恢复外键检查
+        finally {
+            var checks = "SET FOREIGN_KEY_CHECKS = 1;";
+            getJdbcTemplate().execute(checks);
         }
     }
-
-    /**
-     * 数据库初始化创建表结构
-     */
-    protected abstract void createTable();
 
     /**
      * 数据库升级
      *
      * @param currentVersion 当前数据库版本
+     * @param targetVersion  升级目标版本
      */
-    protected abstract void upgrade(int currentVersion);
+    public abstract void upgrade(int currentVersion, int targetVersion);
 
     /**
      * 保存目标版本号到数据库
@@ -80,24 +69,24 @@ public abstract class DatabaseInitialization {
      *
      * @param targetVersion 目标版本号
      */
-    protected abstract void saveTargetVersion(int targetVersion);
+    public abstract void saveTargetVersion(int targetVersion);
 
     /**
      * 获取数据库的初始版本
      * <p>
-     * 该方法会在创建表后执行，基础建表语句里面的字段信息
+     * 该方法会在配置表升级到版本“1”后执行
      * </P>
      *
      * @return 数据库初始版本
      */
-    protected abstract int getCurrentVersion();
+    public abstract int getCurrentVersion();
 
     /**
      * 获取数据库要升级的目标版本
      *
      * @return 数据库升级的目标版本
      */
-    protected abstract int getTargetVersion();
+    public abstract int getTargetVersion();
 
 
 }
