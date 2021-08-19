@@ -9,9 +9,6 @@ public interface DatabaseTable {
 
     /**
      * 数据库初始化创建表结构
-     * <p>
-     * 创建表时可以创建一些表的索引
-     * </p>
      */
     void createTable();
 
