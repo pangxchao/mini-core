@@ -1,5 +1,7 @@
 package com.mini.core.mybatis.database;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 /**
@@ -14,15 +16,16 @@ public abstract class DatabaseInitialization {
      *
      * @param databaseTableList 初始化表实现
      */
-    public final void initialization(final List<DatabaseTable> databaseTableList) {
+    @Transactional
+    public void initialization(final List<DatabaseTable> databaseTableList) {
         // 配置表初始化并获取当前数据库版本和升级目标版本
-        DatabaseInitialization.this.initialization();
+        DatabaseInitialization.this.createTable();
         final int current = getCurrentVersion();
 
         // 初始化数据库
         if (current < 1 && current < getTargetVersion()) {
             for (var databaseTable : databaseTableList) {
-                databaseTable.initialization();
+                databaseTable.createTable();
             }
         }
 
@@ -45,7 +48,7 @@ public abstract class DatabaseInitialization {
      * <li>因为顺序关系，外键关系需要在升级版本中创建</li>
      * </ul>
      */
-    public abstract void initialization();
+    public abstract void createTable();
 
     /**
      * 数据库升级
@@ -56,6 +59,9 @@ public abstract class DatabaseInitialization {
 
     /**
      * 保存目标版本号到数据库
+     * <p>
+     * 该方法会在数据库升级完成后执行
+     * </P>
      *
      * @param targetVersion 目标版本号
      */
@@ -63,6 +69,9 @@ public abstract class DatabaseInitialization {
 
     /**
      * 获取数据库的初始版本
+     * <p>
+     * 该方法会在创建表后执行，基础建表语句里面的字段信息
+     * </P>
      *
      * @return 数据库初始版本
      */

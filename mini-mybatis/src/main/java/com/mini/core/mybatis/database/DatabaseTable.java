@@ -13,7 +13,7 @@ public interface DatabaseTable {
      * 创建表时可以创建一些表的索引
      * </p>
      */
-    void initialization();
+    void createTable();
 
     /**
      * 数据库升级
