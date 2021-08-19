@@ -35,15 +35,15 @@ public abstract class DatabaseInitialization {
             var checks = "SET FOREIGN_KEY_CHECKS = 0;";
             getJdbcTemplate().execute(checks);
             // 配置表初始化并获取当前数据库版本和升级目标版本
-            DatabaseInitialization.this.upgrade(0, 1);
+            DatabaseInitialization.this.createTable();
             final int oldVersion = getOldVersion();
             final int newVersion = getNewVersion();
-            // 升级数据库版本
-            DatabaseInitialization.this.upgrade(1, newVersion);
+            // 升级其它数据库版本到新版本
             for (final var databaseTable : databaseTableList) {
                 databaseTable.upgrade(oldVersion, newVersion);
             }
-            // 保存目标版本号到数据库
+            // 升级配置表并保存新版本到配置信息
+            upgrade(oldVersion, newVersion);
             saveNewVersion(newVersion);
         }
         // 恢复外键检查
@@ -52,6 +52,14 @@ public abstract class DatabaseInitialization {
             getJdbcTemplate().execute(checks);
         }
     }
+
+    /**
+     * 创建数据库
+     * <p>
+     * 配置表每次启动都会执行数据库创建，所以创建时需要检查表是否存在
+     * </P>
+     */
+    public abstract void createTable();
 
     /**
      * 数据库升级
