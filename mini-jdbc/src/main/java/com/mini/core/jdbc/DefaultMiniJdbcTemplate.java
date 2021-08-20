@@ -59,7 +59,8 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     public final boolean hasTable(String tableName) {
         return Objects.requireNonNullElse(this.execute(connection -> {
             final DatabaseMetaData md = connection.getMetaData();
-            try (var rs = md.getTables(null, null, tableName, null)) {
+            try (var rs = md.getTables(connection.getCatalog(),
+                    connection.getSchema(), tableName, null)) {
                 return rs.next();
             }
         }), false);
@@ -71,7 +72,9 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     public final boolean hasColumn(String tableName, String columnName) {
         return Objects.requireNonNullElse(this.execute(connection -> {
             final DatabaseMetaData md = connection.getMetaData();
-            try (var rs = md.getColumns(null, null, tableName, columnName)) {
+            try (var rs = md.getColumns(connection.getCatalog(),
+                    connection.getSchema(), tableName,
+                    columnName)) {
                 return rs.next();
             }
         }), false);
