@@ -102,7 +102,7 @@ public abstract class DatabaseInitialization {
     protected void createConfigTable(String tableName, String idName, String valueName) {
         getJdbcTemplate().execute("\nCREATE TABLE IF NOT EXISTS " + tableName + "( \n " +
                 "   " + idName + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
-                "   " + valueName + " INT NOT NULL COMMENT '数据库版本号', \n" +
+                "   " + valueName + " INT NOT NULL COMMENT '数据库版本号' \n" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;\n"
         );
     }
@@ -140,6 +140,4 @@ public abstract class DatabaseInitialization {
      * @return 数据库升级的目标版本
      */
     protected abstract int getNewVersion();
-
-
 }

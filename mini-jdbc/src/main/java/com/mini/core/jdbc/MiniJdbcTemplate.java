@@ -24,6 +24,13 @@ public interface MiniJdbcTemplate {
     <T> T execute(ConnectionCallback<T> callback);
 
     /**
+     * 执行SQL
+     *
+     * @param sql SQL
+     */
+    void execute(String sql);
+
+    /**
      * 判断当前连接是否存在指定表
      *
      * @param tableName 表名
@@ -39,13 +46,6 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     boolean hasColumn(String tableName, String columnName);
-
-    /**
-     * 执行SQL
-     *
-     * @param sql SQL
-     */
-    void execute(String sql);
 
     /**
      * 执行SQL

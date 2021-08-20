@@ -50,6 +50,11 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     }
 
     @Override
+    public final void execute(String sql) {
+        jdbcOperations.execute(sql);
+    }
+
+    @Override
     @SneakyThrows
     public final boolean hasTable(String tableName) {
         return Objects.requireNonNullElse(this.execute(connection -> {
@@ -70,11 +75,6 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
                 return rs.next();
             }
         }), false);
-    }
-
-    @Override
-    public final void execute(String sql) {
-        jdbcOperations.execute(sql);
     }
 
     @Override
