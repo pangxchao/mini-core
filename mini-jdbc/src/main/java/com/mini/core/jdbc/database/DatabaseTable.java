@@ -1,4 +1,4 @@
-package com.mini.core.mybatis.database;
+package com.mini.core.jdbc.database;
 
 /**
  * 数据库版本升级

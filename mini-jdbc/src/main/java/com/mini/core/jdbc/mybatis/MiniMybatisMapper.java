@@ -1,4 +1,4 @@
-package com.mini.core.mybatis;
+package com.mini.core.jdbc.mybatis;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

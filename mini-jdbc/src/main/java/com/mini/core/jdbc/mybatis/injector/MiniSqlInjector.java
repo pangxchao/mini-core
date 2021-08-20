@@ -1,11 +1,11 @@
-package com.mini.core.mybatis.injector;
+package com.mini.core.jdbc.mybatis.injector;
 
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
-import com.mini.core.mybatis.injector.methods.CountByIdMethod;
-import com.mini.core.mybatis.injector.methods.RemoveMethod;
-import com.mini.core.mybatis.injector.methods.ReplaceMethod;
-import com.mini.core.mybatis.injector.methods.SaveMethod;
+import com.mini.core.jdbc.mybatis.injector.methods.CountByIdMethod;
+import com.mini.core.jdbc.mybatis.injector.methods.RemoveMethod;
+import com.mini.core.jdbc.mybatis.injector.methods.ReplaceMethod;
+import com.mini.core.jdbc.mybatis.injector.methods.SaveMethod;
 
 import java.util.List;
 

@@ -8,11 +8,44 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.sql.DatabaseMetaData;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public interface MiniJdbcTemplate {
+
+    /**
+     * 获取DatabaseMetaData对象
+     *
+     * @return DatabaseMetaData对象
+     */
+    DatabaseMetaData getMetaData();
+
+    /**
+     * 判断当前连接是否存在指定表
+     *
+     * @param tableName 表名
+     * @return 查询结棍
+     */
+    boolean hasTable(String tableName);
+
+    /**
+     * 判断当前连接是否存在指定表的指定字段
+     *
+     * @param tableName  表名
+     * @param columnName 字段名
+     * @return 查询结果
+     */
+    boolean hasColumn(String tableName, String columnName);
+
+    /**
+     * 执行SQL
+     *
+     * @param sql SQL
+     */
+    void execute(String sql);
+
     /**
      * 执行SQL
      *
@@ -20,7 +53,7 @@ public interface MiniJdbcTemplate {
      * @param keyHolder SQL执行返回接收器
      * @return 执行结果 - 影响条数
      */
-    int execute(PreparedStatementCreator creator, KeyHolder keyHolder);
+    int update(PreparedStatementCreator creator, KeyHolder keyHolder);
 
     /**
      * 执行SQL
@@ -29,7 +62,7 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 执行结果 - 影响条数
      */
-    int execute(String sql, Map<String, ?> params);
+    int update(String sql, Map<String, ?> params);
 
     /**
      * 执行SQL
@@ -37,8 +70,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 执行结果 - 影响条数
      */
-    default int execute(@Nonnull NamedWrapper wrapper) {
-        return execute(wrapper.sql(), wrapper.args());
+    default int update(@Nonnull NamedWrapper wrapper) {
+        return update(wrapper.sql(), wrapper.args());
     }
 
     /**
@@ -48,7 +81,7 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 执行结果 - 影响条数
      */
-    int execute(String sql, Object[] params);
+    int update(String sql, Object[] params);
 
     /**
      * 执行SQL
@@ -56,8 +89,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 执行结果 - 影响条数
      */
-    default int execute(@Nonnull IndexWrapper wrapper) {
-        return execute(wrapper.sql(), wrapper.args());
+    default int update(@Nonnull IndexWrapper wrapper) {
+        return update(wrapper.sql(), wrapper.args());
     }
 
     /**

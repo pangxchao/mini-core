@@ -49,7 +49,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @return 执行结果 - 影响条数
      */
     default int execute(AbstractSql<?> sql) {
-        return execute(sql.getSql(), sql.getArgs());
+        return update(sql.getSql(), sql.getArgs());
     }
 
 

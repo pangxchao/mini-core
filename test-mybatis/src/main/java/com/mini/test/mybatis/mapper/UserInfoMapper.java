@@ -1,6 +1,5 @@
 package com.mini.test.mybatis.mapper;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
 import com.mini.test.mybatis.domain.UserInfo;
 import com.mini.core.mybatis.MiniMybatisMapper;

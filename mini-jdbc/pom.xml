@@ -12,6 +12,7 @@
         <!-- 项目使用版本配置 -->
         <junit.version>4.13</junit.version>
         <spring.version>5.2.15.RELEASE</spring.version>
+        <mybatis.plus.version>3.4.3.1</mybatis.plus.version>
         <spring.data.jdbc.version>2.0.9.RELEASE</spring.data.jdbc.version>
 
         <!-- 项目基础属性设置 -->
@@ -25,18 +26,19 @@
     </properties>
 
     <dependencies>
+
+        <!-- MyBatis Plus 数据库框架 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis.plus.version}</version>
+        </dependency>
+
         <!-- Spring data relational 依赖包-->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jdbc</artifactId>
             <version>${spring.data.jdbc.version}</version>
-        </dependency>
-
-        <!-- MyBatis 数据库框架 -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.2.0</version>
         </dependency>
 
         <!-- Spring aspects 依赖包-->

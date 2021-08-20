@@ -13,7 +13,6 @@
         <module>mini-util</module>
         <module>mini-jdbc</module>
         <module>mini-mvc</module>
-        <module>mini-mybatis</module>
     </modules>
 
 </project>

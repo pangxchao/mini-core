@@ -1,9 +1,9 @@
-package com.mini.core.mybatis;
+package com.mini.core.jdbc.mybatis;
 
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.mini.core.mybatis.injector.MiniSqlInjector;
+import com.mini.core.jdbc.mybatis.injector.MiniSqlInjector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

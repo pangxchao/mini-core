@@ -3,6 +3,7 @@ package com.mini.core.jdbc;
 import com.mini.core.jdbc.mapper.MiniBeanRowMapper;
 import com.mini.core.jdbc.wrapper.IndexWrapper;
 import com.mini.core.jdbc.wrapper.NamedWrapper;
+import lombok.SneakyThrows;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,6 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,28 +45,54 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     }
 
     @Override
-    public final int execute(PreparedStatementCreator creator, KeyHolder keyHolder) {
+    public final DatabaseMetaData getMetaData() {
+        return jdbcOperations.execute(Connection::getMetaData);
+    }
+
+    @Override
+    @SneakyThrows
+    public final boolean hasTable(String tableName) {
+        try (var rs = getMetaData().getTables(null, null, tableName, null)) {
+            return rs.next();
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public final boolean hasColumn(String tableName, String columnName) {
+        try (var rs = getMetaData().getColumns(null, null, tableName, columnName)) {
+            return rs.next();
+        }
+    }
+
+    @Override
+    public final void execute(String sql) {
+        jdbcOperations.execute(sql);
+    }
+
+    @Override
+    public final int update(PreparedStatementCreator creator, KeyHolder keyHolder) {
         return jdbcOperations.update(creator, keyHolder);
     }
 
     @Override
-    public final int execute(String sql, Map<String, ?> params) {
+    public final int update(String sql, Map<String, ?> params) {
         return namedJdbcTemplate.update(sql, params);
     }
 
     @Override
-    public final int execute(@Nonnull NamedWrapper wrapper) {
-        return MiniJdbcTemplate.super.execute(wrapper);
+    public final int update(@Nonnull NamedWrapper wrapper) {
+        return MiniJdbcTemplate.super.update(wrapper);
     }
 
     @Override
-    public final int execute(String sql, Object[] params) {
+    public final int update(String sql, Object[] params) {
         return jdbcOperations.update(sql, params);
     }
 
     @Override
-    public final int execute(@Nonnull IndexWrapper wrapper) {
-        return MiniJdbcTemplate.super.execute(wrapper);
+    public final int update(@Nonnull IndexWrapper wrapper) {
+        return MiniJdbcTemplate.super.update(wrapper);
     }
 
     @Nonnull
@@ -183,7 +212,9 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final <T> T queryOne(String sql, Map<String, ?> params, RowMapper<T> mapper) {
-        return namedJdbcTemplate.queryForObject(sql, params, mapper);
+        return namedJdbcTemplate.query(sql, params, rs -> { //
+            return rs.next() ? mapper.mapRow(rs, 0) : null;
+        });
     }
 
     @Nullable
@@ -195,7 +226,9 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final <T> T queryOne(String sql, Object[] params, RowMapper<T> mapper) {
-        return jdbcOperations.queryForObject(sql, params, mapper);
+        return this.jdbcOperations.query(sql, params, rs -> { //
+            return rs.next() ? mapper.mapRow(rs, 0) : null;
+        });
     }
 
     @Nullable
@@ -207,7 +240,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final <T> T queryOne(String sql, Map<String, ?> params, Class<T> type) {
-        return namedJdbcTemplate.queryForObject(sql, params, getBeanRowMapper(type));
+        return this.queryOne(sql, params, getBeanRowMapper(type));
     }
 
     @Nullable
@@ -219,7 +252,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final <T> T queryOne(String sql, Object[] params, Class<T> type) {
-        return jdbcOperations.queryForObject(sql, params, getBeanRowMapper(type));
+        return this.queryOne(sql, params, getBeanRowMapper(type));
     }
 
     @Nullable
@@ -231,7 +264,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final Map<String, Object> queryOneMap(String sql, Map<String, ?> params) {
-        return namedJdbcTemplate.queryForObject(sql, params, getMapRowMapper());
+        return this.queryOne(sql, params, getMapRowMapper());
     }
 
     @Nullable
@@ -243,7 +276,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final Map<String, Object> queryOneMap(String sql, Object[] params) {
-        return jdbcOperations.queryForObject(sql, params, getMapRowMapper());
+        return this.queryOne(sql, params, getMapRowMapper());
     }
 
     @Nullable
@@ -255,7 +288,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final <T> T querySingleOne(String sql, Map<String, ?> params, Class<T> type) {
-        return namedJdbcTemplate.queryForObject(sql, params, getSingleRowMapper(type));
+        return this.queryOne(sql, params, getSingleRowMapper(type));
     }
 
     @Nullable
@@ -267,7 +300,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     @Nullable
     @Override
     public final <T> T querySingleOne(String sql, Object[] params, Class<T> type) {
-        return jdbcOperations.queryForObject(sql, params, getSingleRowMapper(type));
+        return this.queryOne(sql, params, getSingleRowMapper(type));
     }
 
     @Nullable
@@ -506,6 +539,4 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     protected RowMapper<Map<String, Object>> getMapRowMapper() {
         return new ColumnMapRowMapper();
     }
-
-
 }

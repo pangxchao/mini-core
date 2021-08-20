@@ -1,4 +1,4 @@
-package com.mini.core.mybatis.transaction;
+package com.mini.core.jdbc.mybatis.transaction;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -36,7 +36,7 @@ public class MultipleInterceptor {
      * @param proceedingJoinPoint 方法调用参数
      * @return 返回目标方法返回对象
      */
-    @Around(value = "@annotation(com.mini.core.mybatis.transaction.MultipleTransactional)")
+    @Around(value = "@annotation(com.mini.core.jdbc.mybatis.transaction.MultipleTransactional)")
     public Object transactionalMultiAspectAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         requireNonNull(proceedingJoinPoint, "TransactionMultiInterceptor Error: ProceedingJoinPoint is null");
         final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();

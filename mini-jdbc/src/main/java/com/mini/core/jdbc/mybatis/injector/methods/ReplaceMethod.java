@@ -1,4 +1,4 @@
-package com.mini.core.mybatis.injector.methods;
+package com.mini.core.jdbc.mybatis.injector.methods;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;

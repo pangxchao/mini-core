@@ -1,4 +1,4 @@
-package com.mini.core.mybatis.transaction;
+package com.mini.core.jdbc.mybatis.transaction;
 
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;

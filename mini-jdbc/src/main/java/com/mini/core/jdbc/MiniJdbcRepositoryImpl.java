@@ -4,6 +4,7 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
+import java.io.Serializable;
 
 public class MiniJdbcRepositoryImpl extends DefaultMiniJdbcTemplate implements MiniJdbcRepository {
     private final JdbcAggregateOperations operations;
@@ -15,13 +16,13 @@ public class MiniJdbcRepositoryImpl extends DefaultMiniJdbcTemplate implements M
 
     @Nonnull
     @Override
-    public <Entity> Entity insert(@Nonnull Entity entity) {
+    public <Entity extends Serializable> Entity insert(@Nonnull Entity entity) {
         return operations.insert(entity);
     }
 
     @Nonnull
     @Override
-    public <Entity> Entity update(@Nonnull Entity entity) {
+    public <Entity extends Serializable> Entity update(@Nonnull Entity entity) {
         return operations.update(entity);
     }
 }
