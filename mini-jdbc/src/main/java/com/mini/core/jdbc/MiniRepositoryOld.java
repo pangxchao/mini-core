@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import static java.util.Optional.ofNullable;
 
 public interface MiniRepositoryOld extends MiniJdbcTemplate {
+
     /**
      * 执行SQL
      *

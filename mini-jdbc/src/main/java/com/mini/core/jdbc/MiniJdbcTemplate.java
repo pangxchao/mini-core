@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.sql.DatabaseMetaData;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
