@@ -2,6 +2,7 @@ package com.mini.core.jdbc;
 
 import com.mini.core.jdbc.wrapper.IndexWrapper;
 import com.mini.core.jdbc.wrapper.NamedWrapper;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,11 +17,12 @@ import java.util.Map;
 public interface MiniJdbcTemplate {
 
     /**
-     * 获取DatabaseMetaData对象
+     * 获取数据库连接
      *
-     * @return DatabaseMetaData对象
+     * @param callback 连接获取回调
+     * @return 回调结构
      */
-    DatabaseMetaData getMetaData();
+    <T> T execute(ConnectionCallback<T> callback);
 
     /**
      * 判断当前连接是否存在指定表

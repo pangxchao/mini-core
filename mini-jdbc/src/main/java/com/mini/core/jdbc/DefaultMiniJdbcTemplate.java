@@ -11,11 +11,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -45,24 +45,31 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     }
 
     @Override
-    public final DatabaseMetaData getMetaData() {
-        return jdbcOperations.execute(Connection::getMetaData);
+    public final <T> T execute(ConnectionCallback<T> callback) {
+        return jdbcOperations.execute(callback);
     }
 
     @Override
     @SneakyThrows
     public final boolean hasTable(String tableName) {
-        try (var rs = getMetaData().getTables(null, null, tableName, null)) {
-            return rs.next();
-        }
+        return Objects.requireNonNullElse(this.execute(connection -> {
+            final DatabaseMetaData md = connection.getMetaData();
+            try (var rs = md.getTables(null, null, tableName, null)) {
+                return rs.next();
+            }
+        }), false);
+
     }
 
     @Override
     @SneakyThrows
     public final boolean hasColumn(String tableName, String columnName) {
-        try (var rs = getMetaData().getColumns(null, null, tableName, columnName)) {
-            return rs.next();
-        }
+        return Objects.requireNonNullElse(this.execute(connection -> {
+            final DatabaseMetaData md = connection.getMetaData();
+            try (var rs = md.getColumns(null, null, tableName, columnName)) {
+                return rs.next();
+            }
+        }), false);
     }
 
     @Override
