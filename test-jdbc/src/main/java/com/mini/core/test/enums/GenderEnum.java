@@ -1,4 +1,4 @@
-package com.mini.test.mybatis.enums;
+package com.mini.core.test.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

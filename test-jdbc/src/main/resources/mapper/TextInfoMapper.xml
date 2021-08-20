@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mini.core.test.repository.TextInfoRepository">
+<mapper namespace="com.mini.core.test.mapper.TextInfoMapper">
 
     <!-- 基础Map映射 -->
-    <resultMap id="BaseResultMap" type="com.mini.core.test.entity.TextInfo">
-        <id property="id" column="text_id" jdbcType="BIGINT"/>
-        <result property="title" column="text_title" jdbcType="VARCHAR"/>
-        <result property="content" column="text_content" jdbcType="VARCHAR"/>
+    <resultMap id="BaseResultMap" type="com.mini.core.test.domain.TextInfo">
+            <id property="id" column="text_id" jdbcType="BIGINT"/>
+            <result property="title" column="text_title" jdbcType="VARCHAR"/>
+            <result property="content" column="text_content" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <!-- 查询所有字段的基础SQL片段 -->
+    <!-- 基础查询字段 -->
     <sql id="Base_Column_List">
-        text_id, text_title, text_content
+        text_id,text_title,text_content
     </sql>
+
 
 </mapper>

@@ -1,10 +1,10 @@
-package com.mini.test.mybatis.domain;
+package com.mini.core.test.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.mini.test.mybatis.enums.GenderEnum;
+import com.mini.core.test.enums.GenderEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

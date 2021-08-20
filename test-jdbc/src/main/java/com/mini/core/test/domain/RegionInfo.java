@@ -1,4 +1,4 @@
-package com.mini.test.mybatis.domain;
+package com.mini.core.test.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -16,21 +16,27 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("role_info")
-public class RoleInfo implements Serializable  {
+@TableName("region_info")
+public class RegionInfo implements Serializable  {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
     /**
     * 
     */
-    @TableId("role_id")
+    @TableId("region_id")
     private Long id;
 
     /**
     * 
     */
-    @TableField("role_name")
+    @TableField("region_name")
     private String name;
+
+    /**
+    * 
+    */
+    @TableField("region_parent_id")
+    private Long parentId;
 
 }
