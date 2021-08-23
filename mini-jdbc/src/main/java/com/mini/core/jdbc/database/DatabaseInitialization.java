@@ -56,7 +56,7 @@ public abstract class DatabaseInitialization {
      * 数据库初始化程序
      */
     @Transactional
-    public void initialization() {
+    public void initialization(final int newVersion) {
         try {
             // 暂时禁用外键检查
             var checks = "SET FOREIGN_KEY_CHECKS = 0;";
@@ -67,12 +67,12 @@ public abstract class DatabaseInitialization {
                 this.createConfigTable();
             }
             // 升级其它数据库版本到新版本
-            int old = getOldVersion(), v = getNewVersion();
-            for (var databaseTable : databaseTableList) {
-                databaseTable.upgrade(old, v);
+            final int oldVersion = this.getOldVersion();
+            for (DatabaseTable it : databaseTableList) {
+                it.upgrade(oldVersion, newVersion);
             }
-            // 保存新版本
-            this.saveNewVersion(v);
+            // 保存新版本到数据库
+            this.saveNewVersion(newVersion);
         }
         // 恢复外键检查
         finally {
@@ -102,11 +102,11 @@ public abstract class DatabaseInitialization {
      * 该方法会在数据库升级完成后执行
      * </P>
      *
-     * @param targetVersion 目标版本号
+     * @param newVersion 目标版本号
      */
-    protected void saveNewVersion(int targetVersion) {
+    protected void saveNewVersion(int newVersion) {
         String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(), getIdColumnName(), getValueColumnName());
-        this.miniJdbcTemplate.update(string, new Object[]{ID, targetVersion});
+        this.miniJdbcTemplate.update(string, new Object[]{ID, newVersion});
     }
 
     /**
@@ -122,11 +122,4 @@ public abstract class DatabaseInitialization {
         Integer value = this.miniJdbcTemplate.queryInt(string, new Object[]{ID});
         return value == null ? 0 : value;
     }
-
-    /**
-     * 获取数据库要升级的目标版本
-     *
-     * @return 数据库升级的目标版本
-     */
-    protected abstract int getNewVersion();
 }
