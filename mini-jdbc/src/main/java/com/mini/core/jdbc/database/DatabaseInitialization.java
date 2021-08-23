@@ -1,7 +1,6 @@
 package com.mini.core.jdbc.database;
 
 import com.mini.core.jdbc.MiniJdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,14 +22,32 @@ public abstract class DatabaseInitialization {
      *
      * @return 数据库操升级表列表信息
      */
-    protected abstract List<DatabaseTable> getDatabaseTableList();
+    protected abstract List<DatabaseTable> getTableList();
 
     /**
      * 获取数据库操作对象
      *
      * @return 数据库操作对象
      */
-    protected abstract MiniJdbcTemplate getMiniJdbcTemplate();
+    protected abstract MiniJdbcTemplate getJdbcTemplate();
+
+    /**
+     * 获取Value字段名称
+     *
+     * @return Value字段名称
+     */
+    protected String getConfigValueColumnName() {
+        return "version_value";
+    }
+
+    /**
+     * 获取ID字段名称
+     *
+     * @return ID字段名称
+     */
+    protected String getConfigIdColumnName() {
+        return "version_id";
+    }
 
     /**
      * 数据库版本配置表
@@ -42,40 +59,23 @@ public abstract class DatabaseInitialization {
     }
 
     /**
-     * 获取Value字段名称
-     *
-     * @return Value字段名称
-     */
-    protected String getValueColumnName() {
-        return "version_value";
-    }
-
-    /**
-     * 获取ID字段名称
-     *
-     * @return ID字段名称
-     */
-    protected String getIdColumnName() {
-        return "version_id";
-    }
-
-    /**
      * 数据库初始化程序
+     *
+     * @param newVersion 升级到目标版本
      */
-    @Transactional
-    public void initialization(final int newVersion) {
+    public final void initialization(final int newVersion) {
         try {
             // 暂时禁用外键检查
             var checks = "SET FOREIGN_KEY_CHECKS = 0;";
-            getMiniJdbcTemplate().execute(checks);
+            this.getJdbcTemplate().execute(checks);
             // 如果表不存在时则创建表
-            final String tName = this.getConfigTableName();
-            if (!getMiniJdbcTemplate().hasTable(tName)) {
+            final String tName = getConfigTableName();
+            if (!getJdbcTemplate().hasTable(tName)) {
                 this.createConfigTable();
             }
             // 升级其它数据库版本到新版本
-            final int oldVersion = this.getOldVersion();
-            for (DatabaseTable it : getDatabaseTableList()) {
+            final int oldVersion = getOldVersion();
+            for (DatabaseTable it : getTableList()) {
                 it.upgrade(oldVersion, newVersion);
             }
             // 保存新版本到数据库
@@ -84,7 +84,7 @@ public abstract class DatabaseInitialization {
         // 恢复外键检查
         finally {
             var checks = "SET FOREIGN_KEY_CHECKS = 1;";
-            getMiniJdbcTemplate().execute(checks);
+            this.getJdbcTemplate().execute(checks);
         }
     }
 
@@ -95,10 +95,10 @@ public abstract class DatabaseInitialization {
      * </p>
      */
     protected void createConfigTable() {
-        getMiniJdbcTemplate().execute("\n" +
+        this.getJdbcTemplate().execute("\n" +
                 "CREATE TABLE IF NOT EXISTS " + getConfigTableName() + "( \n " +
-                "   " + getIdColumnName() + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
-                "   " + getValueColumnName() + " INT NOT NULL COMMENT '数据库版本号' \n" +
+                "   " + getConfigIdColumnName() + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
+                "   " + getConfigValueColumnName() + " INT NOT NULL COMMENT '数据库版本号' \n" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;\n"
         );
     }
@@ -112,8 +112,9 @@ public abstract class DatabaseInitialization {
      * @param newVersion 目标版本号
      */
     protected void saveNewVersion(int newVersion) {
-        String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(), getIdColumnName(), getValueColumnName());
-        getMiniJdbcTemplate().update(string, new Object[]{ID, newVersion});
+        String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(),
+                getConfigIdColumnName(), getConfigValueColumnName());
+        this.getJdbcTemplate().update(string, new Object[]{ID, newVersion});
     }
 
     /**
@@ -125,8 +126,9 @@ public abstract class DatabaseInitialization {
      * @return 数据库初始版本
      */
     protected int getOldVersion() {
-        String string = format("SELECT %s FROM %s WHERE %s = ?", getValueColumnName(), getConfigTableName(), getIdColumnName());
-        Integer value = getMiniJdbcTemplate().queryInt(string, new Object[]{ID});
+        String string = format("SELECT %s FROM %s WHERE %s = ?", getConfigValueColumnName(),
+                getConfigTableName(), getConfigIdColumnName());
+        Integer value = this.getJdbcTemplate().queryInt(string, new Object[]{ID});
         return value == null ? 0 : value;
     }
 }
