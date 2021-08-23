@@ -16,14 +16,21 @@ import static java.lang.String.format;
  * @author pangchao
  */
 public abstract class DatabaseInitialization {
-    protected final List<DatabaseTable> databaseTableList;
-    protected final MiniJdbcTemplate miniJdbcTemplate;
     private static final int ID = 1;
 
-    public DatabaseInitialization(List<DatabaseTable> databaseTableList, MiniJdbcTemplate miniJdbcTemplate) {
-        this.databaseTableList = databaseTableList;
-        this.miniJdbcTemplate = miniJdbcTemplate;
-    }
+    /**
+     * 获取数据库操升级表列表信息
+     *
+     * @return 数据库操升级表列表信息
+     */
+    protected abstract List<DatabaseTable> getDatabaseTableList();
+
+    /**
+     * 获取数据库操作对象
+     *
+     * @return 数据库操作对象
+     */
+    protected abstract MiniJdbcTemplate getMiniJdbcTemplate();
 
     /**
      * 数据库版本配置表
@@ -60,15 +67,15 @@ public abstract class DatabaseInitialization {
         try {
             // 暂时禁用外键检查
             var checks = "SET FOREIGN_KEY_CHECKS = 0;";
-            this.miniJdbcTemplate.execute(checks);
+            getMiniJdbcTemplate().execute(checks);
             // 如果表不存在时则创建表
             final String tName = this.getConfigTableName();
-            if (!this.miniJdbcTemplate.hasTable(tName)) {
+            if (!getMiniJdbcTemplate().hasTable(tName)) {
                 this.createConfigTable();
             }
             // 升级其它数据库版本到新版本
             final int oldVersion = this.getOldVersion();
-            for (DatabaseTable it : databaseTableList) {
+            for (DatabaseTable it : getDatabaseTableList()) {
                 it.upgrade(oldVersion, newVersion);
             }
             // 保存新版本到数据库
@@ -77,7 +84,7 @@ public abstract class DatabaseInitialization {
         // 恢复外键检查
         finally {
             var checks = "SET FOREIGN_KEY_CHECKS = 1;";
-            this.miniJdbcTemplate.execute(checks);
+            getMiniJdbcTemplate().execute(checks);
         }
     }
 
@@ -88,7 +95,7 @@ public abstract class DatabaseInitialization {
      * </p>
      */
     protected void createConfigTable() {
-        miniJdbcTemplate.execute("\n" +
+        getMiniJdbcTemplate().execute("\n" +
                 "CREATE TABLE IF NOT EXISTS " + getConfigTableName() + "( \n " +
                 "   " + getIdColumnName() + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
                 "   " + getValueColumnName() + " INT NOT NULL COMMENT '数据库版本号' \n" +
@@ -106,7 +113,7 @@ public abstract class DatabaseInitialization {
      */
     protected void saveNewVersion(int newVersion) {
         String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(), getIdColumnName(), getValueColumnName());
-        this.miniJdbcTemplate.update(string, new Object[]{ID, newVersion});
+        getMiniJdbcTemplate().update(string, new Object[]{ID, newVersion});
     }
 
     /**
@@ -119,7 +126,7 @@ public abstract class DatabaseInitialization {
      */
     protected int getOldVersion() {
         String string = format("SELECT %s FROM %s WHERE %s = ?", getValueColumnName(), getConfigTableName(), getIdColumnName());
-        Integer value = this.miniJdbcTemplate.queryInt(string, new Object[]{ID});
+        Integer value = getMiniJdbcTemplate().queryInt(string, new Object[]{ID});
         return value == null ? 0 : value;
     }
 }
