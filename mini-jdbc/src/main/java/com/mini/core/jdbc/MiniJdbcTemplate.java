@@ -82,7 +82,7 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 执行结果 - 影响条数
      */
-    int update(String sql, Object[] params);
+    int update(String sql, Object... params);
 
     /**
      * 执行SQL
@@ -513,7 +513,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default String queryString(String sql, Object[] params) {
+    default String queryString(String sql, Object... params) {
         return querySingleOne(sql, params, String.class);
     }
 
@@ -559,7 +559,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Long queryLong(String sql, Object[] params) {
+    default Long queryLong(String sql, Object... params) {
         return querySingleOne(sql, params, Long.class);
     }
 
@@ -605,7 +605,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Integer queryInt(String sql, Object[] params) {
+    default Integer queryInt(String sql, Object... params) {
         return querySingleOne(sql, params, Integer.class);
     }
 
@@ -651,7 +651,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Short queryShort(String sql, Object[] params) {
+    default Short queryShort(String sql, Object... params) {
         return querySingleOne(sql, params, Short.class);
     }
 
@@ -697,7 +697,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Byte queryByte(String sql, Object[] params) {
+    default Byte queryByte(String sql, Object... params) {
         return querySingleOne(sql, params, Byte.class);
     }
 
@@ -743,7 +743,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Double queryDouble(String sql, Object[] params) {
+    default Double queryDouble(String sql, Object... params) {
         return querySingleOne(sql, params, Double.class);
     }
 
@@ -789,7 +789,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Float queryFloat(String sql, Object[] params) {
+    default Float queryFloat(String sql, Object... params) {
         return querySingleOne(sql, params, Float.class);
     }
 
@@ -835,7 +835,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Boolean queryBoolean(String sql, Object[] params) {
+    default Boolean queryBoolean(String sql, Object... params) {
         return querySingleOne(sql, params, Boolean.class);
     }
 
@@ -881,7 +881,7 @@ public interface MiniJdbcTemplate {
      * @return 查询结果
      */
     @Nullable
-    default Date queryDate(String sql, Object[] params) {
+    default Date queryDate(String sql, Object... params) {
         return querySingleOne(sql, params, Date.class);
     }
 

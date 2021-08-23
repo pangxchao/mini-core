@@ -96,7 +96,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     }
 
     @Override
-    public final int update(String sql, Object[] params) {
+    public final int update(String sql, Object... params) {
         return jdbcOperations.update(sql, params);
     }
 
@@ -333,7 +333,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final String queryString(String sql, Object[] params) {
+    public final String queryString(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryString(sql, params);
     }
 
@@ -357,7 +357,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Long queryLong(String sql, Object[] params) {
+    public final Long queryLong(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryLong(sql, params);
     }
 
@@ -381,7 +381,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Integer queryInt(String sql, Object[] params) {
+    public final Integer queryInt(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryInt(sql, params);
     }
 
@@ -405,7 +405,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Short queryShort(String sql, Object[] params) {
+    public final Short queryShort(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryShort(sql, params);
     }
 
@@ -429,7 +429,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Byte queryByte(String sql, Object[] params) {
+    public final Byte queryByte(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryByte(sql, params);
     }
 
@@ -453,7 +453,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Double queryDouble(String sql, Object[] params) {
+    public final Double queryDouble(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryDouble(sql, params);
     }
 
@@ -477,7 +477,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Float queryFloat(String sql, Object[] params) {
+    public final Float queryFloat(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryFloat(sql, params);
     }
 
@@ -501,7 +501,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Boolean queryBoolean(String sql, Object[] params) {
+    public final Boolean queryBoolean(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryBoolean(sql, params);
     }
 
@@ -531,7 +531,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nullable
     @Override
-    public final Date queryDate(String sql, Object[] params) {
+    public final Date queryDate(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryDate(sql, params);
     }
 
