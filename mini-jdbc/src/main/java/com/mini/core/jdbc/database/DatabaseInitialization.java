@@ -16,21 +16,14 @@ import static java.lang.String.format;
  * @author pangchao
  */
 public abstract class DatabaseInitialization {
+    protected final List<DatabaseTable> databaseTableList;
+    protected final MiniJdbcTemplate miniJdbcTemplate;
     private static final int ID = 1;
 
-    /**
-     * 获取数据库升级表的列表
-     *
-     * @return 数据库升级表的列表
-     */
-    protected abstract List<DatabaseTable> getDatabaseTableList();
-
-    /**
-     * 获取数据库操作类
-     *
-     * @return 数据库操作类
-     */
-    protected abstract MiniJdbcTemplate getJdbcTemplate();
+    public DatabaseInitialization(List<DatabaseTable> databaseTableList, MiniJdbcTemplate miniJdbcTemplate) {
+        this.databaseTableList = databaseTableList;
+        this.miniJdbcTemplate = miniJdbcTemplate;
+    }
 
     /**
      * 数据库版本配置表
@@ -61,37 +54,30 @@ public abstract class DatabaseInitialization {
 
     /**
      * 数据库初始化程序
-     *
-     * @param databaseTableList 初始化表实现
      */
     @Transactional
-    public void initialization(final List<DatabaseTable> databaseTableList) {
-        String tableName = DatabaseInitialization.this.getConfigTableName();
-        String valueName = DatabaseInitialization.this.getValueColumnName();
-        String idName = DatabaseInitialization.this.getIdColumnName();
-
-        // 如果表不存在时则创建表
-        if (!this.getJdbcTemplate().hasTable(tableName)) {
-            createConfigTable(tableName, idName, valueName);
-        }
-
+    public void initialization() {
         try {
             // 暂时禁用外键检查
             var checks = "SET FOREIGN_KEY_CHECKS = 0;";
-            getJdbcTemplate().execute(checks);
-            final int oldVersion = getOldVersion();
-            final int newVersion = getNewVersion();
+            this.miniJdbcTemplate.execute(checks);
+            // 如果表不存在时则创建表
+            final String tName = this.getConfigTableName();
+            if (!this.miniJdbcTemplate.hasTable(tName)) {
+                this.createConfigTable();
+            }
             // 升级其它数据库版本到新版本
-            for (final var databaseTable : databaseTableList) {
-                databaseTable.upgrade(oldVersion, newVersion);
+            int old = getOldVersion(), v = getNewVersion();
+            for (var databaseTable : databaseTableList) {
+                databaseTable.upgrade(old, v);
             }
             // 保存新版本
-            saveNewVersion(newVersion);
+            this.saveNewVersion(v);
         }
         // 恢复外键检查
         finally {
             var checks = "SET FOREIGN_KEY_CHECKS = 1;";
-            getJdbcTemplate().execute(checks);
+            this.miniJdbcTemplate.execute(checks);
         }
     }
 
@@ -100,15 +86,12 @@ public abstract class DatabaseInitialization {
      * <p>
      * 默认为Mysql实现
      * </p>
-     *
-     * @param tableName 版本表名称
-     * @param idName    版本ID字段名称
-     * @param valueName 版本号字段名称
      */
-    protected void createConfigTable(String tableName, String idName, String valueName) {
-        getJdbcTemplate().execute("\nCREATE TABLE IF NOT EXISTS " + tableName + "( \n " +
-                "   " + idName + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
-                "   " + valueName + " INT NOT NULL COMMENT '数据库版本号' \n" +
+    protected void createConfigTable() {
+        miniJdbcTemplate.execute("\n" +
+                "CREATE TABLE IF NOT EXISTS " + getConfigTableName() + "( \n " +
+                "   " + getIdColumnName() + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
+                "   " + getValueColumnName() + " INT NOT NULL COMMENT '数据库版本号' \n" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;\n"
         );
     }
@@ -123,7 +106,7 @@ public abstract class DatabaseInitialization {
      */
     protected void saveNewVersion(int targetVersion) {
         String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(), getIdColumnName(), getValueColumnName());
-        getJdbcTemplate().update(string, new Object[]{ID, targetVersion});
+        this.miniJdbcTemplate.update(string, new Object[]{ID, targetVersion});
     }
 
     /**
@@ -136,7 +119,7 @@ public abstract class DatabaseInitialization {
      */
     protected int getOldVersion() {
         String string = format("SELECT %s FROM %s WHERE %s = ?", getValueColumnName(), getConfigTableName(), getIdColumnName());
-        Integer value = getJdbcTemplate().queryInt(string, new Object[]{ID});
+        Integer value = this.miniJdbcTemplate.queryInt(string, new Object[]{ID});
         return value == null ? 0 : value;
     }
 
