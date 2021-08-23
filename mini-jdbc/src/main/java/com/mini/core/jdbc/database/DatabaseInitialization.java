@@ -19,6 +19,13 @@ public abstract class DatabaseInitialization {
     private static final int ID = 1;
 
     /**
+     * 获取数据库升级表的列表
+     *
+     * @return 数据库升级表的列表
+     */
+    protected abstract List<DatabaseTable> getDatabaseTableList();
+
+    /**
      * 获取数据库操作类
      *
      * @return 数据库操作类
@@ -57,7 +64,6 @@ public abstract class DatabaseInitialization {
      *
      * @param databaseTableList 初始化表实现
      */
-
     @Transactional
     public void initialization(final List<DatabaseTable> databaseTableList) {
         String tableName = DatabaseInitialization.this.getConfigTableName();
