@@ -19,13 +19,13 @@ import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
-import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -42,8 +42,8 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     private final ApplicationContext context;
     private final Dialect dialect;
 
-    public MiniRepositoryOldImpl(ApplicationContext context, DataSource dataSource, Dialect dialect) {
-        super(dataSource);
+    public MiniRepositoryOldImpl(ApplicationContext context, JdbcTemplate jdbcTemplate, Dialect dialect) {
+        super(jdbcTemplate);
         this.context = context;
         this.dialect = dialect;
     }

@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
 import java.util.Date;
 import java.util.List;
@@ -21,8 +20,8 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
     private final JdbcOperations jdbcOperations;
 
-    public DefaultMiniJdbcTemplate(@Nonnull final DataSource dataSource) {
-        namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    public DefaultMiniJdbcTemplate(@Nonnull final JdbcTemplate jdbcTemplate) {
+        namedJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         jdbcOperations = namedJdbcTemplate.getJdbcOperations();
     }
 
