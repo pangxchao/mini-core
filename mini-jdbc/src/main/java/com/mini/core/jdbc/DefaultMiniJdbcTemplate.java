@@ -9,12 +9,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.KeyHolder;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.sql.DatabaseMetaData;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
@@ -130,7 +126,7 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
 
     @Nonnull
     @Override
-    public <T> List<T> queryList(NamedWrapper wrapper, RowMapper<T> mapper) {
+    public final <T> List<T> queryList(NamedWrapper wrapper, RowMapper<T> mapper) {
         return MiniJdbcTemplate.super.queryList(wrapper, mapper);
     }
 
@@ -218,319 +214,319 @@ public class DefaultMiniJdbcTemplate implements MiniJdbcTemplate {
         return MiniJdbcTemplate.super.querySingleList(wrapper, type);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(String sql, Map<String, ?> params, RowMapper<T> mapper) {
-        return namedJdbcTemplate.query(sql, params, rs -> { //
+    public final <T> Optional<T> queryOne(String sql, Map<String, ?> params, RowMapper<T> mapper) {
+        return Optional.ofNullable(namedJdbcTemplate.query(sql, params, rs -> { //
             return rs.next() ? mapper.mapRow(rs, 0) : null;
-        });
+        }));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(NamedWrapper wrapper, RowMapper<T> mapper) {
+    public final <T> Optional<T> queryOne(NamedWrapper wrapper, RowMapper<T> mapper) {
         return MiniJdbcTemplate.super.queryOne(wrapper, mapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(String sql, Object[] params, RowMapper<T> mapper) {
-        return this.jdbcOperations.query(sql, params, rs -> { //
+    public final <T> Optional<T> queryOne(String sql, Object[] params, RowMapper<T> mapper) {
+        return Optional.ofNullable(this.jdbcOperations.query(sql, params, rs -> { //
             return rs.next() ? mapper.mapRow(rs, 0) : null;
-        });
+        }));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public <T> T queryOne(IndexWrapper wrapper, RowMapper<T> mapper) {
+    public final <T> Optional<T> queryOne(IndexWrapper wrapper, RowMapper<T> mapper) {
         return MiniJdbcTemplate.super.queryOne(wrapper, mapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(String sql, Map<String, ?> params, Class<T> type) {
+    public final <T> Optional<T> queryOne(String sql, Map<String, ?> params, Class<T> type) {
         return this.queryOne(sql, params, getBeanRowMapper(type));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(NamedWrapper wrapper, Class<T> type) {
+    public final <T> Optional<T> queryOne(NamedWrapper wrapper, Class<T> type) {
         return MiniJdbcTemplate.super.queryOne(wrapper, type);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(String sql, Object[] params, Class<T> type) {
+    public final <T> Optional<T> queryOne(String sql, Object[] params, Class<T> type) {
         return this.queryOne(sql, params, getBeanRowMapper(type));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T queryOne(IndexWrapper wrapper, Class<T> type) {
+    public final <T> Optional<T> queryOne(IndexWrapper wrapper, Class<T> type) {
         return MiniJdbcTemplate.super.queryOne(wrapper, type);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Map<String, Object> queryOneMap(String sql, Map<String, ?> params) {
+    public final Optional<Map<String, Object>> queryOneMap(String sql, Map<String, ?> params) {
         return this.queryOne(sql, params, getMapRowMapper());
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public Map<String, Object> queryOneMap(NamedWrapper wrapper) {
+    public final Optional<Map<String, Object>> queryOneMap(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryOneMap(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Map<String, Object> queryOneMap(String sql, Object[] params) {
+    public final Optional<Map<String, Object>> queryOneMap(String sql, Object[] params) {
         return this.queryOne(sql, params, getMapRowMapper());
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Map<String, Object> queryOneMap(IndexWrapper wrapper) {
+    public final Optional<Map<String, Object>> queryOneMap(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryOneMap(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T querySingleOne(String sql, Map<String, ?> params, Class<T> type) {
+    public final <T> Optional<T> querySingleOne(String sql, Map<String, ?> params, Class<T> type) {
         return this.queryOne(sql, params, getSingleRowMapper(type));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T querySingleOne(NamedWrapper wrapper, Class<T> type) {
+    public final <T> Optional<T> querySingleOne(NamedWrapper wrapper, Class<T> type) {
         return MiniJdbcTemplate.super.querySingleOne(wrapper, type);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T querySingleOne(String sql, Object[] params, Class<T> type) {
+    public final <T> Optional<T> querySingleOne(String sql, Object[] params, Class<T> type) {
         return this.queryOne(sql, params, getSingleRowMapper(type));
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final <T> T querySingleOne(IndexWrapper wrapper, Class<T> type) {
+    public final <T> Optional<T> querySingleOne(IndexWrapper wrapper, Class<T> type) {
         return MiniJdbcTemplate.super.querySingleOne(wrapper, type);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final String queryString(String sql, Map<String, ?> params) {
+    public final Optional<String> queryString(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryString(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final String queryString(NamedWrapper wrapper) {
+    public final Optional<String> queryString(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryString(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final String queryString(String sql, Object... params) {
+    public final Optional<String> queryString(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryString(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final String queryString(IndexWrapper wrapper) {
+    public final Optional<String> queryString(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryString(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Long queryLong(String sql, Map<String, ?> params) {
+    public final Optional<Long> queryLong(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryLong(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Long queryLong(NamedWrapper wrapper) {
+    public final Optional<Long> queryLong(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryLong(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Long queryLong(String sql, Object... params) {
+    public final Optional<Long> queryLong(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryLong(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Long queryLong(IndexWrapper wrapper) {
+    public final Optional<Long> queryLong(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryLong(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Integer queryInt(String sql, Map<String, ?> params) {
+    public final Optional<Integer> queryInt(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryInt(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Integer queryInt(NamedWrapper wrapper) {
+    public final Optional<Integer> queryInt(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryInt(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Integer queryInt(String sql, Object... params) {
+    public final Optional<Integer> queryInt(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryInt(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Integer queryInt(IndexWrapper wrapper) {
+    public final Optional<Integer> queryInt(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryInt(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Short queryShort(String sql, Map<String, ?> params) {
+    public final Optional<Short> queryShort(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryShort(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Short queryShort(NamedWrapper wrapper) {
+    public final Optional<Short> queryShort(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryShort(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Short queryShort(String sql, Object... params) {
+    public final Optional<Short> queryShort(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryShort(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Short queryShort(IndexWrapper wrapper) {
+    public final Optional<Short> queryShort(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryShort(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Byte queryByte(String sql, Map<String, ?> params) {
+    public final Optional<Byte> queryByte(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryByte(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Byte queryByte(NamedWrapper wrapper) {
+    public final Optional<Byte> queryByte(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryByte(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Byte queryByte(String sql, Object... params) {
+    public final Optional<Byte> queryByte(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryByte(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Byte queryByte(IndexWrapper wrapper) {
+    public final Optional<Byte> queryByte(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryByte(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Double queryDouble(String sql, Map<String, ?> params) {
+    public final Optional<Double> queryDouble(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryDouble(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Double queryDouble(NamedWrapper wrapper) {
+    public final Optional<Double> queryDouble(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryDouble(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Double queryDouble(String sql, Object... params) {
+    public final Optional<Double> queryDouble(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryDouble(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Double queryDouble(IndexWrapper wrapper) {
+    public final Optional<Double> queryDouble(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryDouble(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Float queryFloat(String sql, Map<String, ?> params) {
+    public final Optional<Float> queryFloat(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryFloat(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Float queryFloat(NamedWrapper wrapper) {
+    public final Optional<Float> queryFloat(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryFloat(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Float queryFloat(String sql, Object... params) {
+    public final Optional<Float> queryFloat(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryFloat(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Float queryFloat(IndexWrapper wrapper) {
+    public final Optional<Float> queryFloat(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryFloat(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Boolean queryBoolean(String sql, Map<String, ?> params) {
+    public final Optional<Boolean> queryBoolean(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryBoolean(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Boolean queryBoolean(NamedWrapper wrapper) {
+    public final Optional<Boolean> queryBoolean(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryBoolean(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Boolean queryBoolean(String sql, Object... params) {
+    public final Optional<Boolean> queryBoolean(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryBoolean(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Boolean queryBoolean(IndexWrapper wrapper) {
+    public final Optional<Boolean> queryBoolean(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryBoolean(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Date queryDate(String sql, Map<String, ?> params) {
+    public final Optional<Date> queryDate(String sql, Map<String, ?> params) {
         return MiniJdbcTemplate.super.queryDate(sql, params);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Date queryDate(NamedWrapper wrapper) {
+    public final Optional<Date> queryDate(NamedWrapper wrapper) {
         return MiniJdbcTemplate.super.queryDate(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Date queryDate(IndexWrapper wrapper) {
+    public final Optional<Date> queryDate(IndexWrapper wrapper) {
         return MiniJdbcTemplate.super.queryDate(wrapper);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public final Date queryDate(String sql, Object... params) {
+    public final Optional<Date> queryDate(String sql, Object... params) {
         return MiniJdbcTemplate.super.queryDate(sql, params);
     }
 

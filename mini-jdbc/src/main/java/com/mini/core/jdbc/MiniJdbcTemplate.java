@@ -8,10 +8,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.KeyHolder;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface MiniJdbcTemplate {
 
@@ -310,8 +310,8 @@ public interface MiniJdbcTemplate {
      * @param mapper 映射器
      * @return 查询结果
      */
-    @Nullable
-    <T> T queryOne(String sql, Map<String, ?> params, RowMapper<T> mapper);
+    @Nonnull
+    <T> Optional<T> queryOne(String sql, Map<String, ?> params, RowMapper<T> mapper);
 
     /**
      * 查询对象
@@ -320,8 +320,8 @@ public interface MiniJdbcTemplate {
      * @param mapper  映射器
      * @return 查询结果
      */
-    @Nullable
-    default <T> T queryOne(NamedWrapper wrapper, RowMapper<T> mapper) {
+    @Nonnull
+    default <T> Optional<T> queryOne(NamedWrapper wrapper, RowMapper<T> mapper) {
         return queryOne(wrapper.sql(), wrapper.args(), mapper);
     }
 
@@ -333,8 +333,8 @@ public interface MiniJdbcTemplate {
      * @param mapper 映射器
      * @return 查询结果
      */
-    @Nullable
-    <T> T queryOne(String sql, Object[] params, RowMapper<T> mapper);
+    @Nonnull
+    <T> Optional<T> queryOne(String sql, Object[] params, RowMapper<T> mapper);
 
     /**
      * 查询对象
@@ -343,8 +343,8 @@ public interface MiniJdbcTemplate {
      * @param mapper  映射器
      * @return 查询结果
      */
-    @Nullable
-    default <T> T queryOne(IndexWrapper wrapper, RowMapper<T> mapper) {
+    @Nonnull
+    default <T> Optional<T> queryOne(IndexWrapper wrapper, RowMapper<T> mapper) {
         return queryOne(wrapper.sql(), wrapper.args(), mapper);
     }
 
@@ -356,8 +356,8 @@ public interface MiniJdbcTemplate {
      * @param type   值的类型
      * @return 查询结果
      */
-    @Nullable
-    <T> T queryOne(String sql, Map<String, ?> params, Class<T> type);
+    @Nonnull
+    <T> Optional<T> queryOne(String sql, Map<String, ?> params, Class<T> type);
 
     /**
      * 查询对象
@@ -366,8 +366,8 @@ public interface MiniJdbcTemplate {
      * @param type    值的类型
      * @return 查询结果
      */
-    @Nullable
-    default <T> T queryOne(NamedWrapper wrapper, Class<T> type) {
+    @Nonnull
+    default <T> Optional<T> queryOne(NamedWrapper wrapper, Class<T> type) {
         return queryOne(wrapper.sql(), wrapper.args(), type);
     }
 
@@ -379,8 +379,8 @@ public interface MiniJdbcTemplate {
      * @param type   值的类型
      * @return 查询结果
      */
-    @Nullable
-    <T> T queryOne(String sql, Object[] params, Class<T> type);
+    @Nonnull
+    <T> Optional<T> queryOne(String sql, Object[] params, Class<T> type);
 
     /**
      * 查询对象
@@ -389,8 +389,8 @@ public interface MiniJdbcTemplate {
      * @param type    值的类型
      * @return 查询结果
      */
-    @Nullable
-    default <T> T queryOne(IndexWrapper wrapper, Class<T> type) {
+    @Nonnull
+    default <T> Optional<T> queryOne(IndexWrapper wrapper, Class<T> type) {
         return queryOne(wrapper.sql(), wrapper.args(), type);
     }
 
@@ -401,8 +401,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    Map<String, Object> queryOneMap(String sql, Map<String, ?> params);
+    @Nonnull
+    Optional<Map<String, Object>> queryOneMap(String sql, Map<String, ?> params);
 
     /**
      * 查询对象
@@ -410,8 +410,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Map<String, Object> queryOneMap(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Map<String, Object>> queryOneMap(NamedWrapper wrapper) {
         return queryOneMap(wrapper.sql(), wrapper.args());
     }
 
@@ -422,8 +422,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    Map<String, Object> queryOneMap(String sql, Object[] params);
+    @Nonnull
+    Optional<Map<String, Object>> queryOneMap(String sql, Object[] params);
 
     /**
      * 查询对象
@@ -431,8 +431,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Map<String, Object> queryOneMap(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Map<String, Object>> queryOneMap(IndexWrapper wrapper) {
         return queryOneMap(wrapper.sql(), wrapper.args());
     }
 
@@ -444,8 +444,8 @@ public interface MiniJdbcTemplate {
      * @param type   值的类型
      * @return 查询结果
      */
-    @Nullable
-    <T> T querySingleOne(String sql, Map<String, ?> params, Class<T> type);
+    @Nonnull
+    <T> Optional<T> querySingleOne(String sql, Map<String, ?> params, Class<T> type);
 
     /**
      * 查询对象
@@ -454,8 +454,8 @@ public interface MiniJdbcTemplate {
      * @param type    值的类型
      * @return 查询结果
      */
-    @Nullable
-    default <T> T querySingleOne(NamedWrapper wrapper, Class<T> type) {
+    @Nonnull
+    default <T> Optional<T> querySingleOne(NamedWrapper wrapper, Class<T> type) {
         return querySingleOne(wrapper.sql(), wrapper.args(), type);
     }
 
@@ -467,8 +467,8 @@ public interface MiniJdbcTemplate {
      * @param type   值的类型
      * @return 查询结果
      */
-    @Nullable
-    <T> T querySingleOne(String sql, Object[] params, Class<T> type);
+    @Nonnull
+    <T> Optional<T> querySingleOne(String sql, Object[] params, Class<T> type);
 
     /**
      * 查询对象
@@ -477,8 +477,8 @@ public interface MiniJdbcTemplate {
      * @param type    值的类型
      * @return 查询结果
      */
-    @Nullable
-    default <T> T querySingleOne(IndexWrapper wrapper, Class<T> type) {
+    @Nonnull
+    default <T> Optional<T> querySingleOne(IndexWrapper wrapper, Class<T> type) {
         return querySingleOne(wrapper.sql(), wrapper.args(), type);
     }
 
@@ -489,8 +489,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default String queryString(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<String> queryString(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, String.class);
     }
 
@@ -500,8 +500,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default String queryString(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<String> queryString(NamedWrapper wrapper) {
         return querySingleOne(wrapper, String.class);
     }
 
@@ -512,8 +512,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default String queryString(String sql, Object... params) {
+    @Nonnull
+    default Optional<String> queryString(String sql, Object... params) {
         return querySingleOne(sql, params, String.class);
     }
 
@@ -523,8 +523,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default String queryString(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<String> queryString(IndexWrapper wrapper) {
         return querySingleOne(wrapper, String.class);
     }
 
@@ -535,8 +535,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Long queryLong(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Long> queryLong(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Long.class);
     }
 
@@ -546,8 +546,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Long queryLong(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Long> queryLong(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Long.class);
     }
 
@@ -558,8 +558,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Long queryLong(String sql, Object... params) {
+    @Nonnull
+    default Optional<Long> queryLong(String sql, Object... params) {
         return querySingleOne(sql, params, Long.class);
     }
 
@@ -569,8 +569,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Long queryLong(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Long> queryLong(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Long.class);
     }
 
@@ -581,8 +581,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Integer queryInt(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Integer> queryInt(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Integer.class);
     }
 
@@ -592,8 +592,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Integer queryInt(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Integer> queryInt(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Integer.class);
     }
 
@@ -604,8 +604,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Integer queryInt(String sql, Object... params) {
+    @Nonnull
+    default Optional<Integer> queryInt(String sql, Object... params) {
         return querySingleOne(sql, params, Integer.class);
     }
 
@@ -615,8 +615,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Integer queryInt(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Integer> queryInt(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Integer.class);
     }
 
@@ -627,8 +627,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Short queryShort(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Short> queryShort(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Short.class);
     }
 
@@ -638,8 +638,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Short queryShort(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Short> queryShort(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Short.class);
     }
 
@@ -650,8 +650,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Short queryShort(String sql, Object... params) {
+    @Nonnull
+    default Optional<Short> queryShort(String sql, Object... params) {
         return querySingleOne(sql, params, Short.class);
     }
 
@@ -661,8 +661,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Short queryShort(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Short> queryShort(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Short.class);
     }
 
@@ -673,8 +673,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Byte queryByte(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Byte> queryByte(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Byte.class);
     }
 
@@ -684,8 +684,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Byte queryByte(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Byte> queryByte(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Byte.class);
     }
 
@@ -696,8 +696,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Byte queryByte(String sql, Object... params) {
+    @Nonnull
+    default Optional<Byte> queryByte(String sql, Object... params) {
         return querySingleOne(sql, params, Byte.class);
     }
 
@@ -707,8 +707,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Byte queryByte(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Byte> queryByte(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Byte.class);
     }
 
@@ -719,8 +719,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Double queryDouble(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Double> queryDouble(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Double.class);
     }
 
@@ -730,8 +730,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Double queryDouble(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Double> queryDouble(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Double.class);
     }
 
@@ -742,8 +742,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Double queryDouble(String sql, Object... params) {
+    @Nonnull
+    default Optional<Double> queryDouble(String sql, Object... params) {
         return querySingleOne(sql, params, Double.class);
     }
 
@@ -753,8 +753,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Double queryDouble(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Double> queryDouble(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Double.class);
     }
 
@@ -765,8 +765,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Float queryFloat(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Float> queryFloat(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Float.class);
     }
 
@@ -776,8 +776,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Float queryFloat(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Float> queryFloat(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Float.class);
     }
 
@@ -788,8 +788,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Float queryFloat(String sql, Object... params) {
+    @Nonnull
+    default Optional<Float> queryFloat(String sql, Object... params) {
         return querySingleOne(sql, params, Float.class);
     }
 
@@ -799,8 +799,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Float queryFloat(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Float> queryFloat(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Float.class);
     }
 
@@ -811,8 +811,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Boolean queryBoolean(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Boolean> queryBoolean(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Boolean.class);
     }
 
@@ -822,8 +822,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Boolean queryBoolean(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Boolean> queryBoolean(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Boolean.class);
     }
 
@@ -834,8 +834,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Boolean queryBoolean(String sql, Object... params) {
+    @Nonnull
+    default Optional<Boolean> queryBoolean(String sql, Object... params) {
         return querySingleOne(sql, params, Boolean.class);
     }
 
@@ -845,8 +845,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Boolean queryBoolean(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Boolean> queryBoolean(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Boolean.class);
     }
 
@@ -857,8 +857,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Date queryDate(String sql, Map<String, ?> params) {
+    @Nonnull
+    default Optional<Date> queryDate(String sql, Map<String, ?> params) {
         return querySingleOne(sql, params, Date.class);
     }
 
@@ -868,8 +868,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Date queryDate(NamedWrapper wrapper) {
+    @Nonnull
+    default Optional<Date> queryDate(NamedWrapper wrapper) {
         return querySingleOne(wrapper, Date.class);
     }
 
@@ -880,8 +880,8 @@ public interface MiniJdbcTemplate {
      * @param params 参数
      * @return 查询结果
      */
-    @Nullable
-    default Date queryDate(String sql, Object... params) {
+    @Nonnull
+    default Optional<Date> queryDate(String sql, Object... params) {
         return querySingleOne(sql, params, Date.class);
     }
 
@@ -891,8 +891,8 @@ public interface MiniJdbcTemplate {
      * @param wrapper SQL包装器
      * @return 查询结果
      */
-    @Nullable
-    default Date queryDate(IndexWrapper wrapper) {
+    @Nonnull
+    default Optional<Date> queryDate(IndexWrapper wrapper) {
         return querySingleOne(wrapper, Date.class);
     }
 }

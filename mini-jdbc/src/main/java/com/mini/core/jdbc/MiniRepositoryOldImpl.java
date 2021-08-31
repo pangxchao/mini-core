@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.util.Optional.ofNullable;
 
 public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements MiniRepositoryOld {
     private final ApplicationContext context;
@@ -306,7 +305,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     @Override
     public final <T> Page<T> queryPage(Pageable pageable, String sql, Object[] params, RowMapper<T> mapper) {
         List<T> content = queryList(pageable.getOffset(), pageable.getPageSize(), sql, params, mapper);
-        long total = ofNullable(queryLong("SELECT COUNT(*) FROM (" + sql + ") T ", params)).orElse(0L);
+        long total = queryLong("SELECT COUNT(*) FROM (" + sql + ") T ", params).orElse(0L);
         return new PageImpl<>(content, pageable, total);
     }
 

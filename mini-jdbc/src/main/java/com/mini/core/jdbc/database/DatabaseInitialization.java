@@ -112,8 +112,7 @@ public abstract class DatabaseInitialization {
      * @param newVersion 目标版本号
      */
     protected void saveNewVersion(int newVersion) {
-        String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(),
-                getConfigIdColumnName(), getConfigValueColumnName());
+        String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(), getConfigIdColumnName(), getConfigValueColumnName());
         this.getJdbcTemplate().update(string, ID, newVersion);
     }
 
@@ -126,9 +125,7 @@ public abstract class DatabaseInitialization {
      * @return 数据库初始版本
      */
     protected int getOldVersion() {
-        String string = format("SELECT %s FROM %s WHERE %s = ?", getConfigValueColumnName(),
-                getConfigTableName(), getConfigIdColumnName());
-        Integer value = this.getJdbcTemplate().queryInt(string, ID);
-        return value == null ? 0 : value;
+        String string = format("SELECT %s FROM %s WHERE %s = ?", getConfigValueColumnName(), getConfigTableName(), getConfigIdColumnName());
+        return this.getJdbcTemplate().queryInt(string, ID).orElse(0);
     }
 }
