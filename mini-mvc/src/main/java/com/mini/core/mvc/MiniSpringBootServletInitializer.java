@@ -18,6 +18,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.format.FormatterRegistry;
@@ -43,10 +44,12 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
         return new Class<?>[]{this.getClass()};
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected static void run(Class<?>[] sources, String[] args) {
         SpringApplication.run(sources, args);
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected static void run(Class<?> source, String[] args) {
         SpringApplication.run(source, args);
     }
@@ -77,8 +80,8 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
 
     @Bean
     @ConditionalOnMissingBean(value = ErrorAttributes.class)
-    public MiniDefaultErrorAttributes miniDefaultErrorAttributes() {
-        return new MiniDefaultErrorAttributes();
+    public MiniDefaultErrorAttributes miniDefaultErrorAttributes(MessageSource messageSource) {
+        return new MiniDefaultErrorAttributes(messageSource);
     }
 
     @Bean

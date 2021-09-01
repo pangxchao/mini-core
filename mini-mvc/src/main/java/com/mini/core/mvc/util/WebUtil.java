@@ -14,7 +14,7 @@ import static java.lang.String.format;
  */
 public final class WebUtil {
     /**
-     * 获取访问当前项目请求的路径
+     * 获取当前请求路径
      *
      * @param request request 对象
      * @return 例如：/index.jsp
@@ -25,7 +25,7 @@ public final class WebUtil {
     }
 
     /**
-     * 获取访问当前项目请求的路径
+     * 获取当前请求路径
      *
      * @param request request 对象
      * @return 例如：index.jsp

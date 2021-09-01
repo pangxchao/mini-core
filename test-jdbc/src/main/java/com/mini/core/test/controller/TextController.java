@@ -1,10 +1,8 @@
 package com.mini.core.test.controller;
 
 import com.mini.core.mvc.model.JsonModel;
-import com.mini.core.mvc.util.ResponseCode;
 import com.mini.core.test.repository.TextInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
