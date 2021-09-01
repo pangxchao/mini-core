@@ -85,6 +85,12 @@ public abstract class MiniSpringBootServletInitializer extends SpringBootServlet
     }
 
     @Bean
+    @ConditionalOnMissingBean(value = MiniErrorExceptionHandler.class)
+    public MiniErrorExceptionHandler miniErrorExceptionHandler() {
+        return new MiniErrorExceptionHandler();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(value = StringToInstantConverter.class)
     public StringToInstantConverter stringToInstantConverter() {
         return new StringToInstantConverter();

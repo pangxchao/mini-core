@@ -1,6 +1,7 @@
 package com.mini.core.mvc.validation;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -95,5 +96,16 @@ public final class ValidateException extends RuntimeException {
             return messageSource.getMessage(name, getArgs(), locale);
         }
         return getMessage();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("message", getMessage())
+                .append("status", status)
+                .append("field", field)
+                .append("args", args)
+                .append("code", code)
+                .toString();
     }
 }
