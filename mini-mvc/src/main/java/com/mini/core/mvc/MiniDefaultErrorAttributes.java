@@ -68,7 +68,7 @@ public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
 
         // 其它验证框架验证的结果
         if (exception instanceof ValidationException) {
-            map.put("message", "");
+            map.put("message", "Bad Request");
             return map;
         }
 
@@ -87,13 +87,16 @@ public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
         // 自定义异常消息
         if (exception instanceof ValidateException) {
             var e = (ValidateException) exception;
-            // 添加自定义错误返回数据
             map.put("message", e.getMessage(messageSource, webRequest.getLocale()));
             map.put("error", e.getStatus().getReasonPhrase());
             map.put("status", e.getStatus().value());
             map.put(getFieldName(), e.getField());
             map.put(getCodeName(), e.getCode());
+            return map;
         }
+
+        // 其它异常信息处理
+        map.put("message", "Server Error");
         return map;
     }
 
