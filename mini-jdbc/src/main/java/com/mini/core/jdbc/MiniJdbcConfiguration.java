@@ -10,7 +10,6 @@ import com.mini.core.jdbc.mybatis.injector.MiniSqlInjector;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
@@ -21,16 +20,10 @@ import static com.baomidou.mybatisplus.annotation.DbType.MYSQL;
 public class MiniJdbcConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(value = JdbcTemplate.class)
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public JdbcTemplate jdbcTemplate(final DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    @Bean
     @ConditionalOnMissingBean(value = MiniJdbcTemplate.class)
-    public MiniJdbcTemplate miniJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        return new DefaultMiniJdbcTemplate(jdbcTemplate);
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    public MiniJdbcTemplate miniJdbcTemplate(final DataSource dataSource) {
+        return new DefaultMiniJdbcTemplate(dataSource);
     }
 
     @Bean

@@ -19,13 +19,13 @@ import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -41,15 +41,15 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     private final ApplicationContext context;
     private final Dialect dialect;
 
-    public MiniRepositoryOldImpl(ApplicationContext context, JdbcTemplate jdbcTemplate, Dialect dialect) {
-        super(jdbcTemplate);
+    public MiniRepositoryOldImpl(ApplicationContext context, DataSource dataSource, Dialect dialect) {
+        super(dataSource, true);
         this.context = context;
         this.dialect = dialect;
     }
 
     @Override
     public final int execute(String sql, @Nullable Object[] params, GeneratedKeyHolder keyHolder) {
-        return getJdbcOperations().update(con -> {
+        return this.update(con -> {
             var statement = con.prepareStatement(sql, RETURN_GENERATED_KEYS);
             var setter = new ArgumentPreparedStatementSetter(params);
             setter.setValues(statement);
@@ -81,7 +81,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final <T> List<T> queryList(long offset, int size, String sql, Object[] params, RowMapper<T> mapper) {
-        return this.queryList(sql + " " + dialect.limit().getLimitOffset(size, offset), params, mapper);
+        return this.queryList(sql + " " + dialect.limit().getLimitOffset(size, offset), mapper, params);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final <T> List<T> queryList(long offset, int size, String sql, Object[] params, Class<T> type) {
-        return this.queryList(offset, size, sql, params, getBeanRowMapper(type));
+        return this.queryList(offset, size, sql, params, getBeanPropertyRowMapper(type));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     @Nonnull
     @Override
     public final List<Map<String, Object>> queryListMap(long offset, int size, String sql, @Nullable Object[] params) {
-        return queryList(offset, size, sql, params, getMapRowMapper());
+        return queryList(offset, size, sql, params, getColumnMapRowMapper());
     }
 
     @Override
@@ -148,7 +148,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     @Nonnull
     @Override
     public final <T> List<T> queryListSingle(String sql, @Nullable Object[] params, Class<T> type) {
-        return querySingleList(sql, params, type);
+        return querySingleList(sql, type, params);
     }
 
     @Override
@@ -158,7 +158,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public <T> List<T> queryListSingle(long offset, int size, String sql, @Nullable Object[] params, Class<T> type) {
-        return queryList(offset, size, sql, params, getSingleRowMapper(type));
+        return queryList(offset, size, sql, params, getSingleColumnRowMapper(type));
     }
 
     @Override
@@ -191,7 +191,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     @Nullable
     @Override
     public final <T> T queryObject(String sql, Object[] params, Class<T> type) {
-        return this.queryObject(sql, params, getBeanRowMapper(type));
+        return this.queryObject(sql, params, getBeanPropertyRowMapper(type));
     }
 
     @Nullable
@@ -203,7 +203,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     @Nullable
     @Override
     public final Map<String, Object> queryObjectMap(String sql, Object[] params) {
-        return this.queryObject(sql, params, getMapRowMapper());
+        return this.queryObject(sql, params, getColumnMapRowMapper());
     }
 
     @Nullable
@@ -215,7 +215,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     @Nullable
     @Override
     public final <T> T queryObjectSingle(String sql, Object[] params, Class<T> type) {
-        return this.queryObject(sql, params, getSingleRowMapper(type));
+        return this.queryObject(sql, params, getSingleColumnRowMapper(type));
     }
 
     @Nullable
@@ -316,7 +316,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final <T> Page<T> queryPage(Pageable pageable, String sql, Object[] params, Class<T> type) {
-        return queryPage(pageable, sql, params, getBeanRowMapper(type));
+        return queryPage(pageable, sql, params, getBeanPropertyRowMapper(type));
     }
 
     @Override
@@ -326,7 +326,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final Page<Map<String, Object>> queryPageMap(Pageable pageable, String sql, Object[] params) {
-        return queryPage(pageable, sql, params, getMapRowMapper());
+        return queryPage(pageable, sql, params, getColumnMapRowMapper());
     }
 
     @Override
@@ -336,7 +336,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final <T> Page<T> queryPageSingle(Pageable pageable, String sql, Object[] params, Class<T> type) {
-        return queryPage(pageable, sql, params, getSingleRowMapper(type));
+        return queryPage(pageable, sql, params, getSingleColumnRowMapper(type));
     }
 
     @Override
@@ -497,7 +497,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
     public final <T> int update(T entity, boolean includeNull) {
         Class<? extends T> type = (Class<? extends T>) entity.getClass();
         ClassHolder<? extends T> holder = ClassHolder.create(type);
-        return MiniRepositoryOld.super.update(getTableName(holder), builder -> {
+        return update(getTableName(holder), (Consumer<UpdateFragment<?>>) builder -> {
             Assert.isTrue(holder.getFields().values().stream().anyMatch(it -> {
                 // 为了数据安全，修改时必须有ID字段并且ID字段值不能为空，否则报错
                 return Objects.nonNull(it.getAnnotation(Id.class));

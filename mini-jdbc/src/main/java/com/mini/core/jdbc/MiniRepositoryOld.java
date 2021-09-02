@@ -63,7 +63,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @return 查询结果
      */
     default <T> List<T> queryList(AbstractSql<?> sql, RowMapper<T> mapper) {
-        return queryList(sql.getSql(), sql.getArgs(), mapper);
+        return queryList(sql.getSql(), mapper, sql.getArgs());
     }
 
     /**
@@ -75,7 +75,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @return 查询结果
      */
     default <T> List<T> queryList(AbstractSql<?> sql, Class<T> type) {
-        return queryList(sql.getSql(), sql.getArgs(), type);
+        return queryList(sql.getSql(), type, sql.getArgs());
     }
 
     /**
@@ -193,7 +193,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @return 查询结果
      */
     default List<Map<String, Object>> queryListMap(AbstractSql<?> sql) {
-        return queryListMap(sql.getSql(), sql.getArgs());
+        return queryMapList(sql.getSql(), sql.getArgs());
     }
 
     /**
