@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Mini JDBC 操作默认实现
+ *
+ * @author pangchao
+ */
 public class DefaultMiniJdbcTemplate extends JdbcTemplate implements MiniJdbcTemplate {
 
     public DefaultMiniJdbcTemplate(DataSource dataSource, boolean lazyInit) {
@@ -41,14 +46,6 @@ public class DefaultMiniJdbcTemplate extends JdbcTemplate implements MiniJdbcTem
 
     @Nonnull
     @Override
-    public <T> Optional<T> queryOne(String sql, RowMapper<T> mapper, Object... params) {
-        return Optional.ofNullable(query(sql, params, rs -> { //
-            return rs.next() ? mapper.mapRow(rs, 0) : null;
-        }));
-    }
-
-    @Nonnull
-    @Override
     public <T> Optional<T> queryOne(String sql, Class<T> type, Object... params) {
         return queryOne(sql, getBeanPropertyRowMapper(type), params);
     }
@@ -61,7 +58,7 @@ public class DefaultMiniJdbcTemplate extends JdbcTemplate implements MiniJdbcTem
 
     @NotNull
     @Override
-    public <T> Optional<T> querySingleOne(String sql, Class<T> type, Object[] params) {
+    public <T> Optional<T> querySingleOne(String sql, Class<T> type, Object... params) {
         return queryOne(sql, getSingleColumnRowMapper(type), params);
     }
 

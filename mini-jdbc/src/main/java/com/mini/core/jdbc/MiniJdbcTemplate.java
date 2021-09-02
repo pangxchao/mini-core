@@ -8,6 +8,13 @@ import org.springframework.jdbc.core.RowMapper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+import static java.util.Optional.ofNullable;
+
+/**
+ * Mini JDBC 操作接口
+ *
+ * @author pangchao
+ */
 public interface MiniJdbcTemplate extends JdbcOperations {
 
     /**
@@ -151,7 +158,9 @@ public interface MiniJdbcTemplate extends JdbcOperations {
      * @return 查询结果
      */
     @Nonnull
-    <T> Optional<T> queryOne(String sql, RowMapper<T> mapper, Object... params);
+    default <T> Optional<T> queryOne(String sql, RowMapper<T> mapper, Object... params) {
+        return ofNullable(query(sql, params, rs -> rs.next() ? mapper.mapRow(rs, 0) : null));
+    }
 
     /**
      * 查询对象
@@ -218,7 +227,7 @@ public interface MiniJdbcTemplate extends JdbcOperations {
      * @return 查询结果
      */
     @Nonnull
-    <T> Optional<T> querySingleOne(String sql, Class<T> type, Object[] params);
+    <T> Optional<T> querySingleOne(String sql, Class<T> type, Object... params);
 
     /**
      * 查询对象
