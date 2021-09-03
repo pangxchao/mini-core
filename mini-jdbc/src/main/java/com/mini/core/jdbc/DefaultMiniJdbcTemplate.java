@@ -64,6 +64,8 @@ public class DefaultMiniJdbcTemplate extends JdbcTemplate implements MiniJdbcTem
 
     @Nonnull
     protected <T> RowMapper<T> getBeanPropertyRowMapper(Class<T> requiredType) {
-        return BeanPropertyRowMapper.newInstance(requiredType);
+        var mapper = BeanPropertyRowMapper.newInstance(requiredType);
+        mapper.setPrimitivesDefaultedForNullValue(true);
+        return mapper;
     }
 }
