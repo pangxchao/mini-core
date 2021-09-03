@@ -36,6 +36,7 @@ public class MultipleInterceptor {
      * @param proceedingJoinPoint 方法调用参数
      * @return 返回目标方法返回对象
      */
+    @SuppressWarnings("DuplicatedCode")
     @Around(value = "@annotation(com.mini.core.jdbc.transaction.MultipleTransactional)")
     public Object transactionalMultiAspectAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         requireNonNull(proceedingJoinPoint, "TransactionMultiInterceptor Error: ProceedingJoinPoint is null");
