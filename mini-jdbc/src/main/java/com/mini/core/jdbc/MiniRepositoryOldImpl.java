@@ -64,19 +64,19 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final int execute(AbstractSql<?> sql) {
-        return MiniRepositoryOld.super.execute(sql);
+        return update(sql.getSql(), sql.getArgs());
     }
 
     @Nonnull
     @Override
     public final <T> List<T> queryList(AbstractSql<?> sql, RowMapper<T> mapper) {
-        return MiniRepositoryOld.super.queryList(sql, mapper);
+        return queryList(sql.getSql(), mapper, sql.getArgs());
     }
 
     @Nonnull
     @Override
     public final <T> List<T> queryList(AbstractSql<?> sql, Class<T> type) {
-        return MiniRepositoryOld.super.queryList(sql, type);
+        return queryList(sql.getSql(), type, sql.getArgs());
     }
 
     @Override
@@ -121,7 +121,7 @@ public class MiniRepositoryOldImpl extends DefaultMiniJdbcTemplate implements Mi
 
     @Override
     public final List<Map<String, Object>> queryListMap(AbstractSql<?> sql) {
-        return MiniRepositoryOld.super.queryListMap(sql);
+        return queryMapList(sql.getSql(), sql.getArgs());
     }
 
     @Nonnull

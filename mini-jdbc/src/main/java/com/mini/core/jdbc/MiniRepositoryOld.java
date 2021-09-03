@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import static java.util.Optional.ofNullable;
 
-public interface MiniRepositoryOld extends MiniJdbcTemplate {
+public interface MiniRepositoryOld {
 
     /**
      * 执行SQL
@@ -49,9 +49,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @param sql SQL和参数
      * @return 执行结果 - 影响条数
      */
-    default int execute(AbstractSql<?> sql) {
-        return update(sql.getSql(), sql.getArgs());
-    }
+    int execute(AbstractSql<?> sql);
 
 
     /**
@@ -62,9 +60,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @param <T>    解析器类型
      * @return 查询结果
      */
-    default <T> List<T> queryList(AbstractSql<?> sql, RowMapper<T> mapper) {
-        return queryList(sql.getSql(), mapper, sql.getArgs());
-    }
+    <T> List<T> queryList(AbstractSql<?> sql, RowMapper<T> mapper);
 
     /**
      * 查询列表
@@ -74,9 +70,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @param <T>  解析器类型
      * @return 查询结果
      */
-    default <T> List<T> queryList(AbstractSql<?> sql, Class<T> type) {
-        return queryList(sql.getSql(), type, sql.getArgs());
-    }
+    <T> List<T> queryList(AbstractSql<?> sql, Class<T> type);
 
     /**
      * 查询列表
@@ -192,9 +186,7 @@ public interface MiniRepositoryOld extends MiniJdbcTemplate {
      * @param sql SQL
      * @return 查询结果
      */
-    default List<Map<String, Object>> queryListMap(AbstractSql<?> sql) {
-        return queryMapList(sql.getSql(), sql.getArgs());
-    }
+    List<Map<String, Object>> queryListMap(AbstractSql<?> sql);
 
     /**
      * 查询列表
