@@ -986,7 +986,7 @@ public final class ValidatorUtil {
     }
 
     public static ValidatorBuilder noLogin() {
-        return noLogin("No Login");
+        return noLogin("Not logged in");
     }
 
     public static ValidatorBuilder noPermission(String message, Integer code) {
@@ -998,7 +998,7 @@ public final class ValidatorUtil {
     }
 
     public static ValidatorBuilder noPermission() {
-        return noPermission("No Permission");
+        return noPermission("No permission");
     }
 
     public static ValidatorBuilder serverError(String message, Integer code) {
@@ -1010,6 +1010,6 @@ public final class ValidatorUtil {
     }
 
     public static ValidatorBuilder serverError() {
-        return serverError("Server Error");
+        return serverError("Server error");
     }
 }

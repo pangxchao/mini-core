@@ -1,9 +1,15 @@
 package com.mini.core.jdbc.database;
 
 import com.mini.core.jdbc.MiniJdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Objects;
 
+import static com.mini.core.jdbc.database.UpgradeType.DATA;
+import static com.mini.core.jdbc.database.UpgradeType.STRUCTURE;
 import static java.lang.String.format;
 
 /**
@@ -14,22 +20,27 @@ import static java.lang.String.format;
  *
  * @author pangchao
  */
+@Component
 public abstract class DatabaseInitialization {
+    private TransactionTemplate transactionTemplate;
+    private List<DatabaseTable> databaseTableList;
+    private MiniJdbcTemplate miniJdbcTemplate;
     private static final int ID = 1;
 
-    /**
-     * 获取数据库操升级表列表信息
-     *
-     * @return 数据库操升级表列表信息
-     */
-    protected abstract List<DatabaseTable> getTableList();
+    @Autowired
+    public final void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
 
-    /**
-     * 获取数据库操作对象
-     *
-     * @return 数据库操作对象
-     */
-    protected abstract MiniJdbcTemplate getJdbcTemplate();
+    @Autowired
+    public final void setDatabaseTableList(List<DatabaseTable> databaseTableList) {
+        this.databaseTableList = databaseTableList;
+    }
+
+    @Autowired
+    public final void setMiniJdbcTemplate(MiniJdbcTemplate miniJdbcTemplate) {
+        this.miniJdbcTemplate = miniJdbcTemplate;
+    }
 
     /**
      * 获取Value字段名称
@@ -60,31 +71,48 @@ public abstract class DatabaseInitialization {
 
     /**
      * 数据库初始化程序
+     * <p>
+     * 该方法内部会为每个版本开启一个事务调用时外面不需要事务
+     * </p>
      *
      * @param newVersion 升级到目标版本
      */
     public final void initialization(final int newVersion) {
+        Objects.requireNonNull(transactionTemplate);
+        Objects.requireNonNull(databaseTableList);
+        Objects.requireNonNull(miniJdbcTemplate);
         try {
             // 暂时禁用外键检查
             var checks = "SET FOREIGN_KEY_CHECKS = 0;";
-            this.getJdbcTemplate().execute(checks);
+            this.miniJdbcTemplate.execute(checks);
             // 如果表不存在时则创建表
             final String tName = getConfigTableName();
-            if (!getJdbcTemplate().hasTable(tName)) {
+            if (!miniJdbcTemplate.hasTable(tName)) {
                 this.createConfigTable();
             }
             // 升级其它数据库版本到新版本
-            final int oldVersion = getOldVersion();
-            for (DatabaseTable it : getTableList()) {
-                it.upgrade(oldVersion, newVersion);
+            for (int version = getOldVersion(); version <= newVersion; version++) {
+                // 升级结构
+                for (DatabaseTable it : databaseTableList) {
+                    it.upgrade(version, STRUCTURE);
+                }
+
+                // 升级数据
+                final int finalVersion = version;
+                transactionTemplate.execute(transactionStatus -> {
+                    for (DatabaseTable it : databaseTableList) {
+                        it.upgrade(finalVersion, DATA);
+                    }
+                    // 保存升级后的版本
+                    saveNewVersion(finalVersion);
+                    return null;
+                });
             }
-            // 保存新版本到数据库
-            this.saveNewVersion(newVersion);
         }
         // 恢复外键检查
         finally {
             var checks = "SET FOREIGN_KEY_CHECKS = 1;";
-            this.getJdbcTemplate().execute(checks);
+            this.miniJdbcTemplate.execute(checks);
         }
     }
 
@@ -95,7 +123,7 @@ public abstract class DatabaseInitialization {
      * </p>
      */
     protected void createConfigTable() {
-        this.getJdbcTemplate().execute("\n" +
+        this.miniJdbcTemplate.execute("\n" +
                 "CREATE TABLE IF NOT EXISTS " + getConfigTableName() + "( \n " +
                 "   " + getConfigIdColumnName() + " INT NOT NULL PRIMARY KEY COMMENT '版本ID',\n" +
                 "   " + getConfigValueColumnName() + " INT NOT NULL COMMENT '数据库版本号' \n" +
@@ -113,7 +141,7 @@ public abstract class DatabaseInitialization {
      */
     protected void saveNewVersion(int newVersion) {
         String string = format("REPLACE INTO %s(%s, %s) VALUES(?, ?)", getConfigTableName(), getConfigIdColumnName(), getConfigValueColumnName());
-        this.getJdbcTemplate().update(string, ID, newVersion);
+        this.miniJdbcTemplate.update(string, ID, newVersion);
     }
 
     /**
@@ -126,6 +154,6 @@ public abstract class DatabaseInitialization {
      */
     protected int getOldVersion() {
         String string = format("SELECT %s FROM %s WHERE %s = ?", getConfigValueColumnName(), getConfigTableName(), getConfigIdColumnName());
-        return this.getJdbcTemplate().queryInt(string, ID).orElse(0);
+        return this.miniJdbcTemplate.queryInt(string, ID).orElse(0);
     }
 }
