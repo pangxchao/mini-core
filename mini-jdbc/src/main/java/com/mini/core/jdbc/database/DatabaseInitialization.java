@@ -7,9 +7,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
-import static com.mini.core.jdbc.database.UpgradeType.DATA;
-import static com.mini.core.jdbc.database.UpgradeType.STRUCTURE;
 import static java.lang.String.format;
 
 /**
@@ -23,7 +22,7 @@ import static java.lang.String.format;
 @Component
 public abstract class DatabaseInitialization {
     private TransactionTemplate transactionTemplate;
-    private List<DatabaseTable> databaseTableList;
+    private List<UpgradeTable> databaseTableList;
     private MiniJdbcTemplate miniJdbcTemplate;
     private static final int ID = 1;
 
@@ -33,7 +32,7 @@ public abstract class DatabaseInitialization {
     }
 
     @Autowired
-    public final void setDatabaseTableList(List<DatabaseTable> databaseTableList) {
+    public final void setDatabaseTableList(List<UpgradeTable> databaseTableList) {
         this.databaseTableList = databaseTableList;
     }
 
@@ -91,18 +90,26 @@ public abstract class DatabaseInitialization {
                 this.createConfigTable();
             }
             // 升级其它数据库版本到新版本
-            for (int version = getOldVersion(); version <= newVersion; version++) {
+            for (int version = getOldVersion() + 1; version <= newVersion; version++) {
                 // 升级结构
-                for (DatabaseTable it : databaseTableList) {
-                    it.upgrade(version, STRUCTURE);
-                }
+                final int finalVersion = version;
+                this.databaseTableList.forEach(databaseTable -> databaseTable.upgrade(new UpgradeCallback() {
+                    public boolean upgradeStructureToVersion(int version, Consumer<MiniJdbcTemplate> consumer) {
+                        if (finalVersion != version) return false;
+                        consumer.accept(miniJdbcTemplate);
+                        return true;
+                    }
+                }));
 
                 // 升级数据
-                final int finalVersion = version;
                 transactionTemplate.execute(transactionStatus -> {
-                    for (DatabaseTable it : databaseTableList) {
-                        it.upgrade(finalVersion, DATA);
-                    }
+                    this.databaseTableList.forEach(databaseTable -> databaseTable.upgrade(new UpgradeCallback() {
+                        public boolean upgradeDataToVersion(int version, Consumer<MiniJdbcTemplate> consumer) {
+                            if (finalVersion != version) return false;
+                            consumer.accept(miniJdbcTemplate);
+                            return true;
+                        }
+                    }));
                     // 保存升级后的版本
                     saveNewVersion(finalVersion);
                     return null;
