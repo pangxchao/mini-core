@@ -88,10 +88,8 @@ public class MiniDefaultErrorAttributes extends DefaultErrorAttributes {
         if (exception instanceof ValidateException) {
             var e = (ValidateException) exception;
             map.put("message", e.getMessage(messageSource, webRequest.getLocale()));
-            map.put("error", e.getStatus().getReasonPhrase());
-            map.put("status", e.getStatus().value());
-            map.put(getFieldName(), e.getField());
-            map.put(getCodeName(), e.getCode());
+            map.put(this.getFieldName(), e.getField());
+            map.put(this.getCodeName(), e.getCode());
             return map;
         }
 

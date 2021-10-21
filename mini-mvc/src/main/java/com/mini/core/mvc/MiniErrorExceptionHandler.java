@@ -81,8 +81,9 @@ public class MiniErrorExceptionHandler {
     /**
      * 自定义错误处理异常类处理器
      *
-     * @param request  HttpServletRequest 对象
-     * @param response HttpServletResponse 对象
+     * @param exception ValidateException 对象
+     * @param request   HttpServletRequest 对象
+     * @param response  HttpServletResponse 对象
      */
     @SneakyThrows
     @ExceptionHandler({ValidateException.class})
