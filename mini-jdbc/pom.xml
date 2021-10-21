@@ -11,9 +11,9 @@
     <properties>
         <!-- 项目使用版本配置 -->
         <junit.version>4.13</junit.version>
-        <spring.version>5.2.15.RELEASE</spring.version>
-        <mybatis.plus.version>3.4.3.1</mybatis.plus.version>
-        <spring.data.jdbc.version>2.0.9.RELEASE</spring.data.jdbc.version>
+        <spring.version>5.3.10</spring.version>
+        <mybatis.plus.version>3.4.3.4</mybatis.plus.version>
+        <spring.data.jdbc.version>2.2.4</spring.data.jdbc.version>
 
         <!-- 项目基础属性设置 -->
         <java.version>11</java.version>

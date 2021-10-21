@@ -104,7 +104,7 @@
         <repository>
             <id>releases</id>
             <name>GitHub Private Maven</name>
-            <url>file:C:/Workspace/mini-maven</url>
+            <url>file:C:/Workspace/projects/mini-maven</url>
         </repository>
     </distributionManagement>
 </project>

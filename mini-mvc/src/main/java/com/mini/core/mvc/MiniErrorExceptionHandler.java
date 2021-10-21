@@ -32,7 +32,7 @@ public class MiniErrorExceptionHandler {
     @SneakyThrows
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public void validate(MethodArgumentNotValidException exception, HttpServletRequest request, HttpServletResponse response) {
-        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST);
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST.value());
         request.getRequestDispatcher("/error").forward(request, response);
     }
 
@@ -46,7 +46,7 @@ public class MiniErrorExceptionHandler {
     @SneakyThrows
     @ExceptionHandler({ConstraintViolationException.class})
     public void validate(ConstraintViolationException exception, HttpServletRequest request, HttpServletResponse response) {
-        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST);
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST.value());
         request.getRequestDispatcher("/error").forward(request, response);
     }
 
@@ -60,7 +60,7 @@ public class MiniErrorExceptionHandler {
     @SneakyThrows
     @ExceptionHandler({ValidationException.class})
     public void validate(ValidationException exception, HttpServletRequest request, HttpServletResponse response) {
-        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST);
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST.value());
         request.getRequestDispatcher("/error").forward(request, response);
     }
 
@@ -74,7 +74,7 @@ public class MiniErrorExceptionHandler {
     @SneakyThrows
     @ExceptionHandler({BindException.class})
     public void validate(BindException exception, HttpServletRequest request, HttpServletResponse response) {
-        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST);
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, HttpStatus.BAD_REQUEST.value());
         request.getRequestDispatcher("/error").forward(request, response);
     }
 
@@ -88,7 +88,7 @@ public class MiniErrorExceptionHandler {
     @SneakyThrows
     @ExceptionHandler({ValidateException.class})
     public void validate(ValidateException exception, HttpServletRequest request, HttpServletResponse response) {
-        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, exception.getStatus());
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, exception.getStatus().value());
         request.getRequestDispatcher("/error").forward(request, response);
     }
 }
