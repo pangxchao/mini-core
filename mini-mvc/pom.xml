@@ -13,7 +13,7 @@
         <java.version>11</java.version>
         <junit.version>4.13</junit.version>
         <spring.version>5.2.15.RELEASE</spring.version>
-        <spring.boot.version>2.3.11.RELEASE</spring.boot.version>
+        <spring.boot.version>2.5.12</spring.boot.version>
 
         <!-- 项目基础属性设置 -->
         <maven.test.skip>true</maven.test.skip>
