@@ -19,7 +19,7 @@
         <!-- 项目使用版本配置 -->
         <java.version>11</java.version>
         <junit.version>4.13</junit.version>
-        <kotlin.version>1.4.21</kotlin.version>
+        <kotlin.version>1.6.0</kotlin.version>
         <spring.version>5.2.15.RELEASE</spring.version>
         <spring.boot.version>2.3.11.RELEASE</spring.boot.version>
 
